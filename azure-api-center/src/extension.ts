@@ -99,7 +99,7 @@ async function downloadOpenApiFile(): Promise<string> {
     const url = 'https://conferenceapi.azurewebsites.net/?format=yaml';
     const response = await axios.get(url);
 
-    return JSON.stringify(response.data);
+    return JSON.stringify(response.data, null, 4);
 }
 
 // This method is called when your extension is deactivated
