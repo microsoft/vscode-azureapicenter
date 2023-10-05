@@ -25,12 +25,21 @@
       }
     ],
     "views": {
-      "explorer": [
+      "api-center-treeview": [
         {
           "id": "apiCenterTreeView",
           "name": "API Center",
           "icon": "media/api-center-icon.svg",
           "contextualTitle": "Azure API Center"
+        }
+      ]
+    },   
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "api-center-treeview",
+          "title": "API Center",
+          "icon": "media/api-center-icon.svg"
         }
       ]
     }
