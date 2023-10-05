@@ -1,4 +1,6 @@
+import { download } from '@vscode/test-electron';
 import * as vscode from 'vscode';
+import axios from 'axios';
 
 interface TreeItem {
     label: string;
@@ -66,10 +68,12 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 	context.subscriptions.push(disposable);
 
-	let openDocs = vscode.commands.registerCommand('azure-api-center.open-api-docs', () => {
+	let openDocs = vscode.commands.registerCommand('azure-api-center.open-api-docs', async () => {
 		// The code you place here will be executed every time your command is executed
 		// Display a message box to the user
 		vscode.window.showInformationMessage('Opening Docs');
+
+		await openOpenApiFile();
 	});
 	context.subscriptions.push(openDocs);
 
@@ -77,9 +81,25 @@ export function activate(context: vscode.ExtensionContext) {
 	const treeView = vscode.window.createTreeView('apiCenterTreeView', { treeDataProvider });
 
     context.subscriptions.push(vscode.commands.registerCommand('azure-api-center.showTreeView', () => {
-	
 		treeView.reveal({ label: 'Parent 1' });
     }));
+}
+
+async function openOpenApiFile(): Promise<void> {
+    const data = await downloadOpenApiFile();
+    const doc = await vscode.workspace.openTextDocument({ content: data.toString() });
+    await vscode.window.showTextDocument(doc);
+
+    // Using this extension for now... https://marketplace.visualstudio.com/items?itemName=Arjun.swagger-viewer
+    const commandId = 'swagger.preview';
+    vscode.commands.executeCommand(commandId);
+}
+
+async function downloadOpenApiFile(): Promise<string> {
+    const url = 'https://conferenceapi.azurewebsites.net/?format=yaml';
+    const response = await axios.get(url);
+
+    return JSON.stringify(response.data);
 }
 
 // This method is called when your extension is deactivated
