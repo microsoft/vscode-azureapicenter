@@ -22,6 +22,14 @@
       {
         "command": "azure-api-center.showTreeView",
         "title": "Show Tree View"
+      },
+      {
+        "command": "azure-api-center.refresh",
+        "title": "Refresh"
+      },
+      {
+        "command": "azure-api-center.open-api-docs",
+        "title": "View Documentation"
       }
     ],
     "views": {
@@ -40,6 +48,21 @@
           "id": "api-center-treeview",
           "title": "API Center",
           "icon": "media/api-center-icon.svg"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "azure-api-center.refresh",
+          "when": "view == apiCenterTreeView",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "azure-api-center.open-api-docs",
+          "when": "view == apiCenterTreeView && viewItem == parent"
         }
       ]
     }

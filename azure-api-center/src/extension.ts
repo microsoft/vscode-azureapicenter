@@ -4,6 +4,7 @@ interface TreeItem {
     label: string;
 	type?: string;
     children?: TreeItem[];
+	contextValue?: string;
 }
 
 // Gives data to treeview
@@ -45,16 +46,6 @@ class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
             ]);
         }
     }
-/*
-    getTreeItemContextMenu(element: TreeItem): vscode.TreeItemContext[] {
-        if (element.type === 'child') {
-            return [
-                { command: 'azure-api-center.helloWorld', title: 'Do something' }
-            ];
-        } else {
-            return [];
-        }
-    }*/
 }
 
 // This method is called when your extension is activated
@@ -73,9 +64,14 @@ export function activate(context: vscode.ExtensionContext) {
 		// Display a message box to the user
 		vscode.window.showInformationMessage('Hello World from Azure API Center!');
 	});
-
-
 	context.subscriptions.push(disposable);
+
+	let openDocs = vscode.commands.registerCommand('azure-api-center.open-api-docs', () => {
+		// The code you place here will be executed every time your command is executed
+		// Display a message box to the user
+		vscode.window.showInformationMessage('Opening Docs');
+	});
+	context.subscriptions.push(openDocs);
 
 	const treeDataProvider = new TreeDataProvider();
 	const treeView = vscode.window.createTreeView('apiCenterTreeView', { treeDataProvider });
