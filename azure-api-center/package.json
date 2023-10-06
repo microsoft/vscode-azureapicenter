@@ -29,7 +29,11 @@
       },
       {
         "command": "azure-api-center.open-api-docs",
-        "title": "View Documentation"
+        "title": "Open API Documentation"
+      },
+      {
+        "command": "azure-api-center.open-postman",
+        "title": "Test in Postman"
       }
     ],
     "views": {
@@ -62,6 +66,10 @@
       "view/item/context": [
         {
           "command": "azure-api-center.open-api-docs",
+          "when": "view == apiCenterTreeView && viewItem == parent"
+        },
+        {
+          "command": "azure-api-center.open-postman",
           "when": "view == apiCenterTreeView && viewItem == parent"
         }
       ]

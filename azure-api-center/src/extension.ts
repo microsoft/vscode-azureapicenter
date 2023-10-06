@@ -69,13 +69,14 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(disposable);
 
 	let openDocs = vscode.commands.registerCommand('azure-api-center.open-api-docs', async () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Opening Docs');
-
 		await openOpenApiFile();
 	});
 	context.subscriptions.push(openDocs);
+
+    let openPostman = vscode.commands.registerCommand('azure-api-center.open-postman', async () => {
+		await openinPostman();
+	});
+	context.subscriptions.push(openPostman);
 
 	const treeDataProvider = new TreeDataProvider();
 	const treeView = vscode.window.createTreeView('apiCenterTreeView', { treeDataProvider });
@@ -85,14 +86,18 @@ export function activate(context: vscode.ExtensionContext) {
     }));
 }
 
+async function openinPostman(): Promise<void> {
+    const postmanCommandId = 'postman-for-vscode.sidebar-panel.focus';
+    vscode.commands.executeCommand(postmanCommandId);
+}
+
 async function openOpenApiFile(): Promise<void> {
     const data = await downloadOpenApiFile();
     const doc = await vscode.workspace.openTextDocument({ content: data.toString() });
     await vscode.window.showTextDocument(doc);
-
     // Using this extension for now... https://marketplace.visualstudio.com/items?itemName=Arjun.swagger-viewer
-    const commandId = 'swagger.preview';
-    vscode.commands.executeCommand(commandId);
+    const swaggerCommandId = 'swagger.preview';
+    vscode.commands.executeCommand(swaggerCommandId);
 }
 
 async function downloadOpenApiFile(): Promise<string> {
