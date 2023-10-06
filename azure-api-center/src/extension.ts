@@ -1,5 +1,8 @@
 import * as vscode from 'vscode';
 
+// API
+import { Auth } from './api/auth';
+
 // Commands
 import { OpenApiFileOpener } from './commands/openApiDocCommand';
 import { PostmanOpener } from './commands/openPostmanCommand';
@@ -19,8 +22,9 @@ export function activate(context: vscode.ExtensionContext) {
     }));
 
     // Register API Center extension commands
-	let helloWorldCommand = vscode.commands.registerCommand('azure-api-center.helloWorld', () => {
-		vscode.window.showInformationMessage('Hello World from Azure API Center!');
+	let signInCommand = vscode.commands.registerCommand('azure-api-center.signIn', async () => {
+		const auth = new Auth();
+		auth.getToken();
 	});
 
 	let openApiDocsCommand = vscode.commands.registerCommand('azure-api-center.open-api-docs', async () => {
@@ -34,7 +38,7 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 
 
-    context.subscriptions.push(helloWorldCommand);
+    context.subscriptions.push(signInCommand);
 	context.subscriptions.push(openApiDocsCommand);
     context.subscriptions.push(openPostmanCommand);
 }
