@@ -34,6 +34,10 @@
       {
         "command": "azure-api-center.open-postman",
         "title": "Test in Postman"
+      },
+      {
+        "command": "azure-api-center.generate-api-client",
+        "title": "Generate API Client"
       }
     ],
     "views": {
@@ -70,6 +74,10 @@
         },
         {
           "command": "azure-api-center.open-postman",
+          "when": "view == apiCenterTreeView && viewItem == parent"
+        },
+        {
+          "command": "azure-api-center.generate-api-client",
           "when": "view == apiCenterTreeView && viewItem == parent"
         }
       ]

@@ -6,6 +6,7 @@ import { Auth } from './api/auth';
 // Commands
 import { OpenApiFileOpener } from './commands/openApiDocCommand';
 import { PostmanOpener } from './commands/openPostmanCommand';
+import { GenerateApiLibrary } from './commands/generateLibraryCommand';
 
 // User Interface
 import { ApiCenterTreeDataProvider } from './ui/apiCenterTreeViewProvider';
@@ -37,10 +38,15 @@ export function activate(context: vscode.ExtensionContext) {
         await postmanOpener.open();
 	});
 
+	let generateApiClientCommand = vscode.commands.registerCommand('azure-api-center.generate-api-client', async () => {
+		const apiLibraryGenerator = new GenerateApiLibrary();
+        await apiLibraryGenerator.generate();
+	});
 
     context.subscriptions.push(signInCommand);
 	context.subscriptions.push(openApiDocsCommand);
     context.subscriptions.push(openPostmanCommand);
+	context.subscriptions.push(generateApiClientCommand);
 }
 
 export function deactivate() {}
