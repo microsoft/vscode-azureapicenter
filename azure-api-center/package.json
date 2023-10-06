@@ -4,7 +4,7 @@
   "description": "Build, discover, and consume APIs.",
   "version": "0.0.1",
   "engines": {
-    "vscode": "^1.83.0"
+    "vscode": "^1.83.0-20230923"
   },
   "categories": [
     "Other"
@@ -16,7 +16,15 @@
   "extensionDependencies": [
     "Postman.postman-for-vscode",
     "Arjun.swagger-viewer",
-    "ms-graph.kiota"
+    "ms-graph.kiota",
+    "github.copilot-chat"
+  ],
+  "enabledApiProposals": [
+    "chatSlashCommands",
+    "chatAgents",
+    "chatRequestAccess",
+    "interactive",
+    "readonlyMessage"
   ],
   "contributes": {
     "commands": [

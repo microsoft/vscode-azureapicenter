@@ -1,24 +1,8 @@
 import * as vscode from 'vscode';
-import { basename } from 'path';
-import { ProjectPreviewFileSystemProvider, fileSystemScheme } from './filesystemProvider';
 import { API_CENTER_GENERATE_SNIPPET , API_CENTER_LIST_APIs, API_CENTER_FIND_API, API_CENTER_DESCRIBE_API } from './constants';
-import { convertToInteractiveProgressFileTree, parseFileStructure } from './utils';
 
-export function activate(context: vscode.ExtensionContext) {
-
-    // Register the file system provider for the project file preview
-    const fileSystemProvider = new ProjectPreviewFileSystemProvider();
-    context.subscriptions.push(
-        vscode.workspace.registerFileSystemProvider(fileSystemScheme, fileSystemProvider, { isReadonly: new vscode.MarkdownString(vscode.l10n.t('This is a preview of a Teams project.')) })
-    );
-    
-    // Define a Teams chat agent. Agents appear as top-level options in the chat input
-    // when you type `@`, and can contribute sub-commands in the chat input
-    // that appear when you type `/`.
-    const chatAgent = async (prompt: vscode.ChatMessage, ctx: vscode.ChatAgentContext, progress: vscode.Progress<vscode.ChatAgentResponse>, token: vscode.CancellationToken): Promise<vscode.ChatAgentResult | void> => {
-        // To talk to an LLM in your slash command handler implementation, your
-        // extension can use VS Code's `requestChatAccess` API to access the Copilot API.
-        // The pre-release of the GitHub Copilot Chat extension implements this provider.
+export class ChatAgent {
+    async handleChatMessage(prompt: vscode.ChatMessage, ctx: vscode.ChatAgentContext, progress: vscode.Progress<vscode.ChatAgentResponse>, token: vscode.CancellationToken): Promise<vscode.ChatAgentResult | void> {
         if (prompt.content.startsWith('/list')) {
             const access = await vscode.chat.requestChatAccess('copilot');
             const messages = [
@@ -107,21 +91,5 @@ export function activate(context: vscode.ExtensionContext) {
                 followUp: [{ message: vscode.l10n.t('@apicenter /generate spec language'), metadata: {} }]
             };
         } 
-        
-    };
-
-    context.subscriptions.push(
-        // Register the Teams chat agent with two subcommands, /generate and /examples
-        vscode.chat.registerAgent('apicenter', chatAgent, {
-            description: 'Interact with API Center APIs.',
-            subCommands: [
-                { name: 'find', description: 'Find an API.' },
-                { name: 'list', description: 'List APIs available to me.' },
-                { name: 'describe', description: 'Describe an API.' },
-                { name: 'generate', description: 'Generate a code snippet to call an API.' },
-            ],
-        })
-    );
+    }
 }
-
-export function deactivate() { }
