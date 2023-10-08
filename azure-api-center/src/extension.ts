@@ -15,16 +15,32 @@ import { API_CENTER_LIST_APIs, API_CENTER_FIND_API, API_CENTER_GENERATE_SNIPPET 
 import { ApiCenterTreeDataProvider } from './ui/apiCenterTreeViewProvider';
 import { API_CENTER_DESCRIBE_API } from './copilot-chat/constants';
 
+import { ext } from './extensionVariables';
+import { AzExtTreeDataProvider, createAzExtOutputChannel } from '@microsoft/vscode-azext-utils';
+import { registerAzureUtilsExtensionVariables } from '@microsoft/vscode-azext-azureutils';
+import { AzureAccountTreeItem } from './tree/AzureAccountTreeItem';
+
 export function activate(context: vscode.ExtensionContext) {
 	console.log('Congratulations, your extension "azure-api-center" is now active!');
 
-    // Show the API Center tree view
-    const treeDataProvider = new ApiCenterTreeDataProvider();
-	const treeView = vscode.window.createTreeView('apiCenterTreeView', { treeDataProvider });
+    // https://github.com/microsoft/vscode-azuretools/tree/main/azure
+    ext.context = context;
+    ext.outputChannel = createAzExtOutputChannel('Azure API Center', ext.prefix);
+    context.subscriptions.push(ext.outputChannel);
+    registerAzureUtilsExtensionVariables(ext);
 
-    context.subscriptions.push(vscode.commands.registerCommand('azure-api-center.showTreeView', () => {
-		treeView.reveal({ label: 'Parent 1' });
-    }));
+    const azureAccountTreeItem = new AzureAccountTreeItem();
+    context.subscriptions.push(azureAccountTreeItem);
+    const treeDataProvider = new AzExtTreeDataProvider(azureAccountTreeItem, "appService.loadMore");
+    context.subscriptions.push(vscode.window.createTreeView("apiCenterTreeView", { treeDataProvider }));
+
+    // Show the API Center tree view
+    //const treeDataProvider = new ApiCenterTreeDataProvider();
+	//const treeView = vscode.window.createTreeView('apiCenterTreeView', { treeDataProvider });
+
+    //context.subscriptions.push(vscode.commands.registerCommand('azure-api-center.showTreeView', () => {
+		//treeView.reveal({ label: 'Parent 1' });
+    //}));
 
     // Register API Center extension commands
 	let signInCommand = vscode.commands.registerCommand('azure-api-center.signIn', async () => {
