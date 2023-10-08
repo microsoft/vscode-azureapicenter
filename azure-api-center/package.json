@@ -30,6 +30,14 @@
   "contributes": {
     "commands": [
       {
+        "command": "azure-api-center.selectSubscriptions",
+        "title": "Select Subscriptions...",
+        "icon": {
+          "light": "resources/light/filter.svg",
+          "dark": "resources/dark/filter.svg"
+        }
+      },
+      {
         "command": "azure-api-center.signIn",
         "title": "Sign In"
       },
@@ -83,6 +91,11 @@
       ],
       "view/item/context": [
         {
+          "command": "azure-api-center.selectSubscriptions",
+          "when": "view == apiCenterTreeView && viewItem == azureextensionui.azureSubscription",
+          "group": "inline"
+        },
+        {
           "command": "azure-api-center.open-api-docs",
           "when": "view == apiCenterTreeView && viewItem == parent"
         },
@@ -93,6 +106,12 @@
         {
           "command": "azure-api-center.generate-api-client",
           "when": "view == apiCenterTreeView && viewItem == parent"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "azure-api-center.selectSubscriptions",
+          "when": "never"
         }
       ]
     }

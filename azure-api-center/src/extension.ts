@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-
+import { commands } from "vscode";
 // API
 import { Auth } from './api/auth';
 
@@ -16,7 +16,7 @@ import { ApiCenterTreeDataProvider } from './ui/apiCenterTreeViewProvider';
 import { API_CENTER_DESCRIBE_API } from './copilot-chat/constants';
 
 import { ext } from './extensionVariables';
-import { AzExtTreeDataProvider, createAzExtOutputChannel } from '@microsoft/vscode-azext-utils';
+import { AzExtTreeDataProvider, createAzExtOutputChannel, registerCommand } from '@microsoft/vscode-azext-utils';
 import { registerAzureUtilsExtensionVariables } from '@microsoft/vscode-azext-azureutils';
 import { AzureAccountTreeItem } from './tree/AzureAccountTreeItem';
 
@@ -34,6 +34,8 @@ export function activate(context: vscode.ExtensionContext) {
     const treeDataProvider = new AzExtTreeDataProvider(azureAccountTreeItem, "appService.loadMore");
     context.subscriptions.push(vscode.window.createTreeView("apiCenterTreeView", { treeDataProvider }));
 
+    registerCommand('azure-api-center.selectSubscriptions', () => commands.executeCommand('azure-account.selectSubscriptions'));
+    
     // Show the API Center tree view
     //const treeDataProvider = new ApiCenterTreeDataProvider();
 	//const treeView = vscode.window.createTreeView('apiCenterTreeView', { treeDataProvider });
