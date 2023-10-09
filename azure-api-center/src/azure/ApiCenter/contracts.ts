@@ -33,3 +33,33 @@ export type ApiCenterEnvironment = {
     // tslint:disable-next-line:no-reserved-keywords
     type: string;
 };
+
+export type ApiCenterApiVersion = {
+    id: string;
+    location: string;
+    name: string;
+    properties: {
+    };
+    // tslint:disable-next-line:no-reserved-keywords
+    type: string;
+};
+
+export type ApiCenterApiDeployment = {
+    id: string;
+    location: string;
+    name: string;
+    properties: {
+    };
+    // tslint:disable-next-line:no-reserved-keywords
+    type: string;
+};
+
+export type ApiCenterApiVersionDefinition = {
+    id: string;
+    location: string;
+    name: string;
+    properties: {
+    };
+    // tslint:disable-next-line:no-reserved-keywords
+    type: string;
+};

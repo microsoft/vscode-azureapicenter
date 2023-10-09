@@ -1,14 +1,23 @@
-import { AzExtParentTreeItem, AzExtTreeItem, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
+import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import { ApiCenterApi } from "../azure/ApiCenter/contracts";
 import { treeUtils } from "../utils/treeUtils";
+import { ApiVersionsTreeItem } from "./ApiVersionsTreeItem";
+import { ApiDeploymentsTreeItem } from "./ApiDeploymentsTreeItem";
 
-export class ApiTreeItem extends AzExtTreeItem {
+export class ApiTreeItem extends AzExtParentTreeItem {
     public static contextValue: string = "azureApiCenterApi";
     public readonly contextValue: string = ApiTreeItem.contextValue;
+    public readonly apiVersionsTreeItem: ApiVersionsTreeItem;
+    public readonly apiDeploymentsTreeItem: ApiDeploymentsTreeItem;
     private readonly _apiCenterApi: ApiCenterApi;
-    constructor(parent: AzExtParentTreeItem, apiCenterApi: ApiCenterApi) {
+    private readonly _apiCenterName: string;
+    private _nextLink: string | undefined;
+    constructor(parent: AzExtParentTreeItem, apiCenterName: string, apiCenterApi: ApiCenterApi) {
       super(parent);
+      this._apiCenterName = apiCenterName;
       this._apiCenterApi = apiCenterApi;
+      this.apiVersionsTreeItem = new ApiVersionsTreeItem(this, apiCenterName, apiCenterApi);
+      this.apiDeploymentsTreeItem = new ApiDeploymentsTreeItem(this, apiCenterName, apiCenterApi);
     }
   
     public get iconPath(): TreeItemIconPath {
@@ -21,5 +30,13 @@ export class ApiTreeItem extends AzExtTreeItem {
   
     public get label(): string {
       return this._apiCenterApi.name;
+    }
+
+    public hasMoreChildrenImpl(): boolean {
+      return this._nextLink !== undefined;
+    }
+
+    public async loadMoreChildrenImpl(clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
+      return [this.apiVersionsTreeItem, this.apiDeploymentsTreeItem]
     }
   }

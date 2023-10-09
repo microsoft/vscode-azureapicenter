@@ -5,7 +5,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ISubscriptionContext } from "@microsoft/vscode-azext-utils";
-import { ApiCenter, ApiCenterApi, ApiCenterEnvironment } from "./contracts";
+import { ApiCenter, ApiCenterApi, ApiCenterApiDeployment, ApiCenterApiVersion, ApiCenterApiVersionDefinition, ApiCenterEnvironment } from "./contracts";
 import { ServiceClient, RequestPrepareOptions } from "@azure/ms-rest-js";
 import { getCredentialForToken } from "../../utils/credentialUtil";
 
@@ -48,6 +48,39 @@ export class ApiCenterService {
       const options: RequestPrepareOptions = {
         method: "GET",
         url: `https://management.azure.com/subscriptions/${this.susbcriptionContext.subscriptionId}/resourceGroups/${this.resourceGroupName}/providers/Microsoft.ApiCenter/services/${this.apiCenterName}/workspaces/default/environments?api-version=${this.apiVersion}`
+      };
+      const response = await client.sendRequest(options);
+      return response.parsedBody;
+    }
+
+    public async getApiCenterApiVersions(apiName: string): Promise< {value: ApiCenterApiVersion[]; nextLink: string }> {
+      const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
+      const client = new ServiceClient(creds);
+      const options: RequestPrepareOptions = {
+        method: "GET",
+        url: `https://management.azure.com/subscriptions/${this.susbcriptionContext.subscriptionId}/resourceGroups/${this.resourceGroupName}/providers/Microsoft.ApiCenter/services/${this.apiCenterName}/workspaces/default/apis/${apiName}/versions?api-version=${this.apiVersion}`
+      };
+      const response = await client.sendRequest(options);
+      return response.parsedBody;
+    }
+
+    public async getApiCenterApiDeployments(apiName: string): Promise< {value: ApiCenterApiDeployment[]; nextLink: string }> {
+      const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
+      const client = new ServiceClient(creds);
+      const options: RequestPrepareOptions = {
+        method: "GET",
+        url: `https://management.azure.com/subscriptions/${this.susbcriptionContext.subscriptionId}/resourceGroups/${this.resourceGroupName}/providers/Microsoft.ApiCenter/services/${this.apiCenterName}/workspaces/default/apis/${apiName}/deployments?api-version=${this.apiVersion}`
+      };
+      const response = await client.sendRequest(options);
+      return response.parsedBody;
+    }
+
+    public async getApiCenterApiVersionDefinitions(apiName: string, apiVersion: string): Promise< {value: ApiCenterApiVersionDefinition[]; nextLink: string }> {  
+      const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
+      const client = new ServiceClient(creds);
+      const options: RequestPrepareOptions = {
+        method: "GET",
+        url: `https://management.azure.com/subscriptions/${this.susbcriptionContext.subscriptionId}/resourceGroups/${this.resourceGroupName}/providers/Microsoft.ApiCenter/services/${this.apiCenterName}/workspaces/default/apis/${apiName}/versions/${apiVersion}/definitions?api-version=${this.apiVersion}`
       };
       const response = await client.sendRequest(options);
       return response.parsedBody;

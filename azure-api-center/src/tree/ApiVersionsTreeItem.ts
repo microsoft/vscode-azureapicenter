@@ -4,13 +4,18 @@ import { getResourceGroupFromId } from "@microsoft/vscode-azext-azureutils";
 import { ApiCenterService } from "../azure/ApiCenter/ApiCenterService";
 import { ApiTreeItem } from "./ApiTreeItem";
 import { treeUtils } from "../utils/treeUtils";
+import { ApiVersionTreeItem } from "./ApiVersionTreeItem";
 
-export class ApisTreeItem extends AzExtParentTreeItem {
-    public static contextValue: string = "azureApiCenterApis";
-    public readonly contextValue: string = ApisTreeItem.contextValue;
+export class ApiVersionsTreeItem extends AzExtParentTreeItem {
+    public static contextValue: string = "azureApiCenterApiVersions";
+    public readonly contextValue: string = ApiVersionsTreeItem.contextValue;
     private _nextLink: string | undefined;
-    constructor(parent: AzExtParentTreeItem, public apiCenter: ApiCenter) {
+    private readonly _apiCenterName: string;
+    private readonly _apiCenterApi: ApiCenterApi;
+    constructor(parent: AzExtParentTreeItem, apiCenterName: string, apiCenterApi: ApiCenterApi) {
       super(parent);
+      this._apiCenterName = apiCenterName;
+      this._apiCenterApi = apiCenterApi;
     }
 
     public get iconPath(): TreeItemIconPath {
@@ -18,19 +23,19 @@ export class ApisTreeItem extends AzExtParentTreeItem {
     }
     
     public get label(): string {
-      return "Apis";
+      return "Versions";
     }
 
     public async loadMoreChildrenImpl(clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
-      const resourceGroupName = getResourceGroupFromId(this.apiCenter.id);
-      const apiCenterService = new ApiCenterService(this.parent?.subscription!, resourceGroupName, this.apiCenter.name);
-      const apis = await apiCenterService.getApiCenterApis();
+      const resourceGroupName = getResourceGroupFromId(this._apiCenterApi.id);
+      const apiCenterService = new ApiCenterService(this.parent?.subscription!, resourceGroupName, this._apiCenterName);
+      const apis = await apiCenterService.getApiCenterApiVersions(this._apiCenterApi.name);
 
       this._nextLink = apis.nextLink;
       return await this.createTreeItemsWithErrorHandling(
           apis.value,
           'invalidResource',
-          resource => new ApiTreeItem(this, this.apiCenter.name, resource),
+          resource => new ApiVersionTreeItem(this, this._apiCenterName, this._apiCenterApi.name, resource),
           resource => resource.name
       );
     }
