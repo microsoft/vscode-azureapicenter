@@ -1,7 +1,8 @@
-import { AzExtParentTreeItem, AzExtTreeItem, IActionContext } from "@microsoft/vscode-azext-utils";
+import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import { ApiCenter } from "../azure/ResourceGraph/contracts";
 import { ApisTreeItem } from "./ApisTreeItem";
 import { EnvironmentsTreeItem } from "./EnvironmentsTreeItem";
+import { treeUtils } from "../utils/treeUtils";
 
 export class ApiCenterTreeItem extends AzExtParentTreeItem {
     public static contextValue: string = "azureApiCenter";
@@ -15,6 +16,10 @@ export class ApiCenterTreeItem extends AzExtParentTreeItem {
       this._apicenter = apicenter;
       this.apisTreeItem = new ApisTreeItem(this, apicenter);
       this.environmentsTreeItem = new EnvironmentsTreeItem(this, apicenter);
+    }
+
+    public get iconPath(): TreeItemIconPath {
+      return treeUtils.getIconPath('apiCenter');
     }
   
     public get id(): string {

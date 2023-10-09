@@ -1,8 +1,9 @@
-import { AzExtParentTreeItem, AzExtTreeItem, IActionContext } from "@microsoft/vscode-azext-utils";
+import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import { ApiCenter } from "../azure/ApiCenter/contracts";
 import { getResourceGroupFromId } from "@microsoft/vscode-azext-azureutils";
 import { ApiCenterService } from "../azure/ApiCenter/ApiCenterService";
 import { EnvironmentTreeItem } from "./EnvironmentTreeItem";
+import { treeUtils } from "../utils/treeUtils";
 
 export class EnvironmentsTreeItem extends AzExtParentTreeItem {
     public static contextValue: string = "azureApiCenterEnvironments";
@@ -15,6 +16,10 @@ export class EnvironmentsTreeItem extends AzExtParentTreeItem {
     }
     public get label(): string {
       return "Environments";
+    }
+
+    public get iconPath(): TreeItemIconPath {
+      return treeUtils.getIconPath('list');
     }
 
     public async loadMoreChildrenImpl(clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
