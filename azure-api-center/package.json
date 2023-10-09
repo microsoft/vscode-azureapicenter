@@ -97,15 +97,15 @@
         },
         {
           "command": "azure-api-center.open-api-docs",
-          "when": "view == apiCenterTreeView && viewItem == parent"
+          "when": "view == apiCenterTreeView && viewItem == azureApiCenterApiVersion"
         },
         {
           "command": "azure-api-center.open-postman",
-          "when": "view == apiCenterTreeView && viewItem == parent"
+          "when": "view == apiCenterTreeView && viewItem == azureApiCenterApiVersion"
         },
         {
           "command": "azure-api-center.generate-api-client",
-          "when": "view == apiCenterTreeView && viewItem == parent"
+          "when": "view == apiCenterTreeView && viewItem == azureApiCenterApiVersion"
         }
       ],
       "commandPalette": [
