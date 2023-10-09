@@ -19,6 +19,8 @@ export type ApiCenterApi = {
     location: string;
     name: string;
     properties: {
+        title: string;
+        type: string;
     };
     // tslint:disable-next-line:no-reserved-keywords
     type: string;
@@ -39,6 +41,8 @@ export type ApiCenterApiVersion = {
     location: string;
     name: string;
     properties: {
+        title: string;
+        lifecycleStage: string;
     };
     // tslint:disable-next-line:no-reserved-keywords
     type: string;
@@ -59,6 +63,11 @@ export type ApiCenterApiVersionDefinition = {
     location: string;
     name: string;
     properties: {
+        title: string;
+        specification: {
+            name: string;
+            version: string;
+        }
     };
     // tslint:disable-next-line:no-reserved-keywords
     type: string;
