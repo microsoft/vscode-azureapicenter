@@ -72,3 +72,12 @@ export type ApiCenterApiVersionDefinition = {
     // tslint:disable-next-line:no-reserved-keywords
     type: string;
 };
+
+export type ApiCenterApiVersionDefinitionImport = {
+    format: string;
+    value: string;
+    specificationDetails: {
+        name: string
+        version: string
+    }
+}
