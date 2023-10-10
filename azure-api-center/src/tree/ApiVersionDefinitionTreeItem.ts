@@ -5,7 +5,7 @@ import { treeUtils } from "../utils/treeUtils";
 export class ApiVersionDefinitionTreeItem extends AzExtTreeItem {
     public static contextValue: string = "azureApiCenterApiVersionDefinition";
     public readonly contextValue: string = ApiVersionDefinitionTreeItem.contextValue;
-    private readonly _apiCenterApiVersionDefinition: ApiCenterApiVersion;
+    private readonly _apiCenterApiVersionDefinition: ApiCenterApiVersionDefinition;
     constructor(
       parent: AzExtParentTreeItem, 
       apiCenterApiVersionDefinition: ApiCenterApiVersionDefinition) {

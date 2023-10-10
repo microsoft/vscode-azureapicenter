@@ -85,4 +85,55 @@ export class ApiCenterService {
       const response = await client.sendRequest(options);
       return response.parsedBody;
     }
+
+    public async createOrUpdateApi(apiCenterApi: ApiCenterApi): Promise<ApiCenterApi> {
+      const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
+      const client = new ServiceClient(creds);
+      const options: RequestPrepareOptions = {
+        method: "PUT",
+        url: `https://management.azure.com/subscriptions/${this.susbcriptionContext.subscriptionId}/resourceGroups/${this.resourceGroupName}/providers/Microsoft.ApiCenter/services/${this.apiCenterName}/workspaces/default/apis/${apiCenterApi.name}?api-version=${this.apiVersion}`,
+        body: apiCenterApi.properties
+      };
+      const response = await client.sendRequest(options);
+      return response.parsedBody;
+    }
+
+    public async createOrUpdateApiVersion(apiName: string, apiCenterApiVersion: ApiCenterApiVersion): Promise<ApiCenterApiVersion> {
+      const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
+      const client = new ServiceClient(creds);
+      const options: RequestPrepareOptions = {
+        method: "PUT",
+        url: `https://management.azure.com/subscriptions/${this.susbcriptionContext.subscriptionId}/resourceGroups/${this.resourceGroupName}/providers/Microsoft.ApiCenter/services/${this.apiCenterName}/workspaces/default/apis/${apiName}/versions/${apiCenterApiVersion.name}?api-version=${this.apiVersion}`,
+        body: apiCenterApiVersion.properties
+      };
+      const response = await client.sendRequest(options);
+      
+      return response.parsedBody;
+    }
+
+    public async createOrUpdateApiDeployment(apiName: string, apiCenterApiDeployment: ApiCenterApiDeployment): Promise<ApiCenterApiDeployment> {
+      const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
+      const client = new ServiceClient(creds);
+      const options: RequestPrepareOptions = {
+        method: "PUT",
+        url: `https://management.azure.com/subscriptions/${this.susbcriptionContext.subscriptionId}/resourceGroups/${this.resourceGroupName}/providers/Microsoft.ApiCenter/services/${this.apiCenterName}/workspaces/default/apis/${apiName}/deployments/${apiCenterApiDeployment.name}?api-version=${this.apiVersion}`,
+        body: apiCenterApiDeployment.properties
+      };
+      const response = await client.sendRequest(options);
+      
+      return response.parsedBody;
+    }
+
+    public async createOrUpdateApiVersionDefinition(apiName: string, apiVersionName: string, apiCenterApiVersionDefinition: ApiCenterApiVersionDefinition): Promise<ApiCenterApiVersionDefinition> {
+      const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
+      const client = new ServiceClient(creds);
+      const options: RequestPrepareOptions = {
+        method: "PUT",
+        url: `https://management.azure.com/subscriptions/${this.susbcriptionContext.subscriptionId}/resourceGroups/${this.resourceGroupName}/providers/Microsoft.ApiCenter/services/${this.apiCenterName}/workspaces/default/apis/${apiName}/versions/${apiVersionName}/definitions/${apiCenterApiVersionDefinition.name}?api-version=${this.apiVersion}`,
+        body: apiCenterApiVersionDefinition.properties
+      };
+      const response = await client.sendRequest(options);
+      
+      return response.parsedBody;
+    }
 }
