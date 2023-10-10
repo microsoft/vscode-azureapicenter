@@ -1,7 +1,5 @@
 import * as vscode from 'vscode';
 import { commands } from "vscode";
-// API
-import { Auth } from './api/auth';
 
 // Commands
 import { OpenApiFileOpener } from './commands/openApiDocCommand';
@@ -9,12 +7,9 @@ import { PostmanOpener } from './commands/openPostmanCommand';
 import { GenerateApiLibrary } from './commands/generateLibraryCommand';
 
 // Copilot
-import { API_CENTER_LIST_APIs, API_CENTER_FIND_API, API_CENTER_GENERATE_SNIPPET } from './copilot-chat/constants';
+import { API_CENTER_LIST_APIs, API_CENTER_FIND_API, API_CENTER_DESCRIBE_API, API_CENTER_GENERATE_SNIPPET } from './copilot-chat/constants';
 
-// User Interface
-import { ApiCenterTreeDataProvider } from './ui/apiCenterTreeViewProvider';
-import { API_CENTER_DESCRIBE_API } from './copilot-chat/constants';
-
+// Tree View UI
 import { ext } from './extensionVariables';
 import { AzExtTreeDataProvider, createAzExtOutputChannel, registerCommand } from '@microsoft/vscode-azext-utils';
 import { registerAzureUtilsExtensionVariables } from '@microsoft/vscode-azext-azureutils';
@@ -36,7 +31,8 @@ export function activate(context: vscode.ExtensionContext) {
     
     // Register API Center extension commands
     registerCommand('azure-api-center.selectSubscriptions', () => commands.executeCommand('azure-account.selectSubscriptions'));
-	registerCommand('azure-api-center.open-api-docs', async () => {
+
+    registerCommand('azure-api-center.open-api-docs', async () => {
 		const opener = new OpenApiFileOpener();
         await opener.open();
 	});

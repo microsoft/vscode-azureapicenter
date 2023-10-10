@@ -47,7 +47,11 @@
       },
       {
         "command": "azure-api-center.refresh",
-        "title": "Refresh"
+        "title": "Refresh",
+        "icon": {
+          "light": "resources/light/refresh.svg",
+          "dark": "resources/dark/refresh.svg"
+        }
       },
       {
         "command": "azure-api-center.open-api-docs",
