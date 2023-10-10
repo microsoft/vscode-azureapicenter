@@ -33,34 +33,20 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(azureAccountTreeItem);
     const treeDataProvider = new AzExtTreeDataProvider(azureAccountTreeItem, "appService.loadMore");
     context.subscriptions.push(vscode.window.createTreeView("apiCenterTreeView", { treeDataProvider }));
-
-    registerCommand('azure-api-center.selectSubscriptions', () => commands.executeCommand('azure-account.selectSubscriptions'));
     
-    // Show the API Center tree view
-    //const treeDataProvider = new ApiCenterTreeDataProvider();
-	//const treeView = vscode.window.createTreeView('apiCenterTreeView', { treeDataProvider });
-
-    //context.subscriptions.push(vscode.commands.registerCommand('azure-api-center.showTreeView', () => {
-		//treeView.reveal({ label: 'Parent 1' });
-    //}));
-
     // Register API Center extension commands
-	let signInCommand = vscode.commands.registerCommand('azure-api-center.signIn', async () => {
-		const auth = new Auth();
-		auth.getToken();
-	});
-
-	let openApiDocsCommand = vscode.commands.registerCommand('azure-api-center.open-api-docs', async () => {
+    registerCommand('azure-api-center.selectSubscriptions', () => commands.executeCommand('azure-account.selectSubscriptions'));
+	registerCommand('azure-api-center.open-api-docs', async () => {
 		const opener = new OpenApiFileOpener();
         await opener.open();
 	});
 
-    let openPostmanCommand = vscode.commands.registerCommand('azure-api-center.open-postman', async () => {
+    registerCommand('azure-api-center.open-postman', async () => {
 		const postmanOpener = new PostmanOpener();
         await postmanOpener.open();
 	});
 
-	let generateApiClientCommand = vscode.commands.registerCommand('azure-api-center.generate-api-client', async () => {
+	registerCommand('azure-api-center.generate-api-client', async () => {
 		const apiLibraryGenerator = new GenerateApiLibrary();
         await apiLibraryGenerator.generate();
 	});
@@ -171,11 +157,6 @@ export function activate(context: vscode.ExtensionContext) {
             ],
         })
     );
-
-    context.subscriptions.push(signInCommand);
-	context.subscriptions.push(openApiDocsCommand);
-    context.subscriptions.push(openPostmanCommand);
-	context.subscriptions.push(generateApiClientCommand);
 }
 
 export function deactivate() {}
