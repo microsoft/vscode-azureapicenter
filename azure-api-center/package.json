@@ -38,10 +38,6 @@
         }
       },
       {
-        "command": "azure-api-center.signIn",
-        "title": "Sign In"
-      },
-      {
         "command": "azure-api-center.showTreeView",
         "title": "Show Tree View"
       },
