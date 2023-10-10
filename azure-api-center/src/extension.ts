@@ -11,12 +11,14 @@ import { API_CENTER_LIST_APIs, API_CENTER_FIND_API, API_CENTER_DESCRIBE_API, API
 
 // Tree View UI
 import { ext } from './extensionVariables';
-import { AzExtTreeDataProvider, IActionContext, createAzExtOutputChannel, registerCommand } from '@microsoft/vscode-azext-utils';
+import { AzExtTreeDataProvider, IActionContext, createAzExtOutputChannel, registerCommand, registerEvent } from '@microsoft/vscode-azext-utils';
 import { registerAzureUtilsExtensionVariables } from '@microsoft/vscode-azext-azureutils';
 import { AzureAccountTreeItem } from './tree/AzureAccountTreeItem';
 import { ApiVersionDefinitionTreeItem } from './tree/ApiVersionDefinitionTreeItem';
 import { importOpenApi } from './commands/importOpenApi';
 import { exportOpenApi } from './commands/exportOpenApi';
+import { OpenApiEditor } from './tree/Editors/openApi/OpenApiEditor';
+import { doubleClickDebounceDelay } from './constants';
 
 export function activate(context: vscode.ExtensionContext) {
 	console.log('Congratulations, your extension "azure-api-center" is now active!');
@@ -37,6 +39,19 @@ export function activate(context: vscode.ExtensionContext) {
     registerCommand('azure-api-center.importOpenApiByFile', async (context: IActionContext, node?: ApiVersionDefinitionTreeItem) => { await importOpenApi(context, node, false); });
     registerCommand('azure-api-center.importOpenApiByLink', async (context: IActionContext, node?: ApiVersionDefinitionTreeItem) => { await importOpenApi(context, node, true); });
     registerCommand('azure-api-center.exportOpenApi', async (context: IActionContext, node?: ApiVersionDefinitionTreeItem) => { await exportOpenApi(context, node); });
+
+    const openApiEditor: OpenApiEditor = new OpenApiEditor();
+    context.subscriptions.push(openApiEditor);
+    registerEvent('azure-api-center.openApiEditor.onDidSaveTextDocument',
+                  vscode.workspace.onDidSaveTextDocument,
+                  async (actionContext: IActionContext, doc: vscode.TextDocument) => { await openApiEditor.onDidSaveTextDocument(actionContext, context.globalState, doc); });
+    registerCommand('azure-api-center.showOpenApi', async (actionContext: IActionContext, node?: ApiVersionDefinitionTreeItem) => {
+        if (!node) {
+            node = <ApiVersionDefinitionTreeItem>await ext.tree.showTreeItemPicker(ApiVersionDefinitionTreeItem.contextValue, actionContext);
+        }
+        await openApiEditor.showEditor(node);
+        vscode.commands.executeCommand('setContext', 'isEditorEnabled', true);
+    },              doubleClickDebounceDelay);
 
     registerCommand('azure-api-center.open-api-docs', async () => {
 		const opener = new OpenApiFileOpener();

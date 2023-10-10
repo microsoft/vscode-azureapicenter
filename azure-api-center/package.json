@@ -72,6 +72,10 @@
       {
         "command": "azure-api-center.exportOpenApi",
         "title": "Export OpenAPI"
+      },
+      {
+        "command": "azure-api-center.showOpenApi",
+        "title": "Edit OpenAPI"
       }
     ],
     "views": {
@@ -130,6 +134,10 @@
         {
           "command": "azure-api-center.exportOpenApi",
           "when": "view == apiCenterTreeView && viewItem == azureApiCenterApiVersionDefinition"
+        },
+        {
+          "command": "azure-api-center.showOpenApi",
+          "when": "view == apiCenterTreeView && viewItem == azureApiCenterApiVersionDefinition"
         }
       ],
       "commandPalette": [
@@ -152,6 +160,7 @@
     "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
+    "@types/fs-extra": "^11.0.2",
     "@types/mocha": "^10.0.2",
     "@types/node": "18.x",
     "@types/vscode": "^1.82.0",
@@ -164,8 +173,7 @@
     "ts-loader": "^9.4.4",
     "typescript": "^5.2.2",
     "webpack": "^5.88.2",
-    "webpack-cli": "^5.1.4",
-    "@types/fs-extra": "^11.0.2"
+    "webpack-cli": "^5.1.4"
   },
   "dependencies": {
     "@azure/arm-apicenter": "^1.0.0-beta.1",
@@ -179,6 +187,7 @@
     "fs-extra": "^11.1.1",
     "request": "^2.88.2",
     "request-promise": "^4.2.5",
-    "vscode": "^1.1.37"
+    "vscode": "^1.1.37",
+    "vscode-nls": "^5.2.0"
   }
 }
