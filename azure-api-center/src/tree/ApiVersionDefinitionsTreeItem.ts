@@ -42,7 +42,12 @@ export class ApiVersionDefinitionsTreeItem extends AzExtParentTreeItem {
       return await this.createTreeItemsWithErrorHandling(
         definitions.value,
           'invalidResource',
-          resource => new ApiVersionDefinitionTreeItem(this, resource),
+          resource => new ApiVersionDefinitionTreeItem(
+            this, 
+            this._apiCenterName,
+            this._apiCenterApiName,
+            this._apiCenterApiVersion.name,
+            resource),
           resource => resource.name
       );
     }

@@ -81,3 +81,10 @@ export type ApiCenterApiVersionDefinitionImport = {
         version: string
     }
 }
+
+export type ApiCenterApiVersionDefinitionExport = {
+    id: string;
+    properties: {
+        value: string
+    }
+}

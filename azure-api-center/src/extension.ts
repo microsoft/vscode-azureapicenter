@@ -11,9 +11,12 @@ import { API_CENTER_LIST_APIs, API_CENTER_FIND_API, API_CENTER_DESCRIBE_API, API
 
 // Tree View UI
 import { ext } from './extensionVariables';
-import { AzExtTreeDataProvider, createAzExtOutputChannel, registerCommand } from '@microsoft/vscode-azext-utils';
+import { AzExtTreeDataProvider, IActionContext, createAzExtOutputChannel, registerCommand } from '@microsoft/vscode-azext-utils';
 import { registerAzureUtilsExtensionVariables } from '@microsoft/vscode-azext-azureutils';
 import { AzureAccountTreeItem } from './tree/AzureAccountTreeItem';
+import { ApiVersionDefinitionTreeItem } from './tree/ApiVersionDefinitionTreeItem';
+import { importOpenApi } from './commands/importOpenApi';
+import { exportOpenApi } from './commands/exportOpenApi';
 
 export function activate(context: vscode.ExtensionContext) {
 	console.log('Congratulations, your extension "azure-api-center" is now active!');
@@ -31,6 +34,9 @@ export function activate(context: vscode.ExtensionContext) {
     
     // Register API Center extension commands
     registerCommand('azure-api-center.selectSubscriptions', () => commands.executeCommand('azure-account.selectSubscriptions'));
+    registerCommand('azure-api-center.importOpenApiByFile', async (context: IActionContext, node?: ApiVersionDefinitionTreeItem) => { await importOpenApi(context, node, false); });
+    registerCommand('azure-api-center.importOpenApiByLink', async (context: IActionContext, node?: ApiVersionDefinitionTreeItem) => { await importOpenApi(context, node, true); });
+    registerCommand('azure-api-center.exportOpenApi', async (context: IActionContext, node?: ApiVersionDefinitionTreeItem) => { await exportOpenApi(context, node); });
 
     registerCommand('azure-api-center.open-api-docs', async () => {
 		const opener = new OpenApiFileOpener();
