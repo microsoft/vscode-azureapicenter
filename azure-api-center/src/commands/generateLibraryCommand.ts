@@ -1,11 +1,9 @@
 import * as vscode from 'vscode';
 
 export class GenerateApiLibrary {
-    public async generate(): Promise<void> {
-        const url = 'https://conferenceapi.azurewebsites.net/?format=yaml';
-
+    public async generate(path: string): Promise<void> {
         // Generate library with Kiota
-        const descriptionUrl = encodeURIComponent(url);
+        const descriptionUrl = encodeURIComponent(path);
         const uriScheme = vscode.env.uriScheme;
         const deepLink = `${uriScheme}://ms-graph.kiota/OpenDescription?descriptionUrl=${descriptionUrl}`;
         const uri = vscode.Uri.parse(deepLink);
