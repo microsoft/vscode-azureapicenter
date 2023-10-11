@@ -1,7 +1,5 @@
 import * as vscode from 'vscode';
-
-// API
-import { Auth } from './api/auth';
+import { commands } from "vscode";
 
 // Commands
 import { OpenApiFileOpener } from './commands/openApiDocCommand';
@@ -9,40 +7,63 @@ import { PostmanOpener } from './commands/openPostmanCommand';
 import { GenerateApiLibrary } from './commands/generateLibraryCommand';
 
 // Copilot
-import { API_CENTER_LIST_APIs, API_CENTER_FIND_API, API_CENTER_GENERATE_SNIPPET } from './copilot-chat/constants';
+import { API_CENTER_LIST_APIs, API_CENTER_FIND_API, API_CENTER_DESCRIBE_API, API_CENTER_GENERATE_SNIPPET } from './copilot-chat/constants';
 
-// User Interface
-import { ApiCenterTreeDataProvider } from './ui/apiCenterTreeViewProvider';
-import { API_CENTER_DESCRIBE_API } from './copilot-chat/constants';
+// Tree View UI
+import { ext } from './extensionVariables';
+import { AzExtTreeDataProvider, IActionContext, createAzExtOutputChannel, registerCommand, registerEvent } from '@microsoft/vscode-azext-utils';
+import { registerAzureUtilsExtensionVariables } from '@microsoft/vscode-azext-azureutils';
+import { AzureAccountTreeItem } from './tree/AzureAccountTreeItem';
+import { ApiVersionDefinitionTreeItem } from './tree/ApiVersionDefinitionTreeItem';
+import { importOpenApi } from './commands/importOpenApi';
+import { exportOpenApi } from './commands/exportOpenApi';
+import { OpenApiEditor } from './tree/Editors/openApi/OpenApiEditor';
+import { doubleClickDebounceDelay } from './constants';
 
 export function activate(context: vscode.ExtensionContext) {
 	console.log('Congratulations, your extension "azure-api-center" is now active!');
 
-    // Show the API Center tree view
-    const treeDataProvider = new ApiCenterTreeDataProvider();
-	const treeView = vscode.window.createTreeView('apiCenterTreeView', { treeDataProvider });
+    // https://github.com/microsoft/vscode-azuretools/tree/main/azure
+    ext.context = context;
+    ext.outputChannel = createAzExtOutputChannel('Azure API Center', ext.prefix);
+    context.subscriptions.push(ext.outputChannel);
+    registerAzureUtilsExtensionVariables(ext);
 
-    context.subscriptions.push(vscode.commands.registerCommand('azure-api-center.showTreeView', () => {
-		treeView.reveal({ label: 'Parent 1' });
-    }));
-
+    const azureAccountTreeItem = new AzureAccountTreeItem();
+    context.subscriptions.push(azureAccountTreeItem);
+    const treeDataProvider = new AzExtTreeDataProvider(azureAccountTreeItem, "appService.loadMore");
+    context.subscriptions.push(vscode.window.createTreeView("apiCenterTreeView", { treeDataProvider }));
+    
     // Register API Center extension commands
-	let signInCommand = vscode.commands.registerCommand('azure-api-center.signIn', async () => {
-		const auth = new Auth();
-		auth.getToken();
-	});
+    registerCommand('azure-api-center.selectSubscriptions', () => commands.executeCommand('azure-account.selectSubscriptions'));
+    registerCommand('azure-api-center.importOpenApiByFile', async (context: IActionContext, node?: ApiVersionDefinitionTreeItem) => { await importOpenApi(context, node, false); });
+    registerCommand('azure-api-center.importOpenApiByLink', async (context: IActionContext, node?: ApiVersionDefinitionTreeItem) => { await importOpenApi(context, node, true); });
+    registerCommand('azure-api-center.exportOpenApi', async (context: IActionContext, node?: ApiVersionDefinitionTreeItem) => { await exportOpenApi(context, node); });
 
-	let openApiDocsCommand = vscode.commands.registerCommand('azure-api-center.open-api-docs', async () => {
+    const openApiEditor: OpenApiEditor = new OpenApiEditor();
+    context.subscriptions.push(openApiEditor);
+    registerEvent('azure-api-center.openApiEditor.onDidSaveTextDocument',
+                  vscode.workspace.onDidSaveTextDocument,
+                  async (actionContext: IActionContext, doc: vscode.TextDocument) => { await openApiEditor.onDidSaveTextDocument(actionContext, context.globalState, doc); });
+    registerCommand('azure-api-center.showOpenApi', async (actionContext: IActionContext, node?: ApiVersionDefinitionTreeItem) => {
+        if (!node) {
+            node = <ApiVersionDefinitionTreeItem>await ext.tree.showTreeItemPicker(ApiVersionDefinitionTreeItem.contextValue, actionContext);
+        }
+        await openApiEditor.showEditor(node);
+        vscode.commands.executeCommand('setContext', 'isEditorEnabled', true);
+    },              doubleClickDebounceDelay);
+
+    registerCommand('azure-api-center.open-api-docs', async () => {
 		const opener = new OpenApiFileOpener();
         await opener.open();
 	});
 
-    let openPostmanCommand = vscode.commands.registerCommand('azure-api-center.open-postman', async () => {
+    registerCommand('azure-api-center.open-postman', async () => {
 		const postmanOpener = new PostmanOpener();
         await postmanOpener.open();
 	});
 
-	let generateApiClientCommand = vscode.commands.registerCommand('azure-api-center.generate-api-client', async () => {
+	registerCommand('azure-api-center.generate-api-client', async () => {
 		const apiLibraryGenerator = new GenerateApiLibrary();
         await apiLibraryGenerator.generate();
 	});
@@ -153,11 +174,6 @@ export function activate(context: vscode.ExtensionContext) {
             ],
         })
     );
-
-    context.subscriptions.push(signInCommand);
-	context.subscriptions.push(openApiDocsCommand);
-    context.subscriptions.push(openPostmanCommand);
-	context.subscriptions.push(generateApiClientCommand);
 }
 
 export function deactivate() {}
