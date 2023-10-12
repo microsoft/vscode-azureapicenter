@@ -42,7 +42,7 @@
         "title": "Show Tree View"
       },
       {
-        "command": "azure-api-center.refresh",
+        "command": "azure-api-center.apiCenterTreeView.refresh",
         "title": "Refresh",
         "icon": {
           "light": "resources/light/refresh.svg",
@@ -100,7 +100,7 @@
     "menus": {
       "view/title": [
         {
-          "command": "azure-api-center.refresh",
+          "command": "azure-api-center.apiCenterTreeView.refresh",
           "when": "view == apiCenterTreeView",
           "group": "navigation"
         }
