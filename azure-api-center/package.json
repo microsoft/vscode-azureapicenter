@@ -44,10 +44,7 @@
       {
         "command": "azure-api-center.apiCenterTreeView.refresh",
         "title": "Refresh",
-        "icon": {
-          "light": "resources/light/refresh.svg",
-          "dark": "resources/dark/refresh.svg"
-        }
+        "icon": "$(refresh)"
       },
       {
         "command": "azure-api-center.open-api-docs",
