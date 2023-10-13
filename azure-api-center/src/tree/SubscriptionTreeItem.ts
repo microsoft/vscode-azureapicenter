@@ -1,10 +1,17 @@
 import { SubscriptionTreeItemBase } from "@microsoft/vscode-azext-azureutils";
 import { ApiCenterTreeItem } from "./ApiCenterTreeItem";
-import { AzExtTreeItem, IActionContext } from "@microsoft/vscode-azext-utils";
+import { AzExtParentTreeItem, AzExtTreeItem, ISubscriptionContext } from "@microsoft/vscode-azext-utils";
 import { ResourceGraphService } from "../azure/ResourceGraph/ResourceGraphService";
+import { treeUtils } from "../utils/treeUtils";
 
 export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
     private _nextLink: string | undefined;
+
+    constructor(parent: AzExtParentTreeItem, subscription: ISubscriptionContext) {
+        super(parent, subscription);
+        this._nextLink = undefined;
+        this.iconPath = treeUtils.getIconPath('azureSubscription');
+    }
 
     public hasMoreChildrenImpl(): boolean {
         return this._nextLink !== undefined;
