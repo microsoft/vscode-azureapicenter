@@ -11,14 +11,14 @@ import { API_CENTER_LIST_APIs, API_CENTER_FIND_API, API_CENTER_DESCRIBE_API, API
 
 // Tree View UI
 import { ext } from './extensionVariables';
-import { AzExtTreeDataProvider, IActionContext, createAzExtOutputChannel, registerCommand, registerEvent } from '@microsoft/vscode-azext-utils';
+import { AzExtTreeDataProvider, AzExtTreeItem, IActionContext, createAzExtOutputChannel, registerCommand, registerEvent } from '@microsoft/vscode-azext-utils';
 import { registerAzureUtilsExtensionVariables } from '@microsoft/vscode-azext-azureutils';
 import { AzureAccountTreeItem } from './tree/AzureAccountTreeItem';
 import { ApiVersionDefinitionTreeItem } from './tree/ApiVersionDefinitionTreeItem';
 import { importOpenApi } from './commands/importOpenApi';
 import { exportOpenApi } from './commands/exportOpenApi';
 import { OpenApiEditor } from './tree/Editors/openApi/OpenApiEditor';
-import { doubleClickDebounceDelay } from './constants';
+import { doubleClickDebounceDelay, selectedNodeKey } from './constants';
 import { refreshTree } from './commands/refreshTree';
 
 export function activate(context: vscode.ExtensionContext) {
@@ -35,7 +35,15 @@ export function activate(context: vscode.ExtensionContext) {
     ext.treeItem = azureAccountTreeItem;
 
     const treeDataProvider = new AzExtTreeDataProvider(azureAccountTreeItem, "appService.loadMore");
-    context.subscriptions.push(vscode.window.createTreeView("apiCenterTreeView", { treeDataProvider }));
+
+    const treeView = vscode.window.createTreeView("apiCenterTreeView", { treeDataProvider });
+    context.subscriptions.push(treeView);
+
+    treeView.onDidChangeSelection((e: vscode.TreeViewSelectionChangeEvent<AzExtTreeItem>) => {
+      const selectedNode = e.selection[0];
+      ext.outputChannel.appendLine(selectedNode.id!);
+      ext.context.globalState.update(selectedNodeKey, selectedNode.id);
+    });
     
     // Register API Center extension commands
     registerCommand('azure-api-center.selectSubscriptions', () => commands.executeCommand('azure-account.selectSubscriptions'));
