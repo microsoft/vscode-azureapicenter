@@ -56,6 +56,7 @@ export function activate(context: vscode.ExtensionContext) {
     registerEvent('azure-api-center.openApiEditor.onDidSaveTextDocument',
                   vscode.workspace.onDidSaveTextDocument,
                   async (actionContext: IActionContext, doc: vscode.TextDocument) => { await openApiEditor.onDidSaveTextDocument(actionContext, context.globalState, doc); });
+    
     registerCommand('azure-api-center.showOpenApi', async (actionContext: IActionContext, node?: ApiVersionDefinitionTreeItem) => {
         if (!node) {
             node = <ApiVersionDefinitionTreeItem>await ext.treeDataProvider.showTreeItemPicker(ApiVersionDefinitionTreeItem.contextValue, actionContext);
@@ -64,19 +65,25 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.commands.executeCommand('setContext', 'isEditorEnabled', true);
     },              doubleClickDebounceDelay);
 
-    registerCommand('azure-api-center.open-api-docs', async () => {
-		const opener = new OpenApiFileOpener();
+    registerCommand('azure-api-center.open-api-docs', async (context: IActionContext, node?: ApiVersionDefinitionTreeItem) => {
+        await openApiEditor.showEditor(node!);
+    
+        const opener = new OpenApiFileOpener();
         await opener.open();
 	});
 
-    registerCommand('azure-api-center.open-postman', async () => {
+    registerCommand('azure-api-center.open-postman', async (context: IActionContext, node?: ApiVersionDefinitionTreeItem) => {
+        await openApiEditor.showEditor(node!);
+
 		const postmanOpener = new PostmanOpener();
         await postmanOpener.open();
 	});
 
-	registerCommand('azure-api-center.generate-api-client', async () => {
-		const apiLibraryGenerator = new GenerateApiLibrary();
-        await apiLibraryGenerator.generate();
+	registerCommand('azure-api-center.generate-api-client', async (context: IActionContext, node?: ApiVersionDefinitionTreeItem) => {
+        const path = await openApiEditor.showEditor(node!);
+        
+        const apiLibraryGenerator = new GenerateApiLibrary();
+        await apiLibraryGenerator.generate(path);
 	});
 
     registerCommand('azure-api-center.apiCenterTreeView.refresh', async (context: IActionContext) => refreshTree(context));

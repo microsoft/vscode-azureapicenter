@@ -113,15 +113,15 @@
         },
         {
           "command": "azure-api-center.open-api-docs",
-          "when": "view == apiCenterTreeView && viewItem == azureApiCenterApiVersion"
+          "when": "view == apiCenterTreeView && viewItem == azureApiCenterApiVersionDefinition"
         },
         {
           "command": "azure-api-center.open-postman",
-          "when": "view == apiCenterTreeView && viewItem == azureApiCenterApiVersion"
+          "when": "view == apiCenterTreeView && viewItem == azureApiCenterApiVersionDefinition"
         },
         {
           "command": "azure-api-center.generate-api-client",
-          "when": "view == apiCenterTreeView && viewItem == azureApiCenterApiVersion"
+          "when": "view == apiCenterTreeView && viewItem == azureApiCenterApiVersionDefinition"
         },
         {
           "command": "azure-api-center.importOpenApiByFile",

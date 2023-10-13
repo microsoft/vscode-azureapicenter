@@ -26,7 +26,7 @@ export abstract class Editor<ContextT> implements vscode.Disposable {
     public abstract getDiffFilename(context: ContextT): Promise<string>;
     public abstract getSaveConfirmationText(context: ContextT): Promise<string>;
     public abstract getSize(context: ContextT): Promise<number>;
-    public async showEditor(context: ContextT, sizeLimit?: number /* in Megabytes */): Promise<void> {
+    public async showEditor(context: ContextT, sizeLimit?: number /* in Megabytes */): Promise<string> {
         const fileName: string = await this.getFilename(context);
         const originFileName: string = await this.getDiffFilename(context);
         this.appendLineToOutput(localize('opening', 'Opening "{0}"...', fileName));
@@ -56,6 +56,8 @@ export abstract class Editor<ContextT> implements vscode.Disposable {
 
         const textEditor: vscode.TextEditor = await vscode.window.showTextDocument(document);
         await this.updateEditor(data, textEditor);
+
+        return localFilePath;
     }
 
     public async updateMatchingContext(doc: vscode.Uri): Promise<void> {
