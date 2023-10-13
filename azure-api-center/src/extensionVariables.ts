@@ -5,6 +5,7 @@
 
 import { ExtensionContext } from "vscode";
 import { AzExtTreeDataProvider, IAzExtOutputChannel, IAzureUserInput } from "@microsoft/vscode-azext-utils";
+import { AzureAccountTreeItem } from "./tree/AzureAccountTreeItem";
 
 /**
  * Namespace for common variables used throughout the extension. They must be initialized in the activate() method of extension.ts
@@ -12,7 +13,8 @@ import { AzExtTreeDataProvider, IAzExtOutputChannel, IAzureUserInput } from "@mi
 // tslint:disable-next-line: export-name
 export namespace ext {
     export let context: ExtensionContext;
-    export let tree: AzExtTreeDataProvider;
+    export let treeItem: AzureAccountTreeItem;
+    export let treeDataProvider: AzExtTreeDataProvider;
     export let outputChannel: IAzExtOutputChannel;
     export let prefix: string = 'azureAPICenter';
 }

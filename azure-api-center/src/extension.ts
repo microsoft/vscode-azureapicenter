@@ -19,6 +19,7 @@ import { importOpenApi } from './commands/importOpenApi';
 import { exportOpenApi } from './commands/exportOpenApi';
 import { OpenApiEditor } from './tree/Editors/openApi/OpenApiEditor';
 import { doubleClickDebounceDelay, selectedNodeKey } from './constants';
+import { refreshTree } from './commands/refreshTree';
 
 export function activate(context: vscode.ExtensionContext) {
 	console.log('Congratulations, your extension "azure-api-center" is now active!');
@@ -31,6 +32,8 @@ export function activate(context: vscode.ExtensionContext) {
 
     const azureAccountTreeItem = new AzureAccountTreeItem();
     context.subscriptions.push(azureAccountTreeItem);
+    ext.treeItem = azureAccountTreeItem;
+
     const treeDataProvider = new AzExtTreeDataProvider(azureAccountTreeItem, "appService.loadMore");
 
     const treeView = vscode.window.createTreeView("apiCenterTreeView", { treeDataProvider });
@@ -55,7 +58,7 @@ export function activate(context: vscode.ExtensionContext) {
                   async (actionContext: IActionContext, doc: vscode.TextDocument) => { await openApiEditor.onDidSaveTextDocument(actionContext, context.globalState, doc); });
     registerCommand('azure-api-center.showOpenApi', async (actionContext: IActionContext, node?: ApiVersionDefinitionTreeItem) => {
         if (!node) {
-            node = <ApiVersionDefinitionTreeItem>await ext.tree.showTreeItemPicker(ApiVersionDefinitionTreeItem.contextValue, actionContext);
+            node = <ApiVersionDefinitionTreeItem>await ext.treeDataProvider.showTreeItemPicker(ApiVersionDefinitionTreeItem.contextValue, actionContext);
         }
         await openApiEditor.showEditor(node);
         vscode.commands.executeCommand('setContext', 'isEditorEnabled', true);
@@ -75,6 +78,8 @@ export function activate(context: vscode.ExtensionContext) {
 		const apiLibraryGenerator = new GenerateApiLibrary();
         await apiLibraryGenerator.generate();
 	});
+
+    registerCommand('azure-api-center.apiCenterTreeView.refresh', async (context: IActionContext) => refreshTree(context));
 
 	const chatAgent = async (prompt: vscode.ChatMessage, ctx: vscode.ChatAgentContext, progress: vscode.Progress<vscode.ChatAgentResponse>, token: vscode.CancellationToken): Promise<vscode.ChatAgentResult | void> => {
         // To talk to an LLM in your slash command handler implementation, your
