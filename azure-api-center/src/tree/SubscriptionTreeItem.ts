@@ -9,7 +9,6 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
 
     constructor(parent: AzExtParentTreeItem, subscription: ISubscriptionContext) {
         super(parent, subscription);
-        this._nextLink = undefined;
         this.iconPath = treeUtils.getIconPath('azureSubscription');
     }
 
