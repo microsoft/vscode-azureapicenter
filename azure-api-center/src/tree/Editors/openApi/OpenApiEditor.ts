@@ -5,7 +5,7 @@ import { ApiCenterApiVersionDefinitionImport } from "../../../azure/ApiCenter/co
 import { showSavePromptConfigKey } from "../../../constants";
 import { localize } from "../../../localize";
 import { ApiVersionDefinitionTreeItem } from "../../ApiVersionDefinitionTreeItem";
-import { Editor } from "../Editor";
+import { Editor, EditorOptions } from "../Editor";
 
 export class OpenApiEditor extends Editor<ApiVersionDefinitionTreeItem> {
     constructor() {
@@ -18,22 +18,21 @@ export class OpenApiEditor extends Editor<ApiVersionDefinitionTreeItem> {
             getResourceGroupFromId(treeItem?.id!),
             treeItem?.apiCenterName!);
 
-        const exportedSpec = await  apiCenterService.exportSpecification(
+        const exportedSpec = await apiCenterService.exportSpecification(
             treeItem?.apiCenterApiName!,
             treeItem?.apiCenterApiVersionName!,
             treeItem?.apiCenterApiVersionDefinition.name!
         );
 
-        const parsed = JSON.parse(exportedSpec.properties.value);
-        return JSON.stringify(parsed, null, 2);
+        return exportedSpec.properties.value;
     }
 
     public async updateData(treeItem: ApiVersionDefinitionTreeItem, data: string): Promise<string> {
-
         const apiCenterService = new ApiCenterService(
             treeItem?.subscription!,
             getResourceGroupFromId(treeItem?.id!),
-            treeItem?.apiCenterName!);
+            treeItem?.apiCenterName!
+        );
 
         return window.withProgress(
             {
@@ -48,30 +47,29 @@ export class OpenApiEditor extends Editor<ApiVersionDefinitionTreeItem> {
                     format: "inline",
                     value: data.toString(),
                     specificationDetails: {
-                        name: "openapi",
-                        version: "0.0.1"
+                        name: "openapi", // TODO: we need to change this right?
+                        version: "0.0.1" // TODO: we need to change this right?
                     }
                 };
 
                 await  apiCenterService.importSpecification(
                     treeItem?.apiCenterApiName!,
-                treeItem?.apiCenterApiVersionName!,
-                treeItem?.apiCenterApiVersionDefinition.name!,
-                importPayload);
+                    treeItem?.apiCenterApiVersionName!,
+                    treeItem?.apiCenterApiVersionDefinition.name!,
+                    importPayload
+                );
             }
         ).then(async () => {
-            // tslint:disable-next-line:no-non-null-assertion
             window.showInformationMessage("Spec uploaded successfully.");
-
             return this.getData(treeItem);
         });
     }
-    public async getFilename(treeItem: ApiVersionDefinitionTreeItem): Promise<string> {
-        return `${treeItem.apiCenterName}-${treeItem.apiCenterApiName}-${treeItem.apiCenterApiVersionName}--${treeItem.apiCenterApiVersionDefinition.name}-openapi-tempFile.json`;
+    public async getFilename(treeItem: ApiVersionDefinitionTreeItem, options: EditorOptions): Promise<string> {
+        return `${treeItem.apiCenterName}-${treeItem.apiCenterApiName}-${treeItem.apiCenterApiVersionName}--${treeItem.apiCenterApiVersionDefinition.name}-openapi-tempFile${options.fileType}`;
     }
 
-    public async getDiffFilename(treeItem: ApiVersionDefinitionTreeItem): Promise<string> {
-        return `${treeItem.apiCenterName}-${treeItem.apiCenterApiName}-${treeItem.apiCenterApiVersionName}--${treeItem.apiCenterApiVersionDefinition.name}-openapi.json`;
+    public async getDiffFilename(treeItem: ApiVersionDefinitionTreeItem, options: EditorOptions): Promise<string> {
+        return `${treeItem.apiCenterName}-${treeItem.apiCenterApiName}-${treeItem.apiCenterApiVersionName}--${treeItem.apiCenterApiVersionDefinition.name}-openapi.json${options.fileType}`;
     }
 
     public async getSaveConfirmationText(treeItem: ApiVersionDefinitionTreeItem): Promise<string> {
