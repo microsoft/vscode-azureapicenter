@@ -2,8 +2,7 @@ import * as vscode from 'vscode';
 import { commands } from "vscode";
 
 // Commands
-import { GenerateApiLibrary } from './commands/generateLibraryCommand';
-import { OpenApiFileOpener } from './commands/openApiDocCommand';
+import { openApiDocInSwagger } from './commands/openApiDocInSwagger';
 // Copilot
 import { API_CENTER_DESCRIBE_API, API_CENTER_FIND_API, API_CENTER_GENERATE_SNIPPET, API_CENTER_LIST_APIs } from './copilot-chat/constants';
 
@@ -11,6 +10,7 @@ import { API_CENTER_DESCRIBE_API, API_CENTER_FIND_API, API_CENTER_GENERATE_SNIPP
 import { registerAzureUtilsExtensionVariables } from '@microsoft/vscode-azext-azureutils';
 import { AzExtTreeDataProvider, AzExtTreeItem, IActionContext, createAzExtOutputChannel, registerCommand, registerEvent } from '@microsoft/vscode-azext-utils';
 import { exportOpenApi } from './commands/exportOpenApi';
+import { generateApiLibrary } from './commands/generateApiLibrary';
 import { importOpenApi } from './commands/importOpenApi';
 import { refreshTree } from './commands/refreshTree';
 import { testInPostman } from './commands/testInPostman';
@@ -66,21 +66,11 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.commands.executeCommand('setContext', 'isEditorEnabled', true);
     },              doubleClickDebounceDelay);
 
-    registerCommand('azure-api-center.open-api-docs', async (context: IActionContext, node?: ApiVersionDefinitionTreeItem) => {
-        await openApiEditor.showEditor(node!);
-
-        const opener = new OpenApiFileOpener();
-        await opener.open();
-	});
+    registerCommand('azure-api-center.open-api-docs', openApiDocInSwagger);
 
     registerCommand('azure-api-center.open-postman', testInPostman);
 
-	registerCommand('azure-api-center.generate-api-client', async (context: IActionContext, node?: ApiVersionDefinitionTreeItem) => {
-        const path = await openApiEditor.showEditor(node!);
-
-        const apiLibraryGenerator = new GenerateApiLibrary();
-        await apiLibraryGenerator.generate(path);
-	});
+	registerCommand('azure-api-center.generate-api-client', generateApiLibrary);
 
     registerCommand('azure-api-center.apiCenterTreeView.refresh', async (context: IActionContext) => refreshTree(context));
 

@@ -5,16 +5,16 @@ import { ext } from '../extensionVariables';
 import { ApiVersionDefinitionTreeItem } from '../tree/ApiVersionDefinitionTreeItem';
 import { ensureExtension } from '../utils/ensureExtension';
 
-const PostmanExtensionId = 'postman.postman-for-vscode';
-const PostmanCommandId = 'postman-for-vscode.sidebar-panel.focus';
+const SwaggerExtensionId = 'arjun.swagger-viewer';
+const SwaggerPreviewCommandId = 'swagger.preview';
 
-export async function testInPostman(context: IActionContext, node: ApiVersionDefinitionTreeItem) {
+export async function openApiDocInSwagger(context: IActionContext, node: ApiVersionDefinitionTreeItem) {
     ensureExtension(context, {
-        extensionId: PostmanExtensionId,
-        noExtensionErrorMessage: 'Cannot test API in Postman unless the Postman extension is installed.',
+        extensionId: SwaggerExtensionId,
+        noExtensionErrorMessage: 'Cannot open API Documentation unless the Swagger extension is installed.',
     });
 
     // don't wait
     void ext.openApiEditor.showEditor(node);
-    await commands.executeCommand(PostmanCommandId);
+    await commands.executeCommand(SwaggerPreviewCommandId);
 }
