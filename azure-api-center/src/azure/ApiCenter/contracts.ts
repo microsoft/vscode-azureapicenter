@@ -80,11 +80,11 @@ export type ApiCenterApiVersionDefinitionImport = {
         name: string
         version: string
     }
-}
+};
 
 export type ApiCenterApiVersionDefinitionExport = {
     id: string;
     properties: {
         value: string
     }
-}
+};

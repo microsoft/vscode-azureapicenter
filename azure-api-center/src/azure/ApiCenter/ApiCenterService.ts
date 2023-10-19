@@ -4,10 +4,10 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { RequestPrepareOptions, ServiceClient } from "@azure/ms-rest-js";
 import { ISubscriptionContext } from "@microsoft/vscode-azext-utils";
-import { ApiCenter, ApiCenterApi, ApiCenterApiDeployment, ApiCenterApiVersion, ApiCenterApiVersionDefinition, ApiCenterApiVersionDefinitionExport, ApiCenterApiVersionDefinitionImport, ApiCenterEnvironment } from "./contracts";
-import { ServiceClient, RequestPrepareOptions } from "@azure/ms-rest-js";
 import { getCredentialForToken } from "../../utils/credentialUtil";
+import { ApiCenter, ApiCenterApi, ApiCenterApiDeployment, ApiCenterApiVersion, ApiCenterApiVersionDefinition, ApiCenterApiVersionDefinitionExport, ApiCenterApiVersionDefinitionImport, ApiCenterEnvironment } from "./contracts";
 
 export class ApiCenterService {
   private susbcriptionContext: ISubscriptionContext;
@@ -152,9 +152,9 @@ export class ApiCenterService {
     };
     let response = await client.sendRequest(options);
 
-    const location = response.headers.get("Location")
+    const location = response.headers.get("Location");
 
-    if (!location) return false;
+    if (!location) {return false;}
 
     options = {
       method: "GET",

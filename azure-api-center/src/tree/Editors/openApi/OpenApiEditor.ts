@@ -1,38 +1,38 @@
 import { getResourceGroupFromId } from "@microsoft/vscode-azext-azureutils";
-import { ApiCenterService } from "../../../azure/ApiCenter/ApiCenterService";
-import { showSavePromptConfigKey } from "../../../constants";
-import { ApiVersionDefinitionTreeItem } from "../../ApiVersionDefinitionTreeItem";
-import { Editor } from "../Editor";
-import { ApiCenterApiVersionDefinitionImport } from "../../../azure/ApiCenter/contracts";
 import { ProgressLocation, window } from "vscode";
+import { ApiCenterService } from "../../../azure/ApiCenter/ApiCenterService";
+import { ApiCenterApiVersionDefinitionImport } from "../../../azure/ApiCenter/contracts";
+import { showSavePromptConfigKey } from "../../../constants";
 import { localize } from "../../../localize";
+import { ApiVersionDefinitionTreeItem } from "../../ApiVersionDefinitionTreeItem";
+import { Editor, EditorOptions } from "../Editor";
 
 export class OpenApiEditor extends Editor<ApiVersionDefinitionTreeItem> {
     constructor() {
         super(showSavePromptConfigKey);
     }
 
-    public async getData(context: ApiVersionDefinitionTreeItem): Promise<string> {
+    public async getData(treeItem: ApiVersionDefinitionTreeItem): Promise<string> {
          const apiCenterService = new ApiCenterService(
-            context?.subscription!, 
-            getResourceGroupFromId(context?.id!), 
-            context?.apiCenterName!);   
+            treeItem?.subscription!,
+            getResourceGroupFromId(treeItem?.id!),
+            treeItem?.apiCenterName!);
 
-        const exportedSpec = await  apiCenterService.exportSpecification(
-            context?.apiCenterApiName!, 
-            context?.apiCenterApiVersionName!, 
-            context?.apiCenterApiVersionDefinition.name!) 
+        const exportedSpec = await apiCenterService.exportSpecification(
+            treeItem?.apiCenterApiName!,
+            treeItem?.apiCenterApiVersionName!,
+            treeItem?.apiCenterApiVersionDefinition.name!
+        );
 
-        const parsed = JSON.parse(exportedSpec.properties.value);
-        return JSON.stringify(parsed, null, 2)
+        return exportedSpec.properties.value;
     }
 
-    public async updateData(context: ApiVersionDefinitionTreeItem, data: string): Promise<string> {
-
+    public async updateData(treeItem: ApiVersionDefinitionTreeItem, data: string): Promise<string> {
         const apiCenterService = new ApiCenterService(
-            context?.subscription!, 
-            getResourceGroupFromId(context?.id!), 
-            context?.apiCenterName!);  
+            treeItem?.subscription!,
+            getResourceGroupFromId(treeItem?.id!),
+            treeItem?.apiCenterName!
+        );
 
         return window.withProgress(
             {
@@ -41,42 +41,41 @@ export class OpenApiEditor extends Editor<ApiVersionDefinitionTreeItem> {
                 cancellable: false
             },
             // tslint:disable-next-line:no-non-null-assertion
-            async () => { 
-                
+            async () => {
+
                 const importPayload: ApiCenterApiVersionDefinitionImport =  {
                     format: "inline",
                     value: data.toString(),
                     specificationDetails: {
-                        name: "openapi",
-                        version: "0.0.1"
+                        name: "openapi", // TODO: we need to change this right?
+                        version: "0.0.1" // TODO: we need to change this right?
                     }
                 };
 
                 await  apiCenterService.importSpecification(
-                    context?.apiCenterApiName!, 
-                context?.apiCenterApiVersionName!, 
-                context?.apiCenterApiVersionDefinition.name!, 
-                importPayload) 
+                    treeItem?.apiCenterApiName!,
+                    treeItem?.apiCenterApiVersionName!,
+                    treeItem?.apiCenterApiVersionDefinition.name!,
+                    importPayload
+                );
             }
         ).then(async () => {
-            // tslint:disable-next-line:no-non-null-assertion
             window.showInformationMessage("Spec uploaded successfully.");
-
-            return this.getData(context);
+            return this.getData(treeItem);
         });
     }
-    public async getFilename(context: ApiVersionDefinitionTreeItem): Promise<string> {
-        return `${context.apiCenterName}-${context.apiCenterApiName}-${context.apiCenterApiVersionName}--${context.apiCenterApiVersionDefinition.name}-openapi-tempFile.json`;
+    public async getFilename(treeItem: ApiVersionDefinitionTreeItem, options: EditorOptions): Promise<string> {
+        return `${treeItem.apiCenterName}-${treeItem.apiCenterApiName}-${treeItem.apiCenterApiVersionName}--${treeItem.apiCenterApiVersionDefinition.name}-openapi-tempFile${options.fileType}`;
     }
 
-    public async getDiffFilename(context: ApiVersionDefinitionTreeItem): Promise<string> {
-        return `${context.apiCenterName}-${context.apiCenterApiName}-${context.apiCenterApiVersionName}--${context.apiCenterApiVersionDefinition.name}-openapi.json`;
+    public async getDiffFilename(treeItem: ApiVersionDefinitionTreeItem, options: EditorOptions): Promise<string> {
+        return `${treeItem.apiCenterName}-${treeItem.apiCenterApiName}-${treeItem.apiCenterApiVersionName}--${treeItem.apiCenterApiVersionDefinition.name}-openapi.json${options.fileType}`;
     }
 
-    public async getSaveConfirmationText(context: ApiVersionDefinitionTreeItem): Promise<string> {
-        return localize("", `Saving will update the API spec '${context.apiCenterApiVersionDefinition.name}'.`);
+    public async getSaveConfirmationText(treeItem: ApiVersionDefinitionTreeItem): Promise<string> {
+        return localize("", `Saving will update the API spec '${treeItem.apiCenterApiVersionDefinition.name}'.`);
     }
-    
+
     public getSize(context: ApiVersionDefinitionTreeItem): Promise<number> {
         throw new Error(localize("", "Method not implemented."));
     }

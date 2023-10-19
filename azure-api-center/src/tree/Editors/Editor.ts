@@ -3,14 +3,19 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { DialogResponses, IActionContext, UserCancelledError } from "@microsoft/vscode-azext-utils";
 import * as fse from 'fs-extra';
 import * as path from 'path';
 import * as vscode from 'vscode';
-import { DialogResponses, IActionContext, UserCancelledError } from "@microsoft/vscode-azext-utils";
 import { ext } from '../../extensionVariables';
 import { localize } from "../../localize";
 import { createTemporaryFile } from '../../utils/fsUtil';
+import { DefinitionFileType, inferDefinitionFileType } from "../../utils/inferDefinitionFileType";
 import { writeToEditor } from '../../utils/vscodeUtils';
+
+export interface EditorOptions {
+   readonly fileType: DefinitionFileType
+}
 
 // tslint:disable-next-line:no-unsafe-any
 export abstract class Editor<ContextT> implements vscode.Disposable {
@@ -22,13 +27,17 @@ export abstract class Editor<ContextT> implements vscode.Disposable {
 
     public abstract getData(context: ContextT): Promise<string>;
     public abstract updateData(context: ContextT, data: string): Promise<string>;
-    public abstract getFilename(context: ContextT): Promise<string>;
-    public abstract getDiffFilename(context: ContextT): Promise<string>;
+    public abstract getFilename(context: ContextT, options: EditorOptions): Promise<string>;
+    public abstract getDiffFilename(context: ContextT, options: EditorOptions): Promise<string>;
     public abstract getSaveConfirmationText(context: ContextT): Promise<string>;
     public abstract getSize(context: ContextT): Promise<number>;
     public async showEditor(context: ContextT, sizeLimit?: number /* in Megabytes */): Promise<string> {
-        const fileName: string = await this.getFilename(context);
-        const originFileName: string = await this.getDiffFilename(context);
+        const data: string = await this.getData(context);
+
+        const fileType: DefinitionFileType = inferDefinitionFileType(data);
+        const fileName: string = await this.getFilename(context, {fileType: fileType});
+        const originFileName: string = await this.getDiffFilename(context, {fileType: fileType});
+
         this.appendLineToOutput(localize('opening', 'Opening "{0}"...', fileName));
         if (sizeLimit !== undefined) {
             const size: number = await this.getSize(context);
@@ -49,7 +58,6 @@ export abstract class Editor<ContextT> implements vscode.Disposable {
         }
 
         this.fileMap[localFilePath] = [document, context];
-        const data: string = await this.getData(context);
 
         // store an original copy of the data
         await fse.writeFile(localOriginPath, data);
@@ -102,9 +110,12 @@ export abstract class Editor<ContextT> implements vscode.Disposable {
     }
 
     private async updateRemote(context: ContextT, doc: vscode.TextDocument): Promise<void> {
-        const filename: string = await this.getFilename(context);
+        const rawText = doc.getText();
+
+        const fileType = inferDefinitionFileType(rawText);
+        const filename: string = await this.getFilename(context, {fileType: fileType});
         this.appendLineToOutput(localize('updating', 'Updating "{0}" ...', filename));
-        const updatedData: string = await this.updateData(context, doc.getText());
+        const updatedData: string = await this.updateData(context, rawText);
         this.appendLineToOutput(localize('done', 'Updated "{0}".', filename));
         await this.updateEditor(updatedData, vscode.window.activeTextEditor);
     }
