@@ -15,9 +15,6 @@
   ],
   "main": "./dist/extension.js",
   "extensionDependencies": [
-    "Postman.postman-for-vscode",
-    "Arjun.swagger-viewer",
-    "ms-graph.kiota",
     "github.copilot-chat"
   ],
   "enabledApiProposals": [
