@@ -1,40 +1,36 @@
 export const swaggerTemplate =
 `
-<html>
+<!DOCTYPE html>
+<html lang="en">
   <head>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.19.5/swagger-ui.css" >
-    <style>
-      .topbar {
-        display: none;
-      }
-    </style>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="SwaggerUI"
+    />
+    <title>SwaggerUI</title>
+    <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui.css" />
   </head>
-
   <body>
-    <div id="swagger-ui"></div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.19.5/swagger-ui-bundle.js"> </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.19.5/swagger-ui-standalone-preset.js"> </script>
-    <script src="./openapi.js"> </script>
-    <script>
-      window.onload = function() {
-        const ui = SwaggerUIBundle({
-          url: '{{apiDefinitionTmpFilePath}}',
-          dom_id: '#swagger-ui',
-          validatorUrl: null,
-          presets: [
-            SwaggerUIBundle.presets.apis,
-            SwaggerUIStandalonePreset
-          ],
-          plugins: [
-            SwaggerUIBundle.plugins.DownloadUrl
-          ],
-          layout: "StandaloneLayout"
-        })
-
-        window.ui = ui
-      }
+  <div id="swagger-ui"></div>
+  <script src="https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui-bundle.js" crossorigin></script>
+  <script src="https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui-standalone-preset.js" crossorigin></script>
+  <script>
+    window.onload = () => {
+      window.ui = SwaggerUIBundle({
+        url: '{{apiDefinitionTmpFilePath}}',
+        dom_id: '#swagger-ui',
+        validatorUrl : null,
+        presets: [
+          SwaggerUIBundle.presets.apis,
+          SwaggerUIStandalonePreset
+        ],
+        layout: "StandaloneLayout",
+      });
+    };
   </script>
   </body>
 </html>
+
 `;

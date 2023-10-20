@@ -12,19 +12,20 @@ const urlPlaceHolder = '{{apiDefinitionTmpFilePath}}';
 
 export async function openAPiInSwagger(context: IActionContext, node: ApiVersionDefinitionTreeItem) {
 
-    // get the temp file path that was created from user definition
-    const apiDefinitionTmpFilePath = await ext.openApiEditor.createTempFileFromTree(node);
-    const fileName = path.parse(apiDefinitionTmpFilePath).base;
+    // write spec to temp file
+    const definitionRaw = await ext.openApiEditor.getData(node);
+    const apiDefinitionTmpFilePath = await createTemporaryFile('/uploads/definition.json');
+    await fse.writeFile(apiDefinitionTmpFilePath, definitionRaw);
 
     // replace the placeholder in the swagger template with the temp file path
-    const swaggerHtml = swaggerTemplate.replace(urlPlaceHolder, fileName);
+    const swaggerHtml = swaggerTemplate.replace(urlPlaceHolder, '/uploads/definition.json');
 
     // create temp file of the swagger template
-    const htmlFilePath = await createTemporaryFile('swagger-ui.html');
+    const htmlFilePath = await createTemporaryFile('index.html');
     await fse.writeFile(htmlFilePath, swaggerHtml);
 
     // serve the swagger template
-    const address = serve(htmlFilePath);
+    const address = serve([htmlFilePath, apiDefinitionTmpFilePath]);
 
     // open web page
     await env.openExternal(Uri.parse(address));
