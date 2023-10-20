@@ -6,7 +6,7 @@
 import * as crypto from "crypto";
 import * as fse from 'fs-extra';
 import * as path from 'path';
-import { extensionName, sessionFolderKey  } from '../constants';
+import { extensionName, sessionFolderKey } from '../constants';
 import { ext } from '../extensionVariables';
 
 export async function createTemporaryFile(fileName: string): Promise<string> {
