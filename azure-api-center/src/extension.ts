@@ -12,7 +12,7 @@ import { showOpenApi } from './commands/editOpenApi';
 import { exportOpenApi } from './commands/exportOpenApi';
 import { generateApiLibrary } from './commands/generateApiLibrary';
 import { importOpenApi } from './commands/importOpenApi';
-import { openAPiInSwagger } from './commands/openInSwagger/openApiInSwagger';
+import { openAPiInSwagger } from './commands/openApiInSwagger';
 import { refreshTree } from './commands/refreshTree';
 import { testInPostman } from './commands/testInPostman';
 import { doubleClickDebounceDelay, selectedNodeKey } from './constants';

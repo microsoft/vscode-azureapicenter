@@ -3,11 +3,11 @@ import { IActionContext } from "@microsoft/vscode-azext-utils";
 import * as fse from 'fs-extra';
 import * as path from 'path';
 import { Uri, env } from "vscode";
-import { ext } from "../../extensionVariables";
-import { ApiVersionDefinitionTreeItem } from "../../tree/ApiVersionDefinitionTreeItem";
-import { swaggerTemplate } from "../../tree/Editors/openApi/swaggerTemplate";
-import { createTemporaryFile } from "../../utils/fsUtil";
-import { serve } from "../../utils/server";
+import { ext } from "../extensionVariables";
+import { ApiVersionDefinitionTreeItem } from "../tree/ApiVersionDefinitionTreeItem";
+import { swaggerTemplate } from "../tree/Editors/openApi/swaggerTemplate";
+import { createTemporaryFile } from "../utils/fsUtil";
+import { serve } from "../utils/server";
 
 // placeholder in the swagger template
 const UrlPlaceHolder = '{{apiDefinitionTmpFilePath}}';
