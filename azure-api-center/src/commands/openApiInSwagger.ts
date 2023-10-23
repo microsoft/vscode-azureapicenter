@@ -2,7 +2,7 @@
 import { IActionContext } from "@microsoft/vscode-azext-utils";
 import * as fse from 'fs-extra';
 import * as path from 'path';
-import { Uri, env } from "vscode";
+import { commands } from "vscode";
 import { ext } from "../extensionVariables";
 import { ApiVersionDefinitionTreeItem } from "../tree/ApiVersionDefinitionTreeItem";
 import { swaggerTemplate } from "../tree/Editors/openApi/swaggerTemplate";
@@ -31,7 +31,10 @@ export async function openAPiInSwagger(context: IActionContext, node: ApiVersion
     const address = serve(map);
 
     // open web page
-    await env.openExternal(Uri.parse(address));
+    await commands.executeCommand("simpleBrowser.api.open", address);
+
+    // TODO: have a setting to open in browser if user prefers
+    // await env.openExternal(Uri.parse(address));
 }
 
 
