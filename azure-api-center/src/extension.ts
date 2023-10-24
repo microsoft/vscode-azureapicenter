@@ -2,7 +2,6 @@ import * as vscode from 'vscode';
 import { commands } from "vscode";
 
 // Commands
-import { openApiDocInSwagger } from './commands/openApiDocInSwagger';
 // Copilot
 import { API_CENTER_DESCRIBE_API, API_CENTER_FIND_API, API_CENTER_GENERATE_SNIPPET, API_CENTER_LIST_APIs } from './copilot-chat/constants';
 
@@ -13,6 +12,7 @@ import { showOpenApi } from './commands/editOpenApi';
 import { exportOpenApi } from './commands/exportOpenApi';
 import { generateApiLibrary } from './commands/generateApiLibrary';
 import { importOpenApi } from './commands/importOpenApi';
+import { openAPiInSwagger } from './commands/openApiInSwagger';
 import { refreshTree } from './commands/refreshTree';
 import { testInPostman } from './commands/testInPostman';
 import { doubleClickDebounceDelay, selectedNodeKey } from './constants';
@@ -67,7 +67,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     registerCommand('azure-api-center.showOpenApi', showOpenApi, doubleClickDebounceDelay);
 
-    registerCommand('azure-api-center.open-api-docs', openApiDocInSwagger);
+    registerCommand('azure-api-center.open-api-docs', openAPiInSwagger);
 
     registerCommand('azure-api-center.open-postman', testInPostman);
 

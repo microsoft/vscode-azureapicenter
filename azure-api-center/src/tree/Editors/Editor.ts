@@ -68,6 +68,17 @@ export abstract class Editor<ContextT> implements vscode.Disposable {
         return localFilePath;
     }
 
+    public async createTempFileFromTree(context: ContextT, sizeLimit?: number /* in Megabytes */) {
+        const data: string = await this.getData(context);
+
+        const fileType: DefinitionFileType = inferDefinitionFileType(data);
+        const fileName: string = await this.getFilename(context, {fileType: fileType});
+        const localFilePath: string = await createTemporaryFile(fileName);
+        fse.writeFile(localFilePath, data);
+
+        return localFilePath;
+    }
+
     public async updateMatchingContext(doc: vscode.Uri): Promise<void> {
         const filePath: string | undefined = Object.keys(this.fileMap).find((fsPath: string) => path.relative(doc.fsPath, fsPath) === '');
         if (filePath) {
