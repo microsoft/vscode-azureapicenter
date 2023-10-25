@@ -6,29 +6,31 @@ import { commands } from "vscode";
 import { ext } from "../extensionVariables";
 import { ApiVersionDefinitionTreeItem } from "../tree/ApiVersionDefinitionTreeItem";
 import { swaggerTemplate } from "../tree/Editors/openApi/swaggerTemplate";
-import { createTemporaryFile } from "../utils/fsUtil";
+import { createTemporaryFolder } from "../utils/fsUtil";
+import { inferDefinitionFileType } from "../utils/inferDefinitionFileType";
 import { serve } from "../utils/server";
 
 // placeholder in the swagger template
 const UrlPlaceHolder = '{{apiDefinitionTmpFilePath}}';
 const SwaggerHtmlFileName = 'index.html';
+const StaticPublicFolderName = '/public';
 
 export async function openAPiInSwagger(context: IActionContext, node: ApiVersionDefinitionTreeItem) {
-    let map = new Map<string, string>();
+    // create temp folder
+    const folderPath = await createTemporaryFolder(StaticPublicFolderName);
 
-    // write spec to temp file
-    const definitionLocalFilePath = await ext.openApiEditor.createTempFileFromTree(node);
-    const definitionLocalFileName = path.basename(definitionLocalFilePath);
-    map.set(`/${definitionLocalFileName}`, definitionLocalFilePath);
+    // create temp file of the swagger definition
+    const definitionFileRaw = await ext.openApiEditor.getData(node);
+    const definitionFileType = inferDefinitionFileType(definitionFileRaw);
+    const definitionFileName = "apiDefinition" + definitionFileType;
+    fse.writeFile(path.join(folderPath, definitionFileName), definitionFileRaw);
 
     // create temp file of the swagger template
-    const swaggerHtml = swaggerTemplate.replace(UrlPlaceHolder, definitionLocalFileName);
-    const htmlFilePath = await createTemporaryFile(SwaggerHtmlFileName);
-    await fse.writeFile(htmlFilePath, swaggerHtml);
-    map.set('/', htmlFilePath);
+    const swaggerHtmlRaw = swaggerTemplate.replace(UrlPlaceHolder, definitionFileName);
+    await fse.writeFile(path.join(folderPath, SwaggerHtmlFileName), swaggerHtmlRaw);
 
     // serve the swagger template
-    const address = serve(map);
+    const address = serve(folderPath, SwaggerHtmlFileName);
 
     // open web page
     await commands.executeCommand("simpleBrowser.api.open", address);

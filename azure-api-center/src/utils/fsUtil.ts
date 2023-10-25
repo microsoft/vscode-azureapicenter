@@ -22,6 +22,17 @@ export async function createTemporaryFile(fileName: string): Promise<string> {
     return filePath;
 }
 
+// make a function that creates a temporary folder
+export async function createTemporaryFolder(folderName: string): Promise<string> {
+    const defaultWorkspacePath = path.join(ext.context.globalStoragePath, extensionName);
+    await fse.ensureDir(defaultWorkspacePath);
+
+    const sessionFolder = getSessionWorkingFolderName();
+    const folderPath: string = path.join(defaultWorkspacePath, sessionFolder, folderName);
+    await fse.ensureDir(folderPath);
+    return folderPath;
+}
+
 export function getSessionWorkingFolderName() : string {
     let sessionFolderName = ext.context.globalState.get(sessionFolderKey);
 // tslint:disable-next-line: strict-boolean-expressions

@@ -1,17 +1,18 @@
 import * as express from 'express';
+import * as path from 'path';
 
-export function serve(fileMap: Map<string, string>): string {
+export function serve(folderPath: string, indexHtmlName: string): string {
     const port = process.env.PORT || 5000;
 
     // Create an Express app
     const app = express();
 
-    // map the files to the routes
-    for (let [key, value] of fileMap) {
-        app.get(key, (req, res) => {
-            res.sendFile(value);
-        });
-    }
+    app.use(express.static(folderPath));
+
+    // set index.html as the default page
+    app.get('/', (req, res) => {
+        res.sendFile(path.join(folderPath, indexHtmlName));
+    });
 
     // Start the server
     const server = app.listen(port);
