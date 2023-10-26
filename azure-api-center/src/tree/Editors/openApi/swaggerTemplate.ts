@@ -11,6 +11,32 @@ export const swaggerTemplate =
     />
     <title>SwaggerUI</title>
     <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui.css" />
+    <style>
+      html {
+        box-sizing: border-box;
+        overflow: -moz-scrollbars-vertical;
+        overflow-y: scroll;
+      }
+
+      *,
+      *:before,
+      *:after {
+        box-sizing: inherit;
+      }
+
+      body {
+        margin: 0;
+        background: #fafafa;
+      }
+
+      .download-url-wrapper {
+        visibility: hidden;
+      }
+
+      .topbar{
+        display: none;
+      }
+	  </style>
   </head>
   <body>
   <div id="swagger-ui"></div>
