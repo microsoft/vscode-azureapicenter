@@ -73,9 +73,21 @@ export abstract class Editor<ContextT> implements vscode.Disposable {
 
         const fileType: DefinitionFileType = inferDefinitionFileType(data);
         const fileName: string = await this.getFilename(context, {fileType: fileType});
-        const localFilePath: string = await createTemporaryFile(fileName);
-        fse.writeFile(localFilePath, data);
+        const originFileName: string = await this.getDiffFilename(context, {fileType: fileType});
 
+        this.appendLineToOutput(localize('opening', 'Opening "{0}"...', fileName));
+        if (sizeLimit !== undefined) {
+            const size: number = await this.getSize(context);
+            if (size > sizeLimit) {
+                const message: string = localize('tooLargeError', '"{0}" is too large to download.', fileName);
+                throw new Error(message);
+            }
+        }
+
+        const localFilePath: string = await createTemporaryFile(fileName);
+
+        // store an original copy of the data
+        await fse.writeFile(localFilePath, data);
         return localFilePath;
     }
 
