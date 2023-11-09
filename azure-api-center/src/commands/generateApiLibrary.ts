@@ -13,7 +13,7 @@ export async function generateApiLibrary(context: IActionContext, node: ApiVersi
         noExtensionErrorMessage: 'Please install the Kiota extension to generate the API library.',
     });
 
-    const path = await ext.openApiEditor.showEditor(node);
+    const path = await ext.openApiEditor.createTempFileFromTree(node);
     const descriptionUrl = encodeURIComponent(path);
     const uriScheme = vscode.env.uriScheme;
 
