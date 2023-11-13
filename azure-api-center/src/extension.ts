@@ -3,7 +3,7 @@ import { commands } from "vscode";
 
 // Commands
 // Copilot
-import { API_CENTER_DESCRIBE_API, API_CENTER_FIND_API, API_CENTER_GENERATE_SNIPPET, API_CENTER_LIST_APIs } from './copilot-chat/constants';
+import { API_CENTER_LIST_APIs } from './copilot-chat/constants';
 
 // Tree View UI
 import { registerAzureUtilsExtensionVariables } from '@microsoft/vscode-azext-azureutils';
@@ -22,7 +22,7 @@ import { AzureAccountTreeItem } from './tree/AzureAccountTreeItem';
 import { OpenApiEditor } from './tree/Editors/openApi/OpenApiEditor';
 
 export function activate(context: vscode.ExtensionContext) {
-	console.log('Congratulations, your extension "azure-api-center" is now active!');
+    console.log('Congratulations, your extension "azure-api-center" is now active!');
 
     // https://github.com/microsoft/vscode-azuretools/tree/main/azure
     ext.context = context;
@@ -40,9 +40,9 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(treeView);
 
     treeView.onDidChangeSelection((e: vscode.TreeViewSelectionChangeEvent<AzExtTreeItem>) => {
-      const selectedNode = e.selection[0];
-      ext.outputChannel.appendLine(selectedNode.id!);
-      ext.context.globalState.update(selectedNodeKey, selectedNode.id);
+        const selectedNode = e.selection[0];
+        ext.outputChannel.appendLine(selectedNode.id!);
+        ext.context.globalState.update(selectedNodeKey, selectedNode.id);
     });
 
     // Register API Center extension commands
@@ -62,8 +62,8 @@ export function activate(context: vscode.ExtensionContext) {
     ext.openApiEditor = openApiEditor;
 
     registerEvent('azure-api-center.openApiEditor.onDidSaveTextDocument',
-                  vscode.workspace.onDidSaveTextDocument,
-                  async (actionContext: IActionContext, doc: vscode.TextDocument) => { await openApiEditor.onDidSaveTextDocument(actionContext, context.globalState, doc); });
+        vscode.workspace.onDidSaveTextDocument,
+        async (actionContext: IActionContext, doc: vscode.TextDocument) => { await openApiEditor.onDidSaveTextDocument(actionContext, context.globalState, doc); });
 
     registerCommand('azure-api-center.showOpenApi', showOpenApi, doubleClickDebounceDelay);
 
@@ -71,11 +71,11 @@ export function activate(context: vscode.ExtensionContext) {
 
     registerCommand('azure-api-center.open-postman', testInPostman);
 
-	registerCommand('azure-api-center.generate-api-client', generateApiLibrary);
+    registerCommand('azure-api-center.generate-api-client', generateApiLibrary);
 
     registerCommand('azure-api-center.apiCenterTreeView.refresh', async (context: IActionContext) => refreshTree(context));
 
-	const chatAgent = async (prompt: vscode.ChatMessage, ctx: vscode.ChatAgentContext, progress: vscode.Progress<vscode.ChatAgentResponse>, token: vscode.CancellationToken): Promise<vscode.ChatAgentResult | void> => {
+    const chatAgent = async (prompt: vscode.ChatMessage, ctx: vscode.ChatAgentContext, progress: vscode.Progress<vscode.ChatAgentResponse>, token: vscode.CancellationToken): Promise<vscode.ChatAgentResult | void> => {
         // To talk to an LLM in your slash command handler implementation, your
         // extension can use VS Code's `requestChatAccess` API to access the Copilot API.
         // The pre-release of the GitHub Copilot Chat extension implements this provider.
@@ -91,85 +91,93 @@ export function activate(context: vscode.ExtensionContext) {
                     content: 'What are APIs are available for me to use in Azure API Center?'
                 },
             ];
-            await access.makeRequest(messages, {}, {
-                report: (fragment: vscode.ChatResponseFragment) => {
-                    const incomingText = fragment.part.replace('[RESPONSE END]', '');
+            try {
+                const platformRequest = await access.makeRequest(messages, {}, token);
+
+                let tempResonse = '';
+                for await (const fragment of platformRequest.response) {
+                    const incomingText = fragment.replace('[RESPONSE END]', '');
+                    tempResonse += incomingText;
                     progress.report({ message: new vscode.MarkdownString(incomingText) });
                 }
-            }, token);
+                console.log(tempResonse);
+
+            } catch (error) {
+                console.log(error);
+            }
 
             return {
                 followUp: [{ message: vscode.l10n.t('@apicenter /find search_query'), metadata: {} }]
             };
         } else if (prompt.content.startsWith('/find')) {
-            const access = await vscode.chat.requestChatAccess('copilot');
-            const messages = [
-                {
-                    role: vscode.ChatMessageRole.System,
-                    content: API_CENTER_FIND_API
-                },
-                {
-                    role: vscode.ChatMessageRole.User,
-                    content: `Find an API for ${prompt.content.split(' ')[1]} from the provided list in the system prompt.`
-                },
-            ];
+            // const access = await vscode.chat.requestChatAccess('copilot');
+            // const messages = [
+            //     {
+            //         role: vscode.ChatMessageRole.System,
+            //         content: API_CENTER_FIND_API
+            //     },
+            //     {
+            //         role: vscode.ChatMessageRole.User,
+            //         content: `Find an API for ${prompt.content.split(' ')[1]} from the provided list in the system prompt.`
+            //     },
+            // ];
 
-            await access.makeRequest(messages, {}, {
-                report: (fragment: vscode.ChatResponseFragment) => {
-                    const incomingText = fragment.part.replace('[RESPONSE END]', '');
-                    progress.report({ message: new vscode.MarkdownString(incomingText) });
-                }
-            }, token);
+            // await access.makeRequest(messages, {}, {
+            //     report: (fragment: vscode.ChatResponseFragment) => {
+            //         const incomingText = fragment.part.replace('[RESPONSE END]', '');
+            //         progress.report({ message: new vscode.MarkdownString(incomingText) });
+            //     }
+            // }, token);
 
             return {
                 followUp: [{ message: vscode.l10n.t('@apicenter /describe api'), metadata: {} }]
             };
-        }  else if (prompt.content.startsWith('/generate')) {
-            const access = await vscode.chat.requestChatAccess('copilot');
-            const messages = [
-                {
-                    role: vscode.ChatMessageRole.System,
-                    content: API_CENTER_GENERATE_SNIPPET
-                },
-                {
-                    role: vscode.ChatMessageRole.User,
-                    content: `Generate a code snippet for API specification ${prompt.content.split(' ')[1]} and language ${prompt.content.split(' ')[2]}`
-                },
-            ];
+        } else if (prompt.content.startsWith('/generate')) {
+            // const access = await vscode.chat.requestChatAccess('copilot');
+            // const messages = [
+            //     {
+            //         role: vscode.ChatMessageRole.System,
+            //         content: API_CENTER_GENERATE_SNIPPET
+            //     },
+            //     {
+            //         role: vscode.ChatMessageRole.User,
+            //         content: `Generate a code snippet for API specification ${prompt.content.split(' ')[1]} and language ${prompt.content.split(' ')[2]}`
+            //     },
+            // ];
 
-            await access.makeRequest(messages, {}, {
-                report: (fragment: vscode.ChatResponseFragment) => {
-                    const incomingText = fragment.part.replace('[RESPONSE END]', '');
-                    progress.report({ message: new vscode.MarkdownString(incomingText) });
-                }
-            }, token);
+            // await access.makeRequest(messages, {}, {
+            //     report: (fragment: vscode.ChatResponseFragment) => {
+            //         const incomingText = fragment.part.replace('[RESPONSE END]', '');
+            //         progress.report({ message: new vscode.MarkdownString(incomingText) });
+            //     }
+            // }, token);
         } else if (prompt.content.startsWith('/describe')) {
-            const access = await vscode.chat.requestChatAccess('copilot');
-            const messages = [
-                {
-                    role: vscode.ChatMessageRole.System,
-                    content: API_CENTER_DESCRIBE_API
-                },
-                {
-                    role: vscode.ChatMessageRole.User,
-                    content: `Describe an API using the following specification ${prompt.content}`
-                },
-            ];
+            // const access = await vscode.chat.requestChatAccess('copilot');
+            // const messages = [
+            //     {
+            //         role: vscode.ChatMessageRole.System,
+            //         content: API_CENTER_DESCRIBE_API
+            //     },
+            //     {
+            //         role: vscode.ChatMessageRole.User,
+            //         content: `Describe an API using the following specification ${prompt.content}`
+            //     },
+            // ];
 
-            await access.makeRequest(messages, {}, {
-                report: (fragment: vscode.ChatResponseFragment) => {
-                    const incomingText = fragment.part.replace('[RESPONSE END]', '');
-                    progress.report({ message: new vscode.MarkdownString(incomingText) });
-                }
-            }, token);
+            // await access.makeRequest(messages, {}, {
+            //     report: (fragment: vscode.ChatResponseFragment) => {
+            //         const incomingText = fragment.part.replace('[RESPONSE END]', '');
+            //         progress.report({ message: new vscode.MarkdownString(incomingText) });
+            //     }
+            // }, token);
 
             return {
                 followUp: [{ message: vscode.l10n.t('@apicenter /generate spec language'), metadata: {} }]
             };
         }
-	};
+    };
 
-	context.subscriptions.push(
+    context.subscriptions.push(
         // Register the Teams chat agent with two subcommands, /generate and /examples
         vscode.chat.registerAgent('apicenter', chatAgent, {
             description: 'Interact with API Center APIs.',
@@ -181,6 +189,59 @@ export function activate(context: vscode.ExtensionContext) {
             ],
         })
     );
+
+    // let handler: vscode.ChatAgentHandler = async (request, context, progress, token) => {
+    // 	let reply = request.prompt;
+    // 	const cmd = request.slashCommand?.name
+
+    // 	if (cmd === 'upcase') {
+    // 		reply = reply.toUpperCase();
+    //         const access = await vscode.chat.requestChatAccess('copilot');
+    //         const messages = [
+    //             {
+    //                 role: vscode.ChatMessageRole.System,
+    //                 content: API_CENTER_LIST_APIs
+    //             },
+    //             {
+    //                 role: vscode.ChatMessageRole.User,
+    //                 content: 'What are APIs are available for me to use in Azure API Center?'
+    //             },
+    //         ];
+    //         try {
+    //             var a = await access.makeRequest(messages, {}, {
+    //                 report: (fragment: vscode.ChatResponseFragment) => {
+    //                     const incomingText = fragment.part.replace('[RESPONSE END]', '');
+    //                     progress.report({ content: incomingText });
+    //                 }
+    //             }, token);
+    //             console.log(a)
+    //         } catch (error) {
+    //             console.log(error);
+    //         }
+
+
+    // 	} else if (cmd === 'downcase') {
+    // 		reply = reply.toLowerCase();
+    // 	}
+
+    // 	progress.report({ content: `\`>\` ${reply}` })
+    // 	return {}
+    // }
+
+    // const agent = vscode.chat.createChatAgent('echo', handler)
+    // agent.description = 'This is a test';
+    // agent.fullName = "Echo Echo Echo";
+    // agent.slashCommandProvider = {
+    // 	provideSlashCommands(token) {
+    // 		return [{
+    // 			name: 'upcase',
+    // 			description: 'Upcase the message',
+    // 		}, {
+    // 			name: 'downcase',
+    // 			description: 'Downcase the message',
+    // 		}]
+    // 	},
+    // }
 }
 
-export function deactivate() {}
+export function deactivate() { }
