@@ -79,7 +79,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     registerCommand('azure-api-center.apiCenterTreeView.refresh', async (context: IActionContext) => refreshTree(context));
 
-    let handler: vscode.ChatAgentHandler = async (request: vscode.ChatAgentRequest, context: vscode.ChatAgentContext, progress: vscode.Progress<vscode.ChatAgentProgress>, token: vscode.CancellationToken): Promise<vscode.ChatAgentResponse> => {
+    let handler: vscode.ChatAgentHandler = async (request: vscode.ChatAgentRequest, context: vscode.ChatAgentContext, progress: vscode.Progress<vscode.ChatAgentProgress>, token: vscode.CancellationToken): Promise<vscode.ChatAgentResult2> => {
         let reply = request.prompt;
         const cmd = request.slashCommand?.name
 
@@ -120,7 +120,7 @@ export function activate(context: vscode.ExtensionContext) {
                 },
                 {
                     role: vscode.ChatMessageRole.User,
-                    content: `Describe an API using the following specification ${prompt.content}`
+                    content: `Describe an API using the following specification ${request.prompt}`
                 },
             ];
 

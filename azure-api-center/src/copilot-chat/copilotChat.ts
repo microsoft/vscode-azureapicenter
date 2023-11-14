@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { AzureAccountApi } from '../azure/azureAccount/azureAccountApi';
 import { API_CENTER_DESCRIBE_API, API_CENTER_LIST_APIs } from './constants';
 
-export async function handleChatMessage(prompt: vscode.ChatMessage, ctx: vscode.ChatAgentContext, progress: vscode.Progress<vscode.ChatAgentResponse>, token: vscode.CancellationToken): Promise<vscode.ChatAgentResult | void> {
+export async function handleChatMessage(prompt: vscode.ChatMessage, ctx: vscode.ChatAgentContext, progress: vscode.Progress<vscode.ChatAgentReplyFollowup>, token: vscode.CancellationToken): Promise<vscode.ChatAgentResult2 | void> {
     // To talk to an LLM in your slash command handler implementation, your
     // extension can use VS Code's `requestChatAccess` API to access the Copilot API.
     // The pre-release of the GitHub Copilot Chat extension implements this provider.
@@ -25,7 +25,7 @@ export async function handleChatMessage(prompt: vscode.ChatMessage, ctx: vscode.
             const platformRequest = await access.makeRequest(messages, {}, token);
             for await (const fragment of platformRequest.response) {
                 const incomingText = fragment.replace('[RESPONSE END]', '');
-                progress.report({ message: new vscode.MarkdownString(incomingText) });
+                progress.report({ message: incomingText });
             }
         } catch (error) {
             console.log(error);
@@ -33,7 +33,7 @@ export async function handleChatMessage(prompt: vscode.ChatMessage, ctx: vscode.
 
 
         return {
-            followUp: [{ message: vscode.l10n.t('@apicenter /find search_query'), metadata: {} }]
+
         };
     } else if (prompt.content.startsWith('/find')) {
         // const access = await vscode.chat.requestChatAccess('copilot');
@@ -56,7 +56,7 @@ export async function handleChatMessage(prompt: vscode.ChatMessage, ctx: vscode.
         // }, token);
 
         return {
-            followUp: [{ message: vscode.l10n.t('@apicenter /describe api'), metadata: {} }]
+
         };
     } else if (prompt.content.startsWith('/generate')) {
         // const access = await vscode.chat.requestChatAccess('copilot');
@@ -93,11 +93,11 @@ export async function handleChatMessage(prompt: vscode.ChatMessage, ctx: vscode.
         const platformRequest = await access.makeRequest(messages, {}, token);
         for await (const fragment of platformRequest.response) {
             const incomingText = fragment.replace('[RESPONSE END]', '');
-            progress.report({ message: new vscode.MarkdownString(incomingText) });
+            progress.report({ message: incomingText });
         }
 
         return {
-            followUp: [{ message: vscode.l10n.t('@apicenter /generate spec language'), metadata: {} }]
+
         };
     }
 }
