@@ -81,7 +81,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     let handler: vscode.ChatAgentHandler = async (request: vscode.ChatAgentRequest, context: vscode.ChatAgentContext, progress: vscode.Progress<vscode.ChatAgentProgress>, token: vscode.CancellationToken): Promise<vscode.ChatAgentResult2> => {
         let reply = request.prompt;
-        const cmd = request.slashCommand?.name
+        const cmd = request.slashCommand?.name;
 
         if (cmd === 'list') {
             try {
@@ -102,7 +102,7 @@ export function activate(context: vscode.ExtensionContext) {
                 const platformRequest = await access.makeRequest(messages, {}, token);
                 for await (const fragment of platformRequest.response) {
                     const incomingText = fragment.replace('[RESPONSE END]', '');
-                    progress.report({ content: `\`>\` ${incomingText}` })
+                    progress.report({ content: incomingText });
                 }
             } catch (error) {
                 console.log(error);
@@ -127,14 +127,14 @@ export function activate(context: vscode.ExtensionContext) {
             const platformRequest = await access.makeRequest(messages, {}, token);
             for await (const fragment of platformRequest.response) {
                 const incomingText = fragment.replace('[RESPONSE END]', '');
-                progress.report({ content: `\`>\` ${incomingText}` })
+                progress.report({ content: incomingText });
             }
         }
 
-        return {}
-    }
+        return {};
+    };
 
-    const agent = vscode.chat.createChatAgent('apicenter', handler)
+    const agent = vscode.chat.createChatAgent('apicenter', handler);
     agent.description = 'Build, discover, and consume great APIs.';
     agent.fullName = "Azure API Center";
     agent.slashCommandProvider = {
@@ -156,9 +156,9 @@ export function activate(context: vscode.ExtensionContext) {
                     name: 'snippet',
                     description: 'Generate a code snippet to consume an API.',
                 }
-            ]
+            ];
         },
-    }
+    };
 
     context.subscriptions.push(agent);
 
