@@ -13,15 +13,7 @@ Format your response using Markdown, and make it look beautiful.
 
 Here are the APIs the end user has access to:
 
-## Repairs API
-Spec: https://piercerepairsapi.azurewebsites.net/openapi.yml
-
-## Demo Conference API
-Spec: https://democonferenceapi.azurewebsites.net/openapi.yml
-
-## Contoso API
-Spec: https://petstore3.swagger.io/api/v3/openapi.json
-
+<SPECIFICATIONS>
 `;
 
 export const API_CENTER_LIST_APIs = `
