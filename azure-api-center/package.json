@@ -1,5 +1,6 @@
 {
   "name": "azure-api-center",
+  "publisher": "microsoft",
   "displayName": "Azure API Center",
   "description": "Build, discover, and consume APIs.",
   "version": "0.0.1",
@@ -19,8 +20,7 @@
     "github.copilot-chat"
   ],
   "enabledApiProposals": [
-    "chatSlashCommands",
-    "chatAgents",
+    "chatAgents2",
     "chatRequestAccess",
     "interactive",
     "readonlyMessage"

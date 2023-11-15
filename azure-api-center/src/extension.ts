@@ -15,11 +15,14 @@ import { openAPiInSwagger } from './commands/openApiInSwagger';
 import { refreshTree } from './commands/refreshTree';
 import { testInPostman } from './commands/testInPostman';
 import { doubleClickDebounceDelay, selectedNodeKey } from './constants';
-import { handleChatMessage } from './copilot-chat/copilotChat';
 import { ext } from './extensionVariables';
 import { ApiVersionDefinitionTreeItem } from './tree/ApiVersionDefinitionTreeItem';
 import { AzureAccountTreeItem } from './tree/AzureAccountTreeItem';
 import { OpenApiEditor } from './tree/Editors/openApi/OpenApiEditor';
+
+// Copilot Chat
+import { AzureAccountApi } from '../src/azure/azureAccount/azureAccountApi';
+import { API_CENTER_DESCRIBE_API, API_CENTER_LIST_APIs } from '../src/copilot-chat/constants';
 
 export function activate(context: vscode.ExtensionContext) {
     console.log('Congratulations, your extension "azure-api-center" is now active!');
@@ -76,18 +79,88 @@ export function activate(context: vscode.ExtensionContext) {
 
     registerCommand('azure-api-center.apiCenterTreeView.refresh', async (context: IActionContext) => refreshTree(context));
 
-    context.subscriptions.push(
-        // Register the Teams chat agent with two subcommands, /generate and /examples
-        vscode.chat.registerAgent('apicenter', handleChatMessage, {
-            description: 'Interact with API Center APIs.',
-            subCommands: [
-                { name: 'find', description: 'Find an API.' },
-                { name: 'list', description: 'List APIs available to me.' },
-                { name: 'describe', description: 'Describe an API.' },
-                { name: 'generate', description: 'Generate a code snippet to call an API.' },
-            ],
-        })
-    );
+    let handler: vscode.ChatAgentHandler = async (request: vscode.ChatAgentRequest, context: vscode.ChatAgentContext, progress: vscode.Progress<vscode.ChatAgentProgress>, token: vscode.CancellationToken): Promise<vscode.ChatAgentResult2> => {
+        let reply = request.prompt;
+        const cmd = request.slashCommand?.name;
+
+        if (cmd === 'list') {
+            try {
+                const azureAccountApi = new AzureAccountApi();
+                const specifications = await azureAccountApi.getAllSpecifications();
+                const access = await vscode.chat.requestChatAccess('copilot');
+                const messages = [
+                    {
+                        role: vscode.ChatMessageRole.System,
+                        content: API_CENTER_LIST_APIs.replace("<SPECIFICATIONS>", specifications.map((specification, index) => `## Spec ${index}:\n${specification.properties.value}\n`).join('\n'))
+                    },
+                    {
+                        role: vscode.ChatMessageRole.User,
+                        content: 'What are APIs are available for me to use in Azure API Center?'
+                    },
+                ];
+
+                const platformRequest = await access.makeRequest(messages, {}, token);
+                for await (const fragment of platformRequest.response) {
+                    const incomingText = fragment.replace('[RESPONSE END]', '');
+                    progress.report({ content: incomingText });
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        } else if (cmd === 'find') {
+
+        } else if (cmd === '/generate') {
+
+        } else if (cmd === 'describe') {
+            const access = await vscode.chat.requestChatAccess('copilot');
+            const messages = [
+                {
+                    role: vscode.ChatMessageRole.System,
+                    content: API_CENTER_DESCRIBE_API
+                },
+                {
+                    role: vscode.ChatMessageRole.User,
+                    content: `Describe an API using the following specification ${request.prompt}`
+                },
+            ];
+
+            const platformRequest = await access.makeRequest(messages, {}, token);
+            for await (const fragment of platformRequest.response) {
+                const incomingText = fragment.replace('[RESPONSE END]', '');
+                progress.report({ content: incomingText });
+            }
+        }
+
+        return {};
+    };
+
+    const agent = vscode.chat.createChatAgent('apicenter', handler);
+    agent.description = 'Build, discover, and consume great APIs.';
+    agent.fullName = "Azure API Center";
+    agent.slashCommandProvider = {
+        provideSlashCommands(token) {
+            return [
+                {
+                    name: 'list',
+                    description: 'List available APIs.',
+                },
+                {
+                    name: 'find',
+                    description: 'Find an API given a search query.',
+                },
+                {
+                    name: 'describe',
+                    description: 'Describe an API.',
+                },
+                {
+                    name: 'snippet',
+                    description: 'Generate a code snippet to consume an API.',
+                }
+            ];
+        },
+    };
+
+    context.subscriptions.push(agent);
 
     // let handler: vscode.ChatAgentHandler = async (request, context, progress, token) => {
     // 	let reply = request.prompt;
