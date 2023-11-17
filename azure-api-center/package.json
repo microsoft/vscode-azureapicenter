@@ -120,24 +120,40 @@
         },
         {
           "command": "azure-api-center.importOpenApiByFile",
-          "when": "view == apiCenterTreeView && viewItem =~ /azureApiCenterApiVersionDefinitionTreeItem/"
+          "when": "view == apiCenterTreeView && viewItem =~ /never/"
         },
         {
           "command": "azure-api-center.importOpenApiByLink",
-          "when": "view == apiCenterTreeView && viewItem =~ /azureApiCenterApiVersionDefinitionTreeItem/"
+          "when": "view == apiCenterTreeView && viewItem =~ /never/"
         },
         {
           "command": "azure-api-center.exportOpenApi",
-          "when": "view == apiCenterTreeView && viewItem =~ /azureApiCenterApiVersionDefinitionTreeItem/"
+          "when": "view == apiCenterTreeView && viewItem =~ /never/"
         },
         {
           "command": "azure-api-center.showOpenApi",
-          "when": "view == apiCenterTreeView && viewItem =~ /azureApiCenterApiVersionDefinitionTreeItem/"
+          "when": "view == apiCenterTreeView && viewItem =~ /never/"
         }
       ],
       "commandPalette": [
         {
           "command": "azure-api-center.selectSubscriptions",
+          "when": "never"
+        },
+        {
+          "command": "azure-api-center.importOpenApiByFile",
+          "when": "never"
+        },
+        {
+          "command": "azure-api-center.importOpenApiByLink",
+          "when": "never"
+        },
+        {
+          "command": "azure-api-center.exportOpenApi",
+          "when": "never"
+        },
+        {
+          "command": "azure-api-center.showOpenApi",
           "when": "never"
         }
       ]
