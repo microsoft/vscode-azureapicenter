@@ -108,31 +108,31 @@
         },
         {
           "command": "azure-api-center.open-api-docs",
-          "when": "view == apiCenterTreeView && viewItem == azureApiCenterApiVersionDefinition"
+          "when": "view == apiCenterTreeView && viewItem == azureApiCenterApiVersionDefinitionTreeItem-openapi"
         },
         {
           "command": "azure-api-center.open-postman",
-          "when": "view == apiCenterTreeView && viewItem == azureApiCenterApiVersionDefinition"
+          "when": "view == apiCenterTreeView && viewItem =~ /azureApiCenterApiVersionDefinitionTreeItem/"
         },
         {
           "command": "azure-api-center.generate-api-client",
-          "when": "view == apiCenterTreeView && viewItem == azureApiCenterApiVersionDefinition"
+          "when": "view == apiCenterTreeView && viewItem == azureApiCenterApiVersionDefinitionTreeItem-openapi"
         },
         {
           "command": "azure-api-center.importOpenApiByFile",
-          "when": "view == apiCenterTreeView && viewItem == azureApiCenterApiVersionDefinition"
+          "when": "view == apiCenterTreeView && viewItem =~ /azureApiCenterApiVersionDefinitionTreeItem/"
         },
         {
           "command": "azure-api-center.importOpenApiByLink",
-          "when": "view == apiCenterTreeView && viewItem == azureApiCenterApiVersionDefinition"
+          "when": "view == apiCenterTreeView && viewItem =~ /azureApiCenterApiVersionDefinitionTreeItem/"
         },
         {
           "command": "azure-api-center.exportOpenApi",
-          "when": "view == apiCenterTreeView && viewItem == azureApiCenterApiVersionDefinition"
+          "when": "view == apiCenterTreeView && viewItem =~ /azureApiCenterApiVersionDefinitionTreeItem/"
         },
         {
           "command": "azure-api-center.showOpenApi",
-          "when": "view == apiCenterTreeView && viewItem == azureApiCenterApiVersionDefinition"
+          "when": "view == apiCenterTreeView && viewItem =~ /azureApiCenterApiVersionDefinitionTreeItem/"
         }
       ],
       "commandPalette": [
