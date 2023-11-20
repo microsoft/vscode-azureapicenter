@@ -20,28 +20,22 @@ export class AzureAccountApi {
     }
 
     public async getAllSpecifications(): Promise<ApiCenterApiVersionDefinitionExport[]> {
-        try {
-            const subscriptions = this.getFilteredSubscriptions();
-            const apiCenters = (await Promise.all(subscriptions.map(async subscription => (await this.getApiCenters(subscription)).map(apiCenter =>
-                ({ apiCenter: apiCenter, azureSubscription: subscription })
-            )))).flat();
-            const apiCentersApis = (await Promise.all(apiCenters.map(async apiCenter => (await this.getApiCenterApis(apiCenter.apiCenter, apiCenter.azureSubscription)).map(apiCenterApi =>
-                ({ apiCenterApi: apiCenterApi, apiCenter: apiCenter.apiCenter, azureSubscription: apiCenter.azureSubscription })
-            )))).flat();
-            const apiCenterApiVersions = (await Promise.all(apiCentersApis.map(async apiCenterApi => (await this.getApiCenterApiVersions(apiCenterApi.apiCenterApi, apiCenterApi.apiCenter, apiCenterApi.azureSubscription)).map(apiCenterApiVersion =>
-                ({ apiCenterApiVersion: apiCenterApiVersion, apiCenterApi: apiCenterApi.apiCenterApi, apiCenter: apiCenterApi.apiCenter, azureSubscription: apiCenterApi.azureSubscription })
-            )))).flat();
-            const apiCenterApiVersionDefinitions = (await Promise.all(apiCenterApiVersions.map(async apiCenterApiVersion => (await this.getApiCenterApiVersionDefinitions(apiCenterApiVersion.apiCenterApiVersion, apiCenterApiVersion.apiCenterApi, apiCenterApiVersion.apiCenter, apiCenterApiVersion.azureSubscription)).map(apiCenterApiVersionDefinition =>
-                ({ apiCenterApiVersionDefinition: apiCenterApiVersionDefinition, apiCenterApiVersion: apiCenterApiVersion.apiCenterApiVersion, apiCenterApi: apiCenterApiVersion.apiCenterApi, apiCenter: apiCenterApiVersion.apiCenter, azureSubscription: apiCenterApiVersion.azureSubscription })
-            )))).flat();
-            const specifications = (await Promise.all(apiCenterApiVersionDefinitions.map(async apiCenterApiVersionDefinition =>
-                (await this.exportSpecification(apiCenterApiVersionDefinition.apiCenterApiVersionDefinition, apiCenterApiVersionDefinition.apiCenterApiVersion, apiCenterApiVersionDefinition.apiCenterApi, apiCenterApiVersionDefinition.apiCenter, apiCenterApiVersionDefinition.azureSubscription)))));
-            return specifications;
-        } catch (error) {
-            console.log(error);
-        }
-
-        return [];
+        const subscriptions = this.getFilteredSubscriptions();
+        const apiCenters = (await Promise.all(subscriptions.map(async subscription => (await this.getApiCenters(subscription)).map(apiCenter =>
+            ({ apiCenter: apiCenter, azureSubscription: subscription })
+        )))).flat();
+        const apiCentersApis = (await Promise.all(apiCenters.map(async apiCenter => (await this.getApiCenterApis(apiCenter.apiCenter, apiCenter.azureSubscription)).map(apiCenterApi =>
+            ({ apiCenterApi: apiCenterApi, apiCenter: apiCenter.apiCenter, azureSubscription: apiCenter.azureSubscription })
+        )))).flat();
+        const apiCenterApiVersions = (await Promise.all(apiCentersApis.map(async apiCenterApi => (await this.getApiCenterApiVersions(apiCenterApi.apiCenterApi, apiCenterApi.apiCenter, apiCenterApi.azureSubscription)).map(apiCenterApiVersion =>
+            ({ apiCenterApiVersion: apiCenterApiVersion, apiCenterApi: apiCenterApi.apiCenterApi, apiCenter: apiCenterApi.apiCenter, azureSubscription: apiCenterApi.azureSubscription })
+        )))).flat();
+        const apiCenterApiVersionDefinitions = (await Promise.all(apiCenterApiVersions.map(async apiCenterApiVersion => (await this.getApiCenterApiVersionDefinitions(apiCenterApiVersion.apiCenterApiVersion, apiCenterApiVersion.apiCenterApi, apiCenterApiVersion.apiCenter, apiCenterApiVersion.azureSubscription)).map(apiCenterApiVersionDefinition =>
+            ({ apiCenterApiVersionDefinition: apiCenterApiVersionDefinition, apiCenterApiVersion: apiCenterApiVersion.apiCenterApiVersion, apiCenterApi: apiCenterApiVersion.apiCenterApi, apiCenter: apiCenterApiVersion.apiCenter, azureSubscription: apiCenterApiVersion.azureSubscription })
+        )))).flat();
+        const specifications = (await Promise.all(apiCenterApiVersionDefinitions.map(async apiCenterApiVersionDefinition =>
+            (await this.exportSpecification(apiCenterApiVersionDefinition.apiCenterApiVersionDefinition, apiCenterApiVersionDefinition.apiCenterApiVersion, apiCenterApiVersionDefinition.apiCenterApi, apiCenterApiVersionDefinition.apiCenter, apiCenterApiVersionDefinition.azureSubscription)))));
+        return specifications;
     }
 
     public async getApiCenters(azureSubscription: AzureSubscription): Promise<ApiCenter[]> {
