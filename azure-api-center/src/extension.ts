@@ -10,6 +10,7 @@ import { AzExtTreeDataProvider, AzExtTreeItem, IActionContext, createAzExtOutput
 import { showOpenApi } from './commands/editOpenApi';
 import { exportOpenApi } from './commands/exportOpenApi';
 import { generateApiLibrary } from './commands/generateApiLibrary';
+import { generateHttpFile } from './commands/generateHttpFile';
 import { importOpenApi } from './commands/importOpenApi';
 import { openAPiInSwagger } from './commands/openApiInSwagger';
 import { refreshTree } from './commands/refreshTree';
@@ -75,6 +76,8 @@ export function activate(context: vscode.ExtensionContext) {
     registerCommand('azure-api-center.open-postman', testInPostman);
 
     registerCommand('azure-api-center.generate-api-client', generateApiLibrary);
+
+    registerCommand('azure-api-center.generateHttpFile', generateHttpFile);
 
     registerCommand('azure-api-center.apiCenterTreeView.refresh', async (context: IActionContext) => refreshTree(context));
 
