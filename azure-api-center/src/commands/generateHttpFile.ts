@@ -2,6 +2,7 @@ import * as SwaggerParser from "@apidevtools/swagger-parser";
 import { IActionContext } from "@microsoft/vscode-azext-utils";
 import * as yaml from 'js-yaml';
 import { OpenAPIV3 } from "openapi-types";
+import * as converter from "swagger2openapi";
 import * as vscode from 'vscode';
 import { ext } from "../extensionVariables";
 import { ApiVersionDefinitionTreeItem } from "../tree/ApiVersionDefinitionTreeItem";
@@ -11,7 +12,8 @@ export async function generateHttpFile(actionContext: IActionContext, node?: Api
     try {
         const definitionFileRaw = await ext.openApiEditor.getData(node!);
         const swaggerObject = pasreDefinitionFileRawToSwaggerObject(definitionFileRaw);
-        const api = (await SwaggerParser.dereference(swaggerObject)) as OpenAPIV3.Document;
+        const swaggerObjectV3 = await convertToOpenAPIV3(swaggerObject);
+        const api = (await SwaggerParser.dereference(swaggerObjectV3)) as OpenAPIV3.Document;
         const httpFileContent = pasreSwaggerObjectToHttpFileContent(api);
         await writeToHttpFile(node!, httpFileContent);
         console.log(api);
@@ -34,6 +36,11 @@ function pasreDefinitionFileRawToSwaggerObject(input: string) {
     }
 
     return result;
+}
+
+async function convertToOpenAPIV3(swaggerObject: any): Promise<OpenAPIV3.Document> {
+    const swaggerObjectV3 = await converter.convert(swaggerObject, {});
+    return swaggerObjectV3.openapi;
 }
 
 function pasreSwaggerObjectToHttpFileContent(api: OpenAPIV3.Document): string {
