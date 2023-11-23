@@ -1,6 +1,7 @@
 import * as SwaggerParser from "@apidevtools/swagger-parser";
 import { IActionContext } from "@microsoft/vscode-azext-utils";
 import * as yaml from 'js-yaml';
+import { OpenAPIV3 } from "openapi-types";
 import * as vscode from 'vscode';
 import { ext } from "../extensionVariables";
 import { ApiVersionDefinitionTreeItem } from "../tree/ApiVersionDefinitionTreeItem";
@@ -10,7 +11,7 @@ export async function generateHttpFile(actionContext: IActionContext, node?: Api
     try {
         const definitionFileRaw = await ext.openApiEditor.getData(node!);
         const swaggerObject = pasreDefinitionFileRawToSwaggerObject(definitionFileRaw);
-        const api = await SwaggerParser.parse(swaggerObject);
+        const api = (await SwaggerParser.dereference(swaggerObject)) as OpenAPIV3.Document;
         const httpFileContent = pasreSwaggerObjectToHttpFileContent(api);
         await writeToHttpFile(node!, httpFileContent);
         console.log(api);
@@ -35,13 +36,35 @@ function pasreDefinitionFileRawToSwaggerObject(input: string) {
     return result;
 }
 
-function pasreSwaggerObjectToHttpFileContent(api: any): string {
+function pasreSwaggerObjectToHttpFileContent(api: OpenAPIV3.Document): string {
     const httpRequests: string[] = [];
 
     for (const path in api.paths) {
         for (const method in api.paths[path]) {
-            const request = `${method.toUpperCase()} {{url}}${path}`;
-            httpRequests.push(request);
+            if (Object.values(OpenAPIV3.HttpMethods).map(m => m.toString()).includes(method)) {
+                const operation: OpenAPIV3.OperationObject = (api.paths[path] as any)[method];
+                const parameters = operation.parameters as (OpenAPIV3.ParameterObject[] | undefined);
+
+                const queryString = parseQueryString(parameters);
+                let header = parseHeader(parameters);
+                const body = parseBody(operation.requestBody as (OpenAPIV3.RequestBodyObject | undefined));
+
+                if (body) {
+                    const jsonContentType = "Content-Type: application/json";
+                    if (header) {
+                        header += "\n" + jsonContentType;
+                    } else {
+                        header = jsonContentType;
+                    }
+                }
+
+                const request = `${method.toUpperCase()} {{url}}${path}${queryString} HTTP/1.1
+${header}
+
+${body}`;
+
+                httpRequests.push(request.trimEnd());
+            }
         }
     }
 
@@ -54,6 +77,45 @@ function pasreSwaggerObjectToHttpFileContent(api: any): string {
     }
 
     return httpFileContent;
+}
+
+function parseQueryString(parameters: OpenAPIV3.ParameterObject[] | undefined): string {
+    const queryStrings = parseParameter(parameters, "query");
+    let queryStringString = queryStrings.map(q => `${q.name}=${q.example}`).join("&");
+    if (queryStringString) {
+        queryStringString = "?" + queryStringString;
+    }
+    return queryStringString;
+}
+
+function parseHeader(parameters: OpenAPIV3.ParameterObject[] | undefined): string {
+    const headers = parseParameter(parameters, "header");
+    const headerString = headers.map(h => `${h.name}: ${h.example}`).join("\n");
+    return headerString;
+}
+
+function parseParameter(parameters: OpenAPIV3.ParameterObject[] | undefined, inValue: string): OpenAPIV3.ParameterObject[] {
+    const filteredParameters = parameters?.filter(p => p.in === inValue);
+    return filteredParameters ?? [];
+}
+
+function parseBody(requestBody: OpenAPIV3.RequestBodyObject | undefined): string {
+    const jsonBodySchema = requestBody?.content?.["application/json"]?.schema as OpenAPIV3.SchemaObject;
+    if (jsonBodySchema) {
+        let body: { [key: string]: any } = {};
+        if (jsonBodySchema.example) {
+            body = jsonBodySchema.example;
+        } else if (jsonBodySchema.properties) {
+            for (const name in jsonBodySchema.properties) {
+                const propertySchema = jsonBodySchema.properties[name] as OpenAPIV3.SchemaObject;
+                body[name] = propertySchema.example;
+            }
+        }
+        if (Object.keys(body).length > 0) {
+            return JSON.stringify(body, null, 2);
+        }
+    }
+    return "";
 }
 
 async function writeToHttpFile(node: ApiVersionDefinitionTreeItem, httpFileContent: string) {
