@@ -35,7 +35,9 @@ export class AzureAccountApi {
         )))).flat();
         const specifications = (await Promise.all(apiCenterApiVersionDefinitions.map(async apiCenterApiVersionDefinition =>
             (await this.exportSpecification(apiCenterApiVersionDefinition.apiCenterApiVersionDefinition, apiCenterApiVersionDefinition.apiCenterApiVersion, apiCenterApiVersionDefinition.apiCenterApi, apiCenterApiVersionDefinition.apiCenter, apiCenterApiVersionDefinition.azureSubscription)))));
-        return specifications;
+
+        // Due to token limit of Copilot LLM, limit the number of specifications to 5.
+        return specifications.slice(0, 5);
     }
 
     public async getApiCenters(azureSubscription: AzureSubscription): Promise<ApiCenter[]> {
