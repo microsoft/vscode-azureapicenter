@@ -75,13 +75,17 @@ ${body}`;
         }
     }
 
-    let httpFileContent = httpRequests.join("\n\n###\n\n");
+    const httpRequestsContent = httpRequests.join("\n\n###\n\n");
 
+    let url = "";
     if (api.servers?.[0]?.url) {
-        let url = api.servers[0].url;
+        url = api.servers[0].url;
         url = url.endsWith('/') ? url.slice(0, -1) : url;
-        httpFileContent = `@url = ${url}\n\n` + httpFileContent;
     }
+
+    const httpFileContent = `@url = ${url}
+
+${httpRequestsContent}`;
 
     return httpFileContent;
 }
