@@ -88,7 +88,7 @@ ${body}`;
 
 function parseQueryString(parameters: OpenAPIV3.ParameterObject[] | undefined): string {
     const queryStrings = parseParameter(parameters, "query");
-    let queryStringString = queryStrings.map(q => `${q.name}=${q.example}`).join("&");
+    let queryStringString = queryStrings.map(q => `${q.name}=${parseValueFromParameterObject(q)}`).join("&");
     if (queryStringString) {
         queryStringString = "?" + queryStringString;
     }
@@ -97,13 +97,31 @@ function parseQueryString(parameters: OpenAPIV3.ParameterObject[] | undefined): 
 
 function parseHeader(parameters: OpenAPIV3.ParameterObject[] | undefined): string {
     const headers = parseParameter(parameters, "header");
-    const headerString = headers.map(h => `${h.name}: ${h.example}`).join("\n");
+    const headerString = headers.map(h => `${h.name}: ${parseValueFromParameterObject(h)}`).join("\n");
     return headerString;
 }
 
 function parseParameter(parameters: OpenAPIV3.ParameterObject[] | undefined, inValue: string): OpenAPIV3.ParameterObject[] {
     const filteredParameters = parameters?.filter(p => p.in === inValue);
     return filteredParameters ?? [];
+}
+
+function parseValueFromParameterObject(parameterObject: OpenAPIV3.ParameterObject): any {
+    if (parameterObject.example) {
+        return parameterObject.example;
+    }
+
+    const schema = parameterObject.schema as OpenAPIV3.SchemaObject;
+    if (schema) {
+        if (schema.example) {
+            return schema.example;
+        }
+        if (schema.default) {
+            return schema.default;
+        }
+    }
+
+    return `{${parameterObject.name}}`;
 }
 
 function parseBody(requestBody: OpenAPIV3.RequestBodyObject | undefined): string {
