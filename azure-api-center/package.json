@@ -116,7 +116,7 @@
         },
         {
           "command": "azure-api-center.open-postman",
-          "when": "view == apiCenterTreeView && viewItem =~ /azureApiCenterApiVersionDefinitionTreeItem/"
+          "when": "view == apiCenterTreeView && viewItem =~ /never/"
         },
         {
           "command": "azure-api-center.generate-api-client",
@@ -162,6 +162,10 @@
         },
         {
           "command": "azure-api-center.showOpenApi",
+          "when": "never"
+        },
+        {
+          "command": "azure-api-center.open-postman",
           "when": "never"
         }
       ]
