@@ -6,20 +6,21 @@ import * as converter from "swagger2openapi";
 import * as vscode from 'vscode';
 import { ext } from "../extensionVariables";
 import { ApiVersionDefinitionTreeItem } from "../tree/ApiVersionDefinitionTreeItem";
+import { ensureExtension } from "../utils/ensureExtension";
 import { createTemporaryFile } from "../utils/fsUtil";
 
-export async function generateHttpFile(actionContext: IActionContext, node?: ApiVersionDefinitionTreeItem) {
-    try {
-        const definitionFileRaw = await ext.openApiEditor.getData(node!);
-        const swaggerObject = pasreDefinitionFileRawToSwaggerObject(definitionFileRaw);
-        const swaggerObjectV3 = await convertToOpenAPIV3(swaggerObject);
-        const api = (await SwaggerParser.dereference(swaggerObjectV3)) as OpenAPIV3.Document;
-        const httpFileContent = pasreSwaggerObjectToHttpFileContent(api);
-        await writeToHttpFile(node!, httpFileContent);
-        console.log(api);
-    } catch (error) {
-        console.log(error);
-    }
+export async function generateHttpFile(context: IActionContext, node?: ApiVersionDefinitionTreeItem) {
+    const definitionFileRaw = await ext.openApiEditor.getData(node!);
+    const swaggerObject = pasreDefinitionFileRawToSwaggerObject(definitionFileRaw);
+    const swaggerObjectV3 = await convertToOpenAPIV3(swaggerObject);
+    const api = (await SwaggerParser.dereference(swaggerObjectV3)) as OpenAPIV3.Document;
+    const httpFileContent = pasreSwaggerObjectToHttpFileContent(api);
+    await writeToHttpFile(node!, httpFileContent);
+
+    ensureExtension(context, {
+        extensionId: 'humao.rest-client',
+        noExtensionErrorMessage: 'Please install the REST Client extension to test APIs with HTTP file.',
+    });
 }
 
 function pasreDefinitionFileRawToSwaggerObject(input: string) {
