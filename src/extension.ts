@@ -22,7 +22,7 @@ import { AzureAccountTreeItem } from './tree/AzureAccountTreeItem';
 import { OpenApiEditor } from './tree/Editors/openApi/OpenApiEditor';
 
 // Copilot Chat
-import { handleChatMessage } from './copilot-chat/copilotChat';
+import { IChatAgentResult, handleChatMessage } from './copilot-chat/copilotChat';
 
 export function activate(context: vscode.ExtensionContext) {
     console.log('Congratulations, your extension "azure-api-center" is now active!');
@@ -101,6 +101,21 @@ export function activate(context: vscode.ExtensionContext) {
                 }
             ];
         },
+    };
+    agent.followupProvider = {
+        provideFollowups(result: IChatAgentResult, token: vscode.CancellationToken) {
+            if (result.slashCommand === 'list') {
+                return [{
+                    message: '@apicenter /list $more',
+                    title: 'List more APIs'
+                }];
+            } else if (result.slashCommand === 'find') {
+                return [{
+                    message: '@apicenter /find $more',
+                    title: 'Find in more APIs'
+                }];
+            }
+        }
     };
 
     context.subscriptions.push(agent);
