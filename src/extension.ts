@@ -94,10 +94,6 @@ export function activate(context: vscode.ExtensionContext) {
                 {
                     name: 'find',
                     description: 'Find an API given a search query.',
-                },
-                {
-                    name: 'describe',
-                    description: 'Describe an API.',
                 }
             ];
         },
