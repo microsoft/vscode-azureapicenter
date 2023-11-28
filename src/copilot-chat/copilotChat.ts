@@ -1,6 +1,8 @@
 import * as vscode from 'vscode';
 import { ApiCenterApiVersionDefinitionExport } from '../azure/ApiCenter/contracts';
 import { AzureAccountApi } from '../azure/azureAccount/azureAccountApi';
+import { TelemetryClient } from '../common/telemetryClient';
+import { TelemetryEvent } from '../common/telemetryEvents';
 import { API_CENTER_FIND_API, API_CENTER_LIST_APIs } from './constants';
 
 const specificationsCount = 3;
@@ -16,6 +18,12 @@ export async function handleChatMessage(request: vscode.ChatAgentRequest, ctx: v
     const cmd = request.slashCommand?.name;
 
     let specificationsContent = '';
+
+    if (cmd) {
+        TelemetryClient.sendEvent(`${TelemetryEvent.copilotChat}.${cmd}`);
+    } else {
+        TelemetryClient.sendEvent(TelemetryEvent.copilotChat);
+    }
 
     if (['list', 'find'].includes(cmd ?? "")) {
         if (request.prompt === '$more') {

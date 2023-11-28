@@ -1,12 +1,13 @@
 import * as vscode from 'vscode';
 import { commands } from "vscode";
+import { TelemetryClient } from './common/telemetryClient';
 
 // Commands
 // Copilot
 
 // Tree View UI
 import { registerAzureUtilsExtensionVariables } from '@microsoft/vscode-azext-azureutils';
-import { AzExtTreeDataProvider, AzExtTreeItem, IActionContext, createAzExtOutputChannel, registerCommand, registerEvent } from '@microsoft/vscode-azext-utils';
+import { AzExtTreeDataProvider, AzExtTreeItem, CommandCallback, IActionContext, IParsedError, createAzExtOutputChannel, parseError, registerCommand, registerEvent } from '@microsoft/vscode-azext-utils';
 import { showOpenApi } from './commands/editOpenApi';
 import { exportOpenApi } from './commands/exportOpenApi';
 import { generateApiLibrary } from './commands/generateApiLibrary';
@@ -15,7 +16,7 @@ import { importOpenApi } from './commands/importOpenApi';
 import { openAPiInSwagger } from './commands/openApiInSwagger';
 import { refreshTree } from './commands/refreshTree';
 import { testInPostman } from './commands/testInPostman';
-import { doubleClickDebounceDelay, selectedNodeKey } from './constants';
+import { doubleClickDebounceDelay, errorProperties, selectedNodeKey } from './constants';
 import { ext } from './extensionVariables';
 import { ApiVersionDefinitionTreeItem } from './tree/ApiVersionDefinitionTreeItem';
 import { AzureAccountTreeItem } from './tree/AzureAccountTreeItem';
@@ -24,8 +25,10 @@ import { OpenApiEditor } from './tree/Editors/openApi/OpenApiEditor';
 // Copilot Chat
 import { IChatAgentResult, handleChatMessage } from './copilot-chat/copilotChat';
 
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
     console.log('Congratulations, your extension "azure-api-center" is now active!');
+
+    await TelemetryClient.initialize(context);
 
     // https://github.com/microsoft/vscode-azuretools/tree/main/azure
     ext.context = context;
@@ -50,12 +53,12 @@ export function activate(context: vscode.ExtensionContext) {
     });
 
     // Register API Center extension commands
-    registerCommand('azure-api-center.selectSubscriptions', () => commands.executeCommand('azure-account.selectSubscriptions'));
+    registerCommandWithTelemetry('azure-api-center.selectSubscriptions', () => commands.executeCommand('azure-account.selectSubscriptions'));
 
     // TODO: move all three to their separate files
-    registerCommand('azure-api-center.importOpenApiByFile', async (context: IActionContext, node?: ApiVersionDefinitionTreeItem) => { await importOpenApi(context, node, false); });
-    registerCommand('azure-api-center.importOpenApiByLink', async (context: IActionContext, node?: ApiVersionDefinitionTreeItem) => { await importOpenApi(context, node, true); });
-    registerCommand('azure-api-center.exportOpenApi', async (context: IActionContext, node?: ApiVersionDefinitionTreeItem) => { await exportOpenApi(context, node); });
+    registerCommandWithTelemetry('azure-api-center.importOpenApiByFile', async (context: IActionContext, node?: ApiVersionDefinitionTreeItem) => { await importOpenApi(context, node, false); });
+    registerCommandWithTelemetry('azure-api-center.importOpenApiByLink', async (context: IActionContext, node?: ApiVersionDefinitionTreeItem) => { await importOpenApi(context, node, true); });
+    registerCommandWithTelemetry('azure-api-center.exportOpenApi', async (context: IActionContext, node?: ApiVersionDefinitionTreeItem) => { await exportOpenApi(context, node); });
 
     // TODO: move this to a separate file
     const openApiEditor: OpenApiEditor = new OpenApiEditor();
@@ -69,17 +72,17 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.workspace.onDidSaveTextDocument,
         async (actionContext: IActionContext, doc: vscode.TextDocument) => { await openApiEditor.onDidSaveTextDocument(actionContext, context.globalState, doc); });
 
-    registerCommand('azure-api-center.showOpenApi', showOpenApi, doubleClickDebounceDelay);
+    registerCommandWithTelemetry('azure-api-center.showOpenApi', showOpenApi, doubleClickDebounceDelay);
 
-    registerCommand('azure-api-center.open-api-docs', openAPiInSwagger);
+    registerCommandWithTelemetry('azure-api-center.open-api-docs', openAPiInSwagger);
 
-    registerCommand('azure-api-center.open-postman', testInPostman);
+    registerCommandWithTelemetry('azure-api-center.open-postman', testInPostman);
 
-    registerCommand('azure-api-center.generate-api-client', generateApiLibrary);
+    registerCommandWithTelemetry('azure-api-center.generate-api-client', generateApiLibrary);
 
-    registerCommand('azure-api-center.generateHttpFile', generateHttpFile);
+    registerCommandWithTelemetry('azure-api-center.generateHttpFile', generateHttpFile);
 
-    registerCommand('azure-api-center.apiCenterTreeView.refresh', async (context: IActionContext) => refreshTree(context));
+    registerCommandWithTelemetry('azure-api-center.apiCenterTreeView.refresh', async (context: IActionContext) => refreshTree(context));
 
     const agent = vscode.chat.createChatAgent('apicenter', handleChatMessage);
     agent.description = 'Build, discover, and consume great APIs.';
@@ -115,6 +118,31 @@ export function activate(context: vscode.ExtensionContext) {
     };
 
     context.subscriptions.push(agent);
+}
+
+async function registerCommandWithTelemetry(commandId: string, callback: CommandCallback, debounce?: number): Promise<void> {
+    registerCommand(commandId, async (context: IActionContext, ...args: any[]) => {
+        const start: number = Date.now();
+        const properties: { [key: string]: string; } = {};
+        let parsedError: IParsedError | undefined;
+        try {
+            TelemetryClient.sendEvent(`${commandId}.start`);
+            await callback(context, ...args);
+        } catch (error) {
+            parsedError = parseError(error);
+            throw error;
+        } finally {
+            const end: number = Date.now();
+            properties.duration = ((end - start) / 1000).toString();
+            if (parsedError) {
+                properties[errorProperties.errorType] = parsedError.errorType;
+                properties[errorProperties.errorMessage] = parsedError.message;
+                TelemetryClient.sendErrorEvent(`${commandId}.end`, properties);
+            } else {
+                TelemetryClient.sendEvent(`${commandId}.end`, properties);
+            }
+        }
+    }, debounce);
 }
 
 export function deactivate() { }
