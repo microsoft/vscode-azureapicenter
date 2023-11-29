@@ -13,7 +13,7 @@ export class OpenApiEditor extends Editor<ApiVersionDefinitionTreeItem> {
     }
 
     public async getData(treeItem: ApiVersionDefinitionTreeItem): Promise<string> {
-         const apiCenterService = new ApiCenterService(
+        const apiCenterService = new ApiCenterService(
             treeItem?.subscription!,
             getResourceGroupFromId(treeItem?.id!),
             treeItem?.apiCenterName!);
@@ -24,7 +24,7 @@ export class OpenApiEditor extends Editor<ApiVersionDefinitionTreeItem> {
             treeItem?.apiCenterApiVersionDefinition.name!
         );
 
-        return exportedSpec.properties.value;
+        return exportedSpec.value;
     }
 
     public async updateData(treeItem: ApiVersionDefinitionTreeItem, data: string): Promise<string> {
@@ -43,7 +43,7 @@ export class OpenApiEditor extends Editor<ApiVersionDefinitionTreeItem> {
             // tslint:disable-next-line:no-non-null-assertion
             async () => {
 
-                const importPayload: ApiCenterApiVersionDefinitionImport =  {
+                const importPayload: ApiCenterApiVersionDefinitionImport = {
                     format: "inline",
                     value: data.toString(),
                     specificationDetails: {
@@ -52,7 +52,7 @@ export class OpenApiEditor extends Editor<ApiVersionDefinitionTreeItem> {
                     }
                 };
 
-                await  apiCenterService.importSpecification(
+                await apiCenterService.importSpecification(
                     treeItem?.apiCenterApiName!,
                     treeItem?.apiCenterApiVersionName!,
                     treeItem?.apiCenterApiVersionDefinition.name!,

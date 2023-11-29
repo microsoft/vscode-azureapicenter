@@ -42,7 +42,7 @@ export async function handleChatMessage(request: vscode.ChatAgentRequest, ctx: v
             progress.report({ content: "\`>\` There are no more API Specifications.\n\n" });
             return { slashCommand: '' };
         }
-        specificationsContent = specificationsToShow.map((specification, index) => `## Spec ${index + 1}:\n${specification.properties.value}\n`).join('\n');
+        specificationsContent = specificationsToShow.map((specification, index) => `## Spec ${index + 1}:\n${specification.value}\n`).join('\n');
     }
 
     if (cmd === 'list') {
