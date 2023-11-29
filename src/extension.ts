@@ -16,13 +16,14 @@ import { importOpenApi } from './commands/importOpenApi';
 import { openAPiInSwagger } from './commands/openApiInSwagger';
 import { refreshTree } from './commands/refreshTree';
 import { testInPostman } from './commands/testInPostman';
-import { doubleClickDebounceDelay, errorProperties, selectedNodeKey } from './constants';
+import { doubleClickDebounceDelay, selectedNodeKey } from './constants';
 import { ext } from './extensionVariables';
 import { ApiVersionDefinitionTreeItem } from './tree/ApiVersionDefinitionTreeItem';
 import { AzureAccountTreeItem } from './tree/AzureAccountTreeItem';
 import { OpenApiEditor } from './tree/Editors/openApi/OpenApiEditor';
 
 // Copilot Chat
+import { ErrorProperties, TelemetryProperties } from './common/telemetryEvent';
 import { IChatAgentResult, handleChatMessage } from './copilot-chat/copilotChat';
 
 export async function activate(context: vscode.ExtensionContext) {
@@ -133,10 +134,10 @@ async function registerCommandWithTelemetry(commandId: string, callback: Command
             throw error;
         } finally {
             const end: number = Date.now();
-            properties.duration = ((end - start) / 1000).toString();
+            properties[TelemetryProperties.duration] = ((end - start) / 1000).toString();
             if (parsedError) {
-                properties[errorProperties.errorType] = parsedError.errorType;
-                properties[errorProperties.errorMessage] = parsedError.message;
+                properties[ErrorProperties.errorType] = parsedError.errorType;
+                properties[ErrorProperties.errorMessage] = parsedError.message;
                 TelemetryClient.sendErrorEvent(`${commandId}.end`, properties);
             } else {
                 TelemetryClient.sendEvent(`${commandId}.end`, properties);
