@@ -1,13 +1,15 @@
 import * as SwaggerParser from "@apidevtools/swagger-parser";
 import { IActionContext } from "@microsoft/vscode-azext-utils";
+import * as fse from 'fs-extra';
 import * as yaml from 'js-yaml';
 import { OpenAPIV3 } from "openapi-types";
+import * as path from 'path';
 import * as converter from "swagger2openapi";
 import * as vscode from 'vscode';
 import { ext } from "../extensionVariables";
 import { ApiVersionDefinitionTreeItem } from "../tree/ApiVersionDefinitionTreeItem";
 import { ensureExtension } from "../utils/ensureExtension";
-import { createTemporaryFile } from "../utils/fsUtil";
+import { createTemporaryFolder } from "../utils/fsUtil";
 
 export async function generateHttpFile(context: IActionContext, node?: ApiVersionDefinitionTreeItem) {
     const definitionFileRaw = await ext.openApiEditor.getData(node!);
@@ -149,13 +151,20 @@ function parseBody(requestBody: OpenAPIV3.RequestBodyObject | undefined): string
 }
 
 async function writeToHttpFile(node: ApiVersionDefinitionTreeItem, httpFileContent: string) {
+    const folderName = getFolderName(node);
+    const folderPath = await createTemporaryFolder(folderName);
     const fileName = getFilename(node);
-    const localFilePath: string = await createTemporaryFile(fileName);
+    const localFilePath: string = path.join(folderPath, fileName);
+    await fse.ensureFile(localFilePath);
     const document: vscode.TextDocument = await vscode.workspace.openTextDocument(localFilePath);
     await vscode.workspace.fs.writeFile(vscode.Uri.file(localFilePath), Buffer.from(httpFileContent));
     await vscode.window.showTextDocument(document);
 }
 
+function getFolderName(treeItem: ApiVersionDefinitionTreeItem): string {
+    return `${treeItem.apiCenterName}-${treeItem.apiCenterApiName}`;
+}
+
 function getFilename(treeItem: ApiVersionDefinitionTreeItem): string {
-    return `${treeItem.apiCenterName}-${treeItem.apiCenterApiName}-${treeItem.apiCenterApiVersionName}--${treeItem.apiCenterApiVersionDefinition.name}-openapi-tempFile.http`;
+    return `${treeItem.apiCenterApiVersionName}-tempFile.http`;
 }

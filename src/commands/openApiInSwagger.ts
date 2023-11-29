@@ -16,47 +16,47 @@ const SwaggerHtmlFileName = 'index.html';
 const StaticPublicFolderName = '/public';
 
 export async function openAPiInSwagger(context: IActionContext, node: ApiVersionDefinitionTreeItem) {
-    // create temp folder
-    const folderPath = await createTemporaryFolder(StaticPublicFolderName);
+  // create temp folder
+  const folderPath = await createTemporaryFolder(StaticPublicFolderName);
 
-    // create temp file of the swagger definition
-    const definitionFileRaw = await ext.openApiEditor.getData(node);
-    const definitionFileType = inferDefinitionFileType(definitionFileRaw);
-    const definitionFileName = "apiDefinition" + definitionFileType;
-    fse.writeFile(path.join(folderPath, definitionFileName), definitionFileRaw);
+  // create temp file of the swagger definition
+  const definitionFileRaw = await ext.openApiEditor.getData(node);
+  const definitionFileType = inferDefinitionFileType(definitionFileRaw);
+  const definitionFileName = "apiDefinition" + definitionFileType;
+  fse.writeFile(path.join(folderPath, definitionFileName), definitionFileRaw);
 
-    // create temp file of the swagger template
-    const swaggerHtmlRaw = swaggerTemplate.replace(UrlPlaceHolder, definitionFileName);
-    await fse.writeFile(path.join(folderPath, SwaggerHtmlFileName), swaggerHtmlRaw);
+  // create temp file of the swagger template
+  const swaggerHtmlRaw = swaggerTemplate.replace(UrlPlaceHolder, definitionFileName);
+  await fse.writeFile(path.join(folderPath, SwaggerHtmlFileName), swaggerHtmlRaw);
 
-    // serve the swagger template
-    const address = serve(folderPath, SwaggerHtmlFileName);
+  // serve the swagger template
+  const address = serve(folderPath, SwaggerHtmlFileName);
 
-    // create a webview panel to show the swagger template
-    const previewPanel = window.createWebviewPanel(
-        "swaggerPreview",
-        `Swagger Preview - ${definitionFileName}`,
-        ViewColumn.One,
-        {
-          enableScripts: true,
-          retainContextWhenHidden: true,
-        }
-    );
+  // create a webview panel to show the swagger template
+  const previewPanel = window.createWebviewPanel(
+    "swaggerPreview",
+    node.apiCenterApiName,
+    ViewColumn.One,
+    {
+      enableScripts: true,
+      retainContextWhenHidden: true,
+    }
+  );
 
-    previewPanel.webview.html = provideTextDocumentContent(address);
+  previewPanel.webview.html = provideTextDocumentContent(address);
 
-    previewPanel.onDidDispose(
-        () =>{},
-        null,
-        ext.context.subscriptions
-      );
+  previewPanel.onDidDispose(
+    () => { },
+    null,
+    ext.context.subscriptions
+  );
 
-    // TODO: have a setting to open in browser if user prefers
-    // await env.openExternal(Uri.parse(address));
+  // TODO: have a setting to open in browser if user prefers
+  // await env.openExternal(Uri.parse(address));
 }
 
 function provideTextDocumentContent(previewUrl: string): string {
-    return `
+  return `
 			<html>
 				<body style="margin:0px;padding:0px;overflow:hidden">
 					<div style="position:fixed;height:100%;width:100%;">
@@ -65,7 +65,7 @@ function provideTextDocumentContent(previewUrl: string): string {
 				</body>
 			</html>
 		`;
-  }
+}
 
 
 
