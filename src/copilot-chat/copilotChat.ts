@@ -25,6 +25,11 @@ export async function handleChatMessage(request: vscode.ChatAgentRequest, ctx: v
         TelemetryClient.sendEvent(TelemetryEvent.copilotChat);
     }
 
+    if (!cmd) {
+        progress.report({ content: 'Hi! What can I help you with? Please use `/list` or `/find` to chat with me!' });
+        return { slashCommand: '' };
+    }
+
     if (['list', 'find'].includes(cmd ?? "")) {
         if (request.prompt === '$more') {
             index += specificationsCount;
