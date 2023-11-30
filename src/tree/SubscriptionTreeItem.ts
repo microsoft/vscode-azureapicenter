@@ -1,8 +1,10 @@
 import { SubscriptionTreeItemBase } from "@microsoft/vscode-azext-azureutils";
-import { ApiCenterTreeItem } from "./ApiCenterTreeItem";
 import { AzExtParentTreeItem, AzExtTreeItem, ISubscriptionContext } from "@microsoft/vscode-azext-utils";
 import { ResourceGraphService } from "../azure/ResourceGraph/ResourceGraphService";
+import { TelemetryClient } from "../common/telemetryClient";
+import { TelemetryEvent } from "../common/telemetryEvent";
 import { treeUtils } from "../utils/treeUtils";
+import { ApiCenterTreeItem } from "./ApiCenterTreeItem";
 
 export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
     private _nextLink: string | undefined;
@@ -17,7 +19,9 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
     }
 
     public async loadMoreChildrenImpl(): Promise<AzExtTreeItem[]> {
-        const resourceGraphService = new ResourceGraphService(this.subscription)
+        TelemetryClient.sendEvent(TelemetryEvent.treeviewListApiCenters);
+
+        const resourceGraphService = new ResourceGraphService(this.subscription);
 
         const apiCenters = await resourceGraphService.listApiCenters();
 

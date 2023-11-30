@@ -1,5 +1,6 @@
 export enum TelemetryEvent {
-    copilotChat = "copilot-chat"
+    copilotChat = "copilot-chat",
+    treeviewListApiCenters = "treeview.listApiCenters",
 }
 
 export enum TelemetryProperties {

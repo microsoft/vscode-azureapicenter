@@ -12,7 +12,7 @@
     "Other"
   ],
   "activationEvents": [
-    "*"
+    "onStartupFinished"
   ],
   "main": "./dist/extension.js",
   "extensionDependencies": [
@@ -166,6 +166,18 @@
         },
         {
           "command": "azure-api-center.open-postman",
+          "when": "never"
+        },
+        {
+          "command": "azure-api-center.open-api-docs",
+          "when": "never"
+        },
+        {
+          "command": "azure-api-center.generate-api-client",
+          "when": "never"
+        },
+        {
+          "command": "azure-api-center.generateHttpFile",
           "when": "never"
         }
       ]

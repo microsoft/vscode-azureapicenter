@@ -31,6 +31,8 @@ export async function activate(context: vscode.ExtensionContext) {
 
     await TelemetryClient.initialize(context);
 
+    TelemetryClient.sendEvent('activate');
+
     // https://github.com/microsoft/vscode-azuretools/tree/main/azure
     ext.context = context;
     ext.outputChannel = createAzExtOutputChannel('Azure API Center', ext.prefix);
