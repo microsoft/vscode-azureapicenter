@@ -7,7 +7,7 @@ import { TelemetryClient } from './common/telemetryClient';
 
 // Tree View UI
 import { registerAzureUtilsExtensionVariables } from '@microsoft/vscode-azext-azureutils';
-import { AzExtTreeDataProvider, AzExtTreeItem, CommandCallback, IActionContext, IParsedError, createAzExtOutputChannel, parseError, registerCommand, registerEvent } from '@microsoft/vscode-azext-utils';
+import { AzExtTreeDataProvider, AzExtTreeItem, CommandCallback, IActionContext, IParsedError, createAzExtOutputChannel, parseError, registerCommand } from '@microsoft/vscode-azext-utils';
 import { showOpenApi } from './commands/editOpenApi';
 import { exportOpenApi } from './commands/exportOpenApi';
 import { generateApiLibrary } from './commands/generateApiLibrary';
@@ -23,6 +23,7 @@ import { AzureAccountTreeItem } from './tree/AzureAccountTreeItem';
 import { OpenApiEditor } from './tree/Editors/openApi/OpenApiEditor';
 
 // Copilot Chat
+import { viewOpenApi } from './commands/viewOpenApi';
 import { ErrorProperties, TelemetryProperties } from './common/telemetryEvent';
 import { IChatAgentResult, handleChatMessage } from './copilot-chat/copilotChat';
 
@@ -71,11 +72,13 @@ export async function activate(context: vscode.ExtensionContext) {
     // TODO: move this to a separate file
     ext.openApiEditor = openApiEditor;
 
-    registerEvent('azure-api-center.openApiEditor.onDidSaveTextDocument',
-        vscode.workspace.onDidSaveTextDocument,
-        async (actionContext: IActionContext, doc: vscode.TextDocument) => { await openApiEditor.onDidSaveTextDocument(actionContext, context.globalState, doc); });
+    // registerEvent('azure-api-center.openApiEditor.onDidSaveTextDocument',
+    //     vscode.workspace.onDidSaveTextDocument,
+    //     async (actionContext: IActionContext, doc: vscode.TextDocument) => { await openApiEditor.onDidSaveTextDocument(actionContext, context.globalState, doc); });
 
     registerCommandWithTelemetry('azure-api-center.showOpenApi', showOpenApi, doubleClickDebounceDelay);
+
+    registerCommandWithTelemetry('azure-api-center.viewOpenApi', viewOpenApi);
 
     registerCommandWithTelemetry('azure-api-center.open-api-docs', openAPiInSwagger);
 

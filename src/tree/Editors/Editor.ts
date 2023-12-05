@@ -14,7 +14,7 @@ import { DefinitionFileType, inferDefinitionFileType } from "../../utils/inferDe
 import { writeToEditor } from '../../utils/vscodeUtils';
 
 export interface EditorOptions {
-   readonly fileType: DefinitionFileType
+    readonly fileType: DefinitionFileType
 }
 
 // tslint:disable-next-line:no-unsafe-any
@@ -35,8 +35,8 @@ export abstract class Editor<ContextT> implements vscode.Disposable {
         const data: string = await this.getData(context);
 
         const fileType: DefinitionFileType = inferDefinitionFileType(data);
-        const fileName: string = await this.getFilename(context, {fileType: fileType});
-        const originFileName: string = await this.getDiffFilename(context, {fileType: fileType});
+        const fileName: string = await this.getFilename(context, { fileType: fileType });
+        const originFileName: string = await this.getDiffFilename(context, { fileType: fileType });
 
         this.appendLineToOutput(localize('opening', 'Opening "{0}"...', fileName));
         if (sizeLimit !== undefined) {
@@ -68,12 +68,18 @@ export abstract class Editor<ContextT> implements vscode.Disposable {
         return localFilePath;
     }
 
+    public async showReadOnlyEditor(context: ContextT, sizeLimit?: number /* in Megabytes */): Promise<string> {
+        const filePath = await this.createTempFileFromTree(context, sizeLimit);
+        const document: vscode.TextDocument = await vscode.workspace.openTextDocument(vscode.Uri.file(filePath));
+        await vscode.window.showTextDocument(document);
+        return filePath;
+    }
+
     public async createTempFileFromTree(context: ContextT, sizeLimit?: number /* in Megabytes */) {
         const data: string = await this.getData(context);
 
         const fileType: DefinitionFileType = inferDefinitionFileType(data);
-        const fileName: string = await this.getFilename(context, {fileType: fileType});
-        const originFileName: string = await this.getDiffFilename(context, {fileType: fileType});
+        const fileName: string = await this.getFilename(context, { fileType: fileType });
 
         this.appendLineToOutput(localize('opening', 'Opening "{0}"...', fileName));
         if (sizeLimit !== undefined) {
@@ -136,7 +142,7 @@ export abstract class Editor<ContextT> implements vscode.Disposable {
         const rawText = doc.getText();
 
         const fileType = inferDefinitionFileType(rawText);
-        const filename: string = await this.getFilename(context, {fileType: fileType});
+        const filename: string = await this.getFilename(context, { fileType: fileType });
         this.appendLineToOutput(localize('updating', 'Updating "{0}" ...', filename));
         const updatedData: string = await this.updateData(context, rawText);
         this.appendLineToOutput(localize('done', 'Updated "{0}".', filename));

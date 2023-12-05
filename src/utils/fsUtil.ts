@@ -33,9 +33,9 @@ export async function createTemporaryFolder(folderName: string): Promise<string>
     return folderPath;
 }
 
-export function getSessionWorkingFolderName() : string {
+export function getSessionWorkingFolderName(): string {
     let sessionFolderName = ext.context.globalState.get(sessionFolderKey);
-// tslint:disable-next-line: strict-boolean-expressions
+    // tslint:disable-next-line: strict-boolean-expressions
     if (!sessionFolderName) {
         sessionFolderName = getRandomHexString();
         ext.outputChannel.appendLine(`Session working folder:${sessionFolderName}`);

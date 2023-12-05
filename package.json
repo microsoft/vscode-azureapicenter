@@ -6,7 +6,7 @@
   "version": "0.0.1",
   "icon": "media/api-center-icon.png",
   "engines": {
-    "vscode": "^1.85.0"
+    "vscode": "^1.84.0"
   },
   "preview": true,
   "aiKey": "AIF-d9b70cd4-b9f9-4d70-929b-a071c400b217",
@@ -82,6 +82,10 @@
         "title": "Edit OpenAPI"
       },
       {
+        "command": "azure-api-center.viewOpenApi",
+        "title": "View OpenAPI"
+      },
+      {
         "command": "azure-api-center.generateHttpFile",
         "title": "Generate HTTP File"
       }
@@ -129,6 +133,10 @@
         },
         {
           "command": "azure-api-center.generate-api-client",
+          "when": "view == apiCenterTreeView && viewItem == azureApiCenterApiVersionDefinitionTreeItem-openapi"
+        },
+        {
+          "command": "azure-api-center.viewOpenApi",
           "when": "view == apiCenterTreeView && viewItem == azureApiCenterApiVersionDefinitionTreeItem-openapi"
         },
         {
@@ -187,6 +195,10 @@
         },
         {
           "command": "azure-api-center.generateHttpFile",
+          "when": "never"
+        },
+        {
+          "command": "azure-api-center.viewOpenApi",
           "when": "never"
         }
       ]
