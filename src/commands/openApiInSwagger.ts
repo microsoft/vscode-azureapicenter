@@ -30,7 +30,7 @@ export async function openAPiInSwagger(context: IActionContext, node: ApiVersion
   await fse.writeFile(path.join(folderPath, SwaggerHtmlFileName), swaggerHtmlRaw);
 
   // serve the swagger template
-  const address = serve(folderPath, SwaggerHtmlFileName);
+  const { address, server } = await serve(folderPath, SwaggerHtmlFileName);
 
   // create a webview panel to show the swagger template
   const previewPanel = window.createWebviewPanel(
@@ -46,7 +46,9 @@ export async function openAPiInSwagger(context: IActionContext, node: ApiVersion
   previewPanel.webview.html = provideTextDocumentContent(address);
 
   previewPanel.onDidDispose(
-    () => { },
+    () => {
+      server.close();
+    },
     null,
     ext.context.subscriptions
   );
