@@ -1,8 +1,9 @@
 import * as express from 'express';
+import getPort from 'get-port';
 import * as path from 'path';
 
-export function serve(folderPath: string, indexHtmlName: string): string {
-    const port = process.env.PORT || 5000;
+export async function serve(folderPath: string, indexHtmlName: string) {
+    const port = await getPort();
 
     // Create an Express app
     const app = express();
@@ -17,5 +18,8 @@ export function serve(folderPath: string, indexHtmlName: string): string {
     // Start the server
     const server = app.listen(port);
 
-    return `http://localhost:${port}`;
+    return {
+        address: `http://localhost:${port}`,
+        server,
+    };
 }
