@@ -1,9 +1,9 @@
 {
   "name": "azure-api-center",
-  "publisher": "ms-azuretools",
+  "publisher": "apidev",
   "displayName": "Azure API Center",
   "description": "Build, discover, and consume APIs.",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "icon": "media/api-center-icon.png",
   "engines": {
     "vscode": "^1.85.0"
@@ -30,9 +30,7 @@
   ],
   "enabledApiProposals": [
     "chatAgents2",
-    "chatRequestAccess",
-    "interactive",
-    "readonlyMessage"
+    "chatRequestAccess"
   ],
   "contributes": {
     "commands": [
