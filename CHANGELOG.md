@@ -1,9 +1,11 @@
 # Change Log
 
-All notable changes to the "azure-api-center" extension will be documented in this file.
+## 0.1.0
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
+### Added
 
-## [Unreleased]
-
-- Initial release
+- Azure Tree View to view Azure resources in Azure API Center
+- Generate API client (with 'Microsoft Kiota' extension)
+- Test API with .HTTP file (with 'REST Client' extension)
+- View API documentation
+- GitHub Copilot Chat Agent for Azure API Center
