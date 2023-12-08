@@ -2,9 +2,6 @@
 trigger:
 - dev
 
-
-
-
 pool:
   vmImage: ubuntu-latest
 
@@ -14,9 +11,10 @@ steps:
     scanType: 'Register'
     verbosity: 'Verbose'
     alertWarningLevel: 'High'
+
 - task: NodeTool@0
   inputs:
-    versionSpec: '10.x'
+    versionSpec: '20.x'
   displayName: 'Install Node.js'
 
 - script: |
