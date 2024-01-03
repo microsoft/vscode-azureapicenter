@@ -1,0 +1,43 @@
+name: "CD"
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 16 * * *"
+
+jobs:
+  cd:
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: validate branch
+        if: ${{ github.ref != 'refs/heads/main' || github.ref != 'refs/heads/dev' }}
+        run: |
+          echo It's not allowed to run CD on other branch except main and dev.
+          exit 1
+
+      - name: checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: ${{ github.ref }}
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: semver-releaser
+        uses: heyvito/semver-releaser@v0.0.10
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: build visx
+        run: |
+          npm run package
+
+      - name: upload release info to artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: release
+          path: |
+            *.vsix
