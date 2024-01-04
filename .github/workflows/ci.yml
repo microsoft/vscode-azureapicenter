@@ -17,11 +17,11 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-      - name: setup project
+      - name: Setup project
         run: |
           npm install
-          npm run build
-      - name: check lint
+          npm run package
+      - name: Check lint
         run: |
           npm run lint
 
