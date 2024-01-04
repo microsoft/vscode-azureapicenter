@@ -1,23 +1,27 @@
 # Node.js
 trigger:
-- dev
+  - dev
 
 pool:
   vmImage: ubuntu-latest
 
 steps:
-- task: ComponentGovernanceComponentDetection@0
-  inputs:
-    scanType: 'Register'
-    verbosity: 'Verbose'
-    alertWarningLevel: 'High'
+  - task: NodeTool@0
+    inputs:
+      versionSpec: "20.x"
+    displayName: "Install Node.js"
 
-- task: NodeTool@0
-  inputs:
-    versionSpec: '20.x'
-  displayName: 'Install Node.js'
+  - script: |
+      npm install
+      npm run vscode:prepublish
+    displayName: "npm install and build"
 
-- script: |
-    npm install
-    npm run vscode:prepublish
-  displayName: 'npm install and build'
+  - task: ComponentGovernanceComponentDetection@0
+    inputs:
+      scanType: "Register"
+      verbosity: "Verbose"
+      alertWarningLevel: "High"
+
+  - task: ManifestGeneratorTask@0
+    inputs:
+      BuildDropPath: "$(System.ArtifactsDirectory)/"
