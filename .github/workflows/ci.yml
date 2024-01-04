@@ -20,6 +20,9 @@ jobs:
       - name: setup project
         run: |
           npm install
+          npm run build
+      - name: check lint
+        run: |
           npm run lint
 
   semver-title:
