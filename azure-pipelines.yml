@@ -24,4 +24,4 @@ steps:
 
   - task: ManifestGeneratorTask@0
     inputs:
-      BuildDropPath: "/"
+      BuildDropPath: "$(System.ArtifactsDirectory)/"
