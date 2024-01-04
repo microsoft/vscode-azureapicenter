@@ -5,6 +5,7 @@
   "description": "Build, discover, and consume APIs.",
   "version": "0.1.0",
   "icon": "media/api-center-icon.png",
+  "license": "SEE LICENSE IN LICENSE.txt",
   "engines": {
     "vscode": "^1.85.0"
   },
