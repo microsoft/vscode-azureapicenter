@@ -1,0 +1,26 @@
+name: "CD"
+
+on:
+  schedule:
+    - cron: "0 16 * * *"
+
+jobs:
+  CD:
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: lts/*
+
+      - name: Build visx
+        run: |
+          npm install
+          npx vsce package --no-dependencies
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: release
+          path: |
+            *.vsix
