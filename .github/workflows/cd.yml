@@ -8,12 +8,6 @@ jobs:
   CD:
     runs-on: "ubuntu-latest"
     steps:
-      - name: Validate branch
-        if: ${{ github.ref != 'refs/heads/dev' }}
-        run: |
-          echo It's not allowed to run CD on other branch except main and dev.
-          exit 1
-
       - uses: actions/checkout@v2
 
       - uses: actions/setup-node@v3
