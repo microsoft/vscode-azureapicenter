@@ -13,7 +13,7 @@ steps:
 
   - script: |
       npm install
-      npm run vscode:prepublish
+      npm run package
     displayName: "npm install and build"
 
   - task: ComponentGovernanceComponentDetection@0
@@ -24,4 +24,4 @@ steps:
 
   - task: ManifestGeneratorTask@0
     inputs:
-      BuildDropPath: "$(System.ArtifactsDirectory)/"
+      BuildDropPath: "./dist"
