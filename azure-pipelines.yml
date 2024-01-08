@@ -15,17 +15,19 @@ steps:
       npm install
       npm run package
     displayName: "npm install and build"
+
+  - task: ManifestGeneratorTask@0
+    inputs:
+      BuildDropPath: "$(System.ArtifactsDirectory)/buildOutput"
+
   - task: PublishBuildArtifacts@1
     inputs:
-      PathtoPublish: './dist'
-      ArtifactName: 'drop'
-      publishLocation: 'Container'
+      PathtoPublish: "$(System.ArtifactsDirectory)/buildOutput"
+      ArtifactName: "drop"
+      publishLocation: "Container"
+
   - task: ComponentGovernanceComponentDetection@0
     inputs:
       scanType: "Register"
       verbosity: "Verbose"
       alertWarningLevel: "High"
-
-  - task: ManifestGeneratorTask@0
-    inputs:
-      BuildDropPath: "./dist"
