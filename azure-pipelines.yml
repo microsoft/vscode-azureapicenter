@@ -18,11 +18,11 @@ steps:
 
   - task: ManifestGeneratorTask@0
     inputs:
-      BuildDropPath: "$(System.ArtifactsDirectory)/buildOutput"
+      BuildDropPath: "./dist"
 
   - task: PublishBuildArtifacts@1
     inputs:
-      PathtoPublish: "$(System.ArtifactsDirectory)/buildOutput"
+      PathtoPublish: "./dist"
       ArtifactName: "drop"
       publishLocation: "Container"
 
