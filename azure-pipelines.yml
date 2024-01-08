@@ -28,4 +28,4 @@ steps:
 
   - task: ManifestGeneratorTask@0
     inputs:
-      BuildDropPath: "Container"
+      BuildDropPath: "./dist"
