@@ -13,7 +13,7 @@ steps:
 
   - script: |
       npm install
-      npm run package
+      npm run vscode:prepublish
     displayName: "npm install and build"
 
   - task: ManifestGeneratorTask@0
