@@ -17,7 +17,7 @@ jobs:
       - name: Build visx
         run: |
           npm install
-          npx vsce package --no-dependencies
+          npx @vscode/vsce package --no-dependencies
 
       - uses: actions/upload-artifact@v3
         with:

@@ -27,7 +27,7 @@ jobs:
 
       - name: Install VSCE command
         run: |
-          npm install vsce -g
+          npm install @vscode/vsce -g
 
       - name: Download release artifacts
         uses: Legit-Labs/action-download-artifact@v2
