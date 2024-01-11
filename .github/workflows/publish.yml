@@ -1,0 +1,44 @@
+name: publish to VSCode marketplace
+run-name: Publish-${{ inputs.run_id }}-${{ github.ref_name }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: "Input the CD pipeline run ID to fetch the artifact"
+        required: true
+        default: ""
+
+jobs:
+  publish-to-vscode-marketplace:
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: lts/*
+
+      - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: ${{ github.head_ref }}
+
+      - name: Install VSCE command
+        run: |
+          npm install @vscode/vsce -g
+
+      - name: Download release artifacts
+        uses: Legit-Labs/action-download-artifact@v2
+        with:
+          run_id: ${{ github.event.inputs.run_id }}
+          name: release
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          workflow: cd.yml
+          path: .
+
+      - name: release to VSCode marketplace
+        run: vsce publish --pat $PAT --packagePath *.vsix
+        env:
+          PAT: ${{ secrets.VSCE_PAT }}
