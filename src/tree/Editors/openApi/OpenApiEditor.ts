@@ -46,7 +46,7 @@ export class OpenApiEditor extends Editor<ApiVersionDefinitionTreeItem> {
                 const importPayload: ApiCenterApiVersionDefinitionImport = {
                     format: "inline",
                     value: data.toString(),
-                    specificationDetails: {
+                    specification: {
                         name: "openapi", // TODO: we need to change this right?
                         version: "0.0.1" // TODO: we need to change this right?
                     }
