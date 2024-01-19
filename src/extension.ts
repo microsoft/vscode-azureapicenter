@@ -90,8 +90,8 @@ export async function activate(context: vscode.ExtensionContext) {
     const agent = vscode.chat.createChatAgent('apicenter', handleChatMessage);
     agent.description = 'Build, discover, and consume great APIs.';
     agent.fullName = "Azure API Center";
-    agent.slashCommandProvider = {
-        provideSlashCommands(token) {
+    agent.subCommandProvider = {
+        provideSubCommands(token) {
             return [
                 {
                     name: 'list',
@@ -106,12 +106,12 @@ export async function activate(context: vscode.ExtensionContext) {
     };
     agent.followupProvider = {
         provideFollowups(result: IChatAgentResult, token: vscode.CancellationToken) {
-            if (result.slashCommand === 'list') {
+            if (result.subCommand === 'list') {
                 return [{
                     message: '@apicenter /list $more',
                     title: 'List more APIs'
                 }];
-            } else if (result.slashCommand === 'find') {
+            } else if (result.subCommand === 'find') {
                 return [{
                     message: '@apicenter /find $more',
                     title: 'Find in more APIs'
