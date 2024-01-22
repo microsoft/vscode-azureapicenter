@@ -1,6 +1,6 @@
 # Azure API Center for Visual Studio Code
 
-Build, discover, try, and consume APIs using your favorite development environment
+Build, discover, try, and consume APIs using your favorite development environment.
 
 ### Discover
 
@@ -31,9 +31,9 @@ Generate API SDK clients for your favorite language including JavaScript, TypeSc
 ## Notice/Known Issues
 
 - VS Code Insiders (version after 2024-01-19) is required to use the `@apicenter` agent with GitHub Copilot Chat.
-- Contents in VS Code workspace are not send to GitHub Copilot.
-- When the content of single spec is very large, `@apicenter` agent may fail as it reach token limit of GitHub Copilot LLM.
-- When selected Azure Subscriptions is over 10 (or more), `@apicenter` agent may fail as it reach call limit of Azure REST APIs.
+- Contents in VS Code workspace are not sent to GitHub Copilot.
+- When the content of single spec is very large, `@apicenter` agent may fail as it reaches token limit of GitHub Copilot LLM.
+- When the number of selected Azure Subscription is larger then 10, `@apicenter` agent may fail as it reaches call limit of Azure REST APIs.
 
 ## Telemetry
 
