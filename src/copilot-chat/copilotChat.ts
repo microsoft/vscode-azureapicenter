@@ -12,11 +12,11 @@ let specifications: ApiCenterApiVersionDefinitionExport[] = [];
 let promptFind = '';
 
 export interface IChatAgentResult extends vscode.ChatAgentResult2 {
-    slashCommand: string;
+    subCommand: string;
 }
 
 export async function handleChatMessage(request: vscode.ChatAgentRequest, ctx: vscode.ChatAgentContext, progress: vscode.Progress<vscode.ChatAgentProgress>, token: vscode.CancellationToken): Promise<IChatAgentResult> {
-    const cmd = request.slashCommand?.name;
+    const cmd = request.subCommand;
     const eventName = cmd ? `${TelemetryEvent.copilotChat}.${cmd}` : TelemetryEvent.copilotChat;
     let parsedError: IParsedError | undefined;
 
@@ -27,7 +27,7 @@ export async function handleChatMessage(request: vscode.ChatAgentRequest, ctx: v
 
         if (!cmd) {
             progress.report({ content: 'Hi! What can I help you with? Please use `/list` or `/find` to chat with me!' });
-            return { slashCommand: '' };
+            return { subCommand: '' };
         }
 
         if (['list', 'find'].includes(cmd ?? "")) {
@@ -45,7 +45,7 @@ export async function handleChatMessage(request: vscode.ChatAgentRequest, ctx: v
             const specificationsToShow = specifications.slice(index, index + specificationsCount);
             if (specificationsToShow.length === 0) {
                 progress.report({ content: "\`>\` There are no more API Specifications.\n\n" });
-                return { slashCommand: '' };
+                return { subCommand: '' };
             }
             specificationsContent = specificationsToShow.map((specification, index) => `## Spec ${index + 1}:\n${specification.value}\n`).join('\n');
         }
@@ -69,7 +69,7 @@ export async function handleChatMessage(request: vscode.ChatAgentRequest, ctx: v
                 const incomingText = fragment.replace('[RESPONSE END]', '');
                 progress.report({ content: incomingText });
             }
-            return { slashCommand: 'list' };
+            return { subCommand: 'list' };
         } else if ((cmd === 'find')) {
             progress.report({ content: `\`>\` Parsing API Specifications for '${promptFind}'...\n\n` });
             const access = await vscode.chat.requestChatAccess('copilot');
@@ -89,10 +89,10 @@ export async function handleChatMessage(request: vscode.ChatAgentRequest, ctx: v
                 const incomingText = fragment.replace('[RESPONSE END]', '');
                 progress.report({ content: incomingText });
             }
-            return { slashCommand: 'find' };
+            return { subCommand: 'find' };
         }
 
-        return { slashCommand: '' };
+        return { subCommand: '' };
     } catch (error) {
         parsedError = parseError(error);
         throw error;
