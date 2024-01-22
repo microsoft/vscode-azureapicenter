@@ -10,7 +10,7 @@ Find the right API, fast from your organization's hand-crafted API catalog with 
 
 Try our new integration with GitHub Copilot Chat to find APIs based on semantic search query.
 
-![chat-agent](https://github.com/Azure/api-center-preview/assets/1050213/0a46b54e-bff6-44df-b2cf-8d576ad83a3d
+![chat-agent](https://github.com/Azure/api-center-preview/assets/1050213/0a46b54e-bff6-44df-b2cf-8d576ad83a3d)
 
 ### Explore
 
