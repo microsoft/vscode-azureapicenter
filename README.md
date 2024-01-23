@@ -10,7 +10,7 @@ Find the right API, fast from your organization's hand-crafted API catalog with 
 
 Try our new integration with GitHub Copilot Chat to find APIs based on semantic search query.
 
-![chat-agent](https://github.com/Azure/api-center-preview/assets/1050213/0a46b54e-bff6-44df-b2cf-8d576ad83a3d)
+![chat-agent](https://github.com/Azure/api-center-preview/assets/1050213/694bbe95-1602-40f2-8ae0-9694205069e4)
 
 ### Explore
 
@@ -32,7 +32,7 @@ Generate API SDK clients for your favorite language including JavaScript, TypeSc
 
 - VS Code Insiders (version after 2024-01-19) is required to use the `@apicenter` agent with GitHub Copilot Chat.
 - Contents in VS Code workspace are not sent to GitHub Copilot.
-- When the content of single spec is very large, `@apicenter` agent may fail as it reaches token limit of GitHub Copilot LLM.
+- When the content of single spec is very large, the `@apicenter` agent may fail as the token limit of GitHub Copilot Chat is exceeded. This is a temporary limitation our team is working to remove.
 - When the number of selected Azure Subscription is larger then 10, `@apicenter` agent may fail as it reaches call limit of Azure REST APIs.
 
 ## Telemetry
