@@ -14,7 +14,7 @@ export async function registerApi(context: IActionContext, node?: ApisTreeItem) 
         node = apiCenterNode.apisTreeItem;
     }
 
-    const apiTitle = await vscode.window.showInputBox({ title: 'API TiTle', ignoreFocusOut: true });
+    const apiTitle = await vscode.window.showInputBox({ title: 'API Title', ignoreFocusOut: true, validateInput: validateInputForTitle });
     if (!apiTitle) {
         return;
     }
@@ -24,7 +24,7 @@ export async function registerApi(context: IActionContext, node?: ApisTreeItem) 
         return;
     }
 
-    const apiVersionTitle = await vscode.window.showInputBox({ title: 'API Version Title', ignoreFocusOut: true });
+    const apiVersionTitle = await vscode.window.showInputBox({ title: 'API Version Title', ignoreFocusOut: true, validateInput: validateInputForTitle });
     if (!apiVersionTitle) {
         return;
     }
@@ -34,7 +34,7 @@ export async function registerApi(context: IActionContext, node?: ApisTreeItem) 
         return;
     }
 
-    const apiDefinitionTitle = await vscode.window.showInputBox({ title: 'API Definition Title', ignoreFocusOut: true });
+    const apiDefinitionTitle = await vscode.window.showInputBox({ title: 'API Definition Title', ignoreFocusOut: true, validateInput: validateInputForTitle });
     if (!apiDefinitionTitle) {
         return;
     }
@@ -57,17 +57,17 @@ export async function registerApi(context: IActionContext, node?: ApisTreeItem) 
         return;
     }
 
-    await createApiResources(node, apiTitle, apiKind, apiVersionTitle, apiVersionLifecycleStage,
+    const resourceGroupName = getResourceGroupFromId(node.apiCenter.id);
+    const apiCenterService = new ApiCenterService(node.parent?.subscription!, resourceGroupName, node.apiCenter.name);
+
+    await createApiResources(apiCenterService, apiTitle, apiKind, apiVersionTitle, apiVersionLifecycleStage,
         apiDefinitionTitle, specificationName, filePath);
 
     node.refresh(context);
 }
 
-async function createApiResources(node: ApisTreeItem, apiTitle: string, apiKind: string,
+async function createApiResources(apiCenterService: ApiCenterService, apiTitle: string, apiKind: string,
     apiVersionTitle: string, apiVersionLifecycleStage: string, apiDefinitionTitle: string, specificationName: string, filePath: string) {
-    const resourceGroupName = getResourceGroupFromId(node.apiCenter.id);
-    const apiCenterService = new ApiCenterService(node.parent?.subscription!, resourceGroupName, node.apiCenter.name);
-
     await vscode.window.withProgress({
         location: vscode.ProgressLocation.Notification,
         title: "Register API"
@@ -81,7 +81,7 @@ async function createApiResources(node: ApisTreeItem, apiTitle: string, apiKind:
                 kind: apiKind.toLowerCase(),
             }
         };
-        await apiCenterService.createOrUpdateApi(api as ApiCenterApi);
+        validateResponse(await apiCenterService.createOrUpdateApi(api as ApiCenterApi));
 
         progress.report({ message: "Creating API Version..." });
         const apiVersionName = getNameFromTitle(apiVersionTitle);
@@ -92,7 +92,7 @@ async function createApiResources(node: ApisTreeItem, apiTitle: string, apiKind:
                 lifecycleStage: apiVersionLifecycleStage.toLowerCase(),
             }
         };
-        await apiCenterService.createOrUpdateApiVersion(apiName, apiVersion as ApiCenterApiVersion);
+        validateResponse(await apiCenterService.createOrUpdateApiVersion(apiName, apiVersion as ApiCenterApiVersion));
 
         progress.report({ message: "Creating API Definition..." });
         const apiDefinitionName = getNameFromTitle(apiDefinitionTitle);
@@ -102,7 +102,7 @@ async function createApiResources(node: ApisTreeItem, apiTitle: string, apiKind:
                 title: apiDefinitionTitle,
             }
         };
-        await apiCenterService.createOrUpdateApiVersionDefinition(apiName, apiVersionName, apiDefinition as ApiCenterApiVersionDefinition);
+        validateResponse(await apiCenterService.createOrUpdateApiVersionDefinition(apiName, apiVersionName, apiDefinition as ApiCenterApiVersionDefinition));
 
         progress.report({ message: "Importing API Definition..." });
         const fileContent = await fse.readFile(filePath);
@@ -120,7 +120,9 @@ async function createApiResources(node: ApisTreeItem, apiTitle: string, apiKind:
             apiDefinitionName,
             importPayload as ApiCenterApiVersionDefinitionImport);
 
-        if (!result) {
+        if (result) {
+            vscode.window.showInformationMessage("API is registered.");
+        } else {
             throw new Error("Failed to register API.");
         }
     });
@@ -128,4 +130,23 @@ async function createApiResources(node: ApisTreeItem, apiTitle: string, apiKind:
 
 function getNameFromTitle(title: string) {
     return title.trim().toLocaleLowerCase().replace(/ /g, '-').replace(/[^A-Za-z0-9-]/g, '');
+}
+
+function validateInputForTitle(value: string) {
+    if (!value) {
+        return "The value should not be empty.";
+    }
+    const name = getNameFromTitle(value);
+    if (name.length < 2) {
+        return "The value should have at least 2 characters of numbers or letters.";
+    }
+    if (!/[a-zA-Z0-9]/.test(name)) {
+        return "The value should start with letter or number.";
+    }
+}
+
+function validateResponse(response: any) {
+    if (response && response.message) {
+        throw new Error(response.message);
+    }
 }
