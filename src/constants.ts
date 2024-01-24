@@ -4,3 +4,7 @@ export const showSavePromptConfigKey = "azure-api-center.showSavePrompt";
 export const doubleClickDebounceDelay = 500; //milliseconds
 export const selectedNodeKey = "selectedNode";
 
+export enum RegisterApiOptions {
+    stepByStep = "Step by step",
+    cicd = "CI/CD",
+}
