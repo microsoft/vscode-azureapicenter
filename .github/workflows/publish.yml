@@ -38,6 +38,16 @@ jobs:
           workflow: cd.yml
           path: .
 
+      - uses: gagle/package-version@v1
+        id: package-version
+
+      - name: upload to release page
+        uses: ncipollo/release-action@v1.10.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ steps.package-version.outputs.version }}
+          artifacts: ./*.vsix
+
       - name: release to VSCode marketplace
         run: vsce publish --pat $PAT --packagePath *.vsix
         env:
