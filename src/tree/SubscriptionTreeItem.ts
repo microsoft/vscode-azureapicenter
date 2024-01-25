@@ -7,6 +7,8 @@ import { treeUtils } from "../utils/treeUtils";
 import { ApiCenterTreeItem } from "./ApiCenterTreeItem";
 
 export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
+    public readonly childTypeLabel: string = 'API Center Service';
+
     private _nextLink: string | undefined;
 
     constructor(parent: AzExtParentTreeItem, subscription: ISubscriptionContext) {
