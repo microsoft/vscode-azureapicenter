@@ -21,7 +21,7 @@ export type ApiCenterApi = {
     name: string;
     properties: {
         title: string;
-        type: string;
+        kind: string;
     };
     // tslint:disable-next-line:no-reserved-keywords
     type: string;
@@ -77,7 +77,7 @@ export type ApiCenterApiVersionDefinition = {
 export type ApiCenterApiVersionDefinitionImport = {
     format: string;
     value: string;
-    specificationDetails: {
+    specification: {
         name: string
         version: string
     }
@@ -86,4 +86,35 @@ export type ApiCenterApiVersionDefinitionImport = {
 export type ApiCenterApiVersionDefinitionExport = {
     id: string;
     value: string;
+};
+
+
+export enum ApiKind {
+    rest = 'REST',
+    graphql = 'GraphQL',
+    grpc = 'gRPC',
+    soap = 'SOAP',
+    webhook = 'Webhook',
+    websocket = 'WebSocket',
+};
+
+export enum ApiVersionLifecycleStage {
+    design = 'Design',
+    development = 'Development',
+    testing = 'Testing',
+    preview = 'Preview',
+    production = 'Production',
+    deprecated = 'Deprecated',
+    retired = 'Retired',
+}
+
+export enum SpecificationName {
+    openapi = 'OpenAPI',
+    wsdl = 'WSDL',
+    wadl = 'WADL',
+    graphql = 'GraphQL',
+    grpc = 'gRPC',
+    asyncapi = 'AsyncAPI',
+    raml = 'RAML',
+    other = 'Other',
 };

@@ -92,7 +92,9 @@ export class ApiCenterService {
     const options: RequestPrepareOptions = {
       method: "PUT",
       url: `https://management.azure.com/subscriptions/${this.susbcriptionContext.subscriptionId}/resourceGroups/${this.resourceGroupName}/providers/Microsoft.ApiCenter/services/${this.apiCenterName}/workspaces/default/apis/${apiCenterApi.name}?api-version=${this.apiVersion}`,
-      body: apiCenterApi.properties
+      body: {
+        properties: apiCenterApi.properties
+      }
     };
     const response = await client.sendRequest(options);
     return response.parsedBody;
@@ -104,7 +106,9 @@ export class ApiCenterService {
     const options: RequestPrepareOptions = {
       method: "PUT",
       url: `https://management.azure.com/subscriptions/${this.susbcriptionContext.subscriptionId}/resourceGroups/${this.resourceGroupName}/providers/Microsoft.ApiCenter/services/${this.apiCenterName}/workspaces/default/apis/${apiName}/versions/${apiCenterApiVersion.name}?api-version=${this.apiVersion}`,
-      body: apiCenterApiVersion.properties
+      body: {
+        properties: apiCenterApiVersion.properties
+      }
     };
     const response = await client.sendRequest(options);
 
@@ -130,7 +134,9 @@ export class ApiCenterService {
     const options: RequestPrepareOptions = {
       method: "PUT",
       url: `https://management.azure.com/subscriptions/${this.susbcriptionContext.subscriptionId}/resourceGroups/${this.resourceGroupName}/providers/Microsoft.ApiCenter/services/${this.apiCenterName}/workspaces/default/apis/${apiName}/versions/${apiVersionName}/definitions/${apiCenterApiVersionDefinition.name}?api-version=${this.apiVersion}`,
-      body: apiCenterApiVersionDefinition.properties
+      body: {
+        properties: apiCenterApiVersionDefinition.properties
+      }
     };
     const response = await client.sendRequest(options);
 
@@ -154,7 +160,7 @@ export class ApiCenterService {
 
     const location = response.headers.get("Location");
 
-    if (!location) {return false;}
+    if (!location) { return false; }
 
     options = {
       method: "GET",

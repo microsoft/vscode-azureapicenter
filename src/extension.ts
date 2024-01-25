@@ -15,6 +15,7 @@ import { generateHttpFile } from './commands/generateHttpFile';
 import { importOpenApi } from './commands/importOpenApi';
 import { openAPiInSwagger } from './commands/openApiInSwagger';
 import { refreshTree } from './commands/refreshTree';
+import { registerApi } from './commands/registerApi';
 import { testInPostman } from './commands/testInPostman';
 import { doubleClickDebounceDelay, selectedNodeKey } from './constants';
 import { ext } from './extensionVariables';
@@ -45,6 +46,7 @@ export async function activate(context: vscode.ExtensionContext) {
     // var a = ext.treeItem.subscription;
 
     const treeDataProvider = new AzExtTreeDataProvider(azureAccountTreeItem, "appService.loadMore");
+    ext.treeDataProvider = treeDataProvider;
 
     const treeView = vscode.window.createTreeView("apiCenterTreeView", { treeDataProvider });
     context.subscriptions.push(treeView);
@@ -84,6 +86,8 @@ export async function activate(context: vscode.ExtensionContext) {
     registerCommandWithTelemetry('azure-api-center.generate-api-client', generateApiLibrary);
 
     registerCommandWithTelemetry('azure-api-center.generateHttpFile', generateHttpFile);
+
+    registerCommandWithTelemetry('azure-api-center.registerApi', registerApi);
 
     registerCommandWithTelemetry('azure-api-center.apiCenterTreeView.refresh', async (context: IActionContext) => refreshTree(context));
 

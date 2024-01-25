@@ -41,48 +41,64 @@
         "icon": {
           "light": "resources/light/filter.svg",
           "dark": "resources/dark/filter.svg"
-        }
+        },
+        "category": "Azure API Center"
       },
       {
         "command": "azure-api-center.showTreeView",
-        "title": "Show Tree View"
+        "title": "Show Tree View",
+        "category": "Azure API Center"
       },
       {
         "command": "azure-api-center.apiCenterTreeView.refresh",
         "title": "Refresh",
-        "icon": "$(refresh)"
+        "icon": "$(refresh)",
+        "category": "Azure API Center"
       },
       {
         "command": "azure-api-center.open-api-docs",
-        "title": "Open API Documentation"
+        "title": "Open API Documentation",
+        "category": "Azure API Center"
       },
       {
         "command": "azure-api-center.open-postman",
-        "title": "Test in Postman"
+        "title": "Test in Postman",
+        "category": "Azure API Center"
       },
       {
         "command": "azure-api-center.generate-api-client",
-        "title": "Generate API Client"
+        "title": "Generate API Client",
+        "category": "Azure API Center"
       },
       {
         "command": "azure-api-center.importOpenApiByFile",
-        "title": "Import OpenAPI from File"
+        "title": "Import OpenAPI from File",
+        "category": "Azure API Center"
       },
       {
         "command": "azure-api-center.importOpenApiByLink",
-        "title": "Import OpenAPI from Link"
+        "title": "Import OpenAPI from Link",
+        "category": "Azure API Center"
       },
       {
         "command": "azure-api-center.exportOpenApi",
-        "title": "Export OpenAPI"
+        "title": "Export OpenAPI",
+        "category": "Azure API Center"
       },
       {
         "command": "azure-api-center.showOpenApi",
-        "title": "Edit OpenAPI"
+        "title": "Edit OpenAPI",
+        "category": "Azure API Center"
       },
       {
         "command": "azure-api-center.generateHttpFile",
-        "title": "Generate HTTP File"
+        "title": "Generate HTTP File",
+        "category": "Azure API Center"
+      },
+      {
+        "command": "azure-api-center.registerApi",
+        "title": "Register API",
+        "category": "Azure API Center"
       }
     ],
     "views": {
@@ -149,6 +165,10 @@
         {
           "command": "azure-api-center.generateHttpFile",
           "when": "view == apiCenterTreeView && viewItem == azureApiCenterApiVersionDefinitionTreeItem-openapi"
+        },
+        {
+          "command": "azure-api-center.registerApi",
+          "when": "view == apiCenterTreeView && viewItem == azureApiCenterApis"
         }
       ],
       "commandPalette": [

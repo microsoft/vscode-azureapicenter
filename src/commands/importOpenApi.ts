@@ -1,57 +1,55 @@
-import { IActionContext } from "@microsoft/vscode-azext-utils";
-import { ApiVersionDefinitionsTreeItem } from "../tree/ApiVersionDefinitionsTreeItem";
-import { OpenDialogOptions, ProgressLocation, Uri, window, workspace } from "vscode";
-import { ext } from "../extensionVariables";
-import * as fse from 'fs-extra';
-import { ApiCenterService } from "../azure/ApiCenter/ApiCenterService";
 import { getResourceGroupFromId } from "@microsoft/vscode-azext-azureutils";
-import { ApiVersionDefinitionTreeItem } from "../tree/ApiVersionDefinitionTreeItem";
+import { IActionContext } from "@microsoft/vscode-azext-utils";
+import * as fse from 'fs-extra';
+import { OpenDialogOptions, ProgressLocation, Uri, window } from "vscode";
+import { ApiCenterService } from "../azure/ApiCenter/ApiCenterService";
 import { ApiCenterApiVersionDefinitionImport } from "../azure/ApiCenter/contracts";
+import { ApiVersionDefinitionTreeItem } from "../tree/ApiVersionDefinitionTreeItem";
 
 export async function importOpenApi(
-    context: IActionContext, 
-    node?: ApiVersionDefinitionTreeItem, 
+    context: IActionContext,
+    node?: ApiVersionDefinitionTreeItem,
     importUsingLink: boolean = false): Promise<void> {
 
-        const apiCenterService = new ApiCenterService(
-            node?.subscription!, 
-            getResourceGroupFromId(node?.id!), 
-            node?.apiCenterName!);
+    const apiCenterService = new ApiCenterService(
+        node?.subscription!,
+        getResourceGroupFromId(node?.id!),
+        node?.apiCenterName!);
 
     if (!importUsingLink) {
         const uris = await askDocument(context);
         const uri = uris[0];
         const fileContent = await fse.readFile(uri.fsPath);
-            window.withProgress(
-                {
-                    location: ProgressLocation.Notification,
-                    title: "Uploading spec to API Center",
-                    cancellable: false
-                },
-                // tslint:disable-next-line:no-non-null-assertion
-                async () => { 
-                    
-                    const importPayload: ApiCenterApiVersionDefinitionImport =  {
-                        format: "inline",
-                        value: fileContent.toString(),
-                        specificationDetails: {
-                            name: "openapi",
-                            version: "0.0.1"
-                        }
-                    };
+        window.withProgress(
+            {
+                location: ProgressLocation.Notification,
+                title: "Uploading spec to API Center",
+                cancellable: false
+            },
+            // tslint:disable-next-line:no-non-null-assertion
+            async () => {
 
-                    return  apiCenterService.importSpecification(
-                    node?.apiCenterApiName!, 
-                    node?.apiCenterApiVersionName!, 
-                    node?.apiCenterApiVersionDefinition.name!, 
-                    importPayload) 
-                }
-            ).then(async () => {
-                // tslint:disable-next-line:no-non-null-assertion
-                await node!.refresh(context);
-                window.showInformationMessage("Spec uploaded successfully.");
-            });
-        
+                const importPayload: ApiCenterApiVersionDefinitionImport = {
+                    format: "inline",
+                    value: fileContent.toString(),
+                    specification: {
+                        name: "openapi",
+                        version: "0.0.1"
+                    }
+                };
+
+                return apiCenterService.importSpecification(
+                    node?.apiCenterApiName!,
+                    node?.apiCenterApiVersionName!,
+                    node?.apiCenterApiVersionDefinition.name!,
+                    importPayload);
+            }
+        ).then(async () => {
+            // tslint:disable-next-line:no-non-null-assertion
+            await node!.refresh(context);
+            window.showInformationMessage("Spec uploaded successfully.");
+        });
+
     } else {
         const openApiLink = await askLink(context);
         window.withProgress(
@@ -61,29 +59,29 @@ export async function importOpenApi(
                 cancellable: false
             },
             // tslint:disable-next-line:no-non-null-assertion
-            async () => { 
-                
-                const importPayload: ApiCenterApiVersionDefinitionImport =  {
+            async () => {
+
+                const importPayload: ApiCenterApiVersionDefinitionImport = {
                     format: "link",
                     value: openApiLink,
-                    specificationDetails: {
+                    specification: {
                         name: "openapi",
                         version: "0.0.1"
                     }
                 };
 
-                return  apiCenterService.importSpecification(
-                node?.apiCenterApiName!, 
-                node?.apiCenterApiVersionName!, 
-                node?.apiCenterApiVersionDefinition.name!, 
-                importPayload) 
+                return apiCenterService.importSpecification(
+                    node?.apiCenterApiName!,
+                    node?.apiCenterApiVersionName!,
+                    node?.apiCenterApiVersionDefinition.name!,
+                    importPayload);
             }
         ).then(async () => {
             // tslint:disable-next-line:no-non-null-assertion
             await node!.refresh(context);
             window.showInformationMessage("Spec uploaded successfully.");
         });
-    
+
     }
 
 }
@@ -101,7 +99,7 @@ async function askDocument(context: IActionContext): Promise<Uri[]> {
     return await context.ui.showOpenDialog(openDialogOptions);
 }
 
-async function askLink(context: IActionContext) : Promise<string> {
+async function askLink(context: IActionContext): Promise<string> {
     const promptStr: string = 'Specify a OpenAPI 2.0 or 3.0 link.';
     return (await context.ui.showInputBox({
         prompt: promptStr,
