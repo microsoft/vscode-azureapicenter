@@ -51,6 +51,6 @@ jobs:
           artifacts: ./*.vsix
 
       - name: release to VSCode marketplace
-        run: vsce publish --pat $PAT --packagePath *.vsix
+        run: vsce publish --pat $PAT --packagePath *.vsix --noVerify
         env:
           PAT: ${{ secrets.VSCE_PAT }}
