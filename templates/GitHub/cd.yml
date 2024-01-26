@@ -26,8 +26,8 @@ jobs:
           enable-AzPSSession: true
 
       # Please create following environment variables to deploy to azure resource: RESOURCE_GROUP, RESOURCE_NAME, FILE_LOCATION
-      # RESOURCE_GROUP: Azure Resource Group name
-      # RESOURCE_NAME: Azure API Center resource name
+      # RESOURCE_GROUP: Azure Resource Group name, please ensure the resource group already created.
+      # RESOURCE_NAME: Azure API Center resource name, please ensure the API Center resource already created.
       # FILE_LOCATION: API Definition file location
       # https://docs.github.com/en/actions/learn-github-actions/variables#creating-configuration-variables-for-a-repository
       - name: Deploy to API Center

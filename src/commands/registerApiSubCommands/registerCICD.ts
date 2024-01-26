@@ -33,10 +33,10 @@ export async function registerCICD(context: IActionContext, node?: ApisTreeItem)
             targetWorkflowPath = path.join(workspacePath, stringResources.azurepipelines);
         }
         await fs.ensureDir(targetWorkflowPath);
-        const yamlFilePath = path.join(getTemplatesFolder(), selectType, stringResources.sourceYaml);
-        const targetFile = path.join(targetWorkflowPath, stringResources.targetYaml)
-        await fs.copyFile(yamlFilePath, targetFile);
-        vscode.workspace.openTextDocument(targetFile).then((document) => {
+        const srcFilePath = path.join(getTemplatesFolder(), selectType, stringResources.sourceYaml);
+        const targetFilePath = path.join(targetWorkflowPath, stringResources.targetYaml)
+        await fs.copyFile(srcFilePath, targetFilePath);
+        vscode.workspace.openTextDocument(targetFilePath).then((document) => {
             void vscode.window.showTextDocument(document);
         });
     }
