@@ -118,3 +118,9 @@ export enum SpecificationName {
     raml = 'RAML',
     other = 'Other',
 };
+
+
+export enum CICDType {
+    github = "GitHub",
+    azure = "Azure DevOps",
+}
