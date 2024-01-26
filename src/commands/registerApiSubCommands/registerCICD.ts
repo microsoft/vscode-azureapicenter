@@ -10,7 +10,7 @@ function getTemplatesFolder(): string {
 }
 
 const stringResources = {
-    azurepipelines: ".azurepipelines",
+    azurepipelines: ".azure-pipelines",
     github: ".github",
     workflows: "workflows",
     sourceYaml: "cd.yml",
