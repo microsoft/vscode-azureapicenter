@@ -8,3 +8,9 @@ export enum RegisterApiOptions {
     stepByStep = "Step by step",
     cicd = "CI/CD",
 }
+
+export enum ApiRulesetOptions {
+    azureApiGuideline = "Azure API Guideline",
+    selectFile = "Select Local File",
+    inputUrl = "Input Remote URL",
+}
