@@ -4,7 +4,7 @@ import { TelemetryClient } from "../common/telemetryClient";
 import { TelemetryEvent, TelemetryProperties } from "../common/telemetryEvent";
 import { RegisterApiOptions } from "../constants";
 import { ApisTreeItem } from "../tree/ApisTreeItem";
-import { registerCICD } from "./registerApiSubCommands/registerCICD";
+import { registerCICD } from "./registerApiSubCommands/registerViaCICD";
 import { registerStepByStep } from "./registerApiSubCommands/registerStepByStep";
 
 export async function registerApi(context: IActionContext, node?: ApisTreeItem) {

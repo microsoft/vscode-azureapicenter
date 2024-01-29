@@ -119,8 +119,3 @@ export enum SpecificationName {
     other = 'Other',
 };
 
-
-export enum CICDType {
-    github = "GitHub",
-    azure = "Azure DevOps",
-}

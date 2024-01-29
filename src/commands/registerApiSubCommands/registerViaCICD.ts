@@ -2,8 +2,7 @@ import { IActionContext } from "@microsoft/vscode-azext-utils";
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as vscode from 'vscode';
-import { CICDType } from "../../azure/ApiCenter/contracts";
-import { ApisTreeItem } from "../../tree/ApisTreeItem";
+import { CICDType } from "../../constants";
 
 function getTemplatesFolder(): string {
     return path.join(__dirname, "..", "templates");
@@ -17,7 +16,7 @@ const stringResources = {
     targetYaml: "register-api.yml",
 }
 
-export async function registerCICD(context: IActionContext, node?: ApisTreeItem) {
+export async function registerCICD(context: IActionContext) {
     const workspaceFolders = vscode.workspace.workspaceFolders;
     if (!workspaceFolders) {
         throw new Error("Please open a project to generate CI/CD file.");
@@ -33,8 +32,8 @@ export async function registerCICD(context: IActionContext, node?: ApisTreeItem)
             targetWorkflowPath = path.join(workspacePath, stringResources.azurepipelines);
         }
         await fs.ensureDir(targetWorkflowPath);
-        const srcFilePath = path.join(getTemplatesFolder(), selectType, stringResources.sourceYaml);
-        const targetFilePath = path.join(targetWorkflowPath, stringResources.targetYaml)
+        const srcFilePath = path.join(getTemplatesFolder(), selectType.replace(/\s/g, ""), stringResources.sourceYaml);
+        const targetFilePath = path.join(targetWorkflowPath, stringResources.targetYaml);
         await fs.copyFile(srcFilePath, targetFilePath);
         vscode.workspace.openTextDocument(targetFilePath).then((document) => {
             void vscode.window.showTextDocument(document);
