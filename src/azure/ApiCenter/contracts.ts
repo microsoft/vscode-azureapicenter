@@ -118,3 +118,4 @@ export enum SpecificationName {
     raml = 'RAML',
     other = 'Other',
 };
+

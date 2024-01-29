@@ -8,3 +8,8 @@ export enum RegisterApiOptions {
     stepByStep = "Step by step",
     cicd = "CI/CD",
 }
+
+export enum CICDType {
+    github = "GitHub",
+    azure = "Azure DevOps",
+}
