@@ -28,6 +28,8 @@ jobs:
   semver-title:
     runs-on: ubuntu-latest
     if: (github.event_name == 'pull_request')
+    permissions:
+      pull-requests: write
     steps:
       - uses: amannn/action-semantic-pull-request@v3.4.0
         env:

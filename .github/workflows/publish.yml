@@ -13,6 +13,9 @@ jobs:
   publish-to-vscode-marketplace:
     runs-on: ubuntu-latest
     environment: production
+    permissions:
+      actions: read
+      contents: write
 
     steps:
       - name: setup node
