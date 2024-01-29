@@ -32,7 +32,15 @@ export async function registerViaCICD(context: IActionContext) {
             targetWorkflowPath = path.join(workspacePath, stringResources.azurepipelines);
         }
         await fs.ensureDir(targetWorkflowPath);
-        const srcFilePath = path.join(getTemplatesFolder(), selectType.replace(/\s/g, ""), stringResources.sourceYaml);
+        const targetType = (selectType: CICDType) => {
+            switch (selectType) {
+                case CICDType.azure:
+                    return "AzureDevOps";
+                case CICDType.github:
+                    return "GitHub";
+            }
+        }
+        const srcFilePath = path.join(getTemplatesFolder(), targetType(selectType as CICDType), stringResources.sourceYaml);
         const targetFilePath = path.join(targetWorkflowPath, stringResources.targetYaml);
         await fs.copyFile(srcFilePath, targetFilePath);
         const document = await vscode.workspace.openTextDocument(targetFilePath);
