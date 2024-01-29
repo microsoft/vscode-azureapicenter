@@ -2,7 +2,7 @@ import { IActionContext } from "@microsoft/vscode-azext-utils";
 import * as vscode from 'vscode';
 import { TelemetryClient } from "../common/telemetryClient";
 import { TelemetryEvent, TelemetryProperties } from "../common/telemetryEvent";
-import { ApiRulesetOptions } from "../constants";
+import { ApiRulesetOptions, azureApiGuidelineRulesetFile } from "../constants";
 import { ensureExtension } from "../utils/ensureExtension";
 
 export async function setApiRuleset(context: IActionContext) {
@@ -19,7 +19,7 @@ export async function setApiRuleset(context: IActionContext) {
 
     switch (apiRulesetOption) {
         case ApiRulesetOptions.azureApiGuideline:
-            await setRulesetFile("https://raw.githubusercontent.com/azure/azure-api-style-guide/main/spectral.yaml");
+            await setRulesetFile(azureApiGuidelineRulesetFile);
             break;
         case ApiRulesetOptions.selectFile:
             const fileUri = await vscode.window.showOpenDialog({
@@ -40,6 +40,9 @@ export async function setApiRuleset(context: IActionContext) {
                     }
                     if (!text.startsWith('http://') && !text.startsWith('https://')) {
                         return 'Please enter a valid URL.';
+                    }
+                    if (!text.endsWith('.json') && !text.endsWith('.yml') && !text.endsWith('.yaml')) {
+                        return 'Please enter a valid URL to a JSON or YAML file.';
                     }
                 }
             });
