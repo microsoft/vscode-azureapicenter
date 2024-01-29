@@ -2,15 +2,16 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
-  # Please set the azure pipeline variables: AZURE_SUBSCRIPTION, RESOURCE_GROUP, RESOURCE_NAME, FILE_LOCATION
-  # AZURE_SUBSCRIPTION: Azure Subscription ID, please ensure the service principal has the permission to access the subscription.
+  # Please set the azure pipeline variables: Azure_Resource_Manager_Service_Connection, RESOURCE_GROUP, RESOURCE_NAME, FILE_LOCATION.
+  # Please ref https://learn.microsoft.com/en-us/azure/devops/pipelines/tasks/reference/azure-cli-v2?view=azure-pipelines for more details.
+  # Please ref https://learn.microsoft.com/en-us/azure/devops/pipelines/library/connect-to-azure?view=azure-devops for more detauls.
+  # Azure_Resource_Manager_Service_Connection: Azure Subscription ID, please ensure the service principal has the permission to access the subscription.
   # RESOURCE_GROUP: Azure Resource Group name, please ensure the resource group already created.
   # RESOURCE_NAME: Azure API Center resource name, please ensure the API Center resource already created.
-  # FILE_LOCATION: API Definition file location
+  # FILE_LOCATION: API Definition file location.
   - task: AzureCLI@2
     inputs:
-      azureSubscription: $(AZURE_SUBSCRIPTION)
+      azureSubscription: <Azure_Resource_Manager_Service_Connection>
       scriptType: "ps"
       scriptLocation: "inlineScript"
-      inlineScript: "az apic api register -g $1 -s $2 --api-location $3"
-      arguments: "$(RESOURCE_GROUP) $(RESOURCE_NAME) $(FILE_LOCATION)"
+      inlineScript: "az apic api register -g $(RESOURCE_GROUP) -s $(RESOURCE_NAME) --api-location $(FILE_LOCATION)"
