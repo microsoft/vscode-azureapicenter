@@ -35,8 +35,7 @@ export async function registerViaCICD(context: IActionContext) {
         const srcFilePath = path.join(getTemplatesFolder(), selectType.replace(/\s/g, ""), stringResources.sourceYaml);
         const targetFilePath = path.join(targetWorkflowPath, stringResources.targetYaml);
         await fs.copyFile(srcFilePath, targetFilePath);
-        vscode.workspace.openTextDocument(targetFilePath).then((document) => {
-            void vscode.window.showTextDocument(document);
-        });
+        const document = await vscode.workspace.openTextDocument(targetFilePath);
+        await vscode.window.showTextDocument(document);
     }
 }
