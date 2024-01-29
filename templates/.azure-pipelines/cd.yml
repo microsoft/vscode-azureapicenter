@@ -1,0 +1,16 @@
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+  # Please set the azure pipeline variables: AZURE_SUBSCRIPTION, RESOURCE_GROUP, RESOURCE_NAME, FILE_LOCATION
+  # AZURE_SUBSCRIPTION: Azure Subscription ID, please ensure the service principal has the permission to access the subscription.
+  # RESOURCE_GROUP: Azure Resource Group name, please ensure the resource group already created.
+  # RESOURCE_NAME: Azure API Center resource name, please ensure the API Center resource already created.
+  # FILE_LOCATION: API Definition file location
+  - task: AzureCLI@2
+    inputs:
+      azureSubscription: $(AZURE_SUBSCRIPTION)
+      scriptType: "ps"
+      scriptLocation: "inlineScript"
+      inlineScript: "az apic api register -g $1 -s $2 --api-location $3"
+      arguments: "$(RESOURCE_GROUP) $(RESOURCE_NAME) $(FILE_LOCATION)"
