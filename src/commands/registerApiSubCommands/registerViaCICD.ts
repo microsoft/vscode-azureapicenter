@@ -14,7 +14,7 @@ const stringResources = {
     workflows: "workflows",
     sourceYaml: "cd.yml",
     targetYaml: "register-api.yml",
-}
+};
 
 export async function registerViaCICD(context: IActionContext) {
     const workspaceFolders = vscode.workspace.workspaceFolders;
