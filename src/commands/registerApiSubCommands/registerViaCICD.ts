@@ -16,7 +16,7 @@ const stringResources = {
     targetYaml: "register-api.yml",
 }
 
-export async function registerCICD(context: IActionContext) {
+export async function registerViaCICD(context: IActionContext) {
     const workspaceFolders = vscode.workspace.workspaceFolders;
     if (!workspaceFolders) {
         throw new Error("Please open a project to generate CI/CD file.");
