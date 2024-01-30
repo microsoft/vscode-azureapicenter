@@ -13,6 +13,9 @@ jobs:
   publish-to-vscode-marketplace:
     runs-on: ubuntu-latest
     environment: production
+    permissions:
+      actions: read
+      contents: write
 
     steps:
       - name: setup node
@@ -38,7 +41,19 @@ jobs:
           workflow: cd.yml
           path: .
 
+      - name: get packge version
+        id: package-version
+        run: |
+          echo "version=$(jq -r '"v"+.version' package.json)" >> $GITHUB_OUTPUT
+
+      - name: upload to release page
+        uses: ncipollo/release-action@v1.10.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ steps.package-version.outputs.version }}
+          artifacts: ./*.vsix
+
       - name: release to VSCode marketplace
-        run: vsce publish --pat $PAT --packagePath *.vsix
+        run: vsce publish --pat $PAT --packagePath *.vsix --noVerify
         env:
           PAT: ${{ secrets.VSCE_PAT }}
