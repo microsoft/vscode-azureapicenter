@@ -1,5 +1,5 @@
 pool:
-  vmImage: ubuntu-latest
+  vmImage: windows-latest
 
 steps:
   # Please set these Azure Pipeline Variables: SERVICE_CONNECTION, RESOURCE_GROUP, RESOURCE_NAME, FILE_LOCATION.
