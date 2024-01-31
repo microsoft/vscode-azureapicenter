@@ -2,6 +2,7 @@ export enum TelemetryEvent {
     copilotChat = "copilot-chat",
     treeviewListApiCenters = "treeview.listApiCenters",
     registerApiSelectOption = "registerApi.selectOption",
+    setApiRulesetSelectOption = "setApiRuleset.selectOption",
 }
 
 export enum TelemetryProperties {

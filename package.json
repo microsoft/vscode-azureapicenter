@@ -99,6 +99,11 @@
         "command": "azure-api-center.registerApi",
         "title": "Register API",
         "category": "Azure API Center"
+      },
+      {
+        "command": "azure-api-center.setApiRuleset",
+        "title": "Set active API Style Guide",
+        "category": "Azure API Center"
       }
     ],
     "views": {
