@@ -102,7 +102,7 @@
       },
       {
         "command": "azure-api-center.setApiRuleset",
-        "title": "Set active API Design Compliance Ruleset for OpenAPI",
+        "title": "Set active API Style Guide",
         "category": "Azure API Center"
       }
     ],

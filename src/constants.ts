@@ -11,7 +11,7 @@ export enum RegisterApiOptions {
 }
 
 export enum ApiRulesetOptions {
-    azureApiGuideline = "Azure API Guideline",
+    azureApiGuideline = "Microsoft Azure REST API Guidelines",
     selectFile = "Select Local File",
     inputUrl = "Input Remote URL",
 }
