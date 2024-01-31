@@ -11,7 +11,7 @@ export async function setApiRuleset(context: IActionContext) {
         noExtensionErrorMessage: 'Please install the Spectral extension to lint APIs.',
     });
 
-    const apiRulesetOption = await vscode.window.showQuickPick(Object.values(ApiRulesetOptions), { title: 'Set API Design Compliance Ruleset', ignoreFocusOut: true });
+    const apiRulesetOption = await vscode.window.showQuickPick(Object.values(ApiRulesetOptions), { title: 'Set API Style Guide', ignoreFocusOut: true });
 
     if (apiRulesetOption) {
         TelemetryClient.sendEvent(TelemetryEvent.setApiRulesetSelectOption, { [TelemetryProperties.option]: apiRulesetOption });
@@ -57,5 +57,5 @@ async function setRulesetFile(rulesetFile: string) {
     const spectralLinterConfig = vscode.workspace.getConfiguration("spectral");
     await spectralLinterConfig.update("rulesetFile", rulesetFile, vscode.ConfigurationTarget.Global);
 
-    vscode.window.showInformationMessage(`API Design Compliance Ruleset is set to '${rulesetFile}'.`);
+    vscode.window.showInformationMessage(`API Style Guide is set to '${rulesetFile}'.`);
 }
