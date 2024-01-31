@@ -1,0 +1,18 @@
+pool:
+  vmImage: windows-latest
+
+steps:
+  # Please set these Azure Pipeline Variables: SERVICE_CONNECTION, RESOURCE_GROUP, RESOURCE_NAME, FILE_LOCATION.
+  # Please ref https://learn.microsoft.com/en-us/azure/devops/pipelines/tasks/reference/azure-cli-v2?view=azure-pipelines to set variables.
+  # Please ref https://learn.microsoft.com/en-us/azure/devops/pipelines/library/connect-to-azure?view=azure-devops to set SERVICE_CONNECTION.
+  # SERVICE_CONNECTION: Azure Subscription ID, please ensure the service principal has the permission to access the subscription.
+  # RESOURCE_GROUP: Azure Resource Group name, please ensure the resource group already created.
+  # RESOURCE_NAME: Azure API Center resource name, please ensure the API Center resource already created.
+  # FILE_LOCATION: API Definition file location.
+  - task: AzureCLI@2
+    inputs:
+      azureSubscription: $(SERVICE_CONNECTION)
+      scriptType: "ps"
+      scriptLocation: "inlineScript"
+      inlineScript: |
+        az apic api register -g ${env:RESOURCE_GROUP} -s ${env:RESOURCE_NAME} --api-location ${env:FILE_LOCATION}
