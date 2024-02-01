@@ -2,8 +2,10 @@ import { IActionContext } from "@microsoft/vscode-azext-utils";
 import * as vscode from 'vscode';
 import { TelemetryClient } from "../common/telemetryClient";
 import { TelemetryEvent, TelemetryProperties } from "../common/telemetryEvent";
-import { ApiRulesetOptions, azureApiGuidelineRulesetFile } from "../constants";
+import { ApiRulesetOptions, azureApiGuidelineRulesetFile, spectralOwaspRulesetFile } from "../constants";
 import { ensureExtension } from "../utils/ensureExtension";
+
+const rulesetFileTypes = ['json', 'yml', 'yaml', 'js', "mjs", "cjs"];
 
 export async function setApiRuleset(context: IActionContext) {
     ensureExtension(context, {
@@ -21,10 +23,13 @@ export async function setApiRuleset(context: IActionContext) {
         case ApiRulesetOptions.azureApiGuideline:
             await setRulesetFile(azureApiGuidelineRulesetFile);
             break;
+        case ApiRulesetOptions.spectralOwasp:
+            await setRulesetFile(spectralOwaspRulesetFile);
+            break;
         case ApiRulesetOptions.selectFile:
             const fileUri = await vscode.window.showOpenDialog({
                 openLabel: "Select Ruleset File",
-                filters: { ['Ruleset']: ['json', 'yml', 'yaml'] }
+                filters: { ['Ruleset']: rulesetFileTypes }
             });
             if (fileUri && fileUri[0]) {
                 await setRulesetFile(fileUri[0].fsPath);
@@ -41,8 +46,8 @@ export async function setApiRuleset(context: IActionContext) {
                     if (!text.startsWith('http://') && !text.startsWith('https://')) {
                         return 'Please enter a valid URL.';
                     }
-                    if (!text.endsWith('.json') && !text.endsWith('.yml') && !text.endsWith('.yaml')) {
-                        return 'Please enter a valid URL to a JSON or YAML file.';
+                    if (!rulesetFileTypes.some(type => text.endsWith(`.${type}`))) {
+                        return 'Please enter a valid URL to a JSON, YAML or JavaScript file.';
                     }
                 }
             });
