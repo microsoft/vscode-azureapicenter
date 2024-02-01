@@ -1,6 +1,9 @@
 {
     "spec": "./test/**/**.test.ts",
-    "require": [],
+    "require": [
+        "test/setup.ts",
+        "ts-node/register"
+    ],
     "reporter": "mocha-multi-reporters",
     "recursive": true,
     "colors": true
