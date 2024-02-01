@@ -77,7 +77,7 @@ export type ApiCenterApiVersionDefinition = {
 export type ApiCenterApiVersionDefinitionImport = {
     format: string;
     value: string;
-    specificationDetails: {
+    specification: {
         name: string
         version: string
     }

@@ -12,6 +12,8 @@ export async function viewOpenApi(actionContext: IActionContext, node?: ApiVersi
 
     // set spectral ruleset
     const spectralLinterConfig = vscode.workspace.getConfiguration("spectral");
+
+    // a quick pick of where the user's ruleset file is located in the system
     spectralLinterConfig.update("rulesetFile", lintRuleFile, vscode.ConfigurationTarget.Global);
 
     // show API spec in read-only editor
