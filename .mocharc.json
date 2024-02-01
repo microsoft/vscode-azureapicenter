@@ -1,0 +1,7 @@
+{
+    "spec": "./test/**/**.test.ts",
+    "require": [],
+    "reporter": "mocha-multi-reporters",
+    "recursive": true,
+    "colors": true
+}
