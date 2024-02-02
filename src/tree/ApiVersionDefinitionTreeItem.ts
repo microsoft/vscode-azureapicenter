@@ -12,7 +12,7 @@ export class ApiVersionDefinitionTreeItem extends AzExtTreeItem {
     public apiCenterApiVersionName: string,
     public apiCenterApiVersionDefinition: ApiCenterApiVersionDefinition) {
     super(parent);
-    this.contextValue += "-" + apiCenterApiVersionDefinition.properties.specification.name;
+    this.contextValue += "-" + apiCenterApiVersionDefinition.properties.specification.name.toLowerCase();
   }
 
   public get iconPath(): TreeItemIconPath {
@@ -24,6 +24,6 @@ export class ApiVersionDefinitionTreeItem extends AzExtTreeItem {
   }
 
   public get label(): string {
-    return this.apiCenterApiVersionDefinition.name;
+    return this.apiCenterApiVersionDefinition.properties.title;
   }
 }
