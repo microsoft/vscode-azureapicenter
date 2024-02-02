@@ -21,6 +21,13 @@
   "categories": [
     "Azure"
   ],
+  "keywords": [
+    "OpenAPI",
+    "GraphQL",
+    "gRPC",
+    "AsyncAPI",
+    "RAML"
+  ],
   "activationEvents": [
     "onStartupFinished"
   ],
