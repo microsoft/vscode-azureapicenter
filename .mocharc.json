@@ -1,7 +1,7 @@
 {
     "spec": "./test/**/**.test.ts",
     "require": [
-        "test/setup.ts",
+        "out/test/setup.js",
         "ts-node/register"
     ],
     "reporter": "mocha-multi-reporters",
