@@ -100,6 +100,11 @@
         "category": "Azure API Center"
       },
       {
+        "command": "azure-api-center.searchApi",
+        "title": "Search API",
+        "category": "Azure API Center"
+      },
+      {
         "command": "azure-api-center.setApiRuleset",
         "title": "Set active API Style Guide",
         "category": "Azure API Center"
@@ -172,6 +177,10 @@
         },
         {
           "command": "azure-api-center.registerApi",
+          "when": "view == apiCenterTreeView && viewItem == azureApiCenterApis"
+        },
+        {
+          "command": "azure-api-center.searchApi",
           "when": "view == apiCenterTreeView && viewItem == azureApiCenterApis"
         }
       ],

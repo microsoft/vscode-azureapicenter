@@ -31,12 +31,16 @@ export class ApiCenterService {
     return response.parsedBody;
   }
 
-  public async getApiCenterApis(): Promise<{ value: ApiCenterApi[]; nextLink: string }> {
+  public async getApiCenterApis(searchContext: string): Promise<{ value: ApiCenterApi[]; nextLink: string }> {
     const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
     const client = new ServiceClient(creds);
+    let urlContent = `https://management.azure.com/subscriptions/${this.susbcriptionContext.subscriptionId}/resourceGroups/${this.resourceGroupName}/providers/Microsoft.ApiCenter/services/${this.apiCenterName}/workspaces/default/apis?api-version=${this.apiVersion}`;
+    if (searchContext) {
+      urlContent += `&$search=${searchContext}`;
+    }
     const options: RequestPrepareOptions = {
       method: "GET",
-      url: `https://management.azure.com/subscriptions/${this.susbcriptionContext.subscriptionId}/resourceGroups/${this.resourceGroupName}/providers/Microsoft.ApiCenter/services/${this.apiCenterName}/workspaces/default/apis?api-version=${this.apiVersion}`
+      url: urlContent,
     };
     const response = await client.sendRequest(options);
     return response.parsedBody;

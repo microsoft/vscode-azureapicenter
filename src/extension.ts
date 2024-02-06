@@ -16,6 +16,7 @@ import { importOpenApi } from './commands/importOpenApi';
 import { openAPiInSwagger } from './commands/openApiInSwagger';
 import { refreshTree } from './commands/refreshTree';
 import { registerApi } from './commands/registerApi';
+import { searchApi } from './commands/searchApi';
 import { setApiRuleset } from './commands/setApiRuleset';
 import { testInPostman } from './commands/testInPostman';
 import { doubleClickDebounceDelay, selectedNodeKey } from './constants';
@@ -89,6 +90,8 @@ export async function activate(context: vscode.ExtensionContext) {
     registerCommandWithTelemetry('azure-api-center.generateHttpFile', generateHttpFile);
 
     registerCommandWithTelemetry('azure-api-center.registerApi', registerApi);
+
+    registerCommandWithTelemetry('azure-api-center.searchApi', searchApi);
 
     registerCommandWithTelemetry('azure-api-center.setApiRuleset', setApiRuleset);
 
