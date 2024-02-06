@@ -103,6 +103,16 @@
         "command": "azure-api-center.setApiRuleset",
         "title": "Set active API Style Guide",
         "category": "Azure API Center"
+      },
+      {
+        "command": "azure-api-center.selectForCompare",
+        "title": "Select for Compare",
+        "category": "Azure API Center"
+      },
+      {
+        "command": "azure-api-center.compareWithSelected",
+        "title": "Compare with Selected",
+        "category": "Azure API Center"
       }
     ],
     "views": {
@@ -173,6 +183,14 @@
         {
           "command": "azure-api-center.registerApi",
           "when": "view == apiCenterTreeView && viewItem == azureApiCenterApis"
+        },
+        {
+          "command": "azure-api-center.selectForCompare",
+          "when": "view == apiCenterTreeView && viewItem == azureApiCenterApiVersionDefinitionTreeItem-openapi"
+        },
+        {
+          "command": "azure-api-center.compareWithSelected",
+          "when": "view == apiCenterTreeView && viewItem == azureApiCenterApiVersionDefinitionTreeItem-openapi && azure-api-center.isSelectedForCompare"
         }
       ],
       "commandPalette": [

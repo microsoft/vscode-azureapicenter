@@ -25,6 +25,8 @@ import { AzureAccountTreeItem } from './tree/AzureAccountTreeItem';
 import { OpenApiEditor } from './tree/Editors/openApi/OpenApiEditor';
 
 // Copilot Chat
+import { compareWithSelected } from './commands/compareWithSelected';
+import { selectForCompare } from './commands/selectForCompare';
 import { ErrorProperties, TelemetryProperties } from './common/telemetryEvent';
 import { IChatAgentResult, handleChatMessage } from './copilot-chat/copilotChat';
 
@@ -91,6 +93,10 @@ export async function activate(context: vscode.ExtensionContext) {
     registerCommandWithTelemetry('azure-api-center.registerApi', registerApi);
 
     registerCommandWithTelemetry('azure-api-center.setApiRuleset', setApiRuleset);
+
+    registerCommandWithTelemetry('azure-api-center.selectForCompare', selectForCompare);
+
+    registerCommandWithTelemetry('azure-api-center.compareWithSelected', compareWithSelected);
 
     registerCommandWithTelemetry('azure-api-center.apiCenterTreeView.refresh', async (context: IActionContext) => refreshTree(context));
 
