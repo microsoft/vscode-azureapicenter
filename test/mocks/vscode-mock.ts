@@ -128,6 +128,7 @@ mockedVSCode.NotebookCellOutput = vscodeMocks.vscMockExtHostedTypes.NotebookCell
         return await task({ report: () => { } }, new vscodeMocks.vscMock.CancellationToken());
     },
     createQuickPick: () => { },
+    showQuickPick: () => { },
     showOpenDialog: () => { },
     showTextDocument: () => { },
     createTerminal: () => { },
