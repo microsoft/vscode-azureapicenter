@@ -45,7 +45,7 @@ jobs:
       - name: Setup project
         run: |
           npm install
-          npm run package
+          npm run compile-tests
       - name: Run unit tests
         run: |
           npm run test:unit
