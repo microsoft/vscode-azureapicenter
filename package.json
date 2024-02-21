@@ -101,8 +101,9 @@
       },
       {
         "command": "azure-api-center.searchApi",
-        "title": "Search API",
-        "category": "Azure API Center"
+        "title": "Search APIs",
+        "category": "Azure API Center",
+        "icon": "$(search)"
       },
       {
         "command": "azure-api-center.setApiRuleset",
@@ -181,7 +182,8 @@
         },
         {
           "command": "azure-api-center.searchApi",
-          "when": "view == apiCenterTreeView && viewItem == azureApiCenterApis"
+          "when": "view == apiCenterTreeView && viewItem == azureApiCenterApis",
+          "group": "inline"
         }
       ],
       "commandPalette": [

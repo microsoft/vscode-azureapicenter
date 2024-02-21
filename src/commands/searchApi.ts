@@ -10,8 +10,8 @@ export async function searchApi(context: IActionContext, node: ApisTreeItem) {
     if (searchContent) {
         TelemetryClient.sendEvent(TelemetryEvent.registerApiSelectOption, { [TelemetryProperties.option]: searchContent });
         node.updateSearchContent(searchContent);
+        node.refresh(context);
     }
-    node.refresh(context);
 }
 
 

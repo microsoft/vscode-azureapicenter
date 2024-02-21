@@ -24,6 +24,7 @@ export class ApisTreeItem extends AzExtParentTreeItem {
 
   public updateSearchContent(context: string): void {
     this.searchContext = context;
+    this.description = `Search Result: ${context}`;
   }
 
   public async loadMoreChildrenImpl(clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
