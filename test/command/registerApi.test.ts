@@ -1,5 +1,6 @@
 import { IActionContext } from "@microsoft/vscode-azext-utils";
 import * as sinon from 'sinon';
+import * as vscode from 'vscode';
 import { registerApi } from "../../src/commands/registerApi";
 import { TelemetryClient } from "../../src/common/telemetryClient";
 import { ApisTreeItem } from "../../src/tree/ApisTreeItem";
@@ -10,8 +11,9 @@ describe("registerApi", () => {
         sandbox.restore();
     })
     it("happy path", async () => {
-        sinon.stub(TelemetryClient, "sendEvent").resolves();
-        sinon.stub(TelemetryClient, "sendErrorEvent").resolves();
+        sandbox.stub(TelemetryClient, "sendEvent").resolves();
+        sandbox.stub(TelemetryClient, "sendErrorEvent").resolves();
+        const showErrorMessageStub = sandbox.stub(vscode.window, "showErrorMessage");
         await registerApi({} as unknown as IActionContext, {} as unknown as ApisTreeItem);
     })
 })

@@ -1,8 +1,8 @@
 {
     "spec": "./test/**/**.test.ts",
     "require": [
-        "out/test/setup.js",
-        "ts-node/register"
+        "ts-node/register",
+        "out/test/setup.js"
     ],
     "reporter": "mocha-multi-reporters",
     "recursive": true,
