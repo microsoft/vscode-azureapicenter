@@ -1,0 +1,17 @@
+{
+    "extends": "@istanbuljs/nyc-config-typescript",
+    "all": true,
+    "include": [
+        "src/**/*.ts"
+    ],
+    "exclude": [],
+    "reporter": [
+        "text",
+        "html",
+        "json-summary",
+        "cobertura",
+        "lcov"
+    ],
+    "check-coverage": true,
+    "lines": 16
+}

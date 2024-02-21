@@ -17,7 +17,6 @@ const originalLoad = Module._load;
 
 export function resetVSCodeMocks() {
     generateMock('workspace');
-    generateMock('window');
     generateMock('languages');
     generateMock('env');
     generateMock('debug');
@@ -28,8 +27,6 @@ export function resetVSCodeMocks() {
     generateMock('extensions');
 
     when(mockedVSCodeNamespaces.workspace.notebookDocuments).thenReturn([]);
-    when(mockedVSCodeNamespaces.window.visibleNotebookEditors).thenReturn([]);
-    when(mockedVSCodeNamespaces.window.activeTextEditor).thenReturn(undefined);
     // Use mock clipboard fo testing purposes.
     const clipboard = new MockClipboard();
     when(mockedVSCodeNamespaces.env.clipboard).thenReturn(clipboard);
