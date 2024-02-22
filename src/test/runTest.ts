@@ -28,12 +28,21 @@ async function runTests(testFolder: string, workspaceFolder: string, logSuffix?:
 	// the download step separately.
 	let currentAttempt = 1;
 	const maxAttempts = 5;
-	const vscodeExecutablePath = "";
 	while (currentAttempt <= maxAttempts) {
 		try {
 			console.log(`Attempting to download VS Code attempt #${currentAttempt}`);
 			const vscodeExecutablePath = await vstest.downloadAndUnzipVSCode();
-
+			const [cli, ...args] = vstest.resolveCliArgsFromVSCodeExecutablePath(vscodeExecutablePath);
+			cp.spawnSync(
+				cli,
+				[
+					...args,
+					'--install-extension', 'ms-vscode.azure-account',
+				],
+				{
+					encoding: 'utf-8',
+					stdio: 'inherit'
+				});
 			break;
 		} catch (e) {
 			if (currentAttempt >= maxAttempts)
@@ -43,30 +52,6 @@ async function runTests(testFolder: string, workspaceFolder: string, logSuffix?:
 			currentAttempt++;
 		}
 	}
-	if (vscodeExecutablePath) {
-		while (currentAttempt <= maxAttempts) {
-			try {
-				const [cli, ...args] = vstest.resolveCliArgsFromVSCodeExecutablePath(vscodeExecutablePath);
-				cp.spawnSync(
-					cli,
-					[
-						...args,
-						'--install-extension', 'ms-vscode.azure-account',
-					],
-					{
-						encoding: 'utf-8',
-						stdio: 'inherit'
-					});
-			} catch (e) {
-				if (currentAttempt >= maxAttempts)
-					throw e;
-
-				console.warn(`Failed to download VS Code, will retry: ${e}`);
-				currentAttempt++;
-			}
-		}
-	}
-
 
 	console.log("Running tests with pre-downloaded VS Code");
 	try {
