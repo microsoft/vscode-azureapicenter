@@ -12,7 +12,7 @@ describe("registerAPI", () => {
         sandbox.restore();
     })
     it('register API with CICD happy path', async () => {
-        const showQuickPick = sinon.stub(vscode.window, 'showQuickPick').resolves('CI/CD');
+        const showQuickPick = sinon.stub(vscode.window, 'showQuickPick').resolves('CI/CD' as any);
         sandbox.stub(TelemetryClient, "sendEvent").resolves();
         sandbox.stub(TelemetryClient, "sendErrorEvent").resolves();
         const stubCICD = sinon.stub(registerViaCICD, 'registerViaCICD').resolves();

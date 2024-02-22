@@ -235,7 +235,8 @@
     "test": "node ./out/test/runTest.js",
     "prepare": "husky install",
     "lint:staged": "lint-staged",
-    "precommit": "lint-staged"
+    "precommit": "lint-staged",
+    "test-only": "node ./out/src/test/runTest.js"
   },
   "devDependencies": {
     "@types/express": "^4.17.20",
@@ -243,6 +244,7 @@
     "@types/js-yaml": "^4.0.8",
     "@types/mocha": "^10.0.2",
     "@types/node": "18.x",
+    "@types/sinon": "^17.0.3",
     "@types/swagger2openapi": "^7.0.4",
     "@types/vscode": "^1.82.0",
     "@typescript-eslint/eslint-plugin": "^6.7.3",
@@ -253,6 +255,7 @@
     "husky": "^8.0.0",
     "lint-staged": "^15.2.0",
     "mocha": "^10.2.0",
+    "sinon": "^17.0.1",
     "terser-webpack-plugin": "^5.3.9",
     "ts-loader": "^9.4.4",
     "typescript": "^5.2.2",
