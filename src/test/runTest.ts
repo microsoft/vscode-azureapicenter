@@ -1,7 +1,7 @@
 import * as vstest from "@vscode/test-electron";
+import * as cp from "child_process";
 import * as fs from "fs";
 import * as path from 'path';
-
 let exitCode = 0;
 const cwd = process.cwd();
 const testEnv = Object.create(process.env) as NodeJS.Dict<string>;
@@ -43,29 +43,29 @@ async function runTests(testFolder: string, workspaceFolder: string, logSuffix?:
 			currentAttempt++;
 		}
 	}
-	// if (vscodeExecutablePath) {
-	// 	while (currentAttempt <= maxAttempts) {
-	// 		try {
-	// 			const [cli, ...args] = vstest.resolveCliArgsFromVSCodeExecutablePath(vscodeExecutablePath);
-	// 			cp.spawnSync(
-	// 				cli,
-	// 				[
-	// 					...args,
-	// 					'--install-extension', 'ms-vscode.azure-account',
-	// 				],
-	// 				{
-	// 					encoding: 'utf-8',
-	// 					stdio: 'inherit'
-	// 				});
-	// 		} catch (e) {
-	// 			if (currentAttempt >= maxAttempts)
-	// 				throw e;
+	if (vscodeExecutablePath) {
+		while (currentAttempt <= maxAttempts) {
+			try {
+				const [cli, ...args] = vstest.resolveCliArgsFromVSCodeExecutablePath(vscodeExecutablePath);
+				cp.spawnSync(
+					cli,
+					[
+						...args,
+						'--install-extension', 'ms-vscode.azure-account',
+					],
+					{
+						encoding: 'utf-8',
+						stdio: 'inherit'
+					});
+			} catch (e) {
+				if (currentAttempt >= maxAttempts)
+					throw e;
 
-	// 			console.warn(`Failed to download VS Code, will retry: ${e}`);
-	// 			currentAttempt++;
-	// 		}
-	// 	}
-	// }
+				console.warn(`Failed to download VS Code, will retry: ${e}`);
+				currentAttempt++;
+			}
+		}
+	}
 
 
 	console.log("Running tests with pre-downloaded VS Code");
