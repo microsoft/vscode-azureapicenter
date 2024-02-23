@@ -19,7 +19,7 @@ describe("registerAPI", () => {
         const stubCICD = sandbox.stub(registerViaCICD, 'registerViaCICD').resolves();
         await registerApi({} as unknown as IActionContext, {} as unknown as ApisTreeItem);
         sandbox.assert.calledOnce(showQuickPick);
-        sandbox.assert.calledOnce(stubCICD)
+        sandbox.assert.calledOnce(stubCICD);
     });
     it('register API with StepByStep happy path', async () => {
         const showQuickPick = sandbox.stub(vscode.window, 'showQuickPick').resolves('Step by step' as any);
@@ -29,5 +29,5 @@ describe("registerAPI", () => {
         await registerApi({} as unknown as IActionContext, {} as unknown as ApisTreeItem);
         sandbox.assert.calledOnce(showQuickPick);
         sandbox.assert.calledOnce(stubStepByStep);
-    })
+    });
 });

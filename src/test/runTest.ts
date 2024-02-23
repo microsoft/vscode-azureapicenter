@@ -19,8 +19,9 @@ async function runTests(testFolder: string, workspaceFolder: string, logSuffix?:
 	testEnv.COVERAGE_OUTPUT = path.join(cwd, ".nyc_output", `${testRunName}.json`);
 	testEnv.TEST_XML_OUTPUT = path.join(path.join(cwd, ".test_results"), `${testRunName}.xml`);
 
-	if (!fs.existsSync(logPath))
+	if (!fs.existsSync(logPath)) {
 		fs.mkdirSync(logPath);
+	}
 
 	const packageContent = await fs.readFile(path.join(__dirname, "..", "..", "..", "package.json"));
 	const packageJSON = JSON.parse(packageContent.toString());
@@ -38,7 +39,7 @@ async function runTests(testFolder: string, workspaceFolder: string, logSuffix?:
 
 			const vscodeExecutablePath = await vstest.downloadAndUnzipVSCode(vscodeVersion);
 			const [cliPath, ...args] = vstest.resolveCliArgsFromVSCodeExecutablePath(vscodeExecutablePath);
-			console.log('preinstall azure-account extension')
+			console.log('preinstall azure-account extension');
 			cp.spawnSync(cliPath,
 				[...args, '--install-extension', 'ms-vscode.azure-account'], {
 				encoding: 'utf-8',
@@ -46,8 +47,9 @@ async function runTests(testFolder: string, workspaceFolder: string, logSuffix?:
 			});
 			break;
 		} catch (e) {
-			if (currentAttempt >= maxAttempts)
+			if (currentAttempt >= maxAttempts) {
 				throw e;
+			}
 
 			console.warn(`Failed to download VS Code, will retry: ${e}`);
 			currentAttempt++;
@@ -94,8 +96,9 @@ async function runAllTests(): Promise<void> {
 	testEnv.MOCHA_FORBID_ONLY = "true";
 
 	// Ensure any necessary folders exist.
-	if (!fs.existsSync(".code_test_logs"))
+	if (!fs.existsSync(".code_test_logs")) {
 		fs.mkdirSync(".code_test_logs");
+	}
 
 	try {
 		await runTests("commands", "test_commands");
