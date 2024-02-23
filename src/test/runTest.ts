@@ -32,17 +32,13 @@ async function runTests(testFolder: string, workspaceFolder: string, logSuffix?:
 		try {
 			console.log(`Attempting to download VS Code attempt #${currentAttempt}`);
 			const vscodeExecutablePath = await vstest.downloadAndUnzipVSCode();
-			const [cli, ...args] = vstest.resolveCliArgsFromVSCodeExecutablePath(vscodeExecutablePath);
-			cp.spawnSync(
-				cli,
-				[
-					...args,
-					'--install-extension', 'ms-vscode.azure-account',
-				],
-				{
-					encoding: 'utf-8',
-					stdio: 'inherit'
-				});
+			const [cliPath, ...args] = vstest.resolveCliArgsFromVSCodeExecutablePath(vscodeExecutablePath);
+			console.log('preinstall azure-account extension')
+			cp.spawnSync(cliPath,
+				[...args, '--install-extension', 'ms-vscode.azure-account'], {
+				encoding: 'utf-8',
+				stdio: 'inherit'
+			});
 			break;
 		} catch (e) {
 			if (currentAttempt >= maxAttempts)
