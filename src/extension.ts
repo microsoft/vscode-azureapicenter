@@ -26,7 +26,7 @@ import { OpenApiEditor } from './tree/Editors/openApi/OpenApiEditor';
 
 // Copilot Chat
 import { ErrorProperties, TelemetryProperties } from './common/telemetryEvent';
-import { IChatAgentResult, handleChatMessage } from './copilot-chat/copilotChat';
+import { IChatResult, handleChatMessage } from './copilot-chat/copilotChat';
 
 export async function activate(context: vscode.ExtensionContext) {
     console.log('Congratulations, your extension "azure-api-center" is now active!');
@@ -94,11 +94,11 @@ export async function activate(context: vscode.ExtensionContext) {
 
     registerCommandWithTelemetry('azure-api-center.apiCenterTreeView.refresh', async (context: IActionContext) => refreshTree(context));
 
-    const agent = vscode.chat.createChatAgent('apicenter', handleChatMessage);
+    const agent = vscode.chat.createChatParticipant('apicenter', handleChatMessage);
     agent.description = 'Build, discover, and consume great APIs.';
     agent.fullName = "Azure API Center";
-    agent.subCommandProvider = {
-        provideSubCommands(token) {
+    agent.commandProvider = {
+        provideCommands(token) {
             return [
                 {
                     name: 'list',
@@ -112,17 +112,17 @@ export async function activate(context: vscode.ExtensionContext) {
         },
     };
     agent.followupProvider = {
-        provideFollowups(result: IChatAgentResult, token: vscode.CancellationToken) {
-            if (result.subCommand === 'list') {
+        provideFollowups(result: IChatResult, token: vscode.CancellationToken) {
+            if (result.metadata.command === 'list') {
                 return [{
-                    message: '@apicenter /list $more',
-                    title: 'List more APIs'
-                }];
-            } else if (result.subCommand === 'find') {
+                    prompt: '$more',
+                    label: 'List more APIs'
+                } satisfies vscode.ChatFollowup];
+            } else if (result.metadata.command === 'find') {
                 return [{
-                    message: '@apicenter /find $more',
-                    title: 'Find in more APIs'
-                }];
+                    prompt: '$more',
+                    label: 'Find in more APIs'
+                } satisfies vscode.ChatFollowup];
             }
         }
     };
