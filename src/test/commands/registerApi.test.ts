@@ -11,7 +11,7 @@ describe("registerAPI", () => {
     const sandbox = sinon.createSandbox();
     afterEach(() => {
         sandbox.restore();
-    })
+    });
     it('register API with CICD happy path', async () => {
         const showQuickPick = sandbox.stub(vscode.window, 'showQuickPick').resolves('CI/CD' as any);
         sandbox.stub(TelemetryClient, "sendEvent").resolves();
