@@ -255,6 +255,7 @@
     "husky": "^8.0.0",
     "lint-staged": "^15.2.0",
     "mocha": "^10.2.0",
+    "semver": "^7.6.0",
     "sinon": "^17.0.1",
     "terser-webpack-plugin": "^5.3.9",
     "ts-loader": "^9.4.4",
