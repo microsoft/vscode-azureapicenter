@@ -5,12 +5,9 @@
         "rootDir": "src"
     },
     "exclude": [
-        ".code_test_logs",
-        ".crash_dumps",
         ".vscode-test",
         "node_modules",
         "out",
-        "src/test/test_projects",
         ".nyc_output",
         ".husky",
         ".github"
