@@ -2,6 +2,16 @@
 
 Build, discover, try, and consume APIs using your favorite development environment.
 
+### Build
+
+Make APIs you are building discoverable to others by registering them with API Center.
+
+![GitHub]
+
+Shift-left API design conformance checks into Visual Studio Code with integrated linting support, powered by Spectral. 
+
+![Design Conformance]()
+
 ### Discover
 
 Find the right API, fast from your organization's hand-crafted API catalog with API Center.
