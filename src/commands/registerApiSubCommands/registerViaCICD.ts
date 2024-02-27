@@ -6,9 +6,7 @@ import { CICDType } from "../../constants";
 
 export namespace RegisterViaCICD {
     export function getTemplatesFolder(): string {
-        const tmpPath = path.join(__dirname, "..", "templates");
-        console.log('===============', tmpPath)
-        return tmpPath;
+        return path.join(__dirname, "..", "templates");
     }
 
     const stringResources = {
@@ -22,7 +20,7 @@ export namespace RegisterViaCICD {
     export async function registerViaCICD(context: IActionContext) {
         const workspaceFolders = vscode.workspace.workspaceFolders;
         if (!workspaceFolders) {
-            throw new Error("Please open a project to generate CI/CD file.");
+            throw new Error("Open a workspace in Visual Studio Code to generate a CI/CD pipeline.");
         }
         const selectType = await vscode.window.showQuickPick(Object.values(CICDType), { title: 'Select CI/CD provider', ignoreFocusOut: true });
         if (selectType) {

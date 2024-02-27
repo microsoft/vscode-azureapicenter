@@ -72,7 +72,7 @@ suite("test registerViaCICD", () => {
         try {
             await RegisterViaCICD.registerViaCICD({} as unknown as IActionContext);
         } catch (error) {
-            assert.equal((error as Error).message, "Please open a project to generate CI/CD file.")
+            assert.equal((error as Error).message, "Open a workspace in Visual Studio Code to generate a CI/CD pipeline.")
         }
     });
 })
