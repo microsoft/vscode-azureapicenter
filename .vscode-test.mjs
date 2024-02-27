@@ -1,7 +1,8 @@
 import { defineConfig } from '@vscode/test-cli';
 import * as semver from "semver";
 
-import pkg from './package.json' assert { type: "json" };
+import { readFileSync } from "fs";
+const pkg = JSON.parse(readFileSync("./package.json"));
 const vscodeVer = semver.minVersion(pkg.engines.vscode).version;
 
 export default defineConfig({
