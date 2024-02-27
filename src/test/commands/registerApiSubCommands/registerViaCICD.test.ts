@@ -14,7 +14,7 @@ suite("test registerViaCICD", () => {
     teardown(() => {
         cleanUpWorkspace();
         sandbox.restore();
-    })
+    });
     function cleanUpWorkspace() {
         const workspaceFolder = vscode.workspace.workspaceFolders;
         if (workspaceFolder) {
@@ -30,13 +30,13 @@ suite("test registerViaCICD", () => {
     test("registerViaCICD happy path with github", async () => {
         sandbox.stub(RegisterViaCICD, "getTemplatesFolder").callsFake(() => {
             const tempPath = path.join(__dirname, "..", "..", "..", "..", "..", "templates");
-            return tempPath
+            return tempPath;
         });
         const stubQiuckPick = sandbox.stub(vscode.window, "showQuickPick").resolves("GitHub" as any);
         const showTextDocument = sandbox.stub(vscode.window, "showTextDocument").resolves();
         await RegisterViaCICD.registerViaCICD({} as unknown as IActionContext);
         const workspaceFolder = vscode.workspace.workspaceFolders;
-        assert.ok(workspaceFolder)
+        assert.ok(workspaceFolder);
         assert.ok(workspaceFolder![0].uri.fsPath);
         assert.ok(await fs.pathExists(path.join(workspaceFolder![0].uri.fsPath, ".github", "workflows", "register-api.yml")))
         sandbox.assert.calledOnce(stubQiuckPick);
@@ -51,9 +51,9 @@ suite("test registerViaCICD", () => {
         const showTextDocument = sandbox.stub(vscode.window, "showTextDocument").resolves();
         await RegisterViaCICD.registerViaCICD({} as unknown as IActionContext);
         const workspaceFolder = vscode.workspace.workspaceFolders;
-        assert.ok(workspaceFolder)
+        assert.ok(workspaceFolder);
         assert.ok(workspaceFolder![0].uri.fsPath);
-        assert.ok(await fs.pathExists(path.join(workspaceFolder![0].uri.fsPath, ".azure-pipelines", "register-api.yml")))
+        assert.ok(await fs.pathExists(path.join(workspaceFolder![0].uri.fsPath, ".azure-pipelines", "register-api.yml")));
         sandbox.assert.calledOnce(stubQiuckPick);
         sandbox.assert.calledOnce(showTextDocument);
     });

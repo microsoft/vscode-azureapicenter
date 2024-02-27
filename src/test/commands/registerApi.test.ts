@@ -11,10 +11,10 @@ suite("registerAPI", () => {
     let sandbox = null as any;
     suiteSetup(() => {
         sandbox = sinon.createSandbox();
-    })
+    });
     teardown(() => {
         sandbox.restore();
-    })
+    });
     test('register API with CICD happy path', async () => {
         const showQuickPick = sandbox.stub(vscode.window, 'showQuickPick').resolves('CI/CD' as any);
         sandbox.stub(TelemetryClient, "sendEvent").resolves();
@@ -35,13 +35,13 @@ suite("registerAPI", () => {
     });
     test('register API with cancel', async () => {
         const showQuickPick = sandbox.stub(vscode.window, 'showQuickPick').resolves(undefined);
-        const TelemetryClientSyb = sandbox.stub(TelemetryClient, "sendEvent").resolves();
+        const telemetryClientSyb = sandbox.stub(TelemetryClient, "sendEvent").resolves();
         const stubStepByStep = sandbox.stub(registerStepByStep, 'registerStepByStep').resolves();
         const stubCICD = sandbox.stub(RegisterViaCICD, 'registerViaCICD').resolves();
         await registerApi({} as unknown as IActionContext, {} as unknown as ApisTreeItem);
         sandbox.assert.calledOnce(showQuickPick);
-        sandbox.assert.notCalled(TelemetryClientSyb);
+        sandbox.assert.notCalled(telemetryClientSyb);
         sandbox.assert.notCalled(stubStepByStep);
         sandbox.assert.notCalled(stubCICD);
-    })
+    });
 });
