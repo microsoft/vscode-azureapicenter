@@ -38,7 +38,10 @@ suite("test registerViaCICD", () => {
         const workspaceFolder = vscode.workspace.workspaceFolders;
         assert.ok(workspaceFolder);
         assert.ok(workspaceFolder![0].uri.fsPath);
-        assert.ok(await fs.pathExists(path.join(workspaceFolder![0].uri.fsPath, ".github", "workflows", "register-api.yml")))
+        assert.ok(await fs.pathExists(path.join(workspaceFolder![0].uri.fsPath, ".github", "workflows", "register-api.yml")));
+        const content = fs.readFileSync(path.join(workspaceFolder![0].uri.fsPath, ".github", "workflows", "register-api.yml"), "utf8");
+        const expectedContent = fs.readFileSync(path.join(__dirname, "..", "..", "resources", "yaml", "github.yml"), "utf8");
+        assert.equal(content, expectedContent);
         sandbox.assert.calledOnce(stubQiuckPick);
         sandbox.assert.calledOnce(showTextDocument);
     });
@@ -54,6 +57,9 @@ suite("test registerViaCICD", () => {
         assert.ok(workspaceFolder);
         assert.ok(workspaceFolder![0].uri.fsPath);
         assert.ok(await fs.pathExists(path.join(workspaceFolder![0].uri.fsPath, ".azure-pipelines", "register-api.yml")));
+        const content = fs.readFileSync(path.join(workspaceFolder![0].uri.fsPath, ".azure-pipelines", "register-api.yml"), "utf8");
+        const expectedContent = fs.readFileSync(path.join(__dirname, "..", "..", "resources", "yaml", "azure.yml"), "utf8");
+        assert.equal(content, expectedContent);
         sandbox.assert.calledOnce(stubQiuckPick);
         sandbox.assert.calledOnce(showTextDocument);
     });
