@@ -29,7 +29,7 @@ suite("test registerViaCICD", () => {
     }
     test("registerViaCICD happy path with github", async () => {
         sandbox.stub(RegisterViaCICD, "getTemplatesFolder").callsFake(() => {
-            const tempPath = path.join(__dirname, "..", "..", "..", "..", "..", "templates");
+            const tempPath = path.join(__dirname, "..", "..", "..", "..", "templates");
             return tempPath;
         });
         const stubQiuckPick = sandbox.stub(vscode.window, "showQuickPick").resolves("GitHub" as any);
@@ -47,7 +47,7 @@ suite("test registerViaCICD", () => {
     });
     test("registerViaCICD happy path with azurepipelines", async () => {
         sandbox.stub(RegisterViaCICD, "getTemplatesFolder").callsFake(() => {
-            const tempPath = path.join(__dirname, "..", "..", "..", "..", "..", "templates");
+            const tempPath = path.join(__dirname, "..", "..", "..", "..", "templates");
             return tempPath;
         });
         const stubQiuckPick = sandbox.stub(vscode.window, "showQuickPick").resolves("Azure DevOps" as any);

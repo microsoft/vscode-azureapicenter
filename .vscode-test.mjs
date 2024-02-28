@@ -7,8 +7,8 @@ const vscodeVer = semver.minVersion(pkg.engines.vscode).version;
 
 export default defineConfig({
     label: 'unitTests',
-    files: 'out/src/test/**/*.test.js',
-    workspaceFolder: 'out/src/test',
+    files: 'out/test/**/*.test.js',
+    workspaceFolder: 'out/test',
     version: vscodeVer,
     mocha: {
         ui: 'tdd',
