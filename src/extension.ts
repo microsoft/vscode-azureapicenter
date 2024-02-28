@@ -96,7 +96,6 @@ export async function activate(context: vscode.ExtensionContext) {
 
     const agent = vscode.chat.createChatParticipant('apicenter', handleChatMessage);
     agent.description = 'Build, discover, and consume great APIs.';
-    agent.fullName = "Azure API Center";
     agent.commandProvider = {
         provideCommands(token) {
             return [
