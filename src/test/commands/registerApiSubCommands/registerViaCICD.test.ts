@@ -48,7 +48,7 @@ suite("test registerViaCICD", () => {
     test("registerViaCICD happy path with azurepipelines", async () => {
         sandbox.stub(RegisterViaCICD, "getTemplatesFolder").callsFake(() => {
             const tempPath = path.join(__dirname, "..", "..", "..", "..", "..", "templates");
-            return tempPath
+            return tempPath;
         });
         const stubQiuckPick = sandbox.stub(vscode.window, "showQuickPick").resolves("Azure DevOps" as any);
         const showTextDocument = sandbox.stub(vscode.window, "showTextDocument").resolves();
@@ -78,7 +78,7 @@ suite("test registerViaCICD", () => {
         try {
             await RegisterViaCICD.registerViaCICD({} as unknown as IActionContext);
         } catch (error) {
-            assert.equal((error as Error).message, "Open a workspace in Visual Studio Code to generate a CI/CD pipeline.")
+            assert.equal((error as Error).message, "Open a workspace in Visual Studio Code to generate a CI/CD pipeline.");
         }
     });
-})
+});
