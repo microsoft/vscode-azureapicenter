@@ -20,5 +20,5 @@ export async function exportOpenApi(
         const exportedSpec = await  apiCenterService.exportSpecification(
                 node?.apiCenterApiName!, 
                 node?.apiCenterApiVersionName!, 
-                node?.apiCenterApiVersionDefinition.name!) 
+                node?.apiCenterApiVersionDefinition.name!); 
 }

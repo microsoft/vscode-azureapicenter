@@ -36,7 +36,7 @@ export class ApiVersionDefinitionsTreeItem extends AzExtParentTreeItem {
       const resourceGroupName = getResourceGroupFromId(this._apiCenterApiVersion.id);
       const apiCenterService = new ApiCenterService(this.parent?.subscription!, resourceGroupName, this._apiCenterName);
 
-      const definitions = await apiCenterService.getApiCenterApiVersionDefinitions(this._apiCenterApiName, this._apiCenterApiVersion.name)
+      const definitions = await apiCenterService.getApiCenterApiVersionDefinitions(this._apiCenterApiName, this._apiCenterApiVersion.name);
 
       this._nextLink = definitions.nextLink;
       return await this.createTreeItemsWithErrorHandling(

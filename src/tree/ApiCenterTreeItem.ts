@@ -35,6 +35,6 @@ export class ApiCenterTreeItem extends AzExtParentTreeItem {
     }
 
     public async loadMoreChildrenImpl(clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
-      return [this.apisTreeItem, this.environmentsTreeItem]
+      return [this.apisTreeItem, this.environmentsTreeItem];
     }
   }
