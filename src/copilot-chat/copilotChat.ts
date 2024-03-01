@@ -6,17 +6,20 @@ import { TelemetryClient } from '../common/telemetryClient';
 import { ErrorProperties, TelemetryEvent } from '../common/telemetryEvent';
 import { API_CENTER_FIND_API, API_CENTER_LIST_APIs } from './constants';
 
-const specificationsCount = 3;
+const LANGUAGE_MODEL_ID = 'copilot-gpt-3.5-turbo';
+const specificationsCount = 1;
 let index = 0;
 let specifications: ApiCenterApiVersionDefinitionExport[] = [];
 let promptFind = '';
 
-export interface IChatAgentResult extends vscode.ChatAgentResult2 {
-    subCommand: string;
+export interface IChatResult extends vscode.ChatResult {
+    metadata: {
+        command: string;
+    }
 }
 
-export async function handleChatMessage(request: vscode.ChatAgentRequest, ctx: vscode.ChatAgentContext, progress: vscode.Progress<vscode.ChatAgentProgress>, token: vscode.CancellationToken): Promise<IChatAgentResult> {
-    const cmd = request.subCommand;
+export async function handleChatMessage(request: vscode.ChatRequest, ctx: vscode.ChatContext, stream: vscode.ChatResponseStream, token: vscode.CancellationToken): Promise<IChatResult> {
+    const cmd = request.command;
     const eventName = cmd ? `${TelemetryEvent.copilotChat}.${cmd}` : TelemetryEvent.copilotChat;
     let parsedError: IParsedError | undefined;
 
@@ -26,8 +29,8 @@ export async function handleChatMessage(request: vscode.ChatAgentRequest, ctx: v
         let specificationsContent = '';
 
         if (!cmd) {
-            progress.report({ content: 'Hi! What can I help you with? Please use `/list` or `/find` to chat with me!' });
-            return { subCommand: '' };
+            stream.markdown('Hi! What can I help you with? Please use `/list` or `/find` to chat with me!');
+            return { metadata: { command: '' } };
         }
 
         if (['list', 'find'].includes(cmd ?? "")) {
@@ -38,63 +41,55 @@ export async function handleChatMessage(request: vscode.ChatAgentRequest, ctx: v
                     promptFind = request.prompt;
                 }
                 index = 0;
-                progress.report({ content: "\`>\` Querying data from Azure API Center...\n\n" });
+                stream.progress("Querying data from Azure API Center...\n\n");
                 const azureAccountApi = new AzureAccountApi();
                 specifications = await azureAccountApi.getAllSpecifications();
             }
             const specificationsToShow = specifications.slice(index, index + specificationsCount);
             if (specificationsToShow.length === 0) {
-                progress.report({ content: "\`>\` There are no more API Specifications.\n\n" });
-                return { subCommand: '' };
+                stream.markdown("\`>\` There are no more API Specifications.\n\n");
+                return { metadata: { command: '' } };
             }
             specificationsContent = specificationsToShow.map((specification, index) => `## Spec ${index + 1}:\n${specification.value}\n`).join('\n');
         }
 
         if (cmd === 'list') {
-            progress.report({ content: "\`>\` Parsing API Specifications...\n\n" });
-            const access = await vscode.chat.requestChatAccess('copilot');
+            stream.progress("Parsing API Specifications...\n\n");
+            const access = await vscode.lm.requestLanguageModelAccess(LANGUAGE_MODEL_ID);
             const messages = [
-                {
-                    role: vscode.ChatMessageRole.System,
-                    content: API_CENTER_LIST_APIs.replace("<SPECIFICATIONS>", specificationsContent)
-                },
-                {
-                    role: vscode.ChatMessageRole.User,
-                    content: 'What are APIs are available for me to use in Azure API Center?'
-                },
+                new vscode.LanguageModelSystemMessage(API_CENTER_LIST_APIs.replace("<SPECIFICATIONS>", specificationsContent)),
+                new vscode.LanguageModelUserMessage("What are APIs are available for me to use in Azure API Center?"),
             ];
 
-            const platformRequest = access.makeRequest(messages, {}, token);
-            for await (const fragment of platformRequest.response) {
-                const incomingText = fragment.replace('[RESPONSE END]', '');
-                progress.report({ content: incomingText });
+            const chatRequest = access.makeChatRequest(messages, {}, token);
+            await chatRequest.result;
+            for await (const fragment of chatRequest.stream) {
+                stream.markdown(fragment);
             }
-            return { subCommand: 'list' };
+            return { metadata: { command: 'list' } };
         } else if ((cmd === 'find')) {
-            progress.report({ content: `\`>\` Parsing API Specifications for '${promptFind}'...\n\n` });
-            const access = await vscode.chat.requestChatAccess('copilot');
+            stream.progress(`Parsing API Specifications for '${promptFind}'...\n\n`);
+            const access = await vscode.lm.requestLanguageModelAccess(LANGUAGE_MODEL_ID);
             const messages = [
-                {
-                    role: vscode.ChatMessageRole.System,
-                    content: API_CENTER_FIND_API.replace("<SPECIFICATIONS>", specificationsContent)
-                },
-                {
-                    role: vscode.ChatMessageRole.User,
-                    content: `Find an API for '${promptFind}' from the provided list in the system prompt.`
-                },
+                new vscode.LanguageModelSystemMessage(API_CENTER_FIND_API.replace("<SPECIFICATIONS>", specificationsContent)),
+                new vscode.LanguageModelUserMessage(`Find an API for '${promptFind}' from the provided list in the system prompt.`),
             ];
 
-            const platformRequest = access.makeRequest(messages, {}, token);
-            for await (const fragment of platformRequest.response) {
-                const incomingText = fragment.replace('[RESPONSE END]', '');
-                progress.report({ content: incomingText });
+            const chatRequest = access.makeChatRequest(messages, {}, token);
+            await chatRequest.result;
+            for await (const fragment of chatRequest.stream) {
+                stream.markdown(fragment);
             }
-            return { subCommand: 'find' };
+            return { metadata: { command: 'find' } };
         }
 
-        return { subCommand: '' };
+        return { metadata: { command: '' } };
     } catch (error) {
         parsedError = parseError(error);
+        if (parsedError.message?.includes("Message exceeds token limit")) {
+            stream.markdown("⚠️ The content of API Spec exceeds the token limit of Copilot Chat LLM. Please try with below action.");
+            return { metadata: { command: cmd! } };
+        }
         throw error;
     } finally {
         if (parsedError) {

@@ -7,7 +7,7 @@ Search the provided list of APIs at the end of this prompt for one that matches 
 
 Once you find an API, you should provide the title, description, and a list of operations that a user can perform. You should also link to the API specification document if one is provided.
 
-If a step does not relate to APIs, do not respond. Please end your response with [RESPONSE END] and do not include any other text.
+If a step does not relate to APIs, do not respond.
 
 Format your response using Markdown, and make it look beautiful.
 
@@ -21,7 +21,7 @@ You are an expert in API development with Azure API Center. Your job is to provi
 
 For each API, you should provide the title, description, and a list of operations that a user can perform. You should also link to the API specification document if one is provided.
 
-If a step does not relate to APIs, do not respond. Please end your response with [RESPONSE END] and do not include any other text.
+If a step does not relate to APIs, do not respond.
 
 Format your response using Markdown, and make it look beautiful.
 
@@ -37,7 +37,7 @@ Find an API from the list of APIs provided in the system prompt that matches the
 
 Format your response using Markdown, and make it look beautiful.
 
-If a step does not relate to APIs, do not respond. Please end your response with [RESPONSE END] and do not include any other text.
+If a step does not relate to APIs, do not respond.
 `;
 
 export const API_CENTER_DESCRIBE_API = `
@@ -47,5 +47,5 @@ Given an OpenAPI specification document, describe the API including title, descr
 
 Format your response using Markdown, and make it look beautiful.
 
-If a step does not relate to APIs, do not respond. Please end your response with [RESPONSE END] and do not include any other text.
+If a step does not relate to APIs, do not respond.
 `;
