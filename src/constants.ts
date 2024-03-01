@@ -12,8 +12,8 @@ export enum RegisterApiOptions {
 }
 
 export enum ApiRulesetOptions {
-    azureApiGuideline = "Microsoft Azure REST API Guidelines",
-    spectralOwasp = "Spectral OWASP API Security Ruleset",
+    azureApiGuideline = "Microsoft Azure REST API",
+    spectralOwasp = "OWASP API Security Top 10",
     selectFile = "Select Local File",
     inputUrl = "Input Remote URL",
 }
