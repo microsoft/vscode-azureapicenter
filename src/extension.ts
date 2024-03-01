@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 import * as vscode from 'vscode';
 import { commands } from "vscode";
 import { TelemetryClient } from './common/telemetryClient';

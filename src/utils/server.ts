@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 import * as express from 'express';
 import getPort from 'get-port';
 import * as path from 'path';

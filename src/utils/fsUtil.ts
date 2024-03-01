@@ -1,7 +1,5 @@
-/*---------------------------------------------------------------------------------------------
- *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
- *--------------------------------------------------------------------------------------------*/
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 
 import * as crypto from "crypto";
 import * as fse from 'fs-extra';
@@ -33,9 +31,9 @@ export async function createTemporaryFolder(folderName: string): Promise<string>
     return folderPath;
 }
 
-export function getSessionWorkingFolderName() : string {
+export function getSessionWorkingFolderName(): string {
     let sessionFolderName = ext.context.globalState.get(sessionFolderKey);
-// tslint:disable-next-line: strict-boolean-expressions
+    // tslint:disable-next-line: strict-boolean-expressions
     if (!sessionFolderName) {
         sessionFolderName = getRandomHexString();
         ext.outputChannel.appendLine(`Session working folder:${sessionFolderName}`);

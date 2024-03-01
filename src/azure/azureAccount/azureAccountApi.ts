@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 import { ResourceGraphClient } from "@azure/arm-resourcegraph";
 import { RequestPrepareOptions, ServiceClient } from "@azure/ms-rest-js";
 import * as vscode from 'vscode';

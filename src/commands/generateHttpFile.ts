@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 import * as SwaggerParser from "@apidevtools/swagger-parser";
 import { IActionContext } from "@microsoft/vscode-azext-utils";
 import * as fse from 'fs-extra';
