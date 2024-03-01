@@ -4,13 +4,11 @@ Build, discover, try, and consume APIs using your favorite development environme
 
 ### Build
 
-Make APIs you are building discoverable to others by registering them with API Center.
-
-![GitHub]
+Make APIs you are building discoverable to others by registering them with API Center directly or using CI/CD pipelines in GitHub or Azure DevOps.
 
 Shift-left API design conformance checks into Visual Studio Code with integrated linting support, powered by Spectral. 
 
-![Design Conformance]()
+![linting](https://github.com/Azure/api-center-preview/assets/1091304/6e216651-1154-4bb3-bb9e-99b71b82a8be)
 
 ### Discover
 
