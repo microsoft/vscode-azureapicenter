@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 const { HttpHeaders } = require("@azure/ms-rest-js");
 
 export function getCredentialForToken(accessToken: any) {
