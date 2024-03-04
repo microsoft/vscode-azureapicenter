@@ -51,11 +51,6 @@
         "category": "Azure API Center"
       },
       {
-        "command": "azure-api-center.showTreeView",
-        "title": "Show Tree View",
-        "category": "Azure API Center"
-      },
-      {
         "command": "azure-api-center.apiCenterTreeView.refresh",
         "title": "Refresh",
         "icon": "$(refresh)",
