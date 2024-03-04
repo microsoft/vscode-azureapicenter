@@ -34,3 +34,15 @@ jobs:
       - uses: amannn/action-semantic-pull-request@v3.4.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  unit-test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v3
+        with:
+          node-version: lts/*
+      - name: run test
+        run: |
+          npm install
+          npm run test
