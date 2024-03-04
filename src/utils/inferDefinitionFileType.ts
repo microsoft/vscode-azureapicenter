@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 import * as yaml from 'js-yaml';
 
 export type DefinitionFileType = '.json' | '.yaml' | '.txt';

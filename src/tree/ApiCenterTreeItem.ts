@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import { ApiCenter } from "../azure/ResourceGraph/contracts";
 import { ApisTreeItem } from "./ApisTreeItem";
@@ -35,6 +37,6 @@ export class ApiCenterTreeItem extends AzExtParentTreeItem {
     }
 
     public async loadMoreChildrenImpl(clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
-      return [this.apisTreeItem, this.environmentsTreeItem]
+      return [this.apisTreeItem, this.environmentsTreeItem];
     }
   }

@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 import { IParsedError, parseError } from '@microsoft/vscode-azext-utils';
 import * as vscode from 'vscode';
 import { ApiCenterApiVersionDefinitionExport } from '../azure/ApiCenter/contracts';

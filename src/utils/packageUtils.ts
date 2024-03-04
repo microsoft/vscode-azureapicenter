@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 import * as fs from "fs";
 import { ExtensionContext } from "vscode";
 

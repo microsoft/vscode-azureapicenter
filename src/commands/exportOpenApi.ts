@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 import { IActionContext } from "@microsoft/vscode-azext-utils";
 import { ApiVersionDefinitionsTreeItem } from "../tree/ApiVersionDefinitionsTreeItem";
 import { OpenDialogOptions, ProgressLocation, Uri, window, workspace } from "vscode";
@@ -20,5 +22,5 @@ export async function exportOpenApi(
         const exportedSpec = await  apiCenterService.exportSpecification(
                 node?.apiCenterApiName!, 
                 node?.apiCenterApiVersionName!, 
-                node?.apiCenterApiVersionDefinition.name!) 
+                node?.apiCenterApiVersionDefinition.name!); 
 }

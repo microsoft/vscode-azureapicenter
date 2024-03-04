@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import { ApiCenter, ApiCenterApi, ApiCenterApiVersion } from "../azure/ApiCenter/contracts";
 import { getResourceGroupFromId } from "@microsoft/vscode-azext-azureutils";
@@ -36,7 +38,7 @@ export class ApiVersionDefinitionsTreeItem extends AzExtParentTreeItem {
       const resourceGroupName = getResourceGroupFromId(this._apiCenterApiVersion.id);
       const apiCenterService = new ApiCenterService(this.parent?.subscription!, resourceGroupName, this._apiCenterName);
 
-      const definitions = await apiCenterService.getApiCenterApiVersionDefinitions(this._apiCenterApiName, this._apiCenterApiVersion.name)
+      const definitions = await apiCenterService.getApiCenterApiVersionDefinitions(this._apiCenterApiName, this._apiCenterApiVersion.name);
 
       this._nextLink = definitions.nextLink;
       return await this.createTreeItemsWithErrorHandling(

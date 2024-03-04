@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 import { getResourceGroupFromId } from "@microsoft/vscode-azext-azureutils";
 import { ProgressLocation, window } from "vscode";
 import { ApiCenterService } from "../../../azure/ApiCenter/ApiCenterService";

@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 export const extensionName = "azure-api-center";
 export const sessionFolderKey = "currentSessionWorkingFolder";
 export const showSavePromptConfigKey = "azure-api-center.showSavePrompt";

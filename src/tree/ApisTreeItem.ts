@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import { ApiCenter, ApiCenterApi } from "../azure/ApiCenter/contracts";
 import { getResourceGroupFromId } from "@microsoft/vscode-azext-azureutils";
