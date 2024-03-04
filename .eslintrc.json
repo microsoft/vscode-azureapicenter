@@ -9,7 +9,25 @@
         "@typescript-eslint"
     ],
     "rules": {
-        "@typescript-eslint/naming-convention": "warn",
+        "@typescript-eslint/naming-convention": [
+            "warn",
+            {
+                "selector": [
+                    "classProperty",
+                    "objectLiteralProperty",
+                    "typeProperty",
+                    "classMethod",
+                    "objectLiteralMethod",
+                    "typeMethod",
+                    "accessor",
+                    "enumMember"
+                ],
+                "format": null,
+                "modifiers": [
+                    "requiresQuotes"
+                ]
+            }
+        ],
         "@typescript-eslint/semi": "warn",
         "curly": "warn",
         "eqeqeq": "warn",
