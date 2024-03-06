@@ -15,20 +15,16 @@ The best ways to contribute to our code is to try things out first, then file th
 ## Setup develop environment
 
 ### Prerequisites
-Verify you have the right prerequisites for building VSCode Azure API Center and install some recommended development tools.
+Follow the official documents to install the required softwares:
 
-<table>
-    <tr><td><h3>Node.js</h3>As a fundamental runtime context for VSCode Azure API Center, Node.js v18 or higher.</td>
-    </tr>
-    <tr><td><h3>VS Code</h3>Install the latest version defined in 'package.json'.</td>
-    </tr>
-</table>
+1. [Git](https://git-scm.com/)
+1. [Node.js and NPM](https://nodejs.org/), Node version >= 18
+1. [Visual Studio Code](https://code.visualstudio.com/) Ensure the version match `engines` defined in [package.json](./package.json)
 
 ### Built the project
 
 1. Clone this repo locally. (`git clone https://github.com/Microsoft/vscode-azureapicenter.git`)
-1. Open a terminal and move into your local copy. (`cd TeamsFx`)
-1. Because the monorepo is managed by PNPM, you need to setup the project at the first time. (`npm run setup` or `pnpm install && npm run build` at root folder) All dependencies will be installed.
+1. Open a terminal and build locally. (`npm install && npm run package`)
 
 ### Debug the project
 
