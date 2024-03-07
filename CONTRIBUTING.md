@@ -21,7 +21,7 @@ Follow the official documents to install the required softwares:
 1. [Node.js and NPM](https://nodejs.org/), Node version >= 18
 1. [Visual Studio Code](https://code.visualstudio.com/) Ensure the version match `engines` defined in [package.json](./package.json)
 
-### Built the project
+### Build the project
 
 1. Clone this repo locally. (`git clone https://github.com/Microsoft/vscode-azureapicenter.git`)
 1. Open a terminal and build locally. (`npm install && npm run package`)
