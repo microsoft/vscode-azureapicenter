@@ -10,6 +10,7 @@ import * as converter from "swagger2openapi";
 import * as vscode from 'vscode';
 import { ext } from "../extensionVariables";
 import { ApiVersionDefinitionTreeItem } from "../tree/ApiVersionDefinitionTreeItem";
+import { UiStrings } from "../uiStrings";
 import { ensureExtension } from "../utils/ensureExtension";
 import { createTemporaryFolder } from "../utils/fsUtil";
 
@@ -23,7 +24,7 @@ export async function generateHttpFile(context: IActionContext, node?: ApiVersio
 
     ensureExtension(context, {
         extensionId: 'humao.rest-client',
-        noExtensionErrorMessage: 'Please install the REST Client extension to test APIs with HTTP file.',
+        noExtensionErrorMessage: UiStrings.NoRestClientExtension,
     });
 }
 

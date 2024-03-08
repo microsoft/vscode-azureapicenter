@@ -1,5 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
+import { UiStrings } from './uiStrings';
+
 export const extensionName = "azure-api-center";
 export const sessionFolderKey = "currentSessionWorkingFolder";
 export const showSavePromptConfigKey = "azure-api-center.showSavePrompt";
@@ -8,19 +10,19 @@ export const selectedNodeKey = "selectedNode";
 export const azureApiGuidelineRulesetFile = "https://raw.githubusercontent.com/azure/azure-api-style-guide/main/spectral.yaml";
 export const spectralOwaspRulesetFile = "https://unpkg.com/@stoplight/spectral-owasp-ruleset/dist/ruleset.mjs";
 
-export enum RegisterApiOptions {
-    stepByStep = "Step by step",
-    cicd = "CI/CD",
+export const RegisterApiOptions = {
+    stepByStep: UiStrings.RegisterApiOptionStepByStep,
+    cicd: UiStrings.RegisterApiOptionCicd,
 }
 
-export enum ApiRulesetOptions {
-    azureApiGuideline = "Microsoft Azure REST API",
-    spectralOwasp = "OWASP API Security Top 10",
-    selectFile = "Select Local File",
-    inputUrl = "Input Remote URL",
+export const ApiRulesetOptions = {
+    azureApiGuideline: UiStrings.ApiRulesetOptionAzureApiGuideline,
+    spectralOwasp: UiStrings.ApiRulesetOptionSpectralOwasp,
+    selectFile: UiStrings.ApiRulesetOptionSelectFile,
+    inputUrl: UiStrings.ApiRulesetOptionInputUrl,
 }
 
-export enum CICDType {
-    github = "GitHub",
-    azure = "Azure DevOps",
+export const CICDType = {
+    github: UiStrings.CICDTypeGitHub,
+    azure: UiStrings.CICDTypeAzure,
 }

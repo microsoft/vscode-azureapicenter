@@ -32,6 +32,7 @@
     "onStartupFinished"
   ],
   "main": "./dist/extension.js",
+  "l10n": "l10n",
   "extensionDependencies": [
     "ms-vscode.azure-account"
   ],
@@ -43,7 +44,7 @@
     "commands": [
       {
         "command": "azure-api-center.selectSubscriptions",
-        "title": "Select Subscriptions...",
+        "title": "%azure-api-center.commands.selectSubscriptions.title%",
         "icon": {
           "light": "resources/light/filter.svg",
           "dark": "resources/dark/filter.svg"
@@ -52,58 +53,58 @@
       },
       {
         "command": "azure-api-center.apiCenterTreeView.refresh",
-        "title": "Refresh",
+        "title": "%azure-api-center.commands.apiCenterTreeView.refresh.title%",
         "icon": "$(refresh)",
         "category": "Azure API Center"
       },
       {
         "command": "azure-api-center.open-api-docs",
-        "title": "Open API Documentation",
+        "title": "%azure-api-center.commands.open-api-docs.title%",
         "category": "Azure API Center"
       },
       {
         "command": "azure-api-center.open-postman",
-        "title": "Test in Postman",
+        "title": "%azure-api-center.commands.open-postman.title%",
         "category": "Azure API Center"
       },
       {
         "command": "azure-api-center.generate-api-client",
-        "title": "Generate API Client",
+        "title": "%azure-api-center.commands.generate-api-client.title%",
         "category": "Azure API Center"
       },
       {
         "command": "azure-api-center.importOpenApiByFile",
-        "title": "Import OpenAPI from File",
+        "title": "%azure-api-center.commands.importOpenApiByFile.title%",
         "category": "Azure API Center"
       },
       {
         "command": "azure-api-center.importOpenApiByLink",
-        "title": "Import OpenAPI from Link",
+        "title": "%azure-api-center.commands.importOpenApiByLink.title%",
         "category": "Azure API Center"
       },
       {
         "command": "azure-api-center.exportOpenApi",
-        "title": "Export OpenAPI",
+        "title": "%azure-api-center.commands.exportOpenApi.title%",
         "category": "Azure API Center"
       },
       {
         "command": "azure-api-center.showOpenApi",
-        "title": "Edit OpenAPI",
+        "title": "%azure-api-center.commands.showOpenApi.title%",
         "category": "Azure API Center"
       },
       {
         "command": "azure-api-center.generateHttpFile",
-        "title": "Generate HTTP File",
+        "title": "%azure-api-center.commands.generateHttpFile.title%",
         "category": "Azure API Center"
       },
       {
         "command": "azure-api-center.registerApi",
-        "title": "Register API",
+        "title": "%azure-api-center.commands.registerApi.title%",
         "category": "Azure API Center"
       },
       {
         "command": "azure-api-center.setApiRuleset",
-        "title": "Set active API Style Guide",
+        "title": "%azure-api-center.commands.setApiRuleset.title%",
         "category": "Azure API Center"
       }
     ],
