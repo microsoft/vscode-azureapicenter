@@ -13,16 +13,16 @@ export const spectralOwaspRulesetFile = "https://unpkg.com/@stoplight/spectral-o
 export const RegisterApiOptions = {
     stepByStep: UiStrings.RegisterApiOptionStepByStep,
     cicd: UiStrings.RegisterApiOptionCicd,
-}
+};
 
 export const ApiRulesetOptions = {
     azureApiGuideline: UiStrings.ApiRulesetOptionAzureApiGuideline,
     spectralOwasp: UiStrings.ApiRulesetOptionSpectralOwasp,
     selectFile: UiStrings.ApiRulesetOptionSelectFile,
     inputUrl: UiStrings.ApiRulesetOptionInputUrl,
-}
+};
 
 export const CICDType = {
     github: UiStrings.CICDTypeGitHub,
     azure: UiStrings.CICDTypeAzure,
-}
+};
