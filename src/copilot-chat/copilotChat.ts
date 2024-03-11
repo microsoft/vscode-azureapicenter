@@ -6,6 +6,7 @@ import { ApiCenterApiVersionDefinitionExport } from '../azure/ApiCenter/contract
 import { AzureAccountApi } from '../azure/azureAccount/azureAccountApi';
 import { TelemetryClient } from '../common/telemetryClient';
 import { ErrorProperties, TelemetryEvent } from '../common/telemetryEvent';
+import { UiStrings } from '../uiStrings';
 import { API_CENTER_FIND_API, API_CENTER_LIST_APIs } from './constants';
 
 const LANGUAGE_MODEL_ID = 'copilot-gpt-3.5-turbo';
@@ -31,7 +32,7 @@ export async function handleChatMessage(request: vscode.ChatRequest, ctx: vscode
         let specificationsContent = '';
 
         if (!cmd) {
-            stream.markdown('Hi! What can I help you with? Please use `/list` or `/find` to chat with me!');
+            stream.markdown(UiStrings.CopilotNoCmd);
             return { metadata: { command: '' } };
         }
 
@@ -43,20 +44,20 @@ export async function handleChatMessage(request: vscode.ChatRequest, ctx: vscode
                     promptFind = request.prompt;
                 }
                 index = 0;
-                stream.progress("Querying data from Azure API Center...\n\n");
+                stream.progress(UiStrings.CopilotQueryData);
                 const azureAccountApi = new AzureAccountApi();
                 specifications = await azureAccountApi.getAllSpecifications();
             }
             const specificationsToShow = specifications.slice(index, index + specificationsCount);
             if (specificationsToShow.length === 0) {
-                stream.markdown("\`>\` There are no more API Specifications.\n\n");
+                stream.markdown(UiStrings.CopilotNoMoreApiSpec);
                 return { metadata: { command: '' } };
             }
             specificationsContent = specificationsToShow.map((specification, index) => `## Spec ${index + 1}:\n${specification.value}\n`).join('\n');
         }
 
         if (cmd === 'list') {
-            stream.progress("Parsing API Specifications...\n\n");
+            stream.progress(UiStrings.CopilotParseApiSpec);
             const access = await vscode.lm.requestLanguageModelAccess(LANGUAGE_MODEL_ID);
             const messages = [
                 new vscode.LanguageModelSystemMessage(API_CENTER_LIST_APIs.replace("<SPECIFICATIONS>", specificationsContent)),
@@ -70,7 +71,7 @@ export async function handleChatMessage(request: vscode.ChatRequest, ctx: vscode
             }
             return { metadata: { command: 'list' } };
         } else if ((cmd === 'find')) {
-            stream.progress(`Parsing API Specifications for '${promptFind}'...\n\n`);
+            stream.progress(vscode.l10n.t(UiStrings.CopilotParseApiSpecFor, promptFind));
             const access = await vscode.lm.requestLanguageModelAccess(LANGUAGE_MODEL_ID);
             const messages = [
                 new vscode.LanguageModelSystemMessage(API_CENTER_FIND_API.replace("<SPECIFICATIONS>", specificationsContent)),
@@ -89,7 +90,7 @@ export async function handleChatMessage(request: vscode.ChatRequest, ctx: vscode
     } catch (error) {
         parsedError = parseError(error);
         if (parsedError.message?.includes("Message exceeds token limit")) {
-            stream.markdown("⚠️ The content of API Spec exceeds the token limit of Copilot Chat LLM. Please try with below action.");
+            stream.markdown(UiStrings.CopilotExceedsTokenLimit);
             return { metadata: { command: cmd! } };
         }
         throw error;

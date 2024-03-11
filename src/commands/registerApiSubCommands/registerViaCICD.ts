@@ -5,6 +5,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import { CICDType } from "../../constants";
+import { UiStrings } from "../../uiStrings";
 
 export namespace RegisterViaCICD {
     export function getTemplatesFolder(): string {
@@ -22,9 +23,9 @@ export namespace RegisterViaCICD {
     export async function registerViaCICD(context: IActionContext) {
         const workspaceFolders = vscode.workspace.workspaceFolders;
         if (!workspaceFolders) {
-            throw new Error("Open a workspace in Visual Studio Code to generate a CI/CD pipeline.");
+            throw new Error(UiStrings.OpenWorkspace);
         }
-        const selectType = await vscode.window.showQuickPick(Object.values(CICDType), { title: 'Select CI/CD provider', ignoreFocusOut: true });
+        const selectType = await vscode.window.showQuickPick(Object.values(CICDType), { title: UiStrings.SelectCiCdProvider, ignoreFocusOut: true });
         if (selectType) {
             const projectFolder = workspaceFolders[0];
             const workspacePath: string = projectFolder.uri.fsPath;
