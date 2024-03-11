@@ -7,12 +7,13 @@ import { AzureAccountApi } from '../azure/azureAccount/azureAccountApi';
 import { TelemetryClient } from '../common/telemetryClient';
 import { ErrorProperties, TelemetryEvent } from '../common/telemetryEvent';
 import { UiStrings } from '../uiStrings';
+import { compressOpenAPIV3, pasreDefinitionFileRawToOpenAPIV3FullObject } from '../utils/openapiUtils';
 import { API_CENTER_FIND_API, API_CENTER_LIST_APIs } from './constants';
 
 const LANGUAGE_MODEL_ID = 'copilot-gpt-3.5-turbo';
 const specificationsCount = 1;
 let index = 0;
-let specifications: ApiCenterApiVersionDefinitionExport[] = [];
+let specifications: (ApiCenterApiVersionDefinitionExport & { type: string })[] = [];
 let promptFind = '';
 
 export interface IChatResult extends vscode.ChatResult {
@@ -53,7 +54,19 @@ export async function handleChatMessage(request: vscode.ChatRequest, ctx: vscode
                 stream.markdown(UiStrings.CopilotNoMoreApiSpec);
                 return { metadata: { command: '' } };
             }
-            specificationsContent = specificationsToShow.map((specification, index) => `## Spec ${index + 1}:\n${specification.value}\n`).join('\n');
+            specificationsContent = (await Promise.all(specificationsToShow.map(async (specification, index) => {
+                let specificationContent = specification.value;
+                if (specification.type === 'openapi') {
+                    try {
+                        const openApi = await pasreDefinitionFileRawToOpenAPIV3FullObject(specification.value);
+                        const compressedOpenApi = compressOpenAPIV3(openApi);
+                        specificationContent = JSON.stringify(compressedOpenApi);
+                    } catch (error) {
+                        stream.markdown("Failed to compress the OpenAPI specification.");
+                    }
+                }
+                return `## Spec ${index + 1}:\n${specificationContent}\n`;
+            }))).join('\n');
         }
 
         if (cmd === 'list') {

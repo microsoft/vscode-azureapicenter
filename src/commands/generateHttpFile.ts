@@ -1,24 +1,23 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
-import * as SwaggerParser from "@apidevtools/swagger-parser";
 import { IActionContext } from "@microsoft/vscode-azext-utils";
 import * as fse from 'fs-extra';
-import * as yaml from 'js-yaml';
-import { OpenAPIV3 } from "openapi-types";
+
+
 import * as path from 'path';
-import * as converter from "swagger2openapi";
+
+import { OpenAPIV3 } from "openapi-types";
 import * as vscode from 'vscode';
 import { ext } from "../extensionVariables";
 import { ApiVersionDefinitionTreeItem } from "../tree/ApiVersionDefinitionTreeItem";
 import { UiStrings } from "../uiStrings";
 import { ensureExtension } from "../utils/ensureExtension";
 import { createTemporaryFolder } from "../utils/fsUtil";
+import { pasreDefinitionFileRawToOpenAPIV3FullObject } from "../utils/openapiUtils";
 
 export async function generateHttpFile(context: IActionContext, node?: ApiVersionDefinitionTreeItem) {
     const definitionFileRaw = await ext.openApiEditor.getData(node!);
-    const swaggerObject = pasreDefinitionFileRawToSwaggerObject(definitionFileRaw);
-    const swaggerObjectV3 = await convertToOpenAPIV3(swaggerObject);
-    const api = (await SwaggerParser.dereference(swaggerObjectV3)) as OpenAPIV3.Document;
+    const api = await pasreDefinitionFileRawToOpenAPIV3FullObject(definitionFileRaw);
     const httpFileContent = pasreSwaggerObjectToHttpFileContent(api);
     await writeToHttpFile(node!, httpFileContent);
 
@@ -26,27 +25,6 @@ export async function generateHttpFile(context: IActionContext, node?: ApiVersio
         extensionId: 'humao.rest-client',
         noExtensionErrorMessage: UiStrings.NoRestClientExtension,
     });
-}
-
-function pasreDefinitionFileRawToSwaggerObject(input: string) {
-    let result = input;
-
-    try {
-        // Attempt to parse as JSON
-        result = JSON.parse(input);
-    } catch (jsonError) {
-        try {
-            // Attempt to parse as YAML
-            result = yaml.load(input) as any;
-        } catch (yamlError) { }
-    }
-
-    return result;
-}
-
-async function convertToOpenAPIV3(swaggerObject: any): Promise<OpenAPIV3.Document> {
-    const swaggerObjectV3 = await converter.convert(swaggerObject, {});
-    return swaggerObjectV3.openapi;
 }
 
 function pasreSwaggerObjectToHttpFileContent(api: OpenAPIV3.Document): string {
