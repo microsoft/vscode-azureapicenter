@@ -47,5 +47,7 @@ export function compressOpenAPIV3(api: OpenAPIV3.Document): OpenAPIV3.Document {
             };
         }
     }
+    delete compressedApi.components;
+
     return compressedApi;
 }

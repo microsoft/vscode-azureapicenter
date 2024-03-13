@@ -7,7 +7,7 @@ import { AzureAccountApi } from '../azure/azureAccount/azureAccountApi';
 import { TelemetryClient } from '../common/telemetryClient';
 import { ErrorProperties, TelemetryEvent } from '../common/telemetryEvent';
 import { UiStrings } from '../uiStrings';
-import { compressOpenAPIV3, pasreDefinitionFileRawToOpenAPIV3FullObject } from '../utils/openapiUtils';
+import { compressOpenAPIV3, pasreDefinitionFileRawToOpenAPIV3FullObject } from '../utils/openApiUtils';
 import { API_CENTER_FIND_API, API_CENTER_LIST_APIs } from './constants';
 
 const LANGUAGE_MODEL_ID = 'copilot-gpt-3.5-turbo';
@@ -62,7 +62,9 @@ export async function handleChatMessage(request: vscode.ChatRequest, ctx: vscode
                         const compressedOpenApi = compressOpenAPIV3(openApi);
                         specificationContent = JSON.stringify(compressedOpenApi);
                     } catch (error) {
-                        stream.markdown("Failed to compress the OpenAPI specification.");
+                        // Do not throw error if it fails to compress OpenAPI.
+                        // Just use the original value, and let LLM have chance to parse it.
+                        // For exmaple, if the OpenAPI is not valid, it fails to compress it, but LLM may still parse it.
                     }
                 }
                 return `## Spec ${index + 1}:\n${specificationContent}\n`;

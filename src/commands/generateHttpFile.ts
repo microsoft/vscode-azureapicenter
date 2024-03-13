@@ -13,7 +13,7 @@ import { ApiVersionDefinitionTreeItem } from "../tree/ApiVersionDefinitionTreeIt
 import { UiStrings } from "../uiStrings";
 import { ensureExtension } from "../utils/ensureExtension";
 import { createTemporaryFolder } from "../utils/fsUtil";
-import { pasreDefinitionFileRawToOpenAPIV3FullObject } from "../utils/openapiUtils";
+import { pasreDefinitionFileRawToOpenAPIV3FullObject } from "../utils/openApiUtils";
 
 export async function generateHttpFile(context: IActionContext, node?: ApiVersionDefinitionTreeItem) {
     const definitionFileRaw = await ext.openApiEditor.getData(node!);
