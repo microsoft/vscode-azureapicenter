@@ -2,8 +2,8 @@
 // Licensed under the MIT license.
 import { IParsedError, parseError } from '@microsoft/vscode-azext-utils';
 import * as vscode from 'vscode';
-import { ApiCenterApiVersionDefinitionExport } from '../azure/ApiCenter/contracts';
 import { AzureAccountApi } from '../azure/azureAccount/azureAccountApi';
+import { ApiCenterApiVersionDefinitionExportWithType } from '../common/interfaces';
 import { TelemetryClient } from '../common/telemetryClient';
 import { ErrorProperties, TelemetryEvent } from '../common/telemetryEvent';
 import { UiStrings } from '../uiStrings';
@@ -13,7 +13,7 @@ import { API_CENTER_FIND_API, API_CENTER_LIST_APIs } from './constants';
 const LANGUAGE_MODEL_ID = 'copilot-gpt-3.5-turbo';
 const specificationsCount = 1;
 let index = 0;
-let specifications: (ApiCenterApiVersionDefinitionExport & { type: string })[] = [];
+let specifications: ApiCenterApiVersionDefinitionExportWithType[] = [];
 let promptFind = '';
 
 export interface IChatResult extends vscode.ChatResult {

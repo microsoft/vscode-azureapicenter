@@ -3,6 +3,7 @@
 import { ResourceGraphClient } from "@azure/arm-resourcegraph";
 import { RequestPrepareOptions, ServiceClient } from "@azure/ms-rest-js";
 import * as vscode from 'vscode';
+import { ApiCenterApiVersionDefinitionExportWithType } from "../../common/interfaces";
 import { getCredentialForToken } from "../../utils/credentialUtil";
 import { ApiCenter, ApiCenterApi, ApiCenterApiVersion, ApiCenterApiVersionDefinition, ApiCenterApiVersionDefinitionExport } from "../ApiCenter/contracts";
 import { AzureAccountExtensionApi, AzureSubscription } from "./azure-account.api";
@@ -21,7 +22,7 @@ export class AzureAccountApi {
         return filteredSubscriptions;
     }
 
-    public async getAllSpecifications(): Promise<(ApiCenterApiVersionDefinitionExport & { type: string })[]> {
+    public async getAllSpecifications(): Promise<ApiCenterApiVersionDefinitionExportWithType[]> {
         const subscriptions = this.getFilteredSubscriptions();
         const apiCenters = (await Promise.all(subscriptions.map(async subscription => (await this.getApiCenters(subscription)).map(apiCenter =>
             ({ apiCenter: apiCenter, azureSubscription: subscription })
