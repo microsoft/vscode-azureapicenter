@@ -82,7 +82,7 @@ export type ApiCenterApiVersionDefinitionImport = {
 };
 
 export type ApiCenterApiVersionDefinitionExport = {
-    id: string;
+    format: string;
     value: string;
 };
 
