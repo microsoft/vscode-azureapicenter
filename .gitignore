@@ -131,3 +131,7 @@ dist
 
 # Generated files from vscode-l10n
 l10n/bundle.l10n.json
+
+# testing resources
+test-results/*
+extensions

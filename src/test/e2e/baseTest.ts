@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 import { _electron, test as base, type Page } from '@playwright/test';
-import { downloadAndUnzipVSCode } from '@vscode/test-electron/out/download';
-import { spawnSync } from 'child_process';
-import * as fs from 'fs';
+import { downloadAndUnzipVSCode, resolveCliArgsFromVSCodeExecutablePath } from '@vscode/test-electron';
+import { spawnSync } from "child_process";
+import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path from 'path';
 export { expect } from '@playwright/test';
@@ -19,10 +19,16 @@ type TestFixtures = TestOptions & {
 };
 
 export const test = base.extend<TestFixtures>({
-    vscodeVersion: ['insiders', { option: true }],
+    vscodeVersion: ['stable', { option: true }],
     workbox: async ({ vscodeVersion, createProject, createTempDir }, use) => {
         const defaultCachePath = await createTempDir();
         const vscodePath = await downloadAndUnzipVSCode(vscodeVersion);
+        const [cli, ...args] = resolveCliArgsFromVSCodeExecutablePath(vscodePath);
+        spawnSync(cli,
+            [...args, '--install-extension', 'ms-vscode.azure-account'], {
+            encoding: 'utf-8',
+            stdio: 'inherit'
+        });
         const electronApp = await _electron.launch({
             executablePath: vscodePath,
             args: [
@@ -36,9 +42,8 @@ export const test = base.extend<TestFixtures>({
                 '--skip-welcome',
                 '--skip-release-notes',
                 '--disable-workspace-trust',
-                `--extensionDevelopmentPath=${path.join(__dirname, '..', '..')}`,
-                `--extensions-dir=${path.join(defaultCachePath, 'extensions')}`,
-                `--user-data-dir=${path.join(defaultCachePath, 'user-data')}`,
+                `--extensionDevelopmentPath=${path.join(__dirname, '..', '..', '..')}`,
+                ...args,
                 await createProject(),
             ],
         });
@@ -63,18 +68,13 @@ export const test = base.extend<TestFixtures>({
                 await fs.promises.rm(projectPath, { recursive: true });
             console.log(`Creating project in ${projectPath}`);
             await fs.promises.mkdir(projectPath);
-            spawnSync(`npm init playwright@latest --yes -- --quiet --browser=chromium --gha --install-deps`, {
-                cwd: projectPath,
-                stdio: 'inherit',
-                shell: true,
-            });
             return projectPath;
         });
     },
     createTempDir: async ({ }, use) => {
         const tempDirs: string[] = [];
         await use(async () => {
-            const tempDir = await fs.promises.realpath(await fs.promises.mkdtemp(path.join(os.tmpdir(), 'pwtest-')));
+            const tempDir = await fs.promises.realpath(await fs.promises.mkdtemp(path.join(os.tmpdir(), 'apic-')));
             tempDirs.push(tempDir);
             return tempDir;
         });
