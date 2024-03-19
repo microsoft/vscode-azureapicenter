@@ -9,7 +9,7 @@ export default defineConfig({
     label: 'unitTests',
     files: 'out/test/**/*.test.js',
     workspaceFolder: 'out/test',
-    version: vscodeVer,
+    version: 'insiders',
     mocha: {
         ui: 'tdd',
         timeout: 20000
