@@ -191,6 +191,11 @@
           "command": "azure-api-center.searchApi",
           "when": "view == apiCenterTreeView && viewItem == azureApiCenterApis",
           "group": "inline"
+        },
+        {
+          "command": "azure-api-center.apiCenterTreeView.refresh",
+          "when": "view == apiCenterTreeView && viewItem == azureApiCenterApis",
+          "group": "inline"
         }
       ],
       "commandPalette": [

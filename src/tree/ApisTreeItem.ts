@@ -22,6 +22,12 @@ export class ApisTreeItem extends AzExtParentTreeItem {
     return "Apis";
   }
 
+  public cleanUpSearch(context: IActionContext): void {
+    this.searchContext = "";
+    this.description = "";
+    this.refresh(context);
+  }
+
   public updateSearchContent(context: string): void {
     this.searchContext = context;
     this.description = `Search Result: ${context}`;

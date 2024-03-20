@@ -95,7 +95,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
     registerCommandWithTelemetry('azure-api-center.setApiRuleset', setApiRuleset);
 
-    registerCommandWithTelemetry('azure-api-center.apiCenterTreeView.refresh', async (context: IActionContext) => refreshTree(context));
+    registerCommandWithTelemetry('azure-api-center.apiCenterTreeView.refresh', refreshTree);
 
     const agent = vscode.chat.createChatParticipant('apicenter', handleChatMessage);
     agent.description = 'Build, discover, and consume great APIs.';
