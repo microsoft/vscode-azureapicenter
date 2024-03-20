@@ -20,5 +20,4 @@
         "source.fixAll": "explicit",
         "source.organizeImports": "explicit"
     },
-    "azureAutomation.directory.basePath": "d:\\ProgramFiles\\Microsoft VS Code Insiders",
 }
