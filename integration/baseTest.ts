@@ -31,6 +31,7 @@ export const test = base.extend<TestFixtures>({
         });
         const electronApp = await _electron.launch({
             executablePath: vscodePath,
+            env: { ...process.env, NODE_ENV: 'development' },
             args: [
                 // Stolen from https://github.com/microsoft/vscode-test/blob/0ec222ef170e102244569064a12898fb203e5bb7/lib/runTest.ts#L126-L160
                 // https://github.com/microsoft/vscode/issues/84238
