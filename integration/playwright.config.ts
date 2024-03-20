@@ -13,9 +13,9 @@ export default defineConfig<void, TestOptions>({
     globalSetup: './globalSetup',
     projects: [
         {
-            name: 'VSCode stable',
+            name: 'VSCode insiders',
             use: {
-                vscodeVersion: 'stable',
+                vscodeVersion: 'insiders',
             }
         }
     ]

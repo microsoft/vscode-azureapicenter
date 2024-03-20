@@ -19,7 +19,7 @@ type TestFixtures = TestOptions & {
 };
 
 export const test = base.extend<TestFixtures>({
-    vscodeVersion: ['stable', { option: true }],
+    vscodeVersion: ['insiders', { option: true }],
     workbox: async ({ vscodeVersion, createProject, createTempDir }, use) => {
         const defaultCachePath = await createTempDir();
         const vscodePath = await downloadAndUnzipVSCode(vscodeVersion);
@@ -42,7 +42,7 @@ export const test = base.extend<TestFixtures>({
                 '--skip-welcome',
                 '--skip-release-notes',
                 '--disable-workspace-trust',
-                `--extensionDevelopmentPath=${path.join(__dirname, '..', '..', '..')}`,
+                `--extensionDevelopmentPath=${path.join(__dirname, '..',)}`,
                 ...args,
                 await createProject(),
             ],
