@@ -133,5 +133,5 @@ dist
 l10n/bundle.l10n.json
 
 # testing resources
-test-results/*
+test-results/**/*
 extensions

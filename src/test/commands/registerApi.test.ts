@@ -3,11 +3,11 @@
 import { IActionContext } from "@microsoft/vscode-azext-utils";
 import * as sinon from "sinon";
 import * as vscode from "vscode";
-import { registerApi } from "../../../commands/registerApi";
-import * as registerStepByStep from "../../../commands/registerApiSubCommands/registerStepByStep";
-import { RegisterViaCICD } from "../../../commands/registerApiSubCommands/registerViaCICD";
-import { TelemetryClient } from "../../../common/telemetryClient";
-import { ApisTreeItem } from "../../../tree/ApisTreeItem";
+import { registerApi } from "../../commands/registerApi";
+import * as registerStepByStep from "../../commands/registerApiSubCommands/registerStepByStep";
+import { RegisterViaCICD } from "../../commands/registerApiSubCommands/registerViaCICD";
+import { TelemetryClient } from "../../common/telemetryClient";
+import { ApisTreeItem } from "../../tree/ApisTreeItem";
 
 suite("registerAPI", () => {
     let sandbox = null as any;
