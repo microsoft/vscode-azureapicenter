@@ -1,8 +1,5 @@
-/*---------------------------------------------------------------------------------------------
- *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
- *--------------------------------------------------------------------------------------------*/
-
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 import { DialogResponses, IActionContext, UserCancelledError } from "@microsoft/vscode-azext-utils";
 import * as fse from 'fs-extra';
 import * as path from 'path';
@@ -14,7 +11,7 @@ import { DefinitionFileType, inferDefinitionFileType } from "../../utils/inferDe
 import { writeToEditor } from '../../utils/vscodeUtils';
 
 export interface EditorOptions {
-   readonly fileType: DefinitionFileType
+    readonly fileType: DefinitionFileType
 }
 
 // tslint:disable-next-line:no-unsafe-any
@@ -35,8 +32,8 @@ export abstract class Editor<ContextT> implements vscode.Disposable {
         const data: string = await this.getData(context);
 
         const fileType: DefinitionFileType = inferDefinitionFileType(data);
-        const fileName: string = await this.getFilename(context, {fileType: fileType});
-        const originFileName: string = await this.getDiffFilename(context, {fileType: fileType});
+        const fileName: string = await this.getFilename(context, { fileType: fileType });
+        const originFileName: string = await this.getDiffFilename(context, { fileType: fileType });
 
         this.appendLineToOutput(localize('opening', 'Opening "{0}"...', fileName));
         if (sizeLimit !== undefined) {
@@ -72,8 +69,8 @@ export abstract class Editor<ContextT> implements vscode.Disposable {
         const data: string = await this.getData(context);
 
         const fileType: DefinitionFileType = inferDefinitionFileType(data);
-        const fileName: string = await this.getFilename(context, {fileType: fileType});
-        const originFileName: string = await this.getDiffFilename(context, {fileType: fileType});
+        const fileName: string = await this.getFilename(context, { fileType: fileType });
+        const originFileName: string = await this.getDiffFilename(context, { fileType: fileType });
 
         this.appendLineToOutput(localize('opening', 'Opening "{0}"...', fileName));
         if (sizeLimit !== undefined) {
@@ -136,7 +133,7 @@ export abstract class Editor<ContextT> implements vscode.Disposable {
         const rawText = doc.getText();
 
         const fileType = inferDefinitionFileType(rawText);
-        const filename: string = await this.getFilename(context, {fileType: fileType});
+        const filename: string = await this.getFilename(context, { fileType: fileType });
         this.appendLineToOutput(localize('updating', 'Updating "{0}" ...', filename));
         const updatedData: string = await this.updateData(context, rawText);
         this.appendLineToOutput(localize('done', 'Updated "{0}".', filename));

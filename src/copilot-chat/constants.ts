@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 export const TEAMS_PROJECT_COMMAND_ID = 'teamsfx.createProject';
 
 export const API_CENTER_FIND_API = `
