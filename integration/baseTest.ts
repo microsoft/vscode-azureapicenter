@@ -18,6 +18,7 @@ type TestFixtures = TestOptions & {
     createTempDir: () => Promise<string>,
 };
 
+
 export const test = base.extend<TestFixtures>({
     vscodeVersion: ['insiders', { option: true }],
     workbox: async ({ vscodeVersion, createProject, createTempDir }, use) => {
