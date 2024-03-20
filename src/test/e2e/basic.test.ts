@@ -2,11 +2,6 @@
 // Licensed under the MIT license.
 import { expect, test } from './baseTest';
 
-// test('get tree view items', async ({ workbox }) => {
-//     await workbox.getByRole('tab', { name: 'API Center' }).locator('a').click();
-//     const page = await workbox.getByRole('treeitem', { name: 'Sign in to Azure...' }).locator('a').click();
-// })
-
 test('trigger command', async ({ workbox }) => {
     // trigger command palette.
     await workbox.keyboard.press('Control+Shift+KeyP');
