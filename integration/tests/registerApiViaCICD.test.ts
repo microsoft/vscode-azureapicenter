@@ -1,6 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
-import { expect, test } from './baseTest';
+import { expect, test } from '../baseTest';
 
 test('trigger generateAPIviaCICD with GitHub', async ({ workbox }) => {
     // wait API Center extension installed on VS Code.
