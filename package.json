@@ -7,7 +7,7 @@
   "icon": "media/api-center-icon.png",
   "license": "SEE LICENSE IN LICENSE",
   "engines": {
-    "vscode": "^1.87.0"
+    "vscode": "^1.88.0"
   },
   "preview": true,
   "aiKey": "0655b027-8c75-4e4f-af1a-891dc8312948",
@@ -28,9 +28,7 @@
     "AsyncAPI",
     "RAML"
   ],
-  "activationEvents": [
-    "onStartupFinished"
-  ],
+  "activationEvents": [],
   "main": "./dist/extension.js",
   "l10n": "l10n",
   "extensionDependencies": [
@@ -41,6 +39,22 @@
     "languageModels"
   ],
   "contributes": {
+    "chatParticipants": [
+      {
+        "name": "apicenter",
+        "description": "%azure-api-center.chatParticipants.apicenter.description%",
+        "commands": [
+          {
+            "name": "list",
+            "description": "%azure-api-center.chatParticipants.apicenter.commands.list.description%"
+          },
+          {
+            "name": "find",
+            "description": "%azure-api-center.chatParticipants.apicenter.commands.find.description%"
+          }
+        ]
+      }
+    ],
     "commands": [
       {
         "command": "azure-api-center.selectSubscriptions",
