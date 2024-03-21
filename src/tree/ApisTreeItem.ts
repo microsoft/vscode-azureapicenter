@@ -8,7 +8,7 @@ import { ApiTreeItem } from "./ApiTreeItem";
 export class ApisTreeItem extends AzExtParentTreeItem {
   public static contextValue: string = "azureApiCenterApis";
   public searchContext: string = "";
-  public readonly contextValue: string = ApisTreeItem.contextValue;
+  public contextValue: string = ApisTreeItem.contextValue;
   private _nextLink: string | undefined;
   constructor(parent: AzExtParentTreeItem, public apiCenter: ApiCenter) {
     super(parent);
@@ -26,6 +26,7 @@ export class ApisTreeItem extends AzExtParentTreeItem {
     this.searchContext = "";
     this.description = "";
     this.refresh(context);
+    this.contextValue += "-search";
   }
 
   public updateSearchContent(context: string): void {
