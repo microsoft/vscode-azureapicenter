@@ -26,10 +26,11 @@ export class ApisTreeItem extends AzExtParentTreeItem {
     this.searchContext = "";
     this.description = "";
     this.refresh(context);
-    this.contextValue += "-search";
+    this.contextValue = ApisTreeItem.contextValue;
   }
 
   public updateSearchContent(context: string): void {
+    this.contextValue = ApisTreeItem.contextValue + "-search";
     this.searchContext = context;
     this.description = `Search Result: ${context}`;
   }
