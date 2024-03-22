@@ -1,28 +1,23 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 import * as os from 'os';
 import * as path from 'path';
 import * as vscode from 'vscode';
-
-let opticTerminal: vscode.Terminal | undefined;
-
-vscode.window.onDidCloseTerminal(closedTerminal => {
-    if (opticTerminal === closedTerminal) {
-        opticTerminal = undefined;
-    }
-});
 
 export function opticDiff(filePath1: string, filePath2: string) {
     filePath1 = convertDriveLetterToUpperCase(filePath1);
     filePath2 = convertDriveLetterToUpperCase(filePath2);
 
-    if (!opticTerminal) {
-        opticTerminal = vscode.window.createTerminal({
-            name: 'Optic',
-            message: 'Breaking Change Detection '
-        });
-    }
+    const task = new vscode.Task(
+        { type: 'shell' },
+        vscode.TaskScope.Workspace,
+        'Breaking Change Detection',
+        'Azure API Center',
+        new vscode.ShellExecution(`optic diff "${filePath1}" "${filePath2}" --check`),
+        "$optic"
+    );
 
-    opticTerminal.sendText(`optic diff "${filePath1}" "${filePath2}" --check`);
-    opticTerminal.show();
+    vscode.tasks.executeTask(task);
 }
 
 // This function is a workaround for a bug in Optic where it doesn't handle drive letters in a case-insensitive way on Windows

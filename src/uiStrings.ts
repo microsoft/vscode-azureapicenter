@@ -48,6 +48,9 @@ export class UiStrings {
     static readonly ApiRulesetOptionInputUrl = vscode.l10n.t("Input Remote URL");
     static readonly CICDTypeGitHub = vscode.l10n.t("GitHub");
     static readonly CICDTypeAzure = vscode.l10n.t("Azure DevOps");
+    static readonly ApiSpecificationOptionApiCenter = vscode.l10n.t("Azure API Center");
+    static readonly ApiSpecificationOptionLocalFile = vscode.l10n.t("Local File");
+    static readonly ApiSpecificationOptionActiveEditor = vscode.l10n.t("Active Editor");
     static readonly TreeitemLabelApi = vscode.l10n.t("Apis");
     static readonly TreeitemLabelDefinitions = vscode.l10n.t("Definitions");
     static readonly TreeitemLabelVersions = vscode.l10n.t("Versions");

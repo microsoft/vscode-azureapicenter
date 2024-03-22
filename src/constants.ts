@@ -26,3 +26,9 @@ export const CICDType = {
     github: UiStrings.CICDTypeGitHub,
     azure: UiStrings.CICDTypeAzure,
 };
+
+export const ApiSpecificationOptions = {
+    apiCenter: UiStrings.ApiSpecificationOptionApiCenter,
+    localFile: UiStrings.ApiSpecificationOptionLocalFile,
+    activeEditor: UiStrings.ApiSpecificationOptionActiveEditor,
+};

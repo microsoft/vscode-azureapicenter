@@ -27,7 +27,7 @@ import { AzureAccountTreeItem } from './tree/AzureAccountTreeItem';
 import { OpenApiEditor } from './tree/Editors/openApi/OpenApiEditor';
 
 // Copilot Chat
-import { compareWithSelected } from './commands/compareWithSelected';
+import { detectBreakingChange } from './commands/detectBreakingChange';
 import { selectForCompare } from './commands/selectForCompare';
 import { ErrorProperties, TelemetryProperties } from './common/telemetryEvent';
 import { IChatResult, handleChatMessage } from './copilot-chat/copilotChat';
@@ -98,7 +98,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
     registerCommandWithTelemetry('azure-api-center.selectForCompare', selectForCompare);
 
-    registerCommandWithTelemetry('azure-api-center.compareWithSelected', compareWithSelected);
+    registerCommandWithTelemetry('azure-api-center.detectBreakingChange', detectBreakingChange);
 
     registerCommandWithTelemetry('azure-api-center.apiCenterTreeView.refresh', async (context: IActionContext) => refreshTree(context));
 

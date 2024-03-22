@@ -113,8 +113,8 @@
         "category": "Azure API Center"
       },
       {
-        "command": "azure-api-center.compareWithSelected",
-        "title": "Compare with Selected",
+        "command": "azure-api-center.detectBreakingChange",
+        "title": "Detect Breaking Change",
         "category": "Azure API Center"
       }
     ],
@@ -186,14 +186,6 @@
         {
           "command": "azure-api-center.registerApi",
           "when": "view == apiCenterTreeView && viewItem == azureApiCenterApis"
-        },
-        {
-          "command": "azure-api-center.selectForCompare",
-          "when": "view == apiCenterTreeView && viewItem == azureApiCenterApiVersionDefinitionTreeItem-openapi"
-        },
-        {
-          "command": "azure-api-center.compareWithSelected",
-          "when": "view == apiCenterTreeView && viewItem == azureApiCenterApiVersionDefinitionTreeItem-openapi && azure-api-center.isSelectedForCompare"
         }
       ],
       "commandPalette": [
@@ -234,7 +226,28 @@
           "when": "never"
         }
       ]
-    }
+    },
+    "problemMatchers": [
+      {
+        "name": "optic",
+        "owner": "api-center",
+        "fileLocation": [
+          "autoDetect",
+          "${workspaceFolder}"
+        ],
+        "pattern": [
+          {
+            "regexp": "x (.*breaking change.*)",
+            "message": 1
+          },
+          {
+            "regexp": "at (.*):(\\d+):(\\d+)",
+            "file": 1,
+            "line": 2
+          }
+        ]
+      }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
