@@ -7,10 +7,10 @@
   "icon": "media/api-center-icon.png",
   "license": "SEE LICENSE IN LICENSE",
   "engines": {
-    "vscode": "^1.87.0"
+    "vscode": "^1.88.0"
   },
   "preview": true,
-  "aiKey": "AIF-d9b70cd4-b9f9-4d70-929b-a071c400b217",
+  "aiKey": "0655b027-8c75-4e4f-af1a-891dc8312948",
   "repository": {
     "type": "git",
     "url": "https://github.com/Azure/api-center-preview.git"
@@ -28,10 +28,9 @@
     "AsyncAPI",
     "RAML"
   ],
-  "activationEvents": [
-    "onStartupFinished"
-  ],
+  "activationEvents": [],
   "main": "./dist/extension.js",
+  "l10n": "l10n",
   "extensionDependencies": [
     "ms-vscode.azure-account"
   ],
@@ -40,10 +39,26 @@
     "languageModels"
   ],
   "contributes": {
+    "chatParticipants": [
+      {
+        "name": "apicenter",
+        "description": "%azure-api-center.chatParticipants.apicenter.description%",
+        "commands": [
+          {
+            "name": "list",
+            "description": "%azure-api-center.chatParticipants.apicenter.commands.list.description%"
+          },
+          {
+            "name": "find",
+            "description": "%azure-api-center.chatParticipants.apicenter.commands.find.description%"
+          }
+        ]
+      }
+    ],
     "commands": [
       {
         "command": "azure-api-center.selectSubscriptions",
-        "title": "Select Subscriptions...",
+        "title": "%azure-api-center.commands.selectSubscriptions.title%",
         "icon": {
           "light": "resources/light/filter.svg",
           "dark": "resources/dark/filter.svg"
@@ -51,59 +66,54 @@
         "category": "Azure API Center"
       },
       {
-        "command": "azure-api-center.showTreeView",
-        "title": "Show Tree View",
-        "category": "Azure API Center"
-      },
-      {
         "command": "azure-api-center.apiCenterTreeView.refresh",
-        "title": "Refresh",
+        "title": "%azure-api-center.commands.apiCenterTreeView.refresh.title%",
         "icon": "$(refresh)",
         "category": "Azure API Center"
       },
       {
         "command": "azure-api-center.open-api-docs",
-        "title": "Open API Documentation",
+        "title": "%azure-api-center.commands.open-api-docs.title%",
         "category": "Azure API Center"
       },
       {
         "command": "azure-api-center.open-postman",
-        "title": "Test in Postman",
+        "title": "%azure-api-center.commands.open-postman.title%",
         "category": "Azure API Center"
       },
       {
         "command": "azure-api-center.generate-api-client",
-        "title": "Generate API Client",
+        "title": "%azure-api-center.commands.generate-api-client.title%",
         "category": "Azure API Center"
       },
       {
         "command": "azure-api-center.importOpenApiByFile",
-        "title": "Import OpenAPI from File",
+        "title": "%azure-api-center.commands.importOpenApiByFile.title%",
         "category": "Azure API Center"
       },
       {
         "command": "azure-api-center.importOpenApiByLink",
-        "title": "Import OpenAPI from Link",
+        "title": "%azure-api-center.commands.importOpenApiByLink.title%",
         "category": "Azure API Center"
       },
       {
         "command": "azure-api-center.exportOpenApi",
-        "title": "Export OpenAPI",
+        "title": "%azure-api-center.commands.exportOpenApi.title%",
         "category": "Azure API Center"
       },
       {
         "command": "azure-api-center.showOpenApi",
-        "title": "Edit OpenAPI",
+        "title": "%azure-api-center.commands.showOpenApi.title%",
         "category": "Azure API Center"
       },
       {
         "command": "azure-api-center.generateHttpFile",
-        "title": "Generate HTTP File",
+        "title": "%azure-api-center.commands.generateHttpFile.title%",
         "category": "Azure API Center"
       },
       {
         "command": "azure-api-center.registerApi",
-        "title": "Register API",
+        "title": "%azure-api-center.commands.registerApi.title%",
         "category": "Azure API Center"
       },
       {
@@ -114,7 +124,7 @@
       },
       {
         "command": "azure-api-center.setApiRuleset",
-        "title": "Set active API Style Guide",
+        "title": "%azure-api-center.commands.setApiRuleset.title%",
         "category": "Azure API Center"
       },
       {
@@ -249,11 +259,11 @@
     "compile": "webpack",
     "watch": "webpack --watch",
     "package": "webpack --mode production --devtool hidden-source-map",
-    "compile-tests": "tsc -p . --outDir out",
+    "compile-tests": "tsc -p . --outDir out && copyfiles -u 1 src/test/resources/**/* out/",
     "watch-tests": "tsc -p . -w --outDir out",
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
-    "test": "node ./out/test/runTest.js",
+    "test": "vscode-test",
     "prepare": "husky install",
     "lint:staged": "lint-staged",
     "precommit": "lint-staged"
@@ -264,16 +274,22 @@
     "@types/js-yaml": "^4.0.8",
     "@types/mocha": "^10.0.2",
     "@types/node": "18.x",
+    "@types/sinon": "^17.0.3",
     "@types/swagger2openapi": "^7.0.4",
     "@types/vscode": "^1.82.0",
     "@typescript-eslint/eslint-plugin": "^6.7.3",
     "@typescript-eslint/parser": "^6.7.3",
-    "@vscode/test-electron": "^2.3.4",
+    "@vscode/test-cli": "^0.0.6",
+    "@vscode/test-electron": "^2.3.9",
+    "copyfiles": "^2.4.1",
     "eslint": "^8.50.0",
+    "eslint-plugin-header": "^3.1.1",
     "glob": "^10.3.3",
     "husky": "^8.0.0",
     "lint-staged": "^15.2.0",
     "mocha": "^10.2.0",
+    "semver": "^7.6.0",
+    "sinon": "^17.0.1",
     "terser-webpack-plugin": "^5.3.9",
     "ts-loader": "^9.4.4",
     "typescript": "^5.2.2",

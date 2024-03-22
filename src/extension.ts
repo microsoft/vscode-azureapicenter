@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 import * as vscode from 'vscode';
 import { commands } from "vscode";
 import { TelemetryClient } from './common/telemetryClient';
@@ -99,23 +101,8 @@ export async function activate(context: vscode.ExtensionContext) {
     registerCommandWithTelemetry('azure-api-center.apiCenterTreeView.cleanup', refreshTree);
 
     const agent = vscode.chat.createChatParticipant('apicenter', handleChatMessage);
-    agent.description = 'Build, discover, and consume great APIs.';
-    agent.commandProvider = {
-        provideCommands(token) {
-            return [
-                {
-                    name: 'list',
-                    description: 'List available APIs.',
-                },
-                {
-                    name: 'find',
-                    description: 'Find an API given a search query.',
-                }
-            ];
-        },
-    };
     agent.followupProvider = {
-        provideFollowups(result: IChatResult, token: vscode.CancellationToken) {
+        provideFollowups(result: IChatResult, context: vscode.ChatContext, token: vscode.CancellationToken) {
             if (result.metadata.command === 'list') {
                 return [{
                     prompt: '$more',

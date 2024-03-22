@@ -2,6 +2,13 @@ name: "CD"
 run-name: CD-${{ github.ref_name }}-${{ github.run_id }}
 on:
   workflow_dispatch:
+    inputs:
+      release:
+        description: "run for release?"
+        required: true
+        type: boolean
+        default: false
+
   schedule:
     - cron: "0 16 * * *"
 
@@ -14,6 +21,13 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: lts/*
+
+      - uses: jossef/action-set-json-field@v1
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.release == 'true' }}
+        with:
+          file: ./package.json
+          field: aiKey
+          value: ${{ secrets.PUBLIC_AIKEY }}
 
       - name: Build visx
         run: |

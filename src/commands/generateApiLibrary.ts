@@ -1,8 +1,13 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
+
 /* eslint-disable @typescript-eslint/naming-convention */
+
 import { IActionContext } from '@microsoft/vscode-azext-utils';
 import * as vscode from 'vscode';
 import { ext } from '../extensionVariables';
 import { ApiVersionDefinitionTreeItem } from '../tree/ApiVersionDefinitionTreeItem';
+import { UiStrings } from '../uiStrings';
 import { ensureExtension } from '../utils/ensureExtension';
 
 const KiotaExtensionId = 'ms-graph.kiota';
@@ -10,7 +15,7 @@ const KiotaExtensionId = 'ms-graph.kiota';
 export async function generateApiLibrary(context: IActionContext, node: ApiVersionDefinitionTreeItem) {
     ensureExtension(context, {
         extensionId: KiotaExtensionId,
-        noExtensionErrorMessage: 'Please install the Kiota extension to generate the API library.',
+        noExtensionErrorMessage: UiStrings.NoKiotaExtension,
     });
 
     const path = await ext.openApiEditor.createTempFileFromTree(node);

@@ -1,6 +1,9 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 import { ResourceGraphClient } from "@azure/arm-resourcegraph";
 import { RequestPrepareOptions, ServiceClient } from "@azure/ms-rest-js";
 import * as vscode from 'vscode';
+import { ApiCenterApiVersionDefinitionExportWithType } from "../../common/interfaces";
 import { getCredentialForToken } from "../../utils/credentialUtil";
 import { ApiCenter, ApiCenterApi, ApiCenterApiVersion, ApiCenterApiVersionDefinition, ApiCenterApiVersionDefinitionExport } from "../ApiCenter/contracts";
 import { AzureAccountExtensionApi, AzureSubscription } from "./azure-account.api";
@@ -19,7 +22,7 @@ export class AzureAccountApi {
         return filteredSubscriptions;
     }
 
-    public async getAllSpecifications(): Promise<ApiCenterApiVersionDefinitionExport[]> {
+    public async getAllSpecifications(): Promise<ApiCenterApiVersionDefinitionExportWithType[]> {
         const subscriptions = this.getFilteredSubscriptions();
         const apiCenters = (await Promise.all(subscriptions.map(async subscription => (await this.getApiCenters(subscription)).map(apiCenter =>
             ({ apiCenter: apiCenter, azureSubscription: subscription })
@@ -33,8 +36,14 @@ export class AzureAccountApi {
         const apiCenterApiVersionDefinitions = (await Promise.all(apiCenterApiVersions.map(async apiCenterApiVersion => (await this.getApiCenterApiVersionDefinitions(apiCenterApiVersion.apiCenterApiVersion, apiCenterApiVersion.apiCenterApi, apiCenterApiVersion.apiCenter, apiCenterApiVersion.azureSubscription)).map(apiCenterApiVersionDefinition =>
             ({ apiCenterApiVersionDefinition: apiCenterApiVersionDefinition, apiCenterApiVersion: apiCenterApiVersion.apiCenterApiVersion, apiCenterApi: apiCenterApiVersion.apiCenterApi, apiCenter: apiCenterApiVersion.apiCenter, azureSubscription: apiCenterApiVersion.azureSubscription })
         )))).flat();
-        const specifications = (await Promise.all(apiCenterApiVersionDefinitions.map(async apiCenterApiVersionDefinition =>
-            (await this.exportSpecification(apiCenterApiVersionDefinition.apiCenterApiVersionDefinition, apiCenterApiVersionDefinition.apiCenterApiVersion, apiCenterApiVersionDefinition.apiCenterApi, apiCenterApiVersionDefinition.apiCenter, apiCenterApiVersionDefinition.azureSubscription)))));
+        const specifications = (await Promise.all(apiCenterApiVersionDefinitions.map(async apiCenterApiVersionDefinition => {
+            const specification = await this.exportSpecification(apiCenterApiVersionDefinition.apiCenterApiVersionDefinition, apiCenterApiVersionDefinition.apiCenterApiVersion, apiCenterApiVersionDefinition.apiCenterApi, apiCenterApiVersionDefinition.apiCenter, apiCenterApiVersionDefinition.azureSubscription);
+            return {
+                format: specification.format,
+                value: specification.value,
+                type: apiCenterApiVersionDefinition.apiCenterApiVersionDefinition.properties?.specification?.name,
+            };
+        })));
         return specifications;
     }
 

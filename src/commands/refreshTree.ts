@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 import { IActionContext } from "@microsoft/vscode-azext-utils";
 import { ext } from "../extensionVariables";
 import { ApisTreeItem } from "../tree/ApisTreeItem";

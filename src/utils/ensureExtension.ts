@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 import { IActionContext } from "@microsoft/vscode-azext-utils";
 import { commands, extensions, l10n } from "vscode";
 
@@ -17,7 +19,7 @@ export function ensureExtension(context: IActionContext, options: EnsureExtensio
                 callback: async () => commands.executeCommand('extension.open', options.extensionId),
             }
         ];
-        throw new Error(l10n.t(options.noExtensionErrorMessage));
+        throw new Error(options.noExtensionErrorMessage);
     }
 
     // TODO: should we check for the version of the extension?
