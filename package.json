@@ -252,6 +252,10 @@
           "when": "never"
         },
         {
+          "command": "azure-api-center.searchApi",
+          "when": "never"
+        },
+        {
           "command": "azure-api-center.cleanup",
           "whne": "never"
         }
