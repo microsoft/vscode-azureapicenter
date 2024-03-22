@@ -116,6 +116,12 @@
         "command": "azure-api-center.setApiRuleset",
         "title": "Set active API Style Guide",
         "category": "Azure API Center"
+      },
+      {
+        "command": "azure-api-center.apiCenterTreeView.cleanup",
+        "title": "CleanUp Search Result",
+        "category": "Azure API Center",
+        "icon": "$(clear-all)"
       }
     ],
     "views": {
@@ -193,7 +199,7 @@
           "group": "inline@0"
         },
         {
-          "command": "azure-api-center.apiCenterTreeView.refresh",
+          "command": "azure-api-center.apiCenterTreeView.cleanup",
           "when": "view == apiCenterTreeView && viewItem == azureApiCenterApis-search",
           "group": "inline@1"
         }

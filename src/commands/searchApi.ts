@@ -6,12 +6,12 @@ import { ApisTreeItem } from "../tree/ApisTreeItem";
 
 export async function searchApi(context: IActionContext, node: ApisTreeItem) {
     const searchContent = await vscode.window.showInputBox({ title: 'Search API', ignoreFocusOut: true, validateInput: validateInputForTitle });
-
-    if (searchContent) {
-        TelemetryClient.sendEvent(TelemetryEvent.registerApiSelectOption, { [TelemetryProperties.option]: searchContent });
-        node.updateSearchContent(searchContent);
-        node.refresh(context);
+    if (!searchContent) {
+        return;
     }
+    TelemetryClient.sendEvent(TelemetryEvent.registerApiSelectOption, { [TelemetryProperties.option]: searchContent });
+    node.updateSearchContent(searchContent);
+    node.refresh(context);
 }
 
 
