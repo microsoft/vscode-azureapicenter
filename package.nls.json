@@ -10,5 +10,6 @@
     "azure-api-center.commands.showOpenApi.title": "Edit OpenAPI",
     "azure-api-center.commands.generateHttpFile.title": "Generate HTTP File",
     "azure-api-center.commands.registerApi.title": "Register API",
-    "azure-api-center.commands.setApiRuleset.title": "Set active API Style Guide"
+    "azure-api-center.commands.setApiRuleset.title": "Set active API Style Guide",
+    "azure-api-center.commands.detectBreakingChange.title": "Detect Breaking Change"
 }

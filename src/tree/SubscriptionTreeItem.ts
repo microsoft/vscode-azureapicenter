@@ -5,11 +5,12 @@ import { AzExtParentTreeItem, AzExtTreeItem, ISubscriptionContext } from "@micro
 import { ResourceGraphService } from "../azure/ResourceGraph/ResourceGraphService";
 import { TelemetryClient } from "../common/telemetryClient";
 import { TelemetryEvent } from "../common/telemetryEvent";
+import { UiStrings } from "../uiStrings";
 import { treeUtils } from "../utils/treeUtils";
 import { ApiCenterTreeItem } from "./ApiCenterTreeItem";
 
 export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
-    public readonly childTypeLabel: string = 'API Center Service';
+    public readonly childTypeLabel: string = UiStrings.SubscriptionTreeItemChildTypeLabel;
 
     private _nextLink: string | undefined;
 

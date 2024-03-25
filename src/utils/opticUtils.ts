@@ -3,6 +3,7 @@
 import * as os from 'os';
 import * as path from 'path';
 import * as vscode from 'vscode';
+import { UiStrings } from '../uiStrings';
 
 export function opticDiff(filePath1: string, filePath2: string) {
     filePath1 = convertDriveLetterToUpperCase(filePath1);
@@ -11,8 +12,8 @@ export function opticDiff(filePath1: string, filePath2: string) {
     const task = new vscode.Task(
         { type: 'shell' },
         vscode.TaskScope.Workspace,
-        'Breaking Change Detection',
-        'Azure API Center',
+        UiStrings.OpticTaskName,
+        UiStrings.OpticTaskSource,
         new vscode.ShellExecution(`npx @useoptic/optic diff "${filePath1}" "${filePath2}" --check`),
         "$optic"
     );

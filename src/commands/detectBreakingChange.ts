@@ -7,6 +7,7 @@ import * as vscode from 'vscode';
 import { ApiSpecificationOptions } from "../constants";
 import { ext } from "../extensionVariables";
 import { ApiVersionDefinitionTreeItem } from "../tree/ApiVersionDefinitionTreeItem";
+import { UiStrings } from "../uiStrings";
 import { createTemporaryFolder } from "../utils/fsUtil";
 import { DefinitionFileType, inferDefinitionFileType } from "../utils/inferDefinitionFileType";
 import { checkNodeVersion } from "../utils/nodeUtils";
@@ -15,15 +16,15 @@ import { opticDiff } from "../utils/opticUtils";
 export async function detectBreakingChange(context: IActionContext) {
     const nodeVersion = await checkNodeVersion();
     if (!nodeVersion) {
-        vscode.window.showErrorMessage('Node.js is not installed. Please install Node.js to use this feature.');
+        vscode.window.showErrorMessage(UiStrings.NodeNotInstalled);
         return;
     }
 
-    const apiSpecification1 = await getApiSpecification('Select first API Specification', context);
+    const apiSpecification1 = await getApiSpecification(UiStrings.SelectFirstApiSpecification, context);
     if (!apiSpecification1) {
         return;
     }
-    const apiSpecification2 = await getApiSpecification('Select second API Specification', context);
+    const apiSpecification2 = await getApiSpecification(UiStrings.SelectSecondApiSpecification, context);
     if (!apiSpecification2) {
         return;
     }

@@ -109,7 +109,7 @@
       },
       {
         "command": "azure-api-center.detectBreakingChange",
-        "title": "Detect Breaking Change",
+        "title": "%azure-api-center.commands.detectBreakingChange.title%",
         "category": "Azure API Center"
       }
     ],
