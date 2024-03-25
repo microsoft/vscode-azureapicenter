@@ -9,9 +9,16 @@ import { ext } from "../extensionVariables";
 import { ApiVersionDefinitionTreeItem } from "../tree/ApiVersionDefinitionTreeItem";
 import { createTemporaryFolder } from "../utils/fsUtil";
 import { DefinitionFileType, inferDefinitionFileType } from "../utils/inferDefinitionFileType";
+import { checkNodeVersion } from "../utils/nodeUtils";
 import { opticDiff } from "../utils/opticUtils";
 
-export async function detectBreakingChange(context: IActionContext, node?: ApiVersionDefinitionTreeItem) {
+export async function detectBreakingChange(context: IActionContext) {
+    const nodeVersion = await checkNodeVersion();
+    if (!nodeVersion) {
+        vscode.window.showErrorMessage('Node.js is not installed. Please install Node.js to use this feature.');
+        return;
+    }
+
     const apiSpecification1 = await getApiSpecification('Select first API Specification', context);
     if (!apiSpecification1) {
         return;

@@ -13,7 +13,7 @@ export function opticDiff(filePath1: string, filePath2: string) {
         vscode.TaskScope.Workspace,
         'Breaking Change Detection',
         'Azure API Center',
-        new vscode.ShellExecution(`optic diff "${filePath1}" "${filePath2}" --check`),
+        new vscode.ShellExecution(`npx @useoptic/optic diff "${filePath1}" "${filePath2}" --check`),
         "$optic"
     );
 
