@@ -28,7 +28,6 @@ import { OpenApiEditor } from './tree/Editors/openApi/OpenApiEditor';
 
 // Copilot Chat
 import { detectBreakingChange } from './commands/detectBreakingChange';
-import { selectForCompare } from './commands/selectForCompare';
 import { ErrorProperties, TelemetryProperties } from './common/telemetryEvent';
 import { IChatResult, handleChatMessage } from './copilot-chat/copilotChat';
 
@@ -95,8 +94,6 @@ export async function activate(context: vscode.ExtensionContext) {
     registerCommandWithTelemetry('azure-api-center.registerApi', registerApi);
 
     registerCommandWithTelemetry('azure-api-center.setApiRuleset', setApiRuleset);
-
-    registerCommandWithTelemetry('azure-api-center.selectForCompare', selectForCompare);
 
     registerCommandWithTelemetry('azure-api-center.detectBreakingChange', detectBreakingChange);
 

@@ -108,11 +108,6 @@
         "category": "Azure API Center"
       },
       {
-        "command": "azure-api-center.selectForCompare",
-        "title": "Select for Compare",
-        "category": "Azure API Center"
-      },
-      {
         "command": "azure-api-center.detectBreakingChange",
         "title": "Detect Breaking Change",
         "category": "Azure API Center"
