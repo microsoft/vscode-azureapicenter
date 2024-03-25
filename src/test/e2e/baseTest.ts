@@ -44,7 +44,8 @@ export const test = base.extend<TestFixtures>({
                 '--skip-welcome',
                 '--skip-release-notes',
                 '--disable-workspace-trust',
-                `--extensionDevelopmentPath=${path.join(__dirname, '..',)}`,
+                `--extensionDevelopmentPath=${path.join(__dirname, '..', '..', '..', '..')
+                }`,
                 ...args,
                 await createProject(),
             ],
@@ -57,30 +58,32 @@ export const test = base.extend<TestFixtures>({
         test.info().attachments.push({ name: 'trace', path: tracePath, contentType: 'application/zip' });
         await electronApp.close();
         const logPath = path.join(defaultCachePath, 'user-data');
-        if (fs.existsSync(logPath)) {
+        if (await fs.exists(logPath)) {
             const logOutputPath = test.info().outputPath('vscode-logs');
-            await fs.promises.cp(logPath, logOutputPath, { recursive: true });
+            await fs.copy(logPath, logOutputPath);
         }
     },
     createProject: async ({ createTempDir }, use) => {
         await use(async () => {
             // We want to be outside of the project directory to avoid already installed dependencies.
             const projectPath = await createTempDir();
-            if (fs.existsSync(projectPath))
-                await fs.promises.rm(projectPath, { recursive: true });
+            if (await fs.exists(projectPath)) {
+                await fs.rm(projectPath, { recursive: true });
+            }
             console.log(`Creating project in ${projectPath}`);
-            await fs.promises.mkdir(projectPath);
+            await fs.mkdir(projectPath);
             return projectPath;
         });
     },
     createTempDir: async ({ }, use) => {
         const tempDirs: string[] = [];
         await use(async () => {
-            const tempDir = await fs.promises.realpath(await fs.promises.mkdtemp(path.join(os.tmpdir(), 'apic-')));
+            const tempDir = await fs.realpath(await fs.mkdtemp(path.join(os.tmpdir(), 'apic-')));
             tempDirs.push(tempDir);
             return tempDir;
         });
-        for (const tempDir of tempDirs)
-            await fs.promises.rm(tempDir, { recursive: true });
+        for (const tempDir of tempDirs) {
+            await fs.rm(tempDir, { recursive: true });
+        }
     }
 });

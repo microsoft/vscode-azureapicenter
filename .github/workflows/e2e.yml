@@ -19,4 +19,4 @@ jobs:
           npm run package
       - run: |
           npx playwright test
-        working-directory: ./integration
+        working-directory: ./src/test/e2e
