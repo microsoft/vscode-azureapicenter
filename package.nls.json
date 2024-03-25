@@ -12,7 +12,7 @@
     "azure-api-center.commands.registerApi.title": "Register API",
     "azure-api-center.commands.setApiRuleset.title": "Set active API Style Guide",
     "azure-api-center.commands.searchApi.title": "Search APIs",
-    "azure-api-center.commands.cleanup.title": "Clean Search Result",
+    "azure-api-center.commands.cleanup.title": "Clean Up Search Result",
     "azure-api-center.chatParticipants.apicenter.description": "Build, discover, and consume great APIs.",
     "azure-api-center.chatParticipants.apicenter.commands.list.description": "List available APIs.",
     "azure-api-center.chatParticipants.apicenter.commands.find.description": "Find an API given a search query."

@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 import { getResourceGroupFromId } from "@microsoft/vscode-azext-azureutils";
 import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
+import * as vscode from 'vscode';
 import { ApiCenterService } from "../azure/ApiCenter/ApiCenterService";
 import { ApiCenter } from "../azure/ApiCenter/contracts";
 import { UiStrings } from "../uiStrings";
@@ -28,14 +29,14 @@ export class ApisTreeItem extends AzExtParentTreeItem {
   public cleanUpSearch(context: IActionContext): void {
     this.searchContext = "";
     this.description = "";
-    this.refresh(context);
     this.contextValue = ApisTreeItem.contextValue;
+    this.refresh(context);
   }
 
   public updateSearchContent(context: string): void {
     this.contextValue = ApisTreeItem.contextValue + "-search";
     this.searchContext = context;
-    this.description = `Search Result: ${context}`;
+    this.description = vscode.l10n.t(UiStrings.SearchAPIsResult, context);
   }
 
   public async loadMoreChildrenImpl(clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
