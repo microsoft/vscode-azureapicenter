@@ -11,7 +11,7 @@ import { ApiTreeItem } from "./ApiTreeItem";
 
 export class ApisTreeItem extends AzExtParentTreeItem {
   public static contextValue: string = "azureApiCenterApis";
-  public searchContext: string = "";
+  public searchContent: string = "";
   public contextValue: string = ApisTreeItem.contextValue;
   private _nextLink: string | undefined;
   constructor(parent: AzExtParentTreeItem, public apiCenter: ApiCenter) {
@@ -27,22 +27,22 @@ export class ApisTreeItem extends AzExtParentTreeItem {
   }
 
   public cleanUpSearch(context: IActionContext): void {
-    this.searchContext = "";
+    this.searchContent = "";
     this.description = "";
     this.contextValue = ApisTreeItem.contextValue;
     this.refresh(context);
   }
 
-  public updateSearchContent(context: string): void {
+  public updateSearchContent(searchContent: string): void {
     this.contextValue = ApisTreeItem.contextValue + "-search";
-    this.searchContext = context;
-    this.description = vscode.l10n.t(UiStrings.SearchAPIsResult, context);
+    this.searchContent = searchContent;
+    this.description = vscode.l10n.t(UiStrings.SearchAPIsResult, searchContent);
   }
 
   public async loadMoreChildrenImpl(clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
     const resourceGroupName = getResourceGroupFromId(this.apiCenter.id);
     const apiCenterService = new ApiCenterService(this.parent?.subscription!, resourceGroupName, this.apiCenter.name);
-    const apis = await apiCenterService.getApiCenterApis(this.searchContext);
+    const apis = await apiCenterService.getApiCenterApis(this.searchContent);
 
     this._nextLink = apis.nextLink;
     return await this.createTreeItemsWithErrorHandling(

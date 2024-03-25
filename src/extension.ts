@@ -10,6 +10,7 @@ import { TelemetryClient } from './common/telemetryClient';
 // Tree View UI
 import { registerAzureUtilsExtensionVariables } from '@microsoft/vscode-azext-azureutils';
 import { AzExtTreeDataProvider, AzExtTreeItem, CommandCallback, IActionContext, IParsedError, createAzExtOutputChannel, parseError, registerCommand, registerEvent } from '@microsoft/vscode-azext-utils';
+import { cleanupSearchResult } from './commands/cleanUpSearch';
 import { showOpenApi } from './commands/editOpenApi';
 import { exportOpenApi } from './commands/exportOpenApi';
 import { generateApiLibrary } from './commands/generateApiLibrary';
@@ -95,11 +96,11 @@ export async function activate(context: vscode.ExtensionContext) {
 
     registerCommandWithTelemetry('azure-api-center.searchApi', searchApi);
 
-    registerCommandWithTelemetry('azure-api-center.cleanup', refreshTree);
+    registerCommandWithTelemetry('azure-api-center.cleanupSearchResult', cleanupSearchResult);
 
     registerCommandWithTelemetry('azure-api-center.setApiRuleset', setApiRuleset);
 
-    registerCommandWithTelemetry('azure-api-center.apiCenterTreeView.refresh', refreshTree);
+    registerCommandWithTelemetry('azure-api-center.apiCenterTreeView.refresh', async (context: IActionContext) => refreshTree(context));
 
     const agent = vscode.chat.createChatParticipant('apicenter', handleChatMessage);
     agent.followupProvider = {

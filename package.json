@@ -128,8 +128,8 @@
         "category": "Azure API Center"
       },
       {
-        "command": "azure-api-center.cleanup",
-        "title": "%azure-api-center.commands.cleanup.title%",
+        "command": "azure-api-center.cleanupSearchResult",
+        "title": "%azure-api-center.commands.cleanupSearchResult.title%",
         "category": "Azure API Center",
         "icon": "$(clear-all)"
       }
@@ -209,7 +209,7 @@
           "group": "inline@0"
         },
         {
-          "command": "azure-api-center.cleanup",
+          "command": "azure-api-center.cleanupSearchResult",
           "when": "view == apiCenterTreeView && viewItem == azureApiCenterApis-search",
           "group": "inline@1"
         }
@@ -256,7 +256,7 @@
           "when": "never"
         },
         {
-          "command": "azure-api-center.cleanup",
+          "command": "azure-api-center.cleanupSearchResult",
           "whne": "never"
         }
       ]
