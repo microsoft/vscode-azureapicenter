@@ -4,7 +4,7 @@ import { IActionContext } from "@microsoft/vscode-azext-utils";
 import * as fse from 'fs-extra';
 import * as path from 'path';
 import * as vscode from 'vscode';
-import { ApiSpecificationOptions } from "../constants";
+import { ApiSpecificationOptions, openapi } from "../constants";
 import { ext } from "../extensionVariables";
 import { ApiVersionDefinitionTreeItem } from "../tree/ApiVersionDefinitionTreeItem";
 import { UiStrings } from "../uiStrings";
@@ -44,7 +44,7 @@ async function getApiSpecification(title: string, context: IActionContext): Prom
 
     switch (apiSpecificationOption) {
         case ApiSpecificationOptions.apiCenter:
-            const node = await ext.treeDataProvider.showTreeItemPicker<ApiVersionDefinitionTreeItem>(new RegExp(`.*${ApiVersionDefinitionTreeItem.contextValue}.*`), context);
+            const node = await ext.treeDataProvider.showTreeItemPicker<ApiVersionDefinitionTreeItem>(`${ApiVersionDefinitionTreeItem.contextValue}-${openapi}`, context);
             return node;
         case ApiSpecificationOptions.localFile:
             const fileUri = await vscode.window.showOpenDialog();
