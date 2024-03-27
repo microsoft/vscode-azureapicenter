@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 import { getResourceGroupFromId } from "@microsoft/vscode-azext-azureutils";
 import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
+import * as vscode from 'vscode';
 import { ApiCenterService } from "../azure/ApiCenter/ApiCenterService";
 import { ApiCenter } from "../azure/ApiCenter/contracts";
 import { UiStrings } from "../uiStrings";
@@ -11,7 +12,8 @@ import { ApiTreeItem } from "./ApiTreeItem";
 export class ApisTreeItem extends AzExtParentTreeItem {
   public readonly childTypeLabel: string = UiStrings.ApisTreeItemChildTypeLabel;
   public static contextValue: string = "azureApiCenterApis";
-  public readonly contextValue: string = ApisTreeItem.contextValue;
+  public searchContent: string = "";
+  public contextValue: string = ApisTreeItem.contextValue;
   private _nextLink: string | undefined;
   constructor(parent: AzExtParentTreeItem, public apiCenter: ApiCenter) {
     super(parent);
@@ -25,10 +27,23 @@ export class ApisTreeItem extends AzExtParentTreeItem {
     return UiStrings.TreeitemLabelApis;
   }
 
+  public cleanUpSearch(context: IActionContext): void {
+    this.searchContent = "";
+    this.description = "";
+    this.contextValue = ApisTreeItem.contextValue;
+    this.refresh(context);
+  }
+
+  public updateSearchContent(searchContent: string): void {
+    this.contextValue = ApisTreeItem.contextValue + "-search";
+    this.searchContent = searchContent;
+    this.description = vscode.l10n.t(UiStrings.SearchAPIsResult, searchContent);
+  }
+
   public async loadMoreChildrenImpl(clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
     const resourceGroupName = getResourceGroupFromId(this.apiCenter.id);
     const apiCenterService = new ApiCenterService(this.parent?.subscription!, resourceGroupName, this.apiCenter.name);
-    const apis = await apiCenterService.getApiCenterApis();
+    const apis = await apiCenterService.getApiCenterApis(this.searchContent);
 
     this._nextLink = apis.nextLink;
     return await this.createTreeItemsWithErrorHandling(

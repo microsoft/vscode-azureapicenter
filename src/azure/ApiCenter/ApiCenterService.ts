@@ -3,6 +3,7 @@
 import { RequestPrepareOptions, ServiceClient } from "@azure/ms-rest-js";
 import { ISubscriptionContext } from "@microsoft/vscode-azext-utils";
 import { getCredentialForToken } from "../../utils/credentialUtil";
+import { APICenterRestAPIs } from "./ApiCenterRestAPIs";
 import { ApiCenter, ApiCenterApi, ApiCenterApiDeployment, ApiCenterApiVersion, ApiCenterApiVersionDefinition, ApiCenterApiVersionDefinitionExport, ApiCenterApiVersionDefinitionImport, ApiCenterEnvironment } from "./contracts";
 
 export class ApiCenterService {
@@ -21,18 +22,22 @@ export class ApiCenterService {
     const client = new ServiceClient(creds);
     const options: RequestPrepareOptions = {
       method: "GET",
-      url: `https://management.azure.com/subscriptions/${this.susbcriptionContext.subscriptionId}/resourceGroups/${this.resourceGroupName}/providers/Microsoft.ApiCenter/services/${this.apiCenterName}?api-version=${this.apiVersion}`
+      url: APICenterRestAPIs.GetAPIService(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, this.apiVersion)
     };
     const response = await client.sendRequest(options);
     return response.parsedBody;
   }
 
-  public async getApiCenterApis(): Promise<{ value: ApiCenterApi[]; nextLink: string }> {
+  public async getApiCenterApis(searchContent: string): Promise<{ value: ApiCenterApi[]; nextLink: string }> {
     const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
     const client = new ServiceClient(creds);
+    let url = APICenterRestAPIs.ListAPIs(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, this.apiVersion);
+    if (searchContent) {
+      url += `&$search=${searchContent}`;
+    }
     const options: RequestPrepareOptions = {
       method: "GET",
-      url: `https://management.azure.com/subscriptions/${this.susbcriptionContext.subscriptionId}/resourceGroups/${this.resourceGroupName}/providers/Microsoft.ApiCenter/services/${this.apiCenterName}/workspaces/default/apis?api-version=${this.apiVersion}`
+      url: url,
     };
     const response = await client.sendRequest(options);
     return response.parsedBody;
@@ -43,7 +48,7 @@ export class ApiCenterService {
     const client = new ServiceClient(creds);
     const options: RequestPrepareOptions = {
       method: "GET",
-      url: `https://management.azure.com/subscriptions/${this.susbcriptionContext.subscriptionId}/resourceGroups/${this.resourceGroupName}/providers/Microsoft.ApiCenter/services/${this.apiCenterName}/workspaces/default/environments?api-version=${this.apiVersion}`
+      url: APICenterRestAPIs.GetAPIEnvironments(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, this.apiVersion)
     };
     const response = await client.sendRequest(options);
     return response.parsedBody;
@@ -54,7 +59,7 @@ export class ApiCenterService {
     const client = new ServiceClient(creds);
     const options: RequestPrepareOptions = {
       method: "GET",
-      url: `https://management.azure.com/subscriptions/${this.susbcriptionContext.subscriptionId}/resourceGroups/${this.resourceGroupName}/providers/Microsoft.ApiCenter/services/${this.apiCenterName}/workspaces/default/apis/${apiName}/versions?api-version=${this.apiVersion}`
+      url: APICenterRestAPIs.GetAPIVersions(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, apiName, this.apiVersion)
     };
     const response = await client.sendRequest(options);
     return response.parsedBody;
@@ -65,7 +70,7 @@ export class ApiCenterService {
     const client = new ServiceClient(creds);
     const options: RequestPrepareOptions = {
       method: "GET",
-      url: `https://management.azure.com/subscriptions/${this.susbcriptionContext.subscriptionId}/resourceGroups/${this.resourceGroupName}/providers/Microsoft.ApiCenter/services/${this.apiCenterName}/workspaces/default/apis/${apiName}/deployments?api-version=${this.apiVersion}`
+      url: APICenterRestAPIs.GetAPIDeployments(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, apiName, this.apiVersion)
     };
     const response = await client.sendRequest(options);
     return response.parsedBody;
@@ -76,7 +81,7 @@ export class ApiCenterService {
     const client = new ServiceClient(creds);
     const options: RequestPrepareOptions = {
       method: "GET",
-      url: `https://management.azure.com/subscriptions/${this.susbcriptionContext.subscriptionId}/resourceGroups/${this.resourceGroupName}/providers/Microsoft.ApiCenter/services/${this.apiCenterName}/workspaces/default/apis/${apiName}/versions/${apiVersion}/definitions?api-version=${this.apiVersion}`
+      url: APICenterRestAPIs.GetAPIDefinition(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, apiName, apiVersion, this.apiVersion)
     };
     const response = await client.sendRequest(options);
     return response.parsedBody;
@@ -87,7 +92,7 @@ export class ApiCenterService {
     const client = new ServiceClient(creds);
     const options: RequestPrepareOptions = {
       method: "PUT",
-      url: `https://management.azure.com/subscriptions/${this.susbcriptionContext.subscriptionId}/resourceGroups/${this.resourceGroupName}/providers/Microsoft.ApiCenter/services/${this.apiCenterName}/workspaces/default/apis/${apiCenterApi.name}?api-version=${this.apiVersion}`,
+      url: APICenterRestAPIs.CreateAPI(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, apiCenterApi.name, this.apiVersion),
       body: {
         properties: apiCenterApi.properties
       }
@@ -101,7 +106,7 @@ export class ApiCenterService {
     const client = new ServiceClient(creds);
     const options: RequestPrepareOptions = {
       method: "PUT",
-      url: `https://management.azure.com/subscriptions/${this.susbcriptionContext.subscriptionId}/resourceGroups/${this.resourceGroupName}/providers/Microsoft.ApiCenter/services/${this.apiCenterName}/workspaces/default/apis/${apiName}/versions/${apiCenterApiVersion.name}?api-version=${this.apiVersion}`,
+      url: APICenterRestAPIs.CreateAPIVersion(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, apiName, apiCenterApiVersion.name, this.apiVersion),
       body: {
         properties: apiCenterApiVersion.properties
       }
@@ -116,7 +121,7 @@ export class ApiCenterService {
     const client = new ServiceClient(creds);
     const options: RequestPrepareOptions = {
       method: "PUT",
-      url: `https://management.azure.com/subscriptions/${this.susbcriptionContext.subscriptionId}/resourceGroups/${this.resourceGroupName}/providers/Microsoft.ApiCenter/services/${this.apiCenterName}/workspaces/default/apis/${apiName}/deployments/${apiCenterApiDeployment.name}?api-version=${this.apiVersion}`,
+      url: APICenterRestAPIs.CreateAPIDeployment(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, apiName, apiCenterApiDeployment.name, this.apiVersion),
       body: apiCenterApiDeployment.properties
     };
     const response = await client.sendRequest(options);
@@ -129,7 +134,7 @@ export class ApiCenterService {
     const client = new ServiceClient(creds);
     const options: RequestPrepareOptions = {
       method: "PUT",
-      url: `https://management.azure.com/subscriptions/${this.susbcriptionContext.subscriptionId}/resourceGroups/${this.resourceGroupName}/providers/Microsoft.ApiCenter/services/${this.apiCenterName}/workspaces/default/apis/${apiName}/versions/${apiVersionName}/definitions/${apiCenterApiVersionDefinition.name}?api-version=${this.apiVersion}`,
+      url: APICenterRestAPIs.CreateAPIDefinition(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, apiName, apiVersionName, apiCenterApiVersionDefinition.name, this.apiVersion),
       body: {
         properties: apiCenterApiVersionDefinition.properties
       }
@@ -149,7 +154,7 @@ export class ApiCenterService {
 
     let options: RequestPrepareOptions = {
       method: "POST",
-      url: `https://management.azure.com/subscriptions/${this.susbcriptionContext.subscriptionId}/resourceGroups/${this.resourceGroupName}/providers/Microsoft.ApiCenter/services/${this.apiCenterName}/workspaces/default/apis/${apiName}/versions/${apiVersionName}/definitions/${apiCenterApiVersionDefinitionName}/importSpecification?api-version=${this.apiVersion}`,
+      url: APICenterRestAPIs.ImportAPISpecification(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, apiName, apiVersionName, apiCenterApiVersionDefinitionName, this.apiVersion),
       body: importPayload
     };
     let response = await client.sendRequest(options);
@@ -174,7 +179,7 @@ export class ApiCenterService {
     const client = new ServiceClient(creds);
     const options: RequestPrepareOptions = {
       method: "POST",
-      url: `https://management.azure.com/subscriptions/${this.susbcriptionContext.subscriptionId}/resourceGroups/${this.resourceGroupName}/providers/Microsoft.ApiCenter/services/${this.apiCenterName}/workspaces/default/apis/${apiName}/versions/${apiVersionName}/definitions/${apiCenterApiVersionDefinitionName}/exportSpecification?api-version=${this.apiVersion}`,
+      url: APICenterRestAPIs.ExportApiSpecification(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, apiName, apiVersionName, apiCenterApiVersionDefinitionName, this.apiVersion),
     };
     const response = await client.sendRequest(options);
     return response.parsedBody;

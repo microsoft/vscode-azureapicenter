@@ -67,4 +67,6 @@ export class UiStrings {
     static readonly SelectSecondApiSpecification = vscode.l10n.t("Select second API Specification");
     static readonly OpticTaskName = vscode.l10n.t("Breaking Change Detection");
     static readonly OpticTaskSource = vscode.l10n.t("Azure API Center");
+    static readonly SearchAPI = vscode.l10n.t('Search API');
+    static readonly SearchAPIsResult = vscode.l10n.t("Search Result for '{0}'");
 }

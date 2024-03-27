@@ -10,6 +10,7 @@ import { TelemetryClient } from './common/telemetryClient';
 // Tree View UI
 import { registerAzureUtilsExtensionVariables } from '@microsoft/vscode-azext-azureutils';
 import { AzExtTreeDataProvider, AzExtTreeItem, CommandCallback, IActionContext, IParsedError, createAzExtOutputChannel, parseError, registerCommand, registerEvent } from '@microsoft/vscode-azext-utils';
+import { cleanupSearchResult } from './commands/cleanUpSearch';
 import { showOpenApi } from './commands/editOpenApi';
 import { exportOpenApi } from './commands/exportOpenApi';
 import { generateApiLibrary } from './commands/generateApiLibrary';
@@ -18,6 +19,7 @@ import { importOpenApi } from './commands/importOpenApi';
 import { openAPiInSwagger } from './commands/openApiInSwagger';
 import { refreshTree } from './commands/refreshTree';
 import { registerApi } from './commands/registerApi';
+import { searchApi } from './commands/searchApi';
 import { setApiRuleset } from './commands/setApiRuleset';
 import { testInPostman } from './commands/testInPostman';
 import { doubleClickDebounceDelay, selectedNodeKey } from './constants';
@@ -93,6 +95,10 @@ export async function activate(context: vscode.ExtensionContext) {
 
     registerCommandWithTelemetry('azure-api-center.registerApi', registerApi);
 
+    registerCommandWithTelemetry('azure-api-center.searchApi', searchApi);
+
+    registerCommandWithTelemetry('azure-api-center.cleanupSearchResult', cleanupSearchResult);
+
     registerCommandWithTelemetry('azure-api-center.setApiRuleset', setApiRuleset);
 
     registerCommandWithTelemetry('azure-api-center.detectBreakingChange', detectBreakingChange);
@@ -100,23 +106,8 @@ export async function activate(context: vscode.ExtensionContext) {
     registerCommandWithTelemetry('azure-api-center.apiCenterTreeView.refresh', async (context: IActionContext) => refreshTree(context));
 
     const agent = vscode.chat.createChatParticipant('apicenter', handleChatMessage);
-    agent.description = 'Build, discover, and consume great APIs.';
-    agent.commandProvider = {
-        provideCommands(token) {
-            return [
-                {
-                    name: 'list',
-                    description: 'List available APIs.',
-                },
-                {
-                    name: 'find',
-                    description: 'Find an API given a search query.',
-                }
-            ];
-        },
-    };
     agent.followupProvider = {
-        provideFollowups(result: IChatResult, token: vscode.CancellationToken) {
+        provideFollowups(result: IChatResult, context: vscode.ChatContext, token: vscode.CancellationToken) {
             if (result.metadata.command === 'list') {
                 return [{
                     prompt: '$more',

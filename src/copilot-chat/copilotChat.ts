@@ -73,29 +73,25 @@ export async function handleChatMessage(request: vscode.ChatRequest, ctx: vscode
 
         if (cmd === 'list') {
             stream.progress(UiStrings.CopilotParseApiSpec);
-            const access = await vscode.lm.requestLanguageModelAccess(LANGUAGE_MODEL_ID);
             const messages = [
-                new vscode.LanguageModelSystemMessage(API_CENTER_LIST_APIs.replace("<SPECIFICATIONS>", specificationsContent)),
-                new vscode.LanguageModelUserMessage("What are APIs are available for me to use in Azure API Center?"),
+                new vscode.LanguageModelChatSystemMessage(API_CENTER_LIST_APIs.replace("<SPECIFICATIONS>", specificationsContent)),
+                new vscode.LanguageModelChatUserMessage("What are APIs are available for me to use in Azure API Center?"),
             ];
 
-            const chatRequest = access.makeChatRequest(messages, {}, token);
-            await chatRequest.result;
-            for await (const fragment of chatRequest.stream) {
+            const chatResponse = await vscode.lm.sendChatRequest(LANGUAGE_MODEL_ID, messages, {}, token);
+            for await (const fragment of chatResponse.stream) {
                 stream.markdown(fragment);
             }
             return { metadata: { command: 'list' } };
         } else if ((cmd === 'find')) {
             stream.progress(vscode.l10n.t(UiStrings.CopilotParseApiSpecFor, promptFind));
-            const access = await vscode.lm.requestLanguageModelAccess(LANGUAGE_MODEL_ID);
             const messages = [
-                new vscode.LanguageModelSystemMessage(API_CENTER_FIND_API.replace("<SPECIFICATIONS>", specificationsContent)),
-                new vscode.LanguageModelUserMessage(`Find an API for '${promptFind}' from the provided list in the system prompt.`),
+                new vscode.LanguageModelChatSystemMessage(API_CENTER_FIND_API.replace("<SPECIFICATIONS>", specificationsContent)),
+                new vscode.LanguageModelChatUserMessage(`Find an API for '${promptFind}' from the provided list in the system prompt.`),
             ];
 
-            const chatRequest = access.makeChatRequest(messages, {}, token);
-            await chatRequest.result;
-            for await (const fragment of chatRequest.stream) {
+            const chatResponse = await vscode.lm.sendChatRequest(LANGUAGE_MODEL_ID, messages, {}, token);
+            for await (const fragment of chatResponse.stream) {
                 stream.markdown(fragment);
             }
             return { metadata: { command: 'find' } };
@@ -104,7 +100,7 @@ export async function handleChatMessage(request: vscode.ChatRequest, ctx: vscode
         return { metadata: { command: '' } };
     } catch (error) {
         parsedError = parseError(error);
-        if (parsedError.message?.includes("Message exceeds token limit")) {
+        if (error instanceof vscode.LanguageModelError && (error as any).cause?.message?.includes("Message exceeds token limit")) {
             stream.markdown(UiStrings.CopilotExceedsTokenLimit);
             return { metadata: { command: cmd! } };
         }
