@@ -195,7 +195,7 @@
         },
         {
           "command": "azure-api-center.exportOpenApi",
-          "when": "view == apiCenterTreeView && viewItem =~ /never/"
+          "when": "view == apiCenterTreeView && viewItem =~ /azureApiCenterApiVersionDefinitionTreeItem/"
         },
         {
           "command": "azure-api-center.showOpenApi",
