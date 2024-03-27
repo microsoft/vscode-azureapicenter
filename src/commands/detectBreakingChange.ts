@@ -14,10 +14,13 @@ import { checkNodeVersion } from "../utils/nodeUtils";
 import { opticDiff } from "../utils/opticUtils";
 
 export async function detectBreakingChange(context: IActionContext) {
+    if (!vscode.workspace.workspaceFolders) {
+        throw new Error(UiStrings.NoFolderOpened);
+    }
+
     const nodeVersion = await checkNodeVersion();
     if (!nodeVersion) {
-        vscode.window.showErrorMessage(UiStrings.NodeNotInstalled);
-        return;
+        throw new Error(UiStrings.NoNodeInstalled);
     }
 
     const apiSpecification1 = await getApiSpecification(UiStrings.SelectFirstApiSpecification, context);

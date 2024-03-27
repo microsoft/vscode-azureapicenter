@@ -62,9 +62,10 @@ export class UiStrings {
     static readonly ApiVersionsChildTypeLabel = vscode.l10n.t("API Version");
     static readonly ApiVersionChildTypeLabel = vscode.l10n.t("Definitions");
     static readonly ApiVersionDefinitionsTreeItemChildTypeLabel = vscode.l10n.t("API Definition");
-    static readonly NodeNotInstalled = vscode.l10n.t("Node.js is not installed. Please install Node.js to use this feature.");
-    static readonly SelectFirstApiSpecification = vscode.l10n.t("Select first API Specification");
-    static readonly SelectSecondApiSpecification = vscode.l10n.t("Select second API Specification");
+    static readonly NoFolderOpened = vscode.l10n.t("No folder is opened. Please open a folder to use this feature.");
+    static readonly NoNodeInstalled = vscode.l10n.t("Node.js is not installed. Please install Node.js to use this feature.");
+    static readonly SelectFirstApiSpecification = vscode.l10n.t("Select first API specification document");
+    static readonly SelectSecondApiSpecification = vscode.l10n.t("Select second API specification document");
     static readonly OpticTaskName = vscode.l10n.t("Breaking Change Detection");
     static readonly OpticTaskSource = vscode.l10n.t("Azure API Center");
     static readonly SearchAPI = vscode.l10n.t('Search API');
