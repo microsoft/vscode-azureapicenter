@@ -277,6 +277,7 @@
     "precommit": "lint-staged"
   },
   "devDependencies": {
+    "@playwright/test": "^1.42.1",
     "@types/express": "^4.17.20",
     "@types/fs-extra": "^11.0.2",
     "@types/js-yaml": "^4.0.8",

@@ -1,0 +1,22 @@
+name: "ui-test"
+on:
+  push:
+    branches: ["dev", "main"]
+  pull_request:
+    branches: ["dev", "main"]
+
+jobs:
+  e2e-test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: lts/*
+      - name: Setup project
+        run: |
+          npm install
+          npm run package
+      - run: |
+          npx playwright test
+        working-directory: ./src/test/e2e
