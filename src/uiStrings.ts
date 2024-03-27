@@ -52,4 +52,6 @@ export class UiStrings {
     static readonly TreeitemLabelDefinitions = vscode.l10n.t("Definitions");
     static readonly TreeitemLabelVersions = vscode.l10n.t("Versions");
     static readonly TreeitemLabelEnvironments = vscode.l10n.t("Environments");
+    static readonly SearchAPI = vscode.l10n.t('Search API');
+    static readonly SearchAPIsResult = vscode.l10n.t("Search Result for '{0}'");
 }

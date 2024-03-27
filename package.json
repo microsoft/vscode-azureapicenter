@@ -117,9 +117,21 @@
         "category": "Azure API Center"
       },
       {
+        "command": "azure-api-center.searchApi",
+        "title": "%azure-api-center.commands.searchApi.title%",
+        "category": "Azure API Center",
+        "icon": "$(search)"
+      },
+      {
         "command": "azure-api-center.setApiRuleset",
         "title": "%azure-api-center.commands.setApiRuleset.title%",
         "category": "Azure API Center"
+      },
+      {
+        "command": "azure-api-center.cleanupSearchResult",
+        "title": "%azure-api-center.commands.cleanupSearchResult.title%",
+        "category": "Azure API Center",
+        "icon": "$(clear-all)"
       }
     ],
     "views": {
@@ -189,7 +201,17 @@
         },
         {
           "command": "azure-api-center.registerApi",
-          "when": "view == apiCenterTreeView && viewItem == azureApiCenterApis"
+          "when": "view == apiCenterTreeView && viewItem =~ /^azureApiCenterApis/"
+        },
+        {
+          "command": "azure-api-center.searchApi",
+          "when": "view == apiCenterTreeView && viewItem =~ /^azureApiCenterApis/",
+          "group": "inline@0"
+        },
+        {
+          "command": "azure-api-center.cleanupSearchResult",
+          "when": "view == apiCenterTreeView && viewItem == azureApiCenterApis-search",
+          "group": "inline@1"
         }
       ],
       "commandPalette": [
@@ -228,6 +250,14 @@
         {
           "command": "azure-api-center.generateHttpFile",
           "when": "never"
+        },
+        {
+          "command": "azure-api-center.searchApi",
+          "when": "never"
+        },
+        {
+          "command": "azure-api-center.cleanupSearchResult",
+          "whne": "never"
         }
       ]
     }
