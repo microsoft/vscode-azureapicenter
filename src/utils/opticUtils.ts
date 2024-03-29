@@ -21,7 +21,8 @@ export function opticDiff(filePath1: string, filePath2: string) {
     vscode.tasks.executeTask(task);
 }
 
-// This function is a workaround for a bug in Optic where it doesn't handle drive letters in a case-insensitive way on Windows
+// This function is a workaround for a bug in Optic where it doesn't handle drive letter with lower case on Windows:
+// https://github.com/opticdev/optic/issues/2810
 function convertDriveLetterToUpperCase(filePath: string): string {
     if (os.platform() === 'win32' && path.isAbsolute(filePath) && filePath[1] === ':') {
         return filePath[0].toUpperCase() + filePath.slice(1);
