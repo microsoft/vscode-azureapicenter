@@ -14,7 +14,7 @@ export function opticDiff(filePath1: string, filePath2: string) {
         vscode.TaskScope.Workspace,
         UiStrings.OpticTaskName,
         UiStrings.OpticTaskSource,
-        new vscode.ShellExecution(`npx @useoptic/optic diff "${filePath1}" "${filePath2}" --check`),
+        new vscode.ShellExecution(`npx @useoptic/optic diff '${filePath1}' '${filePath2}' --check`),
         "$optic"
     );
 
