@@ -41,6 +41,7 @@
   "contributes": {
     "chatParticipants": [
       {
+        "id": "azure-api-center.apicenter",
         "name": "apicenter",
         "description": "%azure-api-center.chatParticipants.apicenter.description%",
         "commands": [
