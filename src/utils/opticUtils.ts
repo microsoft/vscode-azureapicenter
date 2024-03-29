@@ -5,7 +5,7 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import { UiStrings } from '../uiStrings';
 
-export function opticDiff(filePath1: string, filePath2: string) {
+export async function opticDiff(filePath1: string, filePath2: string) {
     filePath1 = convertDriveLetterToUpperCase(filePath1);
     filePath2 = convertDriveLetterToUpperCase(filePath2);
 
@@ -14,11 +14,11 @@ export function opticDiff(filePath1: string, filePath2: string) {
         vscode.TaskScope.Workspace,
         UiStrings.OpticTaskName,
         UiStrings.OpticTaskSource,
-        new vscode.ShellExecution(`npx @useoptic/optic diff '${filePath1}' '${filePath2}' --check`),
+        new vscode.ShellExecution(`npx -y @useoptic/optic@0.54.12 diff '${filePath1}' '${filePath2}' --check`),
         "$optic"
     );
 
-    vscode.tasks.executeTask(task);
+    await vscode.tasks.executeTask(task);
 }
 
 // This function is a workaround for a bug in Optic where it doesn't handle drive letter with lower case on Windows:

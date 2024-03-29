@@ -1,6 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
-import { IActionContext } from "@microsoft/vscode-azext-utils";
+import { IActionContext, UserCancelledError } from "@microsoft/vscode-azext-utils";
 import * as fse from 'fs-extra';
 import * as path from 'path';
 import * as vscode from 'vscode';
@@ -25,11 +25,11 @@ export async function detectBreakingChange(context: IActionContext) {
 
     const apiSpecification1 = await getApiSpecification(UiStrings.SelectFirstApiSpecification, context);
     if (!apiSpecification1) {
-        return;
+        throw new UserCancelledError();
     }
     const apiSpecification2 = await getApiSpecification(UiStrings.SelectSecondApiSpecification, context);
     if (!apiSpecification2) {
-        return;
+        throw new UserCancelledError();
     }
 
     const [fileInfo1, fileInfo2] = await Promise.all([
@@ -37,13 +37,17 @@ export async function detectBreakingChange(context: IActionContext) {
         getFileInfoFromApiSpecification(apiSpecification2)
     ]);
 
-    opticDiff(fileInfo1.fileUri.fsPath, fileInfo2.fileUri.fsPath);
-
-    await vscode.commands.executeCommand('vscode.diff', fileInfo1.fileUri, fileInfo2.fileUri, `${fileInfo1.fileTitle} ↔ ${fileInfo2.fileTitle}`);
+    await Promise.all([
+        await opticDiff(fileInfo1.fileUri.fsPath, fileInfo2.fileUri.fsPath),
+        await vscode.commands.executeCommand('vscode.diff', fileInfo1.fileUri, fileInfo2.fileUri, `${fileInfo1.fileTitle} ↔ ${fileInfo2.fileTitle}`)
+    ]);
 }
 
 async function getApiSpecification(title: string, context: IActionContext): Promise<ApiVersionDefinitionTreeItem | vscode.Uri | undefined> {
     const apiSpecificationOption = await vscode.window.showQuickPick(Object.values(ApiSpecificationOptions), { title, ignoreFocusOut: true });
+    if (!apiSpecificationOption) {
+        return undefined;
+    }
 
     switch (apiSpecificationOption) {
         case ApiSpecificationOptions.apiCenter:

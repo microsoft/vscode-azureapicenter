@@ -9,7 +9,7 @@ import { TelemetryClient } from './common/telemetryClient';
 
 // Tree View UI
 import { registerAzureUtilsExtensionVariables } from '@microsoft/vscode-azext-azureutils';
-import { AzExtTreeDataProvider, AzExtTreeItem, CommandCallback, IActionContext, IParsedError, createAzExtOutputChannel, parseError, registerCommand, registerEvent } from '@microsoft/vscode-azext-utils';
+import { AzExtTreeDataProvider, AzExtTreeItem, CommandCallback, IActionContext, IParsedError, createAzExtOutputChannel, isUserCancelledError, parseError, registerCommand, registerEvent } from '@microsoft/vscode-azext-utils';
 import { cleanupSearchResult } from './commands/cleanUpSearch';
 import { showOpenApi } from './commands/editOpenApi';
 import { exportOpenApi } from './commands/exportOpenApi';
@@ -135,7 +135,9 @@ async function registerCommandWithTelemetry(commandId: string, callback: Command
             await callback(context, ...args);
         } catch (error) {
             parsedError = parseError(error);
-            throw error;
+            if (!isUserCancelledError(parsedError)) {
+                throw error;
+            }
         } finally {
             const end: number = Date.now();
             properties[TelemetryProperties.duration] = ((end - start) / 1000).toString();
