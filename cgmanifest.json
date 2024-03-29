@@ -6,7 +6,8 @@
             "component": {
                 "type": "npm",
                 "npm": {
-                    "name": "@useoptic/optic"
+                    "name": "@useoptic/optic",
+                    "version": "latest"
                 }
             }
         }
