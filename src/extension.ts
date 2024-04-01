@@ -22,7 +22,7 @@ import { registerApi } from './commands/registerApi';
 import { searchApi } from './commands/searchApi';
 import { setApiRuleset } from './commands/setApiRuleset';
 import { testInPostman } from './commands/testInPostman';
-import { doubleClickDebounceDelay, selectedNodeKey } from './constants';
+import { chatParticipantId, doubleClickDebounceDelay, selectedNodeKey } from './constants';
 import { ext } from './extensionVariables';
 import { ApiVersionDefinitionTreeItem } from './tree/ApiVersionDefinitionTreeItem';
 import { AzureAccountTreeItem } from './tree/AzureAccountTreeItem';
@@ -102,8 +102,8 @@ export async function activate(context: vscode.ExtensionContext) {
 
     registerCommandWithTelemetry('azure-api-center.apiCenterTreeView.refresh', async (context: IActionContext) => refreshTree(context));
 
-    const agent = vscode.chat.createChatParticipant('apicenter', handleChatMessage);
-    agent.followupProvider = {
+    const chatParticipant = vscode.chat.createChatParticipant(chatParticipantId, handleChatMessage);
+    chatParticipant.followupProvider = {
         provideFollowups(result: IChatResult, context: vscode.ChatContext, token: vscode.CancellationToken) {
             if (result.metadata.command === 'list') {
                 return [{
@@ -119,7 +119,7 @@ export async function activate(context: vscode.ExtensionContext) {
         }
     };
 
-    context.subscriptions.push(agent);
+    context.subscriptions.push(chatParticipant);
 }
 
 async function registerCommandWithTelemetry(commandId: string, callback: CommandCallback, debounce?: number): Promise<void> {
