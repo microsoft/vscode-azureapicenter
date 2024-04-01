@@ -119,7 +119,7 @@ export async function activate(context: vscode.ExtensionContext) {
         }
     };
 
-    context.subscriptions.push(agent);
+    context.subscriptions.push(chatParticipant);
 }
 
 async function registerCommandWithTelemetry(commandId: string, callback: CommandCallback, debounce?: number): Promise<void> {
