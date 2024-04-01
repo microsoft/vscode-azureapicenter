@@ -36,7 +36,7 @@ function getFilename(treeItem: ApiVersionDefinitionTreeItem): string {
 }
 
 async function writeToHttpFile(node: ApiVersionDefinitionTreeItem, specFormat: string, specValue: string) {
-    if (specFormat !== DefinitionFormat.inline) {
+    if (specFormat === DefinitionFormat.inline) {
         const folderName = getFolderName(node);
         const folderPath = await createTemporaryFolder(folderName);
         const fileName = getFilename(node);
