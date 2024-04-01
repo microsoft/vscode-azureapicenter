@@ -31,10 +31,11 @@ function getFolderName(treeItem: ApiVersionDefinitionTreeItem): string {
 }
 
 function getFilename(treeItem: ApiVersionDefinitionTreeItem): string {
-    return `${treeItem.apiCenterApiVersionName}-tempFile.http`;
+    return `${treeItem.apiCenterApiVersionDefinition.name}`;
 }
 
 async function writeToHttpFile(node: ApiVersionDefinitionTreeItem, httpFileContent: string, value: string) {
+    console.log('===============', httpFileContent, '====================');
     const folderName = getFolderName(node);
     const folderPath = await createTemporaryFolder(folderName);
     const fileName = getFilename(node);
