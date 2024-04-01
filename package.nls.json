@@ -11,6 +11,7 @@
     "azure-api-center.commands.generateHttpFile.title": "Generate HTTP File",
     "azure-api-center.commands.registerApi.title": "Register API",
     "azure-api-center.commands.setApiRuleset.title": "Set active API Style Guide",
+    "azure-api-center.commands.detectBreakingChange.title": "Detect Breaking Change",
     "azure-api-center.commands.searchApi.title": "Search APIs",
     "azure-api-center.commands.cleanupSearchResult.title": "Clean Up Search Result",
     "azure-api-center.chatParticipants.apicenter.description": "Build, discover, and consume great APIs.",

@@ -48,10 +48,26 @@ export class UiStrings {
     static readonly ApiRulesetOptionInputUrl = vscode.l10n.t("Input Remote URL");
     static readonly CICDTypeGitHub = vscode.l10n.t("GitHub");
     static readonly CICDTypeAzure = vscode.l10n.t("Azure DevOps");
-    static readonly TreeitemLabelApi = vscode.l10n.t("Apis");
+    static readonly ApiSpecificationOptionApiCenter = vscode.l10n.t("Azure API Center");
+    static readonly ApiSpecificationOptionLocalFile = vscode.l10n.t("Local File");
+    static readonly ApiSpecificationOptionActiveEditor = vscode.l10n.t("Active Editor");
+    static readonly TreeitemLabelApis = vscode.l10n.t("Apis");
     static readonly TreeitemLabelDefinitions = vscode.l10n.t("Definitions");
     static readonly TreeitemLabelVersions = vscode.l10n.t("Versions");
     static readonly TreeitemLabelEnvironments = vscode.l10n.t("Environments");
+    static readonly SubscriptionTreeItemChildTypeLabel = vscode.l10n.t("API Center Service");
+    static readonly ApiCenterTreeItemTreeItemChildTypeLabel = vscode.l10n.t("Apis or Environments");
+    static readonly ApisTreeItemChildTypeLabel = vscode.l10n.t("API");
+    static readonly ApiTreeItemChildTypeLabel = vscode.l10n.t("Deployments or Versions");
+    static readonly ApiVersionsChildTypeLabel = vscode.l10n.t("API Version");
+    static readonly ApiVersionChildTypeLabel = vscode.l10n.t("Definitions");
+    static readonly ApiVersionDefinitionsTreeItemChildTypeLabel = vscode.l10n.t("API Definition");
+    static readonly NoFolderOpened = vscode.l10n.t("No folder is opened. Please open a folder to use this feature.");
+    static readonly NoNodeInstalled = vscode.l10n.t("Node.js is not installed. Please install Node.js to use this feature.");
+    static readonly SelectFirstApiSpecification = vscode.l10n.t("Select first API specification document");
+    static readonly SelectSecondApiSpecification = vscode.l10n.t("Select second API specification document");
+    static readonly OpticTaskName = vscode.l10n.t("Breaking Change Detection");
+    static readonly OpticTaskSource = vscode.l10n.t("Azure API Center");
     static readonly SearchAPI = vscode.l10n.t('Search API');
     static readonly SearchAPIsResult = vscode.l10n.t("Search Result for '{0}'");
 }

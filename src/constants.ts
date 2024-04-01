@@ -8,6 +8,7 @@ export const sessionFolderKey = "currentSessionWorkingFolder";
 export const showSavePromptConfigKey = "azure-api-center.showSavePrompt";
 export const doubleClickDebounceDelay = 500; //milliseconds
 export const selectedNodeKey = "selectedNode";
+export const openapi = "openapi";
 export const azureApiGuidelineRulesetFile = "https://raw.githubusercontent.com/azure/azure-api-style-guide/main/spectral.yaml";
 export const spectralOwaspRulesetFile = "https://unpkg.com/@stoplight/spectral-owasp-ruleset/dist/ruleset.mjs";
 
@@ -26,4 +27,10 @@ export const ApiRulesetOptions = {
 export const CICDType = {
     github: UiStrings.CICDTypeGitHub,
     azure: UiStrings.CICDTypeAzure,
+};
+
+export const ApiSpecificationOptions = {
+    apiCenter: UiStrings.ApiSpecificationOptionApiCenter,
+    localFile: UiStrings.ApiSpecificationOptionLocalFile,
+    activeEditor: UiStrings.ApiSpecificationOptionActiveEditor,
 };

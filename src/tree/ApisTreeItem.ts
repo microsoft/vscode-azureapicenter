@@ -10,6 +10,7 @@ import { treeUtils } from "../utils/treeUtils";
 import { ApiTreeItem } from "./ApiTreeItem";
 
 export class ApisTreeItem extends AzExtParentTreeItem {
+  public readonly childTypeLabel: string = UiStrings.ApisTreeItemChildTypeLabel;
   public static contextValue: string = "azureApiCenterApis";
   public searchContent: string = "";
   public contextValue: string = ApisTreeItem.contextValue;
@@ -23,7 +24,7 @@ export class ApisTreeItem extends AzExtParentTreeItem {
   }
 
   public get label(): string {
-    return UiStrings.TreeitemLabelApi;
+    return UiStrings.TreeitemLabelApis;
   }
 
   public cleanUpSearch(context: IActionContext): void {

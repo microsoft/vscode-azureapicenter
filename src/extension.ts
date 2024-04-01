@@ -9,7 +9,7 @@ import { TelemetryClient } from './common/telemetryClient';
 
 // Tree View UI
 import { registerAzureUtilsExtensionVariables } from '@microsoft/vscode-azext-azureutils';
-import { AzExtTreeDataProvider, AzExtTreeItem, CommandCallback, IActionContext, IParsedError, createAzExtOutputChannel, parseError, registerCommand, registerEvent } from '@microsoft/vscode-azext-utils';
+import { AzExtTreeDataProvider, AzExtTreeItem, CommandCallback, IActionContext, IParsedError, createAzExtOutputChannel, isUserCancelledError, parseError, registerCommand, registerEvent } from '@microsoft/vscode-azext-utils';
 import { cleanupSearchResult } from './commands/cleanUpSearch';
 import { showOpenApi } from './commands/editOpenApi';
 import { exportOpenApi } from './commands/exportOpenApi';
@@ -29,6 +29,7 @@ import { AzureAccountTreeItem } from './tree/AzureAccountTreeItem';
 import { OpenApiEditor } from './tree/Editors/openApi/OpenApiEditor';
 
 // Copilot Chat
+import { detectBreakingChange } from './commands/detectBreakingChange';
 import { ErrorProperties, TelemetryProperties } from './common/telemetryEvent';
 import { IChatResult, handleChatMessage } from './copilot-chat/copilotChat';
 
@@ -100,6 +101,8 @@ export async function activate(context: vscode.ExtensionContext) {
 
     registerCommandWithTelemetry('azure-api-center.setApiRuleset', setApiRuleset);
 
+    registerCommandWithTelemetry('azure-api-center.detectBreakingChange', detectBreakingChange);
+
     registerCommandWithTelemetry('azure-api-center.apiCenterTreeView.refresh', async (context: IActionContext) => refreshTree(context));
 
     const chatParticipant = vscode.chat.createChatParticipant(chatParticipantId, handleChatMessage);
@@ -132,7 +135,9 @@ async function registerCommandWithTelemetry(commandId: string, callback: Command
             await callback(context, ...args);
         } catch (error) {
             parsedError = parseError(error);
-            throw error;
+            if (!isUserCancelledError(parsedError)) {
+                throw error;
+            }
         } finally {
             const end: number = Date.now();
             properties[TelemetryProperties.duration] = ((end - start) / 1000).toString();
