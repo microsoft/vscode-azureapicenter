@@ -12,7 +12,7 @@ import { registerAzureUtilsExtensionVariables } from '@microsoft/vscode-azext-az
 import { AzExtTreeDataProvider, AzExtTreeItem, CommandCallback, IActionContext, IParsedError, createAzExtOutputChannel, parseError, registerCommand, registerEvent } from '@microsoft/vscode-azext-utils';
 import { cleanupSearchResult } from './commands/cleanUpSearch';
 import { showOpenApi } from './commands/editOpenApi';
-import { exportOpenApi } from './commands/exportOpenApi';
+import { exportOpenApi } from './commands/exportApi';
 import { generateApiLibrary } from './commands/generateApiLibrary';
 import { generateHttpFile } from './commands/generateHttpFile';
 import { importOpenApi } from './commands/importOpenApi';

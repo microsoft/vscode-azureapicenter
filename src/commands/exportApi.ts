@@ -34,14 +34,14 @@ function getFilename(treeItem: ApiVersionDefinitionTreeItem): string {
     return `${treeItem.apiCenterApiVersionDefinition.name}`;
 }
 
-async function writeToHttpFile(node: ApiVersionDefinitionTreeItem, httpFileContent: string, value: string) {
-    console.log('===============', httpFileContent, '====================');
+async function writeToHttpFile(node: ApiVersionDefinitionTreeItem, specFormat: string, specValue: string) {
+    // console.log('===============', specFormat, '====================');
     const folderName = getFolderName(node);
     const folderPath = await createTemporaryFolder(folderName);
     const fileName = getFilename(node);
     const localFilePath: string = path.join(folderPath, fileName);
     await fs.ensureFile(localFilePath);
     const document: vscode.TextDocument = await vscode.workspace.openTextDocument(localFilePath);
-    await vscode.workspace.fs.writeFile(vscode.Uri.file(localFilePath), Buffer.from(value));
+    await vscode.workspace.fs.writeFile(vscode.Uri.file(localFilePath), Buffer.from(specValue));
     await vscode.window.showTextDocument(document);
 }
