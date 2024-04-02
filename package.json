@@ -5,7 +5,7 @@
   "description": "Build, discover, and consume APIs.",
   "version": "0.2.0",
   "icon": "media/api-center-icon.png",
-  "license": "SEE LICENSE IN LICENSE",
+  "license": "MIT",
   "engines": {
     "vscode": "^1.88.0"
   },
@@ -13,10 +13,10 @@
   "aiKey": "0655b027-8c75-4e4f-af1a-891dc8312948",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Azure/api-center-preview.git"
+    "url": "https://github.com/microsoft/vscode-azureapicenter.git"
   },
   "bugs": {
-    "url": "https://github.com/Azure/api-center-preview/issues"
+    "url": "https://github.com/microsoft/vscode-azureapicenter/issues"
   },
   "categories": [
     "Azure"
