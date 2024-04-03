@@ -8,33 +8,33 @@ Make APIs you are building discoverable to others by registering them with API C
 
 Shift-left API design conformance checks into Visual Studio Code with integrated linting support, powered by Spectral.
 
-![linting](https://github.com/Azure/api-center-preview/assets/1091304/6e216651-1154-4bb3-bb9e-99b71b82a8be)
+![linting](./media/integrated-lint.png)
 
 ### Discover
 
 Find the right API, fast from your organization's hand-crafted API catalog with API Center.
 
-![tree-view](https://github.com/Azure/api-center-preview/assets/1050213/1ceac52f-33a3-4841-bfae-4090ff01807f)
+![tree-view](./media/tree-view.png)
 
 Try our new integration with GitHub Copilot Chat to find APIs based on semantic search query.
 
-![chat-agent](https://github.com/Azure/api-center-preview/assets/1050213/694bbe95-1602-40f2-8ae0-9694205069e4)
+![chat-agent](./media/chat-agent.gif)
 
 ### Explore
 
 Explore APIs without leaving Visual Studio Code with inline API documentation and interactive 'try it' experience.
 
-![view-api-doc](https://github.com/Azure/api-center-preview/assets/1050213/fa91f080-52f5-4131-b7da-5bc035368b38)
+![view-api-doc](./media/view-api-doc.png)
 
 Explore API requests and responses with automated .http file generation powered by the [REST Client extension for Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=humao.rest-client).
 
-![generate-http-file](https://github.com/Azure/api-center-preview/assets/1050213/b5abd2ce-fdfd-437b-8a81-0f02c11e3f2a)
+![generate-http-file](./media/generate-http-file.png)
 
 ### Consume
 
 Generate API SDK clients for your favorite language including JavaScript, TypeScript, .NET, Python, Java, and more, powered by the same [Microsoft Kiota](https://learn.microsoft.com/en-us/openapi/kiota/overview) engine that generates SDKs for Microsoft Graph, GitHub, and more.
 
-![generate-api-client](https://github.com/Azure/api-center-preview/assets/1050213/2e0c1155-f36d-42c1-863b-1373c59a7750)
+![generate-api-client](./media/generate-api-client.png)
 
 ## Notice/Known Issues
 
