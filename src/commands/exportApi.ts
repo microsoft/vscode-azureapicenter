@@ -24,7 +24,7 @@ export async function exportOpenApi(
         node?.apiCenterApiVersionName!,
         node?.apiCenterApiVersionDefinition.name!);
 
-    await writeToHttpFile(node!, exportedSpec.format, exportedSpec.value);
+    await writeToTempFile(node!, exportedSpec.format, exportedSpec.value);
 }
 
 function getFolderName(treeItem: ApiVersionDefinitionTreeItem): string {
@@ -35,7 +35,7 @@ function getFilename(treeItem: ApiVersionDefinitionTreeItem): string {
     return `${treeItem.apiCenterApiVersionDefinition.name}`;
 }
 
-async function writeToHttpFile(node: ApiVersionDefinitionTreeItem, specFormat: string, specValue: string) {
+async function writeToTempFile(node: ApiVersionDefinitionTreeItem, specFormat: string, specValue: string) {
     if (specFormat === DefinitionFormat.inline) {
         const folderName = getFolderName(node);
         const folderPath = await createTemporaryFolder(folderName);
