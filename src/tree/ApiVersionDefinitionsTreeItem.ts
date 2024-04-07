@@ -9,6 +9,7 @@ import { treeUtils } from "../utils/treeUtils";
 import { ApiVersionDefinitionTreeItem } from "./ApiVersionDefinitionTreeItem";
 
 export class ApiVersionDefinitionsTreeItem extends AzExtParentTreeItem {
+  public readonly childTypeLabel: string = UiStrings.ApiVersionDefinitionsTreeItemChildTypeLabel;
   public static contextValue: string = "azureApiCenterApiVersionDefinitions";
   public readonly contextValue: string = ApiVersionDefinitionsTreeItem.contextValue;
   private readonly _apiCenterName: string;

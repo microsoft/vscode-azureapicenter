@@ -6,6 +6,7 @@ import * as fs from "fs-extra";
 import * as path from "path";
 import * as vscode from "vscode";
 import { ApiCenterService } from "../azure/ApiCenter/ApiCenterService";
+import { DefinitionFormat } from "../constants";
 import { ApiVersionDefinitionTreeItem } from "../tree/ApiVersionDefinitionTreeItem";
 import { createTemporaryFolder } from "../utils/fsUtil";
 
@@ -35,13 +36,14 @@ function getFilename(treeItem: ApiVersionDefinitionTreeItem): string {
 }
 
 async function writeToHttpFile(node: ApiVersionDefinitionTreeItem, specFormat: string, specValue: string) {
-    // console.log('===============', specFormat, '====================');
-    const folderName = getFolderName(node);
-    const folderPath = await createTemporaryFolder(folderName);
-    const fileName = getFilename(node);
-    const localFilePath: string = path.join(folderPath, fileName);
-    await fs.ensureFile(localFilePath);
-    const document: vscode.TextDocument = await vscode.workspace.openTextDocument(localFilePath);
-    await vscode.workspace.fs.writeFile(vscode.Uri.file(localFilePath), Buffer.from(specValue));
-    await vscode.window.showTextDocument(document);
+    if (specFormat === DefinitionFormat.inline) {
+        const folderName = getFolderName(node);
+        const folderPath = await createTemporaryFolder(folderName);
+        const fileName = getFilename(node);
+        const localFilePath: string = path.join(folderPath, fileName);
+        await fs.ensureFile(localFilePath);
+        const document: vscode.TextDocument = await vscode.workspace.openTextDocument(localFilePath);
+        await vscode.workspace.fs.writeFile(vscode.Uri.file(localFilePath), Buffer.from(specValue));
+        await vscode.window.showTextDocument(document);
+    }
 }

@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 import { AzExtTreeDataProvider, IAzExtOutputChannel } from "@microsoft/vscode-azext-utils";
 import { ExtensionContext } from "vscode";
+import { ApiVersionDefinitionTreeItem } from "./tree/ApiVersionDefinitionTreeItem";
 import { AzureAccountTreeItem } from "./tree/AzureAccountTreeItem";
 import { OpenApiEditor } from "./tree/Editors/openApi/OpenApiEditor";
 
@@ -18,4 +19,5 @@ export namespace ext {
     export let treeDataProvider: AzExtTreeDataProvider;
     export let outputChannel: IAzExtOutputChannel;
     export let openApiEditor: OpenApiEditor;
+    export let selectedApiVersionDefinitionTreeItem: ApiVersionDefinitionTreeItem;
 }

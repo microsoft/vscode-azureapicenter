@@ -41,6 +41,7 @@
   "contributes": {
     "chatParticipants": [
       {
+        "id": "azure-api-center.apicenter",
         "name": "apicenter",
         "description": "%azure-api-center.chatParticipants.apicenter.description%",
         "commands": [
@@ -125,6 +126,11 @@
       {
         "command": "azure-api-center.setApiRuleset",
         "title": "%azure-api-center.commands.setApiRuleset.title%",
+        "category": "Azure API Center"
+      },
+      {
+        "command": "azure-api-center.detectBreakingChange",
+        "title": "%azure-api-center.commands.detectBreakingChange.title%",
         "category": "Azure API Center"
       },
       {
@@ -260,7 +266,28 @@
           "whne": "never"
         }
       ]
-    }
+    },
+    "problemMatchers": [
+      {
+        "name": "optic",
+        "owner": "api-center",
+        "fileLocation": [
+          "autoDetect",
+          "${workspaceFolder}"
+        ],
+        "pattern": [
+          {
+            "regexp": "x (.*breaking change.*)",
+            "message": 1
+          },
+          {
+            "regexp": "at (.*):(\\d+):(\\d+)",
+            "file": 1,
+            "line": 2
+          }
+        ]
+      }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run package",

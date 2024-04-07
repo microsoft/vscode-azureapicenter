@@ -3,10 +3,12 @@
 import { UiStrings } from './uiStrings';
 
 export const extensionName = "azure-api-center";
+export const chatParticipantId = "azure-api-center.apicenter";
 export const sessionFolderKey = "currentSessionWorkingFolder";
 export const showSavePromptConfigKey = "azure-api-center.showSavePrompt";
 export const doubleClickDebounceDelay = 500; //milliseconds
 export const selectedNodeKey = "selectedNode";
+export const openapi = "openapi";
 export const azureApiGuidelineRulesetFile = "https://raw.githubusercontent.com/azure/azure-api-style-guide/main/spectral.yaml";
 export const spectralOwaspRulesetFile = "https://unpkg.com/@stoplight/spectral-owasp-ruleset/dist/ruleset.mjs";
 
@@ -26,3 +28,13 @@ export const CICDType = {
     github: UiStrings.CICDTypeGitHub,
     azure: UiStrings.CICDTypeAzure,
 };
+
+export const ApiSpecificationOptions = {
+    apiCenter: UiStrings.ApiSpecificationOptionApiCenter,
+    localFile: UiStrings.ApiSpecificationOptionLocalFile,
+    activeEditor: UiStrings.ApiSpecificationOptionActiveEditor,
+};
+export const DefinitionFormat = {
+    inline: 'inline',
+    link: 'link',
+}

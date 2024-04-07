@@ -9,7 +9,7 @@ import { TelemetryClient } from './common/telemetryClient';
 
 // Tree View UI
 import { registerAzureUtilsExtensionVariables } from '@microsoft/vscode-azext-azureutils';
-import { AzExtTreeDataProvider, AzExtTreeItem, CommandCallback, IActionContext, IParsedError, createAzExtOutputChannel, parseError, registerCommand, registerEvent } from '@microsoft/vscode-azext-utils';
+import { AzExtTreeDataProvider, AzExtTreeItem, CommandCallback, IActionContext, IParsedError, createAzExtOutputChannel, isUserCancelledError, parseError, registerCommand, registerEvent } from '@microsoft/vscode-azext-utils';
 import { cleanupSearchResult } from './commands/cleanUpSearch';
 import { showOpenApi } from './commands/editOpenApi';
 import { exportOpenApi } from './commands/exportApi';
@@ -22,13 +22,14 @@ import { registerApi } from './commands/registerApi';
 import { searchApi } from './commands/searchApi';
 import { setApiRuleset } from './commands/setApiRuleset';
 import { testInPostman } from './commands/testInPostman';
-import { doubleClickDebounceDelay, selectedNodeKey } from './constants';
+import { chatParticipantId, doubleClickDebounceDelay, selectedNodeKey } from './constants';
 import { ext } from './extensionVariables';
 import { ApiVersionDefinitionTreeItem } from './tree/ApiVersionDefinitionTreeItem';
 import { AzureAccountTreeItem } from './tree/AzureAccountTreeItem';
 import { OpenApiEditor } from './tree/Editors/openApi/OpenApiEditor';
 
 // Copilot Chat
+import { detectBreakingChange } from './commands/detectBreakingChange';
 import { ErrorProperties, TelemetryProperties } from './common/telemetryEvent';
 import { IChatResult, handleChatMessage } from './copilot-chat/copilotChat';
 
@@ -100,10 +101,12 @@ export async function activate(context: vscode.ExtensionContext) {
 
     registerCommandWithTelemetry('azure-api-center.setApiRuleset', setApiRuleset);
 
+    registerCommandWithTelemetry('azure-api-center.detectBreakingChange', detectBreakingChange);
+
     registerCommandWithTelemetry('azure-api-center.apiCenterTreeView.refresh', async (context: IActionContext) => refreshTree(context));
 
-    const agent = vscode.chat.createChatParticipant('apicenter', handleChatMessage);
-    agent.followupProvider = {
+    const chatParticipant = vscode.chat.createChatParticipant(chatParticipantId, handleChatMessage);
+    chatParticipant.followupProvider = {
         provideFollowups(result: IChatResult, context: vscode.ChatContext, token: vscode.CancellationToken) {
             if (result.metadata.command === 'list') {
                 return [{
@@ -119,7 +122,7 @@ export async function activate(context: vscode.ExtensionContext) {
         }
     };
 
-    context.subscriptions.push(agent);
+    context.subscriptions.push(chatParticipant);
 }
 
 async function registerCommandWithTelemetry(commandId: string, callback: CommandCallback, debounce?: number): Promise<void> {
@@ -132,7 +135,9 @@ async function registerCommandWithTelemetry(commandId: string, callback: Command
             await callback(context, ...args);
         } catch (error) {
             parsedError = parseError(error);
-            throw error;
+            if (!isUserCancelledError(parsedError)) {
+                throw error;
+            }
         } finally {
             const end: number = Date.now();
             properties[TelemetryProperties.duration] = ((end - start) / 1000).toString();
