@@ -37,4 +37,4 @@ export const ApiSpecificationOptions = {
 export const DefinitionFormat = {
     inline: 'inline',
     link: 'link',
-}
+};

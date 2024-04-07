@@ -234,10 +234,6 @@
           "when": "never"
         },
         {
-          "command": "azure-api-center.exportApi",
-          "when": "never"
-        },
-        {
           "command": "azure-api-center.showOpenApi",
           "when": "never"
         },
