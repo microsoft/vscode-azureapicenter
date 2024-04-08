@@ -263,7 +263,7 @@
         },
         {
           "command": "azure-api-center.cleanupSearchResult",
-          "whne": "never"
+          "when": "never"
         }
       ]
     },
