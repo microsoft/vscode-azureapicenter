@@ -12,8 +12,7 @@ Shift-left API design conformance checks into Visual Studio Code with integrated
 
 Ensure that new API versions don't break API consumers with breaking change detection support, powered by Optic.
 
-![image](https://github.com/pierceboggan/vscode-azureapicenter-1/assets/1091304/d73801c1-ab90-4323-a51a-9749fed7cd24)
-
+![image](https://github.com/pierceboggan/vscode-azureapicenter-1/assets/1091304/78777fd4-f7cd-488e-a152-20d0f696fa8a)
 
 ### Discover
 
