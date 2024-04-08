@@ -6,13 +6,16 @@ import * as fs from "fs-extra";
 import * as path from "path";
 import * as vscode from "vscode";
 import { ApiCenterService } from "../azure/ApiCenter/ApiCenterService";
-import { DefinitionFormat } from "../constants";
+import { DefinitionFormat, openapi } from "../constants";
+import { ext } from "../extensionVariables";
 import { ApiVersionDefinitionTreeItem } from "../tree/ApiVersionDefinitionTreeItem";
 import { createTemporaryFolder } from "../utils/fsUtil";
-
 export async function exportOpenApi(
     context: IActionContext,
     node?: ApiVersionDefinitionTreeItem): Promise<void> {
+    if (!node) {
+        node = await ext.treeDataProvider.showTreeItemPicker<ApiVersionDefinitionTreeItem>(`${ApiVersionDefinitionTreeItem.contextValue}-${openapi}`, context);
+    }
 
     const apiCenterService = new ApiCenterService(
         node?.subscription!,
