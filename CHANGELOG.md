@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.3.0
+
+The 0.2.0 release of the Azure API Center extension for Visual Studio Code introduces new functionality to detect breaking changes between two OpenAPI specification documents and improves API discoverability by adding the ability to search for an API in the tree view.
+
+### Features
+
+- Search for APIs within an API Center from the tree view.
+- Detect breaking changes between two OpenAPI specification documents. Breaking changes are shown in the `Problems` view and directly within the editor.
+
 ## 0.2.0
 
 The 0.2.0 release of the Azure API Center extension for Visual Studio Code introduces new functionality to register APIs with API Center and shift-left API design conformance checks into Visual Studio Code as you build out APIs. It also includes bug fixes for APIs imported from Azure API Management to ensure APIs titles are properly displayed and interactable using the tree view.
