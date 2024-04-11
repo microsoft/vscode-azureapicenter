@@ -29,52 +29,42 @@ class RootTreeItem extends ParentTreeItemBase {
 
 suite("export API test cases", () => {
     let sandbox = null as any;
+    let root: RootTreeItem;
+    let node: ApiVersionDefinitionTreeItem;
     suiteSetup(() => {
         sandbox = sinon.createSandbox();
     });
+    setup(() => {
+        root = new RootTreeItem(undefined);
+        node = new ApiVersionDefinitionTreeItem(root,
+            "fakeApiCenterName",
+            "fakeApiCenterApiName",
+            "fakeApiCenterApiVersionName",
+            {
+                properties: {
+                    specification: {
+                        name: "fakeName"
+                    }
+                }
+            } as ApiCenterApiVersionDefinition
+        );
+        sandbox.stub(node, "subscription").value("fakeSub");
+        sandbox.stub(node, "id").value("/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test/providers/Microsoft.ApiCenter/services/test/workspaces/default/apis/test/versions/v1/definitions/openapi");
+
+    })
     teardown(() => {
         sandbox.restore();
     });
     test('export API happy path with link type', async () => {
-        let root: RootTreeItem = new RootTreeItem(undefined);
-        let node: ApiVersionDefinitionTreeItem = new ApiVersionDefinitionTreeItem(root,
-            "fakeApiCenterName",
-            "fakeApiCenterApiName",
-            "fakeApiCenterApiVersionName",
-            {
-                properties: {
-                    specification: {
-                        name: "fakeName"
-                    }
-                }
-            } as ApiCenterApiVersionDefinition
-        );
-        sandbox.stub(node, "subscription").value("fakeSub");
-        sandbox.stub(node, "id").value("/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test/providers/Microsoft.ApiCenter/services/test/workspaces/default/apis/test/versions/v1/definitions/openapi");
+        const spyShowTmpFile = sandbox.spy(ExportAPI, "showTmpFile");
         sandbox.stub(ApiCenterService.prototype, "exportSpecification").resolves({ format: "link", value: "fakeValue" });
-        const spyOpenTextDocument = sandbox.spy(ExportAPI, "showTmpFile");
         await ExportAPI.exportApi({} as IActionContext, node);
-        sinon.assert.notCalled(spyOpenTextDocument);
+        sandbox.assert.notCalled(spyShowTmpFile);
     });
     test('export API happy path with inline type', async () => {
-        let root: RootTreeItem = new RootTreeItem(undefined);
-        let node: ApiVersionDefinitionTreeItem = new ApiVersionDefinitionTreeItem(root,
-            "fakeApiCenterName",
-            "fakeApiCenterApiName",
-            "fakeApiCenterApiVersionName",
-            {
-                properties: {
-                    specification: {
-                        name: "fakeName"
-                    }
-                }
-            } as ApiCenterApiVersionDefinition
-        );
-        sandbox.stub(node, "subscription").value("fakeSub");
-        sandbox.stub(node, "id").value("/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test/providers/Microsoft.ApiCenter/services/test/workspaces/default/apis/test/versions/v1/definitions/openapi");
-        sandbox.stub(ApiCenterService.prototype, "exportSpecification").resolves({ format: "inline", value: "fakeValue" });
         let stubShowTempFile = sandbox.stub(ExportAPI, "showTmpFile").resolves();
+        sandbox.stub(ApiCenterService.prototype, "exportSpecification").resolves({ format: "inline", value: "fakeValue" });
         await ExportAPI.exportApi({} as IActionContext, node);
         sandbox.assert.calledOnce(stubShowTempFile);
-    })
+    });
 });
