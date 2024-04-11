@@ -117,3 +117,7 @@ export enum SpecificationName {
     other = 'Other',
 };
 
+export enum DefinitionFormat {
+    inline = 'inline',
+    link = 'link',
+};

@@ -6,7 +6,7 @@ import * as fs from "fs-extra";
 import * as path from "path";
 import * as vscode from "vscode";
 import { ApiCenterService } from "../azure/ApiCenter/ApiCenterService";
-import { DefinitionFormat, openapi } from "../constants";
+import { DefinitionFormat } from "../azure/ApiCenter/contracts";
 import { ext } from "../extensionVariables";
 import { ApiVersionDefinitionTreeItem } from "../tree/ApiVersionDefinitionTreeItem";
 import { createTemporaryFolder } from "../utils/fsUtil";
@@ -15,7 +15,7 @@ export namespace ExportAPI {
         context: IActionContext,
         node?: ApiVersionDefinitionTreeItem): Promise<void> {
         if (!node) {
-            node = await ext.treeDataProvider.showTreeItemPicker<ApiVersionDefinitionTreeItem>(`${ApiVersionDefinitionTreeItem.contextValue}-${openapi}`, context);
+            node = await ext.treeDataProvider.showTreeItemPicker<ApiVersionDefinitionTreeItem>(new RegExp(`${ApiVersionDefinitionTreeItem.contextValue}*`), context);
         }
 
         const apiCenterService = new ApiCenterService(
@@ -39,11 +39,11 @@ export namespace ExportAPI {
 
     async function writeToTempFile(node: ApiVersionDefinitionTreeItem, specFormat: string, specValue: string) {
         if (specFormat === DefinitionFormat.inline) {
-            await ExportAPI.showTmpFile(node, specValue);
+            await ExportAPI.showTempFile(node, specValue);
         }
     }
 
-    export async function showTmpFile(node: ApiVersionDefinitionTreeItem, fileContent: string) {
+    export async function showTempFile(node: ApiVersionDefinitionTreeItem, fileContent: string) {
         const folderName = getFolderName(node);
         const folderPath = await createTemporaryFolder(folderName);
         const fileName = getFilename(node);

@@ -34,7 +34,3 @@ export const ApiSpecificationOptions = {
     localFile: UiStrings.ApiSpecificationOptionLocalFile,
     activeEditor: UiStrings.ApiSpecificationOptionActiveEditor,
 };
-export const DefinitionFormat = {
-    inline: 'inline',
-    link: 'link',
-};
