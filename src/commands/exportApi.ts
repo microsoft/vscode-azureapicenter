@@ -7,6 +7,7 @@ import * as path from "path";
 import * as vscode from "vscode";
 import { ApiCenterService } from "../azure/ApiCenter/ApiCenterService";
 import { ApiSpecExportResultFormat } from "../azure/ApiCenter/contracts";
+import { TelemetryClient } from '../common/telemetryClient';
 import { ext } from "../extensionVariables";
 import { ApiVersionDefinitionTreeItem } from "../tree/ApiVersionDefinitionTreeItem";
 import { createTemporaryFolder } from "../utils/fsUtil";
@@ -40,6 +41,9 @@ export namespace ExportAPI {
     async function writeToTempFile(node: ApiVersionDefinitionTreeItem, specFormat: string, specValue: string) {
         if (specFormat === ApiSpecExportResultFormat.inline) {
             await ExportAPI.showTempFile(node, specValue);
+        } else {
+            // Currently at server side did not exist link, so just monitor this event.
+            TelemetryClient.sendEvent("azure-api-center.exportApi", { format: specFormat });
         }
     }
 
