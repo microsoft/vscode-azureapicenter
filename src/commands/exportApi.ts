@@ -6,7 +6,7 @@ import * as fs from "fs-extra";
 import * as path from "path";
 import * as vscode from "vscode";
 import { ApiCenterService } from "../azure/ApiCenter/ApiCenterService";
-import { DefinitionFormat } from "../azure/ApiCenter/contracts";
+import { ApiSpecExportResultFormat } from "../azure/ApiCenter/contracts";
 import { ext } from "../extensionVariables";
 import { ApiVersionDefinitionTreeItem } from "../tree/ApiVersionDefinitionTreeItem";
 import { createTemporaryFolder } from "../utils/fsUtil";
@@ -38,7 +38,7 @@ export namespace ExportAPI {
     }
 
     async function writeToTempFile(node: ApiVersionDefinitionTreeItem, specFormat: string, specValue: string) {
-        if (specFormat === DefinitionFormat.inline) {
+        if (specFormat === ApiSpecExportResultFormat.inline) {
             await ExportAPI.showTempFile(node, specValue);
         }
     }
