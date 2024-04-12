@@ -5,6 +5,7 @@ import * as sinon from "sinon";
 import { ApiCenterService } from "../../../azure/ApiCenter/ApiCenterService";
 import { ApiCenterApiVersionDefinition } from "../../../azure/ApiCenter/contracts";
 import { ExportAPI } from "../../../commands/exportApi";
+import { TelemetryClient } from "../../../common/telemetryClient";
 import { ApiVersionDefinitionTreeItem } from "../../../tree/ApiVersionDefinitionTreeItem";
 abstract class ParentTreeItemBase extends AzExtParentTreeItem {
     private _childIndex: number = 0;
@@ -33,6 +34,7 @@ suite("export API test cases", () => {
     let node: ApiVersionDefinitionTreeItem;
     suiteSetup(() => {
         sandbox = sinon.createSandbox();
+        sinon.stub(TelemetryClient, "sendEvent").returns();
     });
     setup(() => {
         root = new RootTreeItem(undefined);
