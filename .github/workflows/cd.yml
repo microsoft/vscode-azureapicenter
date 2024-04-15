@@ -32,7 +32,7 @@ jobs:
       - name: Build visx
         run: |
           npm install
-          npx @vscode/vsce package --no-dependencies
+          npx @vscode/vsce package --no-dependencies --githubBranch ${GITHUB_REF#refs/*/}
 
       - uses: actions/upload-artifact@v3
         with:
