@@ -98,8 +98,8 @@
         "category": "Azure API Center"
       },
       {
-        "command": "azure-api-center.exportOpenApi",
-        "title": "%azure-api-center.commands.exportOpenApi.title%",
+        "command": "azure-api-center.exportApi",
+        "title": "%azure-api-center.commands.exportApi.title%",
         "category": "Azure API Center"
       },
       {
@@ -194,8 +194,8 @@
           "when": "view == apiCenterTreeView && viewItem =~ /never/"
         },
         {
-          "command": "azure-api-center.exportOpenApi",
-          "when": "view == apiCenterTreeView && viewItem =~ /never/"
+          "command": "azure-api-center.exportApi",
+          "when": "view == apiCenterTreeView && viewItem =~ /azureApiCenterApiVersionDefinitionTreeItem/"
         },
         {
           "command": "azure-api-center.showOpenApi",
@@ -231,10 +231,6 @@
         },
         {
           "command": "azure-api-center.importOpenApiByLink",
-          "when": "never"
-        },
-        {
-          "command": "azure-api-center.exportOpenApi",
           "when": "never"
         },
         {
