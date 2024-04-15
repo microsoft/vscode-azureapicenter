@@ -10,6 +10,10 @@ Shift-left API design conformance checks into Visual Studio Code with integrated
 
 ![linting](./media/integrated-lint.png)
 
+Ensure that new API versions don't break API consumers with breaking change detection support, powered by Optic.
+
+![Breaking Change Detection](./media/breaking-change.png)
+
 ### Discover
 
 Find the right API, fast from your organization's hand-crafted API catalog with API Center.

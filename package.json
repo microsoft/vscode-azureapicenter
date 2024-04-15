@@ -3,7 +3,7 @@
   "publisher": "apidev",
   "displayName": "Azure API Center",
   "description": "Build, discover, and consume APIs.",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "icon": "media/api-center-icon.png",
   "license": "MIT",
   "engines": {
@@ -259,7 +259,7 @@
         },
         {
           "command": "azure-api-center.cleanupSearchResult",
-          "whne": "never"
+          "when": "never"
         }
       ]
     },

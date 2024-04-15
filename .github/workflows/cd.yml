@@ -23,7 +23,7 @@ jobs:
           node-version: lts/*
 
       - uses: jossef/action-set-json-field@v1
-        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.release == 'true' }}
+        if: ${{ github.event_name == 'workflow_dispatch' && (github.event.inputs.release == 'true' || github.ref == 'refs/heads/main') }}
         with:
           file: ./package.json
           field: aiKey
@@ -32,7 +32,7 @@ jobs:
       - name: Build visx
         run: |
           npm install
-          npx @vscode/vsce package --no-dependencies
+          npx @vscode/vsce package --no-dependencies --githubBranch ${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
 
       - uses: actions/upload-artifact@v3
         with:
