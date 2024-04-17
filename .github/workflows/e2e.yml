@@ -24,9 +24,6 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: test-results
-          path: ./test-results
-      - if: ${{always()}}
-        uses: actions/upload-artifact@v2
-        with:
-          name: extensions
-          path: ./src/test/e2e/.vscode-test/extensions
+          path: |
+            test-results
+            src\test\e2e\.vscode-test\extensions
