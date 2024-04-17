@@ -9,7 +9,7 @@ const execAsync = promisify(exec);
 export default async () => {
     const vscodePath = await downloadAndUnzipVSCode('insiders');
     const [cli, ...args] = resolveCliArgsFromVSCodeExecutablePath(vscodePath);
-    await execAsync(`${cli} ${args[0]} ${args[1]} --install-extension ms-vscode.azure-account`, {
+    await execAsync(`${cli} ${args.join(' ')} --install-extension ms-vscode.azure-account`, {
         encoding: 'utf-8',
     })
 };
