@@ -28,7 +28,7 @@ export const test = base.extend<TestFixtures>({
         const [cli, ...args] = resolveCliArgsFromVSCodeExecutablePath(vscodePath);
         spawnSync(cli, [...args, '--install-extension', 'ms-vscode.azure-account'], {
             encoding: 'utf-8',
-            stdio: 'inherit',
+            stdio: 'inherit'
         });
         const electronApp = await _electron.launch({
             executablePath: vscodePath,

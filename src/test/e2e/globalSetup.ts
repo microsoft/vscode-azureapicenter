@@ -11,5 +11,5 @@ export default async () => {
     const [cli, ...args] = resolveCliArgsFromVSCodeExecutablePath(vscodePath);
     await execAsync(`${cli} ${args.join(' ')} --install-extension ms-vscode.azure-account`, {
         encoding: 'utf-8',
-    })
+    });
 };
