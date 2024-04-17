@@ -20,7 +20,7 @@ jobs:
       - run: |
           npx playwright test
         working-directory: ./src/test/e2e
-      - name: Upload test results
+      - if: ${{ always() }}
         uses: actions/upload-artifact@v2
         with:
           name: test-results
