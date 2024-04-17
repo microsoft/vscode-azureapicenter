@@ -21,6 +21,7 @@ type TestFixtures = TestOptions & {
 
 export const test = base.extend<TestFixtures>({
     vscodeVersion: ['insiders', { option: true }],
+
     workbox: async ({ vscodeVersion, createProject, createTempDir }, use) => {
         const defaultCachePath = await createTempDir();
         const vscodePath = await downloadAndUnzipVSCode(vscodeVersion);
