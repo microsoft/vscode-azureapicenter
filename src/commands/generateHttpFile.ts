@@ -32,6 +32,8 @@ function pasreSwaggerObjectToHttpFileContent(api: OpenAPIV3.Document): string {
     const variableNames = new Set<string>();
 
     for (const path in api.paths) {
+        const pathWithVariables = parsePath(path, variableNames);
+
         for (const method in api.paths[path]) {
             if (Object.values(OpenAPIV3.HttpMethods).map(m => m.toString()).includes(method)) {
                 const operation: OpenAPIV3.OperationObject = (api.paths[path] as any)[method];
@@ -50,7 +52,7 @@ function pasreSwaggerObjectToHttpFileContent(api: OpenAPIV3.Document): string {
                     }
                 }
 
-                const request = `${method.toUpperCase()} {{url}}${path}${queryString} HTTP/1.1
+                const request = `${method.toUpperCase()} {{url}}${pathWithVariables}${queryString} HTTP/1.1
 ${header}
 
 ${body}`;
@@ -76,6 +78,15 @@ ${variablesContent}
 ${httpRequestsContent}`;
 
     return httpFileContent;
+}
+
+function parsePath(path: string, variableNames: Set<string>): string {
+    const pathWithVariables = path.replace(/{(.*?)}/g, (match, variableName) => {
+        variableNames.add(variableName);
+        return `{{${variableName}}}`;
+    });
+
+    return pathWithVariables;
 }
 
 function parseQueryString(parameters: OpenAPIV3.ParameterObject[] | undefined, variableNames: Set<string>): string {
