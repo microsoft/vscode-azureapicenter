@@ -29,6 +29,7 @@ export async function generateHttpFile(context: IActionContext, node?: ApiVersio
 
 function pasreSwaggerObjectToHttpFileContent(api: OpenAPIV3.Document): string {
     const httpRequests: string[] = [];
+    const variableNames = new Set<string>();
 
     for (const path in api.paths) {
         for (const method in api.paths[path]) {
@@ -36,8 +37,8 @@ function pasreSwaggerObjectToHttpFileContent(api: OpenAPIV3.Document): string {
                 const operation: OpenAPIV3.OperationObject = (api.paths[path] as any)[method];
                 const parameters = operation.parameters as (OpenAPIV3.ParameterObject[] | undefined);
 
-                const queryString = parseQueryString(parameters);
-                let header = parseHeader(parameters);
+                const queryString = parseQueryString(parameters, variableNames);
+                let header = parseHeader(parameters, variableNames);
                 const body = parseBody(operation.requestBody as (OpenAPIV3.RequestBodyObject | undefined));
 
                 if (body) {
@@ -67,25 +68,28 @@ ${body}`;
         url = url.endsWith('/') ? url.slice(0, -1) : url;
     }
 
+    const variablesContent = Array.from(variableNames).map(v => `@${v} = `).join("\n");
+
     const httpFileContent = `@url = ${url}
+${variablesContent}
 
 ${httpRequestsContent}`;
 
     return httpFileContent;
 }
 
-function parseQueryString(parameters: OpenAPIV3.ParameterObject[] | undefined): string {
+function parseQueryString(parameters: OpenAPIV3.ParameterObject[] | undefined, variableNames: Set<string>): string {
     const queryStrings = parseParameter(parameters, "query");
-    let queryStringString = queryStrings.map(q => `${q.name}=${parseValueFromParameterObject(q)}`).join("&");
+    let queryStringString = queryStrings.map(q => `${q.name}=${parseValueFromParameterObject(q, variableNames)}`).join("&");
     if (queryStringString) {
         queryStringString = "?" + queryStringString;
     }
     return queryStringString;
 }
 
-function parseHeader(parameters: OpenAPIV3.ParameterObject[] | undefined): string {
+function parseHeader(parameters: OpenAPIV3.ParameterObject[] | undefined, variableNames: Set<string>): string {
     const headers = parseParameter(parameters, "header");
-    const headerString = headers.map(h => `${h.name}: ${parseValueFromParameterObject(h)}`).join("\n");
+    const headerString = headers.map(h => `${h.name}: ${parseValueFromParameterObject(h, variableNames)}`).join("\n");
     return headerString;
 }
 
@@ -94,7 +98,7 @@ function parseParameter(parameters: OpenAPIV3.ParameterObject[] | undefined, inV
     return filteredParameters ?? [];
 }
 
-function parseValueFromParameterObject(parameterObject: OpenAPIV3.ParameterObject): any {
+function parseValueFromParameterObject(parameterObject: OpenAPIV3.ParameterObject, variableNames: Set<string>): any {
     if (parameterObject.example) {
         return parameterObject.example;
     }
@@ -109,7 +113,9 @@ function parseValueFromParameterObject(parameterObject: OpenAPIV3.ParameterObjec
         }
     }
 
-    return `{${parameterObject.name}}`;
+    variableNames.add(parameterObject.name);
+
+    return `{{${parameterObject.name}}}`;
 }
 
 function parseBody(requestBody: OpenAPIV3.RequestBodyObject | undefined): string {
