@@ -2,14 +2,11 @@
 // Licensed under the MIT license.
 import { _electron, test as base, type Page } from '@playwright/test';
 import { downloadAndUnzipVSCode, resolveCliArgsFromVSCodeExecutablePath } from '@vscode/test-electron';
-import { spawn } from "child_process";
+import { spawnSync } from "child_process";
 import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path from 'path';
-import { promisify } from 'util';
 export { expect } from '@playwright/test';
-
-const spawnAsync = promisify(spawn);
 
 export type TestOptions = {
     vscodeVersion: string;
@@ -28,9 +25,9 @@ export const test = base.extend<TestFixtures>({
         const defaultCachePath = await createTempDir();
         const vscodePath = await downloadAndUnzipVSCode(vscodeVersion);
         const [cli, ...args] = resolveCliArgsFromVSCodeExecutablePath(vscodePath);
-        await spawnAsync(cli,
-            [...args, '--install-extension', 'ms-vscode.azure-account'], {
-            stdio: 'inherit'
+        spawnSync(cli, [...args, '--install-extension', 'ms-vscode.azure-account'], {
+            encoding: 'utf-8',
+            stdio: 'inherit',
         });
         const electronApp = await _electron.launch({
             executablePath: vscodePath,
