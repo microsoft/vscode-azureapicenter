@@ -21,12 +21,12 @@ type TestFixtures = TestOptions & {
 
 export const test = base.extend<TestFixtures>({
     vscodeVersion: ['insiders', { option: true }],
+
     workbox: async ({ vscodeVersion, createProject, createTempDir }, use) => {
         const defaultCachePath = await createTempDir();
         const vscodePath = await downloadAndUnzipVSCode(vscodeVersion);
         const [cli, ...args] = resolveCliArgsFromVSCodeExecutablePath(vscodePath);
-        spawnSync(cli,
-            [...args, '--install-extension', 'ms-vscode.azure-account'], {
+        spawnSync(cli, [...args, '--install-extension', 'ms-vscode.azure-account'], {
             encoding: 'utf-8',
             stdio: 'inherit'
         });
