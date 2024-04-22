@@ -123,8 +123,7 @@ function parseBody(requestBody: OpenAPIV3.RequestBodyObject | undefined): string
                 const propertySchema = jsonBodySchema.properties[name] as OpenAPIV3.SchemaObject;
                 if (propertySchema.example) {
                     body[name] = propertySchema.example;
-                }
-                if (propertySchema.default) {
+                } else if (propertySchema.default) {
                     body[name] = propertySchema.default;
                 }
             }
