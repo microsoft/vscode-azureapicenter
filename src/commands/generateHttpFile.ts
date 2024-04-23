@@ -2,11 +2,9 @@
 // Licensed under the MIT license.
 import { IActionContext } from "@microsoft/vscode-azext-utils";
 import * as fse from 'fs-extra';
-
-
-import * as path from 'path';
-
+import { JSONSchemaFaker } from 'json-schema-faker';
 import { OpenAPIV3 } from "openapi-types";
+import * as path from 'path';
 import * as vscode from 'vscode';
 import { ext } from "../extensionVariables";
 import { ApiVersionDefinitionTreeItem } from "../tree/ApiVersionDefinitionTreeItem";
@@ -135,11 +133,20 @@ function parseBody(requestBody: OpenAPIV3.RequestBodyObject | undefined): string
         let body: { [key: string]: any } = {};
         if (jsonBodySchema.example) {
             body = jsonBodySchema.example;
+        } else if (jsonBodySchema.default) {
+            body = jsonBodySchema.default;
         } else if (jsonBodySchema.properties) {
             for (const name in jsonBodySchema.properties) {
                 const propertySchema = jsonBodySchema.properties[name] as OpenAPIV3.SchemaObject;
-                body[name] = propertySchema.example;
+                if (propertySchema.example) {
+                    body[name] = propertySchema.example;
+                } else if (propertySchema.default) {
+                    body[name] = propertySchema.default;
+                }
             }
+        }
+        if (Object.keys(body).length === 0) {
+            body = JSONSchemaFaker.generate(jsonBodySchema) as { [key: string]: any };
         }
         if (Object.keys(body).length > 0) {
             return JSON.stringify(body, null, 2);
