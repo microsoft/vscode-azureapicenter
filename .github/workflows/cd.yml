@@ -9,7 +9,7 @@ on:
         type: boolean
         default: false
       preview:
-        description: "generate prerelease version?"
+        description: "generate prerelease vsix?"
         required: true
         type: boolean
         default: false
@@ -46,7 +46,7 @@ jobs:
           else
             VERSION=$(echo ${VERSION%-*} | awk -v val=$DATE_WITH_TIME -F. '/[0-9]+\./{$3=val;print}' OFS=.)
           fi
-          echo '----------------- prerelease:' $VERSION
+          echo '----------------- prerelease version:' $VERSION
           jq --arg VERSION "$VERSION" '.version=$VERSION' package.json > tmp.$$.json
           mv tmp.$$.json package.json
 
