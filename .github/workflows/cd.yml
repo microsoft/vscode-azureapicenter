@@ -1,5 +1,5 @@
 name: "CD"
-run-name: CD-${{ github.ref_name }}-${{ github.run_id }}
+run-name: CD-${{ github.ref_name }}-${{ github.run_id }}-isPreview-${{ inputs.preview }}
 on:
   workflow_dispatch:
     inputs:
