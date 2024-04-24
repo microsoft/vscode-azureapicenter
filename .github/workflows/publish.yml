@@ -8,6 +8,11 @@ on:
         description: "Input the CD pipeline run ID to fetch the artifact"
         required: true
         default: ""
+      preview:
+        description: "generate prerelease version?"
+        required: true
+        type: boolean
+        default: false
 
 jobs:
   publish-to-vscode-marketplace:
@@ -22,11 +27,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: lts/*
-
-      - uses: actions/checkout@v2
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          ref: ${{ github.head_ref }}
 
       - name: Install VSCE command
         run: |
@@ -44,7 +44,7 @@ jobs:
       - name: get packge version
         id: package-version
         run: |
-          echo "version=$(jq -r '"v"+.version' package.json)" >> $GITHUB_OUTPUT
+          echo "version=$(jq -r '"v"+.version' ./package.json)" >> $GITHUB_OUTPUT
 
       - name: upload to release page
         uses: ncipollo/release-action@v1.10.0
@@ -53,7 +53,14 @@ jobs:
           tag: ${{ steps.package-version.outputs.version }}
           artifacts: ./*.vsix
 
-      - name: release to VSCode marketplace
+      - name: release prerelease to VSCode marketplace
+        if: ${{ github.event.inputs.preview == 'true'}}
+        run: vsce publish --pre-release --pat $PAT --packagePath *.vsix --noVerify
+        env:
+          PAT: ${{ secrets.VSCE_PAT }}
+
+      - name: release stable to VSCode marketplace
+        if: ${{ github.event.inputs.preview != 'true'}}
         run: vsce publish --pat $PAT --packagePath *.vsix --noVerify
         env:
           PAT: ${{ secrets.VSCE_PAT }}
