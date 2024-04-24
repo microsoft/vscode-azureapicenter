@@ -6,7 +6,7 @@ import { ApisTreeItem } from "../tree/ApisTreeItem";
 import { UiStrings } from "../uiStrings";
 
 export async function searchApi(context: IActionContext, node: ApisTreeItem) {
-    const searchContent = await vscode.window.showInputBox({ title: UiStrings.SearchAPI, ignoreFocusOut: true });
+    const searchContent = await vscode.window.showInputBox({ title: UiStrings.SearchAPI, placeHolder: UiStrings.SearchContentHint, ignoreFocusOut: true });
     if (!searchContent) {
         return;
     }
