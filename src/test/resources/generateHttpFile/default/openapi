@@ -1,0 +1,66 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Repair Service",
+        "description": "A simple service to manage repairs for various items",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "https://piercerepairsapi.azurewebsites.net/"
+        }
+    ],
+    "paths": {
+        "/repairs": {
+            "post": {
+                "operationId": "createRepair",
+                "summary": "Create a new repair",
+                "description": "Adds a new repair to the list with the given details and image URL",
+                "parameters": [
+                    {
+                        "name": "assignedTo1",
+                        "in": "header",
+                        "description": "Filter repairs by who they're assigned to",
+                        "schema": {
+                            "type": "string",
+                            "example": "assignedTo1"
+                        },
+                        "required": false
+                    },
+                    {
+                        "name": "assignedTo2",
+                        "in": "query",
+                        "description": "Filter repairs by who they're assigned to",
+                        "schema": {
+                            "type": "string",
+                            "example": "assignedTo2"
+                        },
+                        "required": false
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "description": "The short summary of the repair",
+                                        "example": "title"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "A successful response indicating that the repair was created"
+                    }
+                }
+            }
+        }
+    }
+}

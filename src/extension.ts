@@ -14,7 +14,7 @@ import { cleanupSearchResult } from './commands/cleanUpSearch';
 import { showOpenApi } from './commands/editOpenApi';
 import { ExportAPI } from './commands/exportApi';
 import { generateApiLibrary } from './commands/generateApiLibrary';
-import { generateHttpFile } from './commands/generateHttpFile';
+import { GenerateHttpFile } from './commands/generateHttpFile';
 import { importOpenApi } from './commands/importOpenApi';
 import { openAPiInSwagger } from './commands/openApiInSwagger';
 import { refreshTree } from './commands/refreshTree';
@@ -91,7 +91,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
     registerCommandWithTelemetry('azure-api-center.generate-api-client', generateApiLibrary);
 
-    registerCommandWithTelemetry('azure-api-center.generateHttpFile', generateHttpFile);
+    registerCommandWithTelemetry('azure-api-center.generateHttpFile', GenerateHttpFile.generateHttpFile);
 
     registerCommandWithTelemetry('azure-api-center.registerApi', registerApi);
 

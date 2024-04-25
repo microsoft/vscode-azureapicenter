@@ -1,0 +1,30 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Repair Service",
+        "description": "A simple service to manage repairs for various items",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "https://piercerepairsapi.azurewebsites.net/"
+        },
+        {
+            "url": "https://piercerepairsapi2.azurewebsites.net/"
+        }
+    ],
+    "paths": {
+        "/repairs": {
+            "get": {
+                "operationId": "listRepairs",
+                "summary": "List all repairs",
+                "description": "Returns a list of repairs with their details and images",
+                "responses": {
+                    "200": {
+                        "description": "A successful response"
+                    }
+                }
+            }
+        }
+    }
+}
