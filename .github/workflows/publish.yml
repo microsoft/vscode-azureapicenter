@@ -53,14 +53,12 @@ jobs:
           tag: ${{ steps.package-version.outputs.version }}
           artifacts: ./*.vsix
 
-      - name: release prerelease to VSCode marketplace
-        if: ${{ github.event.inputs.preview == 'true'}}
-        run: vsce publish --pre-release --pat $PAT --packagePath *.vsix --noVerify
+      - name: releae to VSCode marketplace
         env:
           PAT: ${{ secrets.VSCE_PAT }}
-
-      - name: release stable to VSCode marketplace
-        if: ${{ github.event.inputs.preview != 'true'}}
-        run: vsce publish --pat $PAT --packagePath *.vsix --noVerify
-        env:
-          PAT: ${{ secrets.VSCE_PAT }}
+        run: |
+          if [ "${{ github.event.inputs.preview }}" == "true" ]; then
+            vsce publish --pre-release --pat $PAT --packagePath *.vsix --noVerify
+          else
+            vsce publish --pat $PAT --packagePath *.vsix --noVerify
+          fi

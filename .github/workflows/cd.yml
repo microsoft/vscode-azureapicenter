@@ -50,17 +50,14 @@ jobs:
           jq --arg VERSION "$VERSION" '.version=$VERSION' package.json > tmp.$$.json
           mv tmp.$$.json package.json
 
-      - name: Build visx for preview
-        if: ${{ github.event.inputs.preview == 'true'}}
-        run: |
-          npm install
-          npx @vscode/vsce package --no-dependencies --pre-release --githubBranch ${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
-
       - name: Build visx
-        if: ${{ github.event.inputs.preview != 'true'}}
         run: |
           npm install
-          npx @vscode/vsce package --no-dependencies --githubBranch ${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
+          if [ "${{ github.event.inputs.preview }}" == "true" ]; then
+            npx @vscode/vsce package --no-dependencies --pre-release --githubBranch ${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
+          else
+            npx @vscode/vsce package --no-dependencies --githubBranch ${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
+          fi
 
       - uses: actions/upload-artifact@v3
         with:
