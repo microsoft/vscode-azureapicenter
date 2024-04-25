@@ -1,0 +1,5 @@
+@url = https://piercerepairsapi.azurewebsites.net
+@assignedTo1 =\s
+@assignedTo2 =\s
+
+GET {{url}}/repairs\?assignedTo1={{assignedTo1}}&assignedTo2={{assignedTo2}} HTTP/1.1

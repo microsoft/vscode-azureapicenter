@@ -1,0 +1,10 @@
+@url = https://piercerepairsapi.azurewebsites.net
+
+
+POST {{url}}/repairs\?assignedTo2=assignedTo2 HTTP/1.1
+assignedTo1: assignedTo1
+Content-Type: application/json
+
+{
+  "title": "title"
+}

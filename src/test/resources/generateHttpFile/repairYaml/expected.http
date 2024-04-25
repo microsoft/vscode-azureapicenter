@@ -1,0 +1,33 @@
+@url = https://piercerepairsapi.azurewebsites.net
+@assignedTo =\s
+
+GET {{url}}/repairs\?assignedTo={{assignedTo}} HTTP/1.1
+
+###
+
+POST {{url}}/repairs HTTP/1.1
+Content-Type: application/json
+
+{
+  "title": .*,
+  "description": .*,
+  "assignedTo": [\s\S]*
+}
+
+###
+
+PATCH {{url}}/repairs HTTP/1.1
+Content-Type: application/json
+
+{
+  "id": [\s\S]*
+}
+
+###
+
+DELETE {{url}}/repairs HTTP/1.1
+Content-Type: application/json
+
+{
+  "id": .*
+}
