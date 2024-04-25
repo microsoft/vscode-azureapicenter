@@ -40,7 +40,7 @@ export class UiStrings {
     static readonly CopilotParseApiSpec = vscode.l10n.t("Parsing API Specifications...");
     static readonly CopilotParseApiSpecFor = vscode.l10n.t("Parsing API Specifications for '{0}'...");
     static readonly CopilotExceedsTokenLimit = vscode.l10n.t("⚠️ The contents of the API specification document are too large for GitHub Copilot Chat. Please try again with the suggested action below.");
-    static readonly RegisterApiOptionStepByStep = vscode.l10n.t("Step by step");
+    static readonly RegisterApiOptionStepByStep = vscode.l10n.t("Manual");
     static readonly RegisterApiOptionCicd = vscode.l10n.t("CI/CD");
     static readonly ApiRulesetOptionAzureApiGuideline = vscode.l10n.t("Microsoft Azure REST API");
     static readonly ApiRulesetOptionSpectralOwasp = vscode.l10n.t("OWASP API Security Top 10");
