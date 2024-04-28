@@ -4,7 +4,7 @@ import { IActionContext } from "@microsoft/vscode-azext-utils";
 import * as vscode from "vscode";
 import { TelemetryClient } from "../common/telemetryClient";
 import { TelemetryEvent, TelemetryProperties } from "../common/telemetryEvent";
-import { ApiRulesetOptions, azureApiGuidelineRulesetFile, spectralOwaspRulesetFile } from "../constants";
+import { ApiRulesetOptions, azureApiGuidelineRulesetFile, defaultRulesetFile, spectralOwaspRulesetFile } from "../constants";
 import { UiStrings } from "../uiStrings";
 import { ensureExtension } from "../utils/ensureExtension";
 
@@ -23,6 +23,9 @@ export async function setApiRuleset(context: IActionContext) {
     }
 
     switch (apiRulesetOption) {
+        case ApiRulesetOptions.default:
+            await setRulesetFile(defaultRulesetFile);
+            break;
         case ApiRulesetOptions.azureApiGuideline:
             await setRulesetFile(azureApiGuidelineRulesetFile);
             break;
