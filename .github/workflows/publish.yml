@@ -28,6 +28,8 @@ jobs:
         with:
           node-version: lts/*
 
+      - uses: actions/checkout@v2
+
       - name: Install VSCE command
         run: |
           npm install @vscode/vsce -g
@@ -39,12 +41,12 @@ jobs:
           name: release
           github_token: ${{ secrets.GITHUB_TOKEN }}
           workflow: cd.yml
-          path: .
+          path: ./release
 
-      - name: get packge version
+      - name: get package version
         id: package-version
         run: |
-          echo "version=$(jq -r '"v"+.version' ./package.json)" >> $GITHUB_OUTPUT
+          echo "version=$(jq -r '"v"+.version' ./release/package.json)" >> $GITHUB_OUTPUT
 
       - name: upload to release page
         uses: ncipollo/release-action@v1.10.0
@@ -52,13 +54,15 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ steps.package-version.outputs.version }}
           artifacts: ./*.vsix
+          commit: $GITHUB_SHA
+          prerelease: ${{ github.event.inputs.preview }}
 
       - name: releae to VSCode marketplace
         env:
           PAT: ${{ secrets.VSCE_PAT }}
         run: |
           if [ "${{ github.event.inputs.preview }}" == "true" ]; then
-            vsce publish --pre-release --pat $PAT --packagePath *.vsix --noVerify
+            vsce publish --pre-release --pat $PAT --packagePath ./release/*.vsix --noVerify
           else
-            vsce publish --pat $PAT --packagePath *.vsix --noVerify
+            vsce publish --pat $PAT --packagePath ./release/*.vsix --noVerify
           fi
