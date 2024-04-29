@@ -17,6 +17,7 @@ on:
 jobs:
   publish-to-vscode-marketplace:
     runs-on: ubuntu-latest
+    environment: production
     permissions:
       actions: read
       contents: write
@@ -52,6 +53,16 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ steps.package-version.outputs.version }}
-          artifacts: ./*.vsix
+          artifacts: ./release/*.vsix
           commit: ${{ github.sha }}
           prerelease: ${{ github.event.inputs.preview }}
+
+      - name: releae to VSCode marketplace
+        env:
+          PAT: ${{ secrets.VSCE_PAT }}
+        run: |
+          if [ "${{ github.event.inputs.preview }}" == "true" ]; then
+            vsce publish --pre-release --pat $PAT --packagePath ./release/*.vsix --noVerify
+          else
+            vsce publish --pat $PAT --packagePath ./release/*.vsix --noVerify
+          fi
