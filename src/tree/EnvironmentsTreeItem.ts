@@ -2,10 +2,10 @@
 // Licensed under the MIT license.
 import { getResourceGroupFromId } from "@microsoft/vscode-azext-azureutils";
 import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
+import * as vscode from 'vscode';
 import { ApiCenterService } from "../azure/ApiCenter/ApiCenterService";
 import { ApiCenter } from "../azure/ApiCenter/contracts";
 import { UiStrings } from "../uiStrings";
-import { treeUtils } from "../utils/treeUtils";
 import { EnvironmentTreeItem } from "./EnvironmentTreeItem";
 
 export class EnvironmentsTreeItem extends AzExtParentTreeItem {
@@ -22,7 +22,7 @@ export class EnvironmentsTreeItem extends AzExtParentTreeItem {
   }
 
   public get iconPath(): TreeItemIconPath {
-    return treeUtils.getIconPath('list');
+    return new vscode.ThemeIcon("symbol-method");
   }
 
   public async loadMoreChildrenImpl(clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {

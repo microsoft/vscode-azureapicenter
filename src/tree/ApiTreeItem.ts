@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
+import * as vscode from 'vscode';
 import { ApiCenterApi } from "../azure/ApiCenter/contracts";
 import { UiStrings } from "../uiStrings";
-import { treeUtils } from "../utils/treeUtils";
 import { ApiDeploymentsTreeItem } from "./ApiDeploymentsTreeItem";
 import { ApiVersionsTreeItem } from "./ApiVersionsTreeItem";
 
@@ -25,7 +25,7 @@ export class ApiTreeItem extends AzExtParentTreeItem {
   }
 
   public get iconPath(): TreeItemIconPath {
-    return treeUtils.getIconPath('api');
+    return new vscode.ThemeIcon("library");
   }
 
   public get id(): string {

@@ -6,7 +6,6 @@ import * as vscode from 'vscode';
 import { ApiCenterService } from "../azure/ApiCenter/ApiCenterService";
 import { ApiCenter } from "../azure/ApiCenter/contracts";
 import { UiStrings } from "../uiStrings";
-import { treeUtils } from "../utils/treeUtils";
 import { ApiTreeItem } from "./ApiTreeItem";
 
 export class ApisTreeItem extends AzExtParentTreeItem {
@@ -20,7 +19,7 @@ export class ApisTreeItem extends AzExtParentTreeItem {
   }
 
   public get iconPath(): TreeItemIconPath {
-    return treeUtils.getIconPath('list');
+    return new vscode.ThemeIcon("library");
   }
 
   public get label(): string {
