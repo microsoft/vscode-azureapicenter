@@ -2,10 +2,10 @@
 // Licensed under the MIT license.
 import { getResourceGroupFromId } from "@microsoft/vscode-azext-azureutils";
 import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
+import * as vscode from 'vscode';
 import { ApiCenterService } from "../azure/ApiCenter/ApiCenterService";
 import { ApiCenterApiVersion } from "../azure/ApiCenter/contracts";
 import { UiStrings } from "../uiStrings";
-import { treeUtils } from "../utils/treeUtils";
 import { ApiVersionDefinitionTreeItem } from "./ApiVersionDefinitionTreeItem";
 
 export class ApiVersionDefinitionsTreeItem extends AzExtParentTreeItem {
@@ -28,7 +28,7 @@ export class ApiVersionDefinitionsTreeItem extends AzExtParentTreeItem {
   }
 
   public get iconPath(): TreeItemIconPath {
-    return treeUtils.getIconPath('list');
+    return new vscode.ThemeIcon("list-selection");
   }
 
   public get label(): string {
