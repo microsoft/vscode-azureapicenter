@@ -52,12 +52,12 @@ export class UiStrings {
     static readonly ApiSpecificationOptionApiCenter = vscode.l10n.t("Azure API Center");
     static readonly ApiSpecificationOptionLocalFile = vscode.l10n.t("Local File");
     static readonly ApiSpecificationOptionActiveEditor = vscode.l10n.t("Active Editor");
-    static readonly TreeitemLabelApis = vscode.l10n.t("Apis");
+    static readonly TreeitemLabelApis = vscode.l10n.t("APIs");
     static readonly TreeitemLabelDefinitions = vscode.l10n.t("Definitions");
     static readonly TreeitemLabelVersions = vscode.l10n.t("Versions");
     static readonly TreeitemLabelEnvironments = vscode.l10n.t("Environments");
     static readonly SubscriptionTreeItemChildTypeLabel = vscode.l10n.t("API Center Service");
-    static readonly ApiCenterTreeItemTreeItemChildTypeLabel = vscode.l10n.t("Apis or Environments");
+    static readonly ApiCenterTreeItemTreeItemChildTypeLabel = vscode.l10n.t("APIs or Environments");
     static readonly ApisTreeItemChildTypeLabel = vscode.l10n.t("API");
     static readonly ApiTreeItemChildTypeLabel = vscode.l10n.t("Deployments or Versions");
     static readonly ApiVersionsChildTypeLabel = vscode.l10n.t("API Version");
