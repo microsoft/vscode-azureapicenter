@@ -20,8 +20,11 @@ jobs:
         run: |
           npm install
           npm run package
-      - run: |
-          npx playwright test
+      - run: npx playwright test
+        if: ${{ matrix.os != 'ubuntu-latest' }}
+        working-directory: ./src/test/e2e
+      - run: xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- npx playwright test
+        if: ${{ matrix.os == 'ubuntu-latest' }}
         working-directory: ./src/test/e2e
       - if: ${{ always() }}
         uses: actions/upload-artifact@v2

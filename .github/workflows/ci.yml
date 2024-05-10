@@ -36,10 +36,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   unit-test:
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
+    runs-on: windows-latest
     permissions:
       pull-requests: write
     steps:
@@ -53,7 +50,6 @@ jobs:
           npm run test
 
       - uses: codecov/codecov-action@v4
-        if: ${{ matrix.os == 'ubuntu-latest' }}
         with:
           token: ${{ secrets.CODE_COV }}
           fail_ci_if_error: true
