@@ -35,30 +35,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  basecodecov:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          ref: ${{ github.base_ref }}
-      - uses: actions/setup-node@v3
-        with:
-          node-version: lts/*
-      - name: Install dependencies
-        run: npm install
-
-      - name: Run test coverage
-        run: npm run test
-
-      - name: Upload code coverage for ref branch
-        uses: actions/upload-artifact@v3
-        with:
-          name: ref-lcov.info
-          path: ./coverage/lcov.info
-
   unit-test:
     runs-on: windows-latest
-    needs: basecodecov
     permissions:
       pull-requests: write
     steps:
