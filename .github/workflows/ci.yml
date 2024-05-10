@@ -48,6 +48,7 @@ jobs:
         run: |
           npm install
           npm run test
+          ls ./coverage
       - uses: romeovs/lcov-reporter-action@v0.2.16
         with:
           lcov-file: ./coverage/lcov.info
