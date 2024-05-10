@@ -48,7 +48,7 @@ jobs:
         run: |
           npm install
           npm run test
-          ls ./coverage
+      - uses: hrishikesh-kadam/setup-lcov@v1
       - uses: zgosalvez/github-actions-report-lcov@v3
         with:
           coverage-files: ./coverage/lcov.info
