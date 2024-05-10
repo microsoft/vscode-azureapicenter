@@ -30,7 +30,7 @@ export default defineConfig({
     coverage: {
         includeAll: true,
         exclude: ['node_modules/**', 'src/test/**'],
-        reporter: ["text-summary", "html", "json-summary"],
+        reporter: ["text-summary", "html", "json-summary", "lcov"],
         lines: 30
     }
 });
