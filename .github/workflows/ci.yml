@@ -37,6 +37,8 @@ jobs:
 
   unit-test:
     runs-on: windows-latest
+    permissions:
+      pull-requests: write
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v3
@@ -46,6 +48,7 @@ jobs:
         run: |
           npm install
           npm run test
-      - uses: VeryGoodOpenSource/very_good_coverage@v2
+      - uses: romeovs/lcov-reporter-action@v0.2.16
         with:
-          path: '/coverage/lcov.info'
+          lcov-file: ./coverage/lcov.info
+          github-token: ${{ secrets.GITHUB_TOKEN }}
