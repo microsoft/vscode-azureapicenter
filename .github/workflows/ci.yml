@@ -49,7 +49,7 @@ jobs:
           npm install
           npm run test
           ls ./coverage
-      - uses: romeovs/lcov-reporter-action@v0.2.16
+      - uses: zgosalvez/github-actions-report-lcov@v3
         with:
-          lcov-file: ./coverage/lcov.info
+          coverage-files: ./coverage/lcov.info
           github-token: ${{ secrets.GITHUB_TOKEN }}
