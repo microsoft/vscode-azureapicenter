@@ -159,16 +159,22 @@ export class ApiCenterService {
     };
     let response = await client.sendRequest(options);
 
-    const location = response.headers.get("Location");
+    if (response.status === 200) {
+      return true;
+    } else if (response.status === 202) {
+      const location = response.headers.get("Location");
 
-    if (!location) { return false; }
+      if (!location) { return false; }
 
-    options = {
-      method: "GET",
-      url: location,
-    };
+      options = {
+        method: "GET",
+        url: location,
+      };
 
-    return await this.sendRequestWithTimeout(client, options, 120000); // 2 minutes in milliseconds
+      return await this.sendRequestWithTimeout(client, options, 120000); // 2 minutes in milliseconds
+    } else {
+      return false;
+    }
   }
 
   public async exportSpecification(
