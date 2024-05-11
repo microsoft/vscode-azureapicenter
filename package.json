@@ -34,28 +34,7 @@
   "extensionDependencies": [
     "ms-vscode.azure-account"
   ],
-  "enabledApiProposals": [
-    "chatParticipant",
-    "languageModels"
-  ],
   "contributes": {
-    "chatParticipants": [
-      {
-        "id": "azure-api-center.apicenter",
-        "name": "apicenter",
-        "description": "%azure-api-center.chatParticipants.apicenter.description%",
-        "commands": [
-          {
-            "name": "list",
-            "description": "%azure-api-center.chatParticipants.apicenter.commands.list.description%"
-          },
-          {
-            "name": "find",
-            "description": "%azure-api-center.chatParticipants.apicenter.commands.find.description%"
-          }
-        ]
-      }
-    ],
     "commands": [
       {
         "command": "azure-api-center.selectSubscriptions",
