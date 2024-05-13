@@ -7,7 +7,11 @@ on:
 
 jobs:
   e2e-test:
-    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
@@ -17,12 +21,17 @@ jobs:
         run: |
           npm install
           npm run package
-      - run: |
-          npx playwright test
+      - name: E2E test on win
+        run: npx playwright test
+        if: ${{ matrix.os == 'windows-latest' }}
+        working-directory: ./src/test/e2e
+      - name: E2E test on linux
+        run: xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" npx playwright test
+        if: ${{ matrix.os == 'ubuntu-latest' }}
         working-directory: ./src/test/e2e
       - if: ${{ always() }}
         uses: actions/upload-artifact@v2
         with:
-          name: test-results
+          name: test-results-${{ matrix.os }}
           path: |
             test-results
