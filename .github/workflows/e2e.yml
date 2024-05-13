@@ -23,10 +23,10 @@ jobs:
           npm run package
       - name: E2E test on win
         run: npx playwright test
-        if: ${{ matrix.os != 'ubuntu-latest' }}
+        if: ${{ matrix.os == 'windows-latest' }}
         working-directory: ./src/test/e2e
       - name: E2E test on linux
-        run: xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- npx playwright test
+        run: xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" npx playwright test
         if: ${{ matrix.os == 'ubuntu-latest' }}
         working-directory: ./src/test/e2e
       - if: ${{ always() }}
