@@ -27,7 +27,7 @@ suite("registerAPI", () => {
         sandbox.assert.calledOnce(stubCICD);
     });
     test('register API with StepByStep happy path', async () => {
-        const showQuickPick = sandbox.stub(vscode.window, 'showQuickPick').resolves('Step by step' as any);
+        const showQuickPick = sandbox.stub(vscode.window, 'showQuickPick').resolves('Manual' as any);
         sandbox.stub(TelemetryClient, "sendEvent").resolves();
         sandbox.stub(TelemetryClient, "sendErrorEvent").resolves();
         const stubStepByStep = sandbox.stub(registerStepByStep, 'registerStepByStep').resolves();

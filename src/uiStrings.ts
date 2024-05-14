@@ -40,8 +40,9 @@ export class UiStrings {
     static readonly CopilotParseApiSpec = vscode.l10n.t("Parsing API Specifications...");
     static readonly CopilotParseApiSpecFor = vscode.l10n.t("Parsing API Specifications for '{0}'...");
     static readonly CopilotExceedsTokenLimit = vscode.l10n.t("⚠️ The contents of the API specification document are too large for GitHub Copilot Chat. Please try again with the suggested action below.");
-    static readonly RegisterApiOptionStepByStep = vscode.l10n.t("Step by step");
+    static readonly RegisterApiOptionStepByStep = vscode.l10n.t("Manual");
     static readonly RegisterApiOptionCicd = vscode.l10n.t("CI/CD");
+    static readonly ApiRulesetOptionDefault = vscode.l10n.t("Default");
     static readonly ApiRulesetOptionAzureApiGuideline = vscode.l10n.t("Microsoft Azure REST API");
     static readonly ApiRulesetOptionSpectralOwasp = vscode.l10n.t("OWASP API Security Top 10");
     static readonly ApiRulesetOptionSelectFile = vscode.l10n.t("Select Local File");
@@ -51,12 +52,12 @@ export class UiStrings {
     static readonly ApiSpecificationOptionApiCenter = vscode.l10n.t("Azure API Center");
     static readonly ApiSpecificationOptionLocalFile = vscode.l10n.t("Local File");
     static readonly ApiSpecificationOptionActiveEditor = vscode.l10n.t("Active Editor");
-    static readonly TreeitemLabelApis = vscode.l10n.t("Apis");
+    static readonly TreeitemLabelApis = vscode.l10n.t("APIs");
     static readonly TreeitemLabelDefinitions = vscode.l10n.t("Definitions");
     static readonly TreeitemLabelVersions = vscode.l10n.t("Versions");
     static readonly TreeitemLabelEnvironments = vscode.l10n.t("Environments");
     static readonly SubscriptionTreeItemChildTypeLabel = vscode.l10n.t("API Center Service");
-    static readonly ApiCenterTreeItemTreeItemChildTypeLabel = vscode.l10n.t("Apis or Environments");
+    static readonly ApiCenterTreeItemTreeItemChildTypeLabel = vscode.l10n.t("APIs or Environments");
     static readonly ApisTreeItemChildTypeLabel = vscode.l10n.t("API");
     static readonly ApiTreeItemChildTypeLabel = vscode.l10n.t("Deployments or Versions");
     static readonly ApiVersionsChildTypeLabel = vscode.l10n.t("API Version");
@@ -70,4 +71,5 @@ export class UiStrings {
     static readonly OpticTaskSource = vscode.l10n.t("Azure API Center");
     static readonly SearchAPI = vscode.l10n.t('Search API');
     static readonly SearchAPIsResult = vscode.l10n.t("Search Result for '{0}'");
+    static readonly SearchContentHint = vscode.l10n.t("Search for API name, kind, lifecycle stage");
 }

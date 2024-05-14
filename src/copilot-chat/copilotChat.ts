@@ -7,7 +7,7 @@ import { ApiCenterApiVersionDefinitionExportWithType } from '../common/interface
 import { TelemetryClient } from '../common/telemetryClient';
 import { ErrorProperties, TelemetryEvent } from '../common/telemetryEvent';
 import { UiStrings } from '../uiStrings';
-import { compressOpenAPIV3, pasreDefinitionFileRawToOpenAPIV3FullObject } from '../utils/openApiUtils';
+import { OpenApiUtils } from '../utils/openApiUtils';
 import { API_CENTER_FIND_API, API_CENTER_LIST_APIs } from './constants';
 
 const LANGUAGE_MODEL_ID = 'copilot-gpt-3.5-turbo';
@@ -58,8 +58,8 @@ export async function handleChatMessage(request: vscode.ChatRequest, ctx: vscode
                 let specificationContent = specification.value;
                 if (specification.type === 'openapi') {
                     try {
-                        const openApi = await pasreDefinitionFileRawToOpenAPIV3FullObject(specification.value);
-                        const compressedOpenApi = compressOpenAPIV3(openApi);
+                        const openApi = await OpenApiUtils.pasreDefinitionFileRawToOpenAPIV3FullObject(specification.value);
+                        const compressedOpenApi = OpenApiUtils.compressOpenAPIV3(openApi);
                         specificationContent = JSON.stringify(compressedOpenApi);
                     } catch (error) {
                         // Do not throw error if it fails to compress OpenAPI.

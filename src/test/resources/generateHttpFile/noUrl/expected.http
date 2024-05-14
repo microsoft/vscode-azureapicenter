@@ -1,0 +1,4 @@
+@url =\s
+
+
+GET {{url}}/repairs HTTP/1.1

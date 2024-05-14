@@ -6,7 +6,7 @@
     "azure-api-center.commands.generate-api-client.title": "Generate API Client",
     "azure-api-center.commands.importOpenApiByFile.title": "Import OpenAPI from File",
     "azure-api-center.commands.importOpenApiByLink.title": "Import OpenAPI from Link",
-    "azure-api-center.commands.exportOpenApi.title": "Export OpenAPI",
+    "azure-api-center.commands.exportApi.title": "Export API Specification Document",
     "azure-api-center.commands.showOpenApi.title": "Edit OpenAPI",
     "azure-api-center.commands.generateHttpFile.title": "Generate HTTP File",
     "azure-api-center.commands.registerApi.title": "Register API",
