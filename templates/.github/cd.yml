@@ -31,7 +31,7 @@ jobs:
       # FILE_LOCATION: API Definition file location
       # https://docs.github.com/en/actions/learn-github-actions/variables#creating-configuration-variables-for-a-repository
       - name: Deploy to API Center
-        uses: azure/CLI@v1
+        uses: azure/CLI@v2
         with:
           azcliversion: latest
           inlineScript: |
