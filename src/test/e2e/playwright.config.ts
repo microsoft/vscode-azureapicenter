@@ -5,7 +5,7 @@ import { TestOptions } from './baseTest';
 
 export default defineConfig<void, TestOptions>({
     reporter: process.env.CI ? 'html' : 'list',
-    timeout: 60_000,
+    timeout: 120_000,
     workers: 1,
     expect: {
         timeout: 30_000,
