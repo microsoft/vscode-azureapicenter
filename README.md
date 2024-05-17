@@ -20,9 +20,6 @@ Find the right API, fast from your organization's hand-crafted API catalog with 
 
 ![tree-view](./media/tree-view.png)
 
-Try our new integration with GitHub Copilot Chat to find APIs based on semantic search query.
-
-![chat-agent](./media/chat-agent.gif)
 
 ### Explore
 
@@ -46,11 +43,6 @@ Export API specification document for a specific API either from the tree view o
 
 ![Export API specification](./media/export-api.gif)
 
-## Notice/Known Issues
-
-- Contents in VS Code workspace are not sent to GitHub Copilot.
-- When the content of single spec is very large, the `@apicenter` agent may fail as the token limit of GitHub Copilot Chat is exceeded. This is a temporary limitation our team is working to remove.
-- When the number of selected Azure Subscription is larger then 10, `@apicenter` agent may fail as it reaches call limit of Azure REST APIs.
 
 ## Contributing
 
