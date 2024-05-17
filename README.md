@@ -40,6 +40,12 @@ Generate API SDK clients for your favorite language including JavaScript, TypeSc
 
 ![generate-api-client](./media/generate-api-client.png)
 
+### Export API specification
+
+Export API specification document for a specific API either from the tree view or from the command palette
+
+![Export API specification](./media/export-api.gif)
+
 ## Notice/Known Issues
 
 - Contents in VS Code workspace are not sent to GitHub Copilot.
