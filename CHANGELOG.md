@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.0.0
+
+The 1.0.0 general availability (GA) release of the Azure API Center extension for Visual Studio Code provides new capabilities such as the ability to export API specification, defining default rules for API linting and displaying new strings in tree view
+
+### Features
+
+- Allows exporting of the API specification document
+- Defines default ruleset for API linting
+- New icons/strings in tree view
+- Improvement for .http file generation
+
 ## 0.3.0
 
 The 0.3.0 release of the Azure API Center extension for Visual Studio Code introduces new functionality to detect breaking changes between two OpenAPI specification documents and improves API discoverability by adding the ability to search for an API in the tree view.

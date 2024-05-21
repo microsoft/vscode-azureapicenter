@@ -3,13 +3,12 @@
   "publisher": "apidev",
   "displayName": "Azure API Center",
   "description": "Build, discover, and consume APIs.",
-  "version": "0.3.0",
+  "version": "1.0.0",
   "icon": "media/api-center-icon.png",
   "license": "MIT",
   "engines": {
     "vscode": "^1.88.0"
   },
-  "preview": true,
   "aiKey": "0655b027-8c75-4e4f-af1a-891dc8312948",
   "repository": {
     "type": "git",
