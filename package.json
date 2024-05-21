@@ -9,7 +9,6 @@
   "engines": {
     "vscode": "^1.88.0"
   },
-  "preview": true,
   "aiKey": "0655b027-8c75-4e4f-af1a-891dc8312948",
   "repository": {
     "type": "git",
