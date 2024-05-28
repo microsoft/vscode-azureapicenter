@@ -3,8 +3,20 @@
 import * as crypto from "crypto";
 import * as fse from 'fs-extra';
 import * as path from 'path';
+import * as vscode from 'vscode';
 import { extensionName, sessionFolderKey } from '../constants';
 import { ext } from '../extensionVariables';
+
+export async function writeToTemporaryFile(fileContent: string, folderName: string, fileName: string): Promise<vscode.Uri> {
+    const folderPath = await createTemporaryFolder(folderName);
+    const localFilePath: string = path.join(folderPath, fileName);
+    await fse.ensureFile(localFilePath);
+
+    const fileUri = vscode.Uri.file(localFilePath);
+    await vscode.workspace.fs.writeFile(fileUri, Buffer.from(fileContent));
+
+    return fileUri;
+}
 
 export async function createTemporaryFile(fileName: string): Promise<string> {
     // The extension globalStoragePath is a wellknown for vscode and will cleanup when extension gets uninstalled.
