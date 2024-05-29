@@ -15,7 +15,7 @@ import { writeToTemporaryFile } from "../utils/fsUtil";
 import { OpenApiUtils } from "../utils/openApiUtils";
 
 export async function generateMarkdownDocument(context: IActionContext, node?: ApiVersionDefinitionTreeItem) {
-    const apiSpecification = await getApiSpecification(UiStrings.SelectApiDefinitionFile, context);
+    const apiSpecification = await getApiSpecification(UiStrings.SelectApiSpecification, context);
     if (!apiSpecification) {
         throw new UserCancelledError();
     }
