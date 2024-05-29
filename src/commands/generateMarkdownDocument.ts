@@ -15,9 +15,14 @@ import { writeToTemporaryFile } from "../utils/fsUtil";
 import { OpenApiUtils } from "../utils/openApiUtils";
 
 export async function generateMarkdownDocument(context: IActionContext, node?: ApiVersionDefinitionTreeItem) {
-    const apiSpecification = await getApiSpecification(UiStrings.SelectApiSpecification, context);
-    if (!apiSpecification) {
-        throw new UserCancelledError();
+    let apiSpecification;
+    if (node) {
+        apiSpecification = node;
+    } else {
+        apiSpecification = await getApiSpecification(UiStrings.SelectApiSpecification, context);
+        if (!apiSpecification) {
+            throw new UserCancelledError();
+        }
     }
 
     let apiSpecificationContent: string;

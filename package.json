@@ -189,6 +189,10 @@
           "when": "view == apiCenterTreeView && viewItem == azureApiCenterApiVersionDefinitionTreeItem-openapi"
         },
         {
+          "command": "azure-api-center.generateMarkdownDocument",
+          "when": "view == apiCenterTreeView && viewItem == azureApiCenterApiVersionDefinitionTreeItem-openapi"
+        },
+        {
           "command": "azure-api-center.registerApi",
           "when": "view == apiCenterTreeView && viewItem =~ /^azureApiCenterApis/"
         },
