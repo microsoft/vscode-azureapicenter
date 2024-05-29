@@ -12,6 +12,7 @@ import { getApiSpecification } from "../utils/apiSpecificationUtils";
 import * as widdershins from "widdershins";
 import { makrdownDocuments } from "../constants";
 import { writeToTemporaryFile } from "../utils/fsUtil";
+import { OpenApiUtils } from "../utils/openApiUtils";
 
 export async function generateMarkdownDocument(context: IActionContext, node?: ApiVersionDefinitionTreeItem) {
     const apiSpecification = await getApiSpecification(UiStrings.SelectApiDefinitionFile, context);
@@ -45,7 +46,7 @@ async function showMarkdownDocument(apiSpecificationContent: string, folderName:
 }
 
 async function convertApiToMarkdown(apiSpecificationContent: string): Promise<string> {
-    const openApiObject = JSON.parse(apiSpecificationContent);
+    const openApiObject = OpenApiUtils.pasreDefinitionFileRawToSwaggerObject(apiSpecificationContent);
     const options = {
         language_tabs: [],
 
