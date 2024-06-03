@@ -112,6 +112,11 @@
         "category": "Azure API Center"
       },
       {
+        "command": "azure-api-center.generateApiFromCode",
+        "title": "Generate API Documentation",
+        "category": "Azure API Center"
+      },
+      {
         "command": "azure-api-center.cleanupSearchResult",
         "title": "%azure-api-center.commands.cleanupSearchResult.title%",
         "category": "Azure API Center",
@@ -207,6 +212,13 @@
           "group": "inline@1"
         }
       ],
+      "copilot": [
+        {
+          "command": "azure-api-center.generateApiFromCode",
+          "when": "github.copilot-chat.activated && resourceScheme == 'file' && (resourceExtname == .js || resourceExtname == .py || resourceExtname == .cs || resourceExtname == .java)",
+          "group": "apiCenter"
+        }
+      ],
       "commandPalette": [
         {
           "command": "azure-api-center.selectSubscriptions",
@@ -246,6 +258,10 @@
         },
         {
           "command": "azure-api-center.cleanupSearchResult",
+          "when": "never"
+        },
+        {
+          "command": "azure-api-center.generateApiFromCode",
           "when": "never"
         }
       ]

@@ -8,7 +8,6 @@ import { TelemetryClient } from '../common/telemetryClient';
 import { ErrorProperties, TelemetryEvent } from '../common/telemetryEvent';
 import { UiStrings } from '../uiStrings';
 import { OpenApiUtils } from '../utils/openApiUtils';
-import { API_CENTER_FIND_API, API_CENTER_LIST_APIs } from './constants';
 
 const LANGUAGE_MODEL_ID = 'copilot-gpt-3.5-turbo';
 const specificationsCount = 1;
@@ -72,29 +71,29 @@ export async function handleChatMessage(request: vscode.ChatRequest, ctx: vscode
         }
 
         if (cmd === 'list') {
-            stream.progress(UiStrings.CopilotParseApiSpec);
-            const messages = [
-                new vscode.LanguageModelChatSystemMessage(API_CENTER_LIST_APIs.replace("<SPECIFICATIONS>", specificationsContent)),
-                new vscode.LanguageModelChatUserMessage("What are APIs are available for me to use in Azure API Center?"),
-            ];
+            //     stream.progress(UiStrings.CopilotParseApiSpec);
+            //     const messages = [
+            //         new vscode.LanguageModelChatSystemMessage(API_CENTER_LIST_APIs.replace("<SPECIFICATIONS>", specificationsContent)),
+            //         new vscode.LanguageModelChatUserMessage("What are APIs are available for me to use in Azure API Center?"),
+            //     ];
 
-            const chatResponse = await vscode.lm.sendChatRequest(LANGUAGE_MODEL_ID, messages, {}, token);
-            for await (const fragment of chatResponse.stream) {
-                stream.markdown(fragment);
-            }
-            return { metadata: { command: 'list' } };
-        } else if ((cmd === 'find')) {
-            stream.progress(vscode.l10n.t(UiStrings.CopilotParseApiSpecFor, promptFind));
-            const messages = [
-                new vscode.LanguageModelChatSystemMessage(API_CENTER_FIND_API.replace("<SPECIFICATIONS>", specificationsContent)),
-                new vscode.LanguageModelChatUserMessage(`Find an API for '${promptFind}' from the provided list in the system prompt.`),
-            ];
+            //     const chatResponse = await vscode.lm.sendChatRequest(LANGUAGE_MODEL_ID, messages, {}, token);
+            //     for await (const fragment of chatResponse.stream) {
+            //         stream.markdown(fragment);
+            //     }
+            //     return { metadata: { command: 'list' } };
+            // } else if ((cmd === 'find')) {
+            //     stream.progress(vscode.l10n.t(UiStrings.CopilotParseApiSpecFor, promptFind));
+            //     const messages = [
+            //         new vscode.LanguageModelChatSystemMessage(API_CENTER_FIND_API.replace("<SPECIFICATIONS>", specificationsContent)),
+            //         new vscode.LanguageModelChatUserMessage(`Find an API for '${promptFind}' from the provided list in the system prompt.`),
+            //     ];
 
-            const chatResponse = await vscode.lm.sendChatRequest(LANGUAGE_MODEL_ID, messages, {}, token);
-            for await (const fragment of chatResponse.stream) {
-                stream.markdown(fragment);
-            }
-            return { metadata: { command: 'find' } };
+            //     const chatResponse = await vscode.lm.sendChatRequest(LANGUAGE_MODEL_ID, messages, {}, token);
+            //     for await (const fragment of chatResponse.stream) {
+            //         stream.markdown(fragment);
+            //     }
+            //     return { metadata: { command: 'find' } };
         }
 
         return { metadata: { command: '' } };
