@@ -15,7 +15,7 @@ export namespace OpenApiUtils {
         return api;
     }
 
-    function pasreDefinitionFileRawToSwaggerObject(input: string) {
+    export function pasreDefinitionFileRawToSwaggerObject(input: string) {
         let result = input;
 
         try {

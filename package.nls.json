@@ -14,6 +14,7 @@
     "azure-api-center.commands.detectBreakingChange.title": "Detect Breaking Change",
     "azure-api-center.commands.searchApi.title": "Search APIs",
     "azure-api-center.commands.cleanupSearchResult.title": "Clean Up Search Result",
+    "azure-api-center.commands.generateMarkdownDocument.title": "Generate Markdown",
     "azure-api-center.chatParticipants.apicenter.description": "Build, discover, and consume great APIs.",
     "azure-api-center.chatParticipants.apicenter.commands.list.description": "List available APIs.",
     "azure-api-center.chatParticipants.apicenter.commands.find.description": "Find an API given a search query."
