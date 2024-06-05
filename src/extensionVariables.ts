@@ -5,7 +5,6 @@ import { ExtensionContext } from "vscode";
 import { ApiVersionDefinitionTreeItem } from "./tree/ApiVersionDefinitionTreeItem";
 import { AzureAccountTreeItem } from "./tree/AzureAccountTreeItem";
 import { OpenApiEditor } from "./tree/Editors/openApi/OpenApiEditor";
-
 /**
  * Namespace for common variables used throughout the extension. They must be initialized in the activate() method of extension.ts
  */

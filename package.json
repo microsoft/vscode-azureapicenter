@@ -121,6 +121,12 @@
         "command": "azure-api-center.generateMarkdownDocument",
         "title": "%azure-api-center.commands.generateMarkdownDocument.title%",
         "category": "Azure API Center"
+      },
+      {
+        "command": "azure-api-center.apiCenterWorkspace.addApis",
+        "title": "add Apis to workspace",
+        "icon": "$(add)",
+        "category": "Azure API Center"
       }
     ],
     "views": {
@@ -130,6 +136,11 @@
           "name": "API Center",
           "icon": "media/api-center-icon.svg",
           "contextualTitle": "Azure API Center"
+        },
+        {
+          "id": "apiCenterWorkspace",
+          "name": "API Center Workspace",
+          "visibility": "visible"
         }
       ]
     },
@@ -148,6 +159,11 @@
           "command": "azure-api-center.apiCenterTreeView.refresh",
           "when": "view == apiCenterTreeView",
           "group": "navigation"
+        },
+        {
+          "command": "azure-api-center.apiCenterWorkspace.addApis",
+          "when": "view == apiCenterWorkspace",
+          "group": "navigation@1"
         }
       ],
       "view/item/context": [
@@ -204,6 +220,11 @@
         {
           "command": "azure-api-center.cleanupSearchResult",
           "when": "view == apiCenterTreeView && viewItem == azureApiCenterApis-search",
+          "group": "inline@1"
+        },
+        {
+          "command": "azure-api-center.apiCenterWorkspace.addApis",
+          "when": "view == apiCenterWorkspace",
           "group": "inline@1"
         }
       ],
