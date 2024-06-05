@@ -129,6 +129,17 @@
         "command": "azure-api-center.selectTenant",
         "title": "%azure-api-center.commands.selectTenant.title%",
         "category": "Azure API Center"
+      },
+      {
+        "command": "azure-api-center.apiCenterWorkspace.addApis",
+        "title": "add Apis to workspace",
+        "icon": "$(add)",
+        "category": "Azure API Center"
+      },
+      {
+        "command": "azure-api-center.apiCenterWorkspace.refresh",
+        "title": "refresh workspace treeview",
+        "icon": "$(refresh)"
       }
     ],
     "views": {
@@ -138,6 +149,11 @@
           "name": "API Center",
           "icon": "media/api-center-icon.svg",
           "contextualTitle": "Azure API Center"
+        },
+        {
+          "id": "apiCenterWorkspace",
+          "name": "API Center Workspace",
+          "visibility": "visible"
         }
       ]
     },
@@ -156,6 +172,16 @@
           "command": "azure-api-center.apiCenterTreeView.refresh",
           "when": "view == apiCenterTreeView",
           "group": "navigation"
+        },
+        {
+          "command": "azure-api-center.apiCenterWorkspace.addApis",
+          "when": "view == apiCenterWorkspace",
+          "group": "navigation@1"
+        },
+        {
+          "command": "azure-api-center.apiCenterWorkspace.refresh",
+          "when": "view == apiCenterWorkspace",
+          "group": "navigation@0"
         }
       ],
       "view/item/context": [
@@ -186,7 +212,7 @@
         },
         {
           "command": "azure-api-center.exportApi",
-          "when": "view == apiCenterTreeView && viewItem =~ /azureApiCenterApiVersionDefinitionTreeItem/"
+          "when": "(view == apiCenterTreeView && viewItem =~ /azureApiCenterApiVersionDefinitionTreeItem/) || (view == apiCenterWorkspace && viewItem == WorkspaceAPICenter-Definition)"
         },
         {
           "command": "azure-api-center.showOpenApi",
