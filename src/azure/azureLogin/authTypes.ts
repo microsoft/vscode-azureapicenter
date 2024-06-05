@@ -50,6 +50,14 @@ export type AzureSessionProvider = {
     dispose(): void;
 };
 
+export type AzureDataSessionProvider = {
+    signIn(): Promise<void>;
+    signInStatus: SignInStatus;
+    signInStatusChangeEvent: Event<SignInStatus>;
+    getAuthSession(options?: GetAuthSessionOptions): Promise<GeneralUtils.Errorable<AzureAuthenticationSession>>;
+    dispose(): void;
+}
+
 export type ReadyAzureSessionProvider = AzureSessionProvider & {
     signInStatus: SignInStatus.SignedIn;
     selectedTenant: Tenant;
