@@ -8,7 +8,6 @@ import { showSavePromptConfigKey } from "../../../constants";
 import { localize } from "../../../localize";
 import { ApiVersionDefinitionTreeItem } from "../../ApiVersionDefinitionTreeItem";
 import { Editor, EditorOptions } from "../Editor";
-
 export class OpenApiEditor extends Editor<ApiVersionDefinitionTreeItem> {
     constructor() {
         super(showSavePromptConfigKey);

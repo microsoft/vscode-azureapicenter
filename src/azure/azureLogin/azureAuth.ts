@@ -140,7 +140,8 @@ export namespace AzureAuth {
     type AuthProviderId = "microsoft" | "microsoft-sovereign-cloud";
 
     export function getConfiguredAuthProviderId(): AuthProviderId {
-        return AzureAuth.getConfiguredAzureEnv().name === Environment.AzureCloud.name ? "microsoft" : "microsoft-sovereign-cloud";
+        const type = AzureAuth.getConfiguredAzureEnv().name === Environment.AzureCloud.name ? "microsoft" : "microsoft-sovereign-cloud";
+        return type;
     }
 
     export function isReady(provider: AzureSessionProvider): provider is ReadyAzureSessionProvider {
