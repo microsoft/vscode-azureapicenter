@@ -164,6 +164,36 @@
         "command": "azure-api-center.selectTenant",
         "title": "%azure-api-center.commands.selectTenant.title%",
         "category": "Azure API Center"
+      },
+      {
+        "command": "azure-api-center.apiCenterWorkspace.addApis",
+        "title": "Add Api",
+        "icon": "$(add)",
+        "category": "Azure API Center"
+      },
+      {
+        "command": "azure-api-center.apiCenterWorkspace.refresh",
+        "title": "Refresh",
+        "icon": "$(refresh)",
+        "category": "Azure API Center"
+      },
+      {
+        "command": "azure-api-center.apiCenterWorkspace.logout",
+        "title": "Sign out",
+        "icon": "$(sign-out)",
+        "category": "Azure API Center"
+      },
+      {
+        "command": "azure-api-center.apiCenterWorkspace.collapse",
+        "title": "Collapse",
+        "icon": "$(collapse-all)",
+        "category": "Azure API Center"
+      },
+      {
+        "command": "azure-api-center.apiCenterWorkspace.removeApi",
+        "title": "Remove Dataplane",
+        "icon": "$(close)",
+        "category": "Azure API Center"
       }
     ],
     "views": {
@@ -173,6 +203,11 @@
           "name": "API Center",
           "icon": "media/api-center-icon.svg",
           "contextualTitle": "Azure API Center"
+        },
+        {
+          "id": "apiCenterWorkspace",
+          "name": "API Center Workspace",
+          "visibility": "visible"
         }
       ]
     },
@@ -191,6 +226,26 @@
           "command": "azure-api-center.apiCenterTreeView.refresh",
           "when": "view == apiCenterTreeView",
           "group": "navigation"
+        },
+        {
+          "command": "azure-api-center.apiCenterWorkspace.addApis",
+          "when": "view == apiCenterWorkspace",
+          "group": "navigation@2"
+        },
+        {
+          "command": "azure-api-center.apiCenterWorkspace.refresh",
+          "when": "view == apiCenterWorkspace",
+          "group": "navigation@1"
+        },
+        {
+          "command": "azure-api-center.apiCenterWorkspace.logout",
+          "when": "view == apiCenterWorkspace",
+          "group": "navigation@0"
+        },
+        {
+          "command": "azure-api-center.apiCenterWorkspace.collapse",
+          "when": "view == apiCenterWorkspace",
+          "group": "navigation@3"
         }
       ],
       "view/item/context": [
@@ -221,7 +276,7 @@
         },
         {
           "command": "azure-api-center.exportApi",
-          "when": "view == apiCenterTreeView && viewItem =~ /azureApiCenterApiVersionDefinitionTreeItem/"
+          "when": "(view == apiCenterTreeView && viewItem =~ /azureApiCenterApiVersionDefinitionTreeItem/) || (view == apiCenterWorkspace && viewItem == WorkspaceAPICenter-Definition)"
         },
         {
           "command": "azure-api-center.showOpenApi",
@@ -277,6 +332,11 @@
           "command": "azure-api-center.deleteCustomFunction",
           "when": "view == apiCenterTreeView && viewItem == azureApiCenterFunction",
           "group": "function@1"
+        },
+        {
+          "command": "azure-api-center.apiCenterWorkspace.removeApi",
+          "when": "view == apiCenterWorkspace && viewItem == WorkspaceAPICenter-Server",
+          "group": "inline@0"
         }
       ],
       "copilot": [
@@ -357,6 +417,10 @@
         },
         {
           "command": "azure-api-center.deleteCustomFunction",
+          "when": "never"
+        },
+        {
+          "command": "azure-api-center.apiCenterWorkspace.removeApi",
           "when": "never"
         }
       ]
