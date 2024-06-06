@@ -73,4 +73,7 @@ export class UiStrings {
     static readonly SearchAPI = vscode.l10n.t('Search API');
     static readonly SearchAPIsResult = vscode.l10n.t("Search Result for '{0}'");
     static readonly SearchContentHint = vscode.l10n.t("Search for API name, kind, lifecycle stage");
+    static readonly AIContentIncorrect = vscode.l10n.t("AI-generated content may be incorrect");
+    static readonly NoActiveFileOpen = vscode.l10n.t("'No active file is open.");
+    static readonly GeneratingOpenAPI = vscode.l10n.t("Generating OpenAPI Specification from Current File...");
 }

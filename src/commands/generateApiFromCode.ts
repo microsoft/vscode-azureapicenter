@@ -4,13 +4,14 @@ import { IActionContext } from "@microsoft/vscode-azext-utils";
 import * as fs from "fs";
 import * as vscode from 'vscode';
 import { MODEL_SELECTOR } from "../constants";
+import { UiStrings } from "../uiStrings";
 import { sleep } from "../utils/generalUtils";
 
 export async function generateApiFromCode(context: IActionContext) {
     const activeEditor = vscode.window.activeTextEditor;
 
     if (!activeEditor) {
-        throw new Error('No active file is open.');
+        throw new Error(UiStrings.NoActiveFileOpen);
     }
 
     const languageId = activeEditor.document.languageId;
@@ -18,7 +19,7 @@ export async function generateApiFromCode(context: IActionContext) {
 
     await vscode.window.withProgress({
         location: vscode.ProgressLocation.Notification,
-        title: "Generating OpenAPI Specification from Current File..."
+        title: UiStrings.GeneratingOpenAPI
     }, async (progress, token) => {
         const codeContent = await fs.promises.readFile(fileUri.fsPath, { encoding: 'utf-8' });
 
@@ -62,6 +63,8 @@ ${codeContent}
         } else {
             openApiContent = llmResponseText;
         }
+
+        openApiContent = `# ${UiStrings.AIContentIncorrect}\n${openApiContent}`;
 
         const document = await vscode.workspace.openTextDocument({
             language: language,
