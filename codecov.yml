@@ -8,6 +8,21 @@ coverage:
       default:
         target: auto   # require coverage equal or more than current
         if_ci_failed: error #success, failure, error, ignore
+    patch:
+      default:
+        # basic
+        target: auto
+        threshold: 0%
+        base: auto
+        # advanced
+        branches:
+          - master
+        if_ci_failed: error #success, failure, error, ignore
+        only_pulls: false
+        flags:
+          - "unit"
+        paths:
+          - "src"
 
 comment:
   layout: "reach, diff, flags, files"
