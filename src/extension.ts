@@ -22,7 +22,6 @@ import { registerApi } from './commands/registerApi';
 import { searchApi } from './commands/searchApi';
 import { setApiRuleset } from './commands/setApiRuleset';
 import { testInPostman } from './commands/testInPostman';
-import { setupDataPlanProvider } from "./commands/workspaceApis";
 import { chatParticipantId, doubleClickDebounceDelay, selectedNodeKey } from './constants';
 import { ext } from './extensionVariables';
 import { ApiVersionDefinitionTreeItem } from './tree/ApiVersionDefinitionTreeItem';
@@ -31,9 +30,10 @@ import { OpenApiEditor } from './tree/Editors/openApi/OpenApiEditor';
 // Copilot Chat
 import { detectBreakingChange } from './commands/detectBreakingChange';
 import { generateMarkdownDocument } from './commands/generateMarkdownDocument';
+import { getDataPlaneApis } from './commands/workspaceApis';
 import { ErrorProperties, TelemetryProperties } from './common/telemetryEvent';
 import { IChatResult, handleChatMessage } from './copilot-chat/copilotChat';
-
+import { DataPlanAccountManagerTreeItem } from './tree/DataPlaneAccount';
 export async function activate(context: vscode.ExtensionContext) {
     console.log('Congratulations, your extension "azure-api-center" is now active!');
 
@@ -51,12 +51,20 @@ export async function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(azureAccountTreeItem);
     ext.treeItem = azureAccountTreeItem;
     // var a = ext.treeItem.subscription;
-
+    ext.dataPlaneAccounts = [];
     const treeDataProvider = new AzExtTreeDataProvider(azureAccountTreeItem, "appService.loadMore");
     ext.treeDataProvider = treeDataProvider;
 
     const treeView = vscode.window.createTreeView("apiCenterTreeView", { treeDataProvider });
     context.subscriptions.push(treeView);
+
+    const dataPlanAccountManagerTreeItem = new DataPlanAccountManagerTreeItem(undefined);
+    ext.workspaceItem = dataPlanAccountManagerTreeItem;
+
+    const workspaceTreeDataProvider = new AzExtTreeDataProvider(dataPlanAccountManagerTreeItem, "appService.loadMore");
+    ext.workspaceProvider = workspaceTreeDataProvider;
+
+    vscode.window.registerTreeDataProvider('apiCenterWorkspace', workspaceTreeDataProvider);
 
     treeView.onDidChangeSelection((e: vscode.TreeViewSelectionChangeEvent<AzExtTreeItem>) => {
         const selectedNode = e.selection[0];
@@ -109,16 +117,8 @@ export async function activate(context: vscode.ExtensionContext) {
     registerCommandWithTelemetry('azure-api-center.apiCenterTreeView.refresh', async (context: IActionContext) => refreshTree(context));
 
     registerCommandWithTelemetry('azure-api-center.apiCenterWorkspace.addApis', async (context: IActionContext) => {
-        const provider = await setupDataPlanProvider(context);
-        if (provider) {
-            // const apisNodeProvider = new ApisNodeProvider(jsonData);
-            vscode.window.registerTreeDataProvider('apiCenterWorkspace', provider);
-        }
-        // let apiCenters = ParseJsonToApi(jsonData);
-        // for (let data of apiCenters) {
-        //     let apiCenterTreeView = new ApiTreeItem(null, data.id, data);
-        // }
-        // }
+        await getDataPlaneApis(context);
+        ext.workspaceItem.refresh(context);
     });
 
     const chatParticipant = vscode.chat.createChatParticipant(chatParticipantId, handleChatMessage);

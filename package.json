@@ -163,7 +163,7 @@
         {
           "command": "azure-api-center.apiCenterWorkspace.addApis",
           "when": "view == apiCenterWorkspace",
-          "group": "navigation@1"
+          "group": "navigation"
         }
       ],
       "view/item/context": [
@@ -224,8 +224,7 @@
         },
         {
           "command": "azure-api-center.apiCenterWorkspace.addApis",
-          "when": "view == apiCenterWorkspace",
-          "group": "inline@1"
+          "when": "view == apiCenterWorkspace"
         }
       ],
       "commandPalette": [

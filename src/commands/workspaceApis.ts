@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 import { IActionContext } from "@microsoft/vscode-azext-utils";
 import * as vscode from 'vscode';
+import { ext } from "../extensionVariables";
 import { ApisNodeClientProvider } from "../tree/ApisCenterTree";
 
 export async function setupDataPlanProvider(context: IActionContext): Promise<ApisNodeClientProvider | void> {
@@ -23,7 +24,7 @@ export async function setupDataPlanProvider(context: IActionContext): Promise<Ap
         vscode.window.showErrorMessage("Login in first")
     }
 }
-export async function getApis(context: IActionContext): Promise<any | void> {
+export async function getDataPlaneApis(context: IActionContext): Promise<any | void> {
     const endpointUrl = await vscode.window.showInputBox({ title: "Input Runtime URL", ignoreFocusOut: true });
     const clientid = await vscode.window.showInputBox({ title: "Input Client ID", ignoreFocusOut: true });
     const tenantid = await vscode.window.showInputBox({ title: "Input Tenant ID", ignoreFocusOut: true });
@@ -37,18 +38,10 @@ export async function getApis(context: IActionContext): Promise<any | void> {
         "https://azure-apicenter.net/user_impersonation"
     ], { createIfNone: false });
     if (session?.accessToken) {
-        const headers = {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + session?.accessToken
-        };
-        const response = await fetch(`https://${endpointUrl}/workspaces/default/apis`, { method: "GET", headers: headers });
-
-        if (!response.ok) {
-            return;
+        let index = ext.dataPlaneAccounts.findIndex((item) => item.domain == endpointUrl)
+        if (index === -1) {
+            ext.dataPlaneAccounts.push({ domain: endpointUrl, accessToken: session.accessToken })
         }
-        const dataJson = await response.json();
-        return dataJson.value;
     } else {
         vscode.window.showErrorMessage("please login first");
     }
