@@ -194,7 +194,7 @@
         },
         {
           "command": "azure-api-center.exportApi",
-          "when": "view == apiCenterTreeView && viewItem =~ /azureApiCenterApiVersionDefinitionTreeItem/"
+          "when": "(view == apiCenterTreeView && viewItem =~ /azureApiCenterApiVersionDefinitionTreeItem/) || (view == apiCenterWorkspace && viewItem == WorkspaceAPICenter-Definition)"
         },
         {
           "command": "azure-api-center.showOpenApi",
@@ -221,10 +221,6 @@
           "command": "azure-api-center.cleanupSearchResult",
           "when": "view == apiCenterTreeView && viewItem == azureApiCenterApis-search",
           "group": "inline@1"
-        },
-        {
-          "command": "azure-api-center.apiCenterWorkspace.addApis",
-          "when": "view == apiCenterWorkspace"
         }
       ],
       "commandPalette": [

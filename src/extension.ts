@@ -33,7 +33,7 @@ import { generateMarkdownDocument } from './commands/generateMarkdownDocument';
 import { getDataPlaneApis } from './commands/workspaceApis';
 import { ErrorProperties, TelemetryProperties } from './common/telemetryEvent';
 import { IChatResult, handleChatMessage } from './copilot-chat/copilotChat';
-import { DataPlanAccountManagerTreeItem } from './tree/DataPlaneAccount';
+import { ApiDefinitionTreeItem, DataPlanAccountManagerTreeItem } from './tree/DataPlaneAccount';
 export async function activate(context: vscode.ExtensionContext) {
     console.log('Congratulations, your extension "azure-api-center" is now active!');
 
@@ -78,7 +78,7 @@ export async function activate(context: vscode.ExtensionContext) {
     // TODO: move all three to their separate files
     registerCommandWithTelemetry('azure-api-center.importOpenApiByFile', async (context: IActionContext, node?: ApiVersionDefinitionTreeItem) => { await importOpenApi(context, node, false); });
     registerCommandWithTelemetry('azure-api-center.importOpenApiByLink', async (context: IActionContext, node?: ApiVersionDefinitionTreeItem) => { await importOpenApi(context, node, true); });
-    registerCommandWithTelemetry('azure-api-center.exportApi', async (context: IActionContext, node?: ApiVersionDefinitionTreeItem) => { await ExportAPI.exportApi(context, node); });
+    registerCommandWithTelemetry('azure-api-center.exportApi', async (context: IActionContext, node?: ApiVersionDefinitionTreeItem | ApiDefinitionTreeItem) => { await ExportAPI.exportApi(context, node); });
 
     // TODO: move this to a separate file
     const openApiEditor: OpenApiEditor = new OpenApiEditor();
