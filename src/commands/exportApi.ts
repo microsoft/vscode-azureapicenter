@@ -3,11 +3,12 @@
 import { getResourceGroupFromId } from "@microsoft/vscode-azext-azureutils";
 import { IActionContext } from "@microsoft/vscode-azext-utils";
 import * as fs from "fs-extra";
+import * as http from "http";
+import * as https from "https";
 import * as path from "path";
 import * as vscode from "vscode";
 import { ApiCenterService } from "../azure/ApiCenter/ApiCenterService";
 import { ApiSpecExportResultFormat } from "../azure/ApiCenter/contracts";
-import { TelemetryClient } from '../common/telemetryClient';
 import { ext } from "../extensionVariables";
 import { ApiVersionDefinitionTreeItem } from "../tree/ApiVersionDefinitionTreeItem";
 import { createTemporaryFolder } from "../utils/fsUtil";
@@ -43,8 +44,41 @@ export namespace ExportAPI {
             await ExportAPI.showTempFile(node, specValue);
         } else {
             // Currently at server side did not exist link, so just monitor this event.
-            TelemetryClient.sendEvent("azure-api-center.exportApi", { format: specFormat });
+            const folderName = getFolderName(node);
+            const folderPath = await createTemporaryFolder(folderName);
+            const fileName = getFilename(node);
+            const localFilePath: string = path.join(folderPath, fileName);
+            await fs.ensureFile(localFilePath);
+            await downloadFile(specValue, localFilePath);
+            const document: vscode.TextDocument = await vscode.workspace.openTextDocument(localFilePath);
+            await vscode.window.showTextDocument(document);
         }
+    }
+
+    async function downloadFile(url: string, filePath: string): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            const client = url.startsWith('https') ? https : http;
+
+            client.get(url, (response) => {
+                if (response.statusCode !== 200) {
+                    reject(new Error(`request failed with status code: ${response.statusCode}`));
+                    return;
+                }
+
+                const fileStream = fs.createWriteStream(filePath);
+
+                response.pipe(fileStream);
+
+                fileStream.on('finish', () => {
+                    console.log('finished!!!!!!!!');
+                    fileStream.close();
+                    resolve();
+                });
+
+            }).on('error', (err) => {
+                reject(new Error('download error: ' + err.message));
+            });
+        });
     }
 
     export async function showTempFile(node: ApiVersionDefinitionTreeItem, fileContent: string) {
