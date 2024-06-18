@@ -21,10 +21,11 @@ export async function generateApiFromCode(context: IActionContext) {
         location: vscode.ProgressLocation.Notification,
         title: UiStrings.GeneratingOpenAPI
     }, async (progress, token) => {
-        const codeContent = await fs.promises.readFile(fileUri.fsPath, { encoding: 'utf-8' });
+        try {
+            const codeContent = await fs.promises.readFile(fileUri.fsPath, { encoding: 'utf-8' });
 
-        const messages = [
-            vscode.LanguageModelChatMessage.User(`You are an expert in ${languageId} programming language and OpenAPI.
+            const messages = [
+                vscode.LanguageModelChatMessage.User(`You are an expert in ${languageId} programming language and OpenAPI.
 Generate the OpenAPI Specification from the provided ${languageId} programming language.
 Try your best to parse the code and understand the code structure.
 Only return the specification content with YAML format, without any additional information.
@@ -34,44 +35,54 @@ Here's the ${languageId} code of Web API:
 \`\`\`
 ${codeContent}
 \`\`\``),
-        ];
+            ];
 
-        let llmResponseText = '';
-        let index = 0;
-        for (let i = 0; i < 5; i++) {
-            const [model] = await vscode.lm.selectChatModels(MODEL_SELECTOR);
-            const llmResponse = await model.sendRequest(messages, {}, new vscode.CancellationTokenSource().token);
-            llmResponseText = '';
-            for await (const fragment of llmResponse.text) {
-                llmResponseText += fragment;
+            let llmResponseText = '';
+            let index = 0;
+            for (let i = 0; i < 5; i++) {
+                const [model] = await vscode.lm.selectChatModels(MODEL_SELECTOR);
+                const llmResponse = await model.sendRequest(messages, {}, new vscode.CancellationTokenSource().token);
+                llmResponseText = '';
+                for await (const fragment of llmResponse.text) {
+                    llmResponseText += fragment;
+                }
+                if (!(llmResponseText.toLocaleLowerCase().includes('sorry') && (llmResponseText.includes('can\'t') || llmResponseText.includes('cannot')))) {
+                    break;
+                }
+                await sleep(1000);
+                index++;
             }
-            if (!(llmResponseText.toLocaleLowerCase().includes('sorry') && (llmResponseText.includes('can\'t') || llmResponseText.includes('cannot')))) {
-                break;
+
+            let language;
+            let openApiContent;
+
+            const codeBlockMatch = llmResponseText.match(/```(\w+)?\n([\s\S]*?)```/);
+
+            if (codeBlockMatch) {
+                language = codeBlockMatch[1];
+                openApiContent = codeBlockMatch[2];
+            } else {
+                openApiContent = llmResponseText;
             }
-            await sleep(1000);
-            index++;
+
+            openApiContent = `# ${UiStrings.AIContentIncorrect}\n${openApiContent}`;
+
+            const document = await vscode.workspace.openTextDocument({
+                language: language,
+                content: openApiContent
+            });
+            await vscode.window.showTextDocument(document, vscode.ViewColumn.Beside);
+
+            vscode.window.showInformationMessage(`index: ${index}\n`);
+        } catch (error) {
+            if (error instanceof vscode.LanguageModelError && error.cause instanceof Error) {
+                if (error.cause.message.includes('Message exceeds token limit')) {
+                    throw new Error(UiStrings.CopilotExceedsTokenLimit);
+                } else {
+                    throw new Error(error.cause.message);
+                }
+            }
+            throw error;
         }
-
-        let language;
-        let openApiContent;
-
-        const codeBlockMatch = llmResponseText.match(/```(\w+)?\n([\s\S]*?)```/);
-
-        if (codeBlockMatch) {
-            language = codeBlockMatch[1];
-            openApiContent = codeBlockMatch[2];
-        } else {
-            openApiContent = llmResponseText;
-        }
-
-        openApiContent = `# ${UiStrings.AIContentIncorrect}\n${openApiContent}`;
-
-        const document = await vscode.workspace.openTextDocument({
-            language: language,
-            content: openApiContent
-        });
-        await vscode.window.showTextDocument(document, vscode.ViewColumn.Beside);
-
-        vscode.window.showInformationMessage(`index: ${index}\n`);
     });
 }

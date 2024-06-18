@@ -7,7 +7,7 @@
   "icon": "media/api-center-icon.png",
   "license": "MIT",
   "engines": {
-    "vscode": "^1.88.0"
+    "vscode": "^1.91.0"
   },
   "aiKey": "0655b027-8c75-4e4f-af1a-891dc8312948",
   "repository": {
@@ -311,7 +311,7 @@
     "@types/node": "18.x",
     "@types/sinon": "^17.0.3",
     "@types/swagger2openapi": "^7.0.4",
-    "@types/vscode": "^1.82.0",
+    "@types/vscode": "^1.90.0",
     "@typescript-eslint/eslint-plugin": "^6.7.3",
     "@typescript-eslint/parser": "^6.7.3",
     "@vscode/test-cli": "^0.0.6",
