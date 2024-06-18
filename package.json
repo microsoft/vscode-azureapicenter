@@ -18,7 +18,8 @@
     "url": "https://github.com/microsoft/vscode-azureapicenter/issues"
   },
   "categories": [
-    "Azure"
+    "Azure",
+    "AI"
   ],
   "keywords": [
     "OpenAPI",
@@ -113,7 +114,7 @@
       },
       {
         "command": "azure-api-center.generateApiFromCode",
-        "title": "Generate API Documentation",
+        "title": "%azure-api-center.commands.generateApiFromCode.title%",
         "category": "Azure API Center"
       },
       {
@@ -215,7 +216,7 @@
       "copilot": [
         {
           "command": "azure-api-center.generateApiFromCode",
-          "when": "github.copilot-chat.activated && resourceScheme == 'file' && (resourceExtname == .js || resourceExtname == .py || resourceExtname == .cs || resourceExtname == .java)",
+          "when": "github.copilot-chat.activated && resourceScheme == 'file'",
           "group": "apiCenter"
         }
       ],

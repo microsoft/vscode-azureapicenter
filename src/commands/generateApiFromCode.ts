@@ -3,7 +3,7 @@
 import { IActionContext } from "@microsoft/vscode-azext-utils";
 import * as fs from "fs";
 import * as vscode from 'vscode';
-import { MODEL_SELECTOR } from "../constants";
+import { ExceedTokenLimit, MODEL_SELECTOR } from "../constants";
 import { UiStrings } from "../uiStrings";
 import { sleep } from "../utils/generalUtils";
 
@@ -38,7 +38,6 @@ ${codeContent}
             ];
 
             let llmResponseText = '';
-            let index = 0;
             for (let i = 0; i < 5; i++) {
                 const [model] = await vscode.lm.selectChatModels(MODEL_SELECTOR);
                 const llmResponse = await model.sendRequest(messages, {}, new vscode.CancellationTokenSource().token);
@@ -50,7 +49,6 @@ ${codeContent}
                     break;
                 }
                 await sleep(1000);
-                index++;
             }
 
             let language;
@@ -72,11 +70,9 @@ ${codeContent}
                 content: openApiContent
             });
             await vscode.window.showTextDocument(document, vscode.ViewColumn.Beside);
-
-            vscode.window.showInformationMessage(`index: ${index}\n`);
         } catch (error) {
             if (error instanceof vscode.LanguageModelError && error.cause instanceof Error) {
-                if (error.cause.message.includes('Message exceeds token limit')) {
+                if (error.cause.message.includes(ExceedTokenLimit)) {
                     throw new Error(UiStrings.CopilotExceedsTokenLimit);
                 } else {
                     throw new Error(error.cause.message);
