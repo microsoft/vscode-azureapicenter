@@ -14,7 +14,7 @@ import { cleanupSearchResult } from './commands/cleanUpSearch';
 import { detectBreakingChange } from './commands/detectBreakingChange';
 import { showOpenApi } from './commands/editOpenApi';
 import { ExportAPI } from './commands/exportApi';
-import { generateApiFromCode } from './commands/generateApiFromCode';
+import { GenerateApiFromCode } from './commands/generateApiFromCode';
 import { generateApiLibrary } from './commands/generateApiLibrary';
 import { GenerateHttpFile } from './commands/generateHttpFile';
 import { generateMarkdownDocument } from './commands/generateMarkdownDocument';
@@ -100,7 +100,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
     registerCommandWithTelemetry('azure-api-center.setApiRuleset', setApiRuleset);
 
-    registerCommandWithTelemetry('azure-api-center.generateApiFromCode', generateApiFromCode);
+    registerCommandWithTelemetry('azure-api-center.generateApiFromCode', GenerateApiFromCode.generateApiFromCode);
 
     registerCommandWithTelemetry('azure-api-center.detectBreakingChange', detectBreakingChange);
 
