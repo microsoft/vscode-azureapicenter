@@ -8,6 +8,9 @@ import { UiStrings } from "../uiStrings";
 import { GeneralUtils } from "../utils/generalUtils";
 
 export namespace GenerateApiFromCode {
+    const retryCount = 5;
+    const waitTimeMs = 1000;
+
     export async function generateApiFromCode(context: IActionContext) {
         const activeEditor = vscode.window.activeTextEditor;
 
@@ -39,7 +42,7 @@ ${codeContent}
                 ];
 
                 let llmResponseText = '';
-                for (let i = 0; i < 5; i++) {
+                for (let i = 0; i < retryCount; i++) {
                     const [model] = await vscode.lm.selectChatModels(MODEL_SELECTOR);
                     const llmResponse = await model.sendRequest(messages, {}, new vscode.CancellationTokenSource().token);
                     llmResponseText = '';
@@ -49,7 +52,8 @@ ${codeContent}
                     if (!(llmResponseText.toLocaleLowerCase().includes('sorry') && (llmResponseText.includes('can\'t') || llmResponseText.includes('cannot')))) {
                         break;
                     }
-                    await GeneralUtils.sleep(1000);
+
+                    await GeneralUtils.sleep(waitTimeMs);
                 }
 
                 let language;
