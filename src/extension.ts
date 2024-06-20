@@ -11,10 +11,13 @@ import { TelemetryClient } from './common/telemetryClient';
 import { registerAzureUtilsExtensionVariables } from '@microsoft/vscode-azext-azureutils';
 import { AzExtTreeDataProvider, AzExtTreeItem, CommandCallback, IActionContext, IParsedError, createAzExtOutputChannel, isUserCancelledError, parseError, registerCommand, registerEvent } from '@microsoft/vscode-azext-utils';
 import { cleanupSearchResult } from './commands/cleanUpSearch';
+import { detectBreakingChange } from './commands/detectBreakingChange';
 import { showOpenApi } from './commands/editOpenApi';
 import { ExportAPI } from './commands/exportApi';
+import { GenerateApiFromCode } from './commands/generateApiFromCode';
 import { generateApiLibrary } from './commands/generateApiLibrary';
 import { GenerateHttpFile } from './commands/generateHttpFile';
+import { generateMarkdownDocument } from './commands/generateMarkdownDocument';
 import { importOpenApi } from './commands/importOpenApi';
 import { openAPiInSwagger } from './commands/openApiInSwagger';
 import { refreshTree } from './commands/refreshTree';
@@ -22,17 +25,12 @@ import { registerApi } from './commands/registerApi';
 import { searchApi } from './commands/searchApi';
 import { setApiRuleset } from './commands/setApiRuleset';
 import { testInPostman } from './commands/testInPostman';
-import { chatParticipantId, doubleClickDebounceDelay, selectedNodeKey } from './constants';
+import { ErrorProperties, TelemetryProperties } from './common/telemetryEvent';
+import { doubleClickDebounceDelay, selectedNodeKey } from './constants';
 import { ext } from './extensionVariables';
 import { ApiVersionDefinitionTreeItem } from './tree/ApiVersionDefinitionTreeItem';
 import { AzureAccountTreeItem } from './tree/AzureAccountTreeItem';
 import { OpenApiEditor } from './tree/Editors/openApi/OpenApiEditor';
-
-// Copilot Chat
-import { detectBreakingChange } from './commands/detectBreakingChange';
-import { generateMarkdownDocument } from './commands/generateMarkdownDocument';
-import { ErrorProperties, TelemetryProperties } from './common/telemetryEvent';
-import { IChatResult, handleChatMessage } from './copilot-chat/copilotChat';
 
 export async function activate(context: vscode.ExtensionContext) {
     console.log('Congratulations, your extension "azure-api-center" is now active!');
@@ -102,30 +100,13 @@ export async function activate(context: vscode.ExtensionContext) {
 
     registerCommandWithTelemetry('azure-api-center.setApiRuleset', setApiRuleset);
 
+    registerCommandWithTelemetry('azure-api-center.generateApiFromCode', GenerateApiFromCode.generateApiFromCode);
+
     registerCommandWithTelemetry('azure-api-center.detectBreakingChange', detectBreakingChange);
 
     registerCommandWithTelemetry('azure-api-center.generateMarkdownDocument', generateMarkdownDocument);
 
     registerCommandWithTelemetry('azure-api-center.apiCenterTreeView.refresh', async (context: IActionContext) => refreshTree(context));
-
-    const chatParticipant = vscode.chat.createChatParticipant(chatParticipantId, handleChatMessage);
-    chatParticipant.followupProvider = {
-        provideFollowups(result: IChatResult, context: vscode.ChatContext, token: vscode.CancellationToken) {
-            if (result.metadata.command === 'list') {
-                return [{
-                    prompt: '$more',
-                    label: 'List more APIs'
-                } satisfies vscode.ChatFollowup];
-            } else if (result.metadata.command === 'find') {
-                return [{
-                    prompt: '$more',
-                    label: 'Find in more APIs'
-                } satisfies vscode.ChatFollowup];
-            }
-        }
-    };
-
-    context.subscriptions.push(chatParticipant);
 }
 
 async function registerCommandWithTelemetry(commandId: string, callback: CommandCallback, debounce?: number): Promise<void> {

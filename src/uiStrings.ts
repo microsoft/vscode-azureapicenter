@@ -39,7 +39,7 @@ export class UiStrings {
     static readonly CopilotNoMoreApiSpec = vscode.l10n.t("⚠️ There are no more API specification documents.");
     static readonly CopilotParseApiSpec = vscode.l10n.t("Parsing API Specifications...");
     static readonly CopilotParseApiSpecFor = vscode.l10n.t("Parsing API Specifications for '{0}'...");
-    static readonly CopilotExceedsTokenLimit = vscode.l10n.t("⚠️ The contents of the API specification document are too large for GitHub Copilot Chat. Please try again with the suggested action below.");
+    static readonly CopilotExceedsTokenLimit = vscode.l10n.t("The contents of the current file are too large for GitHub Copilot. Please try again with a smaller file.");
     static readonly RegisterApiOptionStepByStep = vscode.l10n.t("Manual");
     static readonly RegisterApiOptionCicd = vscode.l10n.t("CI/CD");
     static readonly ApiRulesetOptionDefault = vscode.l10n.t("Default");
@@ -73,4 +73,7 @@ export class UiStrings {
     static readonly SearchAPI = vscode.l10n.t('Search API');
     static readonly SearchAPIsResult = vscode.l10n.t("Search Result for '{0}'");
     static readonly SearchContentHint = vscode.l10n.t("Search for API name, kind, lifecycle stage");
+    static readonly AIContentIncorrect = vscode.l10n.t("AI-generated content may be incorrect");
+    static readonly NoActiveFileOpen = vscode.l10n.t("'No active file is open.");
+    static readonly GeneratingOpenAPI = vscode.l10n.t("Generating OpenAPI Specification from Current File...");
 }
