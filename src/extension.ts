@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 import * as vscode from 'vscode';
-import { commands } from "vscode";
 import { TelemetryClient } from './common/telemetryClient';
 
 // Commands
@@ -10,6 +9,8 @@ import { TelemetryClient } from './common/telemetryClient';
 // Tree View UI
 import { registerAzureUtilsExtensionVariables } from '@microsoft/vscode-azext-azureutils';
 import { AzExtTreeDataProvider, AzExtTreeItem, CommandCallback, IActionContext, IParsedError, createAzExtOutputChannel, isUserCancelledError, parseError, registerCommand, registerEvent } from '@microsoft/vscode-azext-utils';
+import { selectSubscriptions, selectTenant, signInToAzure } from "./azure/azureLogin/azureAccount";
+import { activateAzureSessionProvider, getSessionProvider } from "./azure/azureLogin/azureSessionProvider";
 import { cleanupSearchResult } from './commands/cleanUpSearch';
 import { detectBreakingChange } from './commands/detectBreakingChange';
 import { showOpenApi } from './commands/editOpenApi';
@@ -29,7 +30,7 @@ import { ErrorProperties, TelemetryProperties } from './common/telemetryEvent';
 import { doubleClickDebounceDelay, selectedNodeKey } from './constants';
 import { ext } from './extensionVariables';
 import { ApiVersionDefinitionTreeItem } from './tree/ApiVersionDefinitionTreeItem';
-import { AzureAccountTreeItem } from './tree/AzureAccountTreeItem';
+import { createAzureAccountTreeItem } from "./tree/AzureAccountTreeItem";
 import { OpenApiEditor } from './tree/Editors/openApi/OpenApiEditor';
 
 export async function activate(context: vscode.ExtensionContext) {
@@ -45,12 +46,15 @@ export async function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(ext.outputChannel);
     registerAzureUtilsExtensionVariables(ext);
 
-    const azureAccountTreeItem = new AzureAccountTreeItem();
-    context.subscriptions.push(azureAccountTreeItem);
-    ext.treeItem = azureAccountTreeItem;
-    // var a = ext.treeItem.subscription;
+    activateAzureSessionProvider(context);
+    const sessionProvider = getSessionProvider();
 
+    const azureAccountTreeItem = createAzureAccountTreeItem(sessionProvider);
+    context.subscriptions.push(azureAccountTreeItem);
     const treeDataProvider = new AzExtTreeDataProvider(azureAccountTreeItem, "appService.loadMore");
+
+    ext.treeItem = azureAccountTreeItem;
+
     ext.treeDataProvider = treeDataProvider;
 
     const treeView = vscode.window.createTreeView("apiCenterTreeView", { treeDataProvider });
@@ -63,7 +67,6 @@ export async function activate(context: vscode.ExtensionContext) {
     });
 
     // Register API Center extension commands
-    registerCommandWithTelemetry('azure-api-center.selectSubscriptions', () => commands.executeCommand('azure-account.selectSubscriptions'));
 
     // TODO: move all three to their separate files
     registerCommandWithTelemetry('azure-api-center.importOpenApiByFile', async (context: IActionContext, node?: ApiVersionDefinitionTreeItem) => { await importOpenApi(context, node, false); });
@@ -107,6 +110,10 @@ export async function activate(context: vscode.ExtensionContext) {
     registerCommandWithTelemetry('azure-api-center.generateMarkdownDocument', generateMarkdownDocument);
 
     registerCommandWithTelemetry('azure-api-center.apiCenterTreeView.refresh', async (context: IActionContext) => refreshTree(context));
+
+    registerCommandWithTelemetry("azure-api-center.signInToAzure", signInToAzure);
+    registerCommandWithTelemetry("azure-api-center.selectTenant", selectTenant);
+    registerCommandWithTelemetry("azure-api-center.selectSubscriptions", selectSubscriptions);
 }
 
 async function registerCommandWithTelemetry(commandId: string, callback: CommandCallback, debounce?: number): Promise<void> {

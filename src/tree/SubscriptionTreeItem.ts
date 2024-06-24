@@ -1,26 +1,55 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
-import { SubscriptionTreeItemBase } from "@microsoft/vscode-azext-azureutils";
 import { AzExtParentTreeItem, AzExtTreeItem, ISubscriptionContext } from "@microsoft/vscode-azext-utils";
+import { ReadyAzureSessionProvider } from "../azure/azureLogin/authTypes";
 import { ResourceGraphService } from "../azure/ResourceGraph/ResourceGraphService";
 import { TelemetryClient } from "../common/telemetryClient";
 import { TelemetryEvent } from "../common/telemetryEvent";
-import { UiStrings } from "../uiStrings";
 import { treeUtils } from "../utils/treeUtils";
 import { ApiCenterTreeItem } from "./ApiCenterTreeItem";
 
-export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
-    public readonly childTypeLabel: string = UiStrings.SubscriptionTreeItemChildTypeLabel;
+export function createSubscriptionTreeItem(
+    parent: AzExtParentTreeItem,
+    sessionProvider: ReadyAzureSessionProvider,
+    subscription: ISubscriptionContext,
+): AzExtTreeItem {
+    return new SubscriptionTreeItem(parent, sessionProvider, subscription);
+}
 
-    private _nextLink: string | undefined;
+class SubscriptionTreeItem extends AzExtParentTreeItem {
+    private readonly sessionProvider: ReadyAzureSessionProvider;
+    public readonly subscriptionContext: ISubscriptionContext;
+    public readonly subscriptionId: string;
+    public readonly contextValue = "azureapicenter.azureSubscription";
+    public readonly label: string;
 
-    constructor(parent: AzExtParentTreeItem, subscription: ISubscriptionContext) {
-        super(parent, subscription);
+    public constructor(
+        parent: AzExtParentTreeItem,
+        sessionProvider: ReadyAzureSessionProvider,
+        subscription: ISubscriptionContext,
+    ) {
+        super(parent);
+        this.sessionProvider = sessionProvider;
+        this.subscriptionContext = subscription;
+        this.subscriptionId = subscription.subscriptionId;
+        this.label = subscription.subscriptionDisplayName;
+        this.id = subscription.subscriptionPath;
         this.iconPath = treeUtils.getIconPath('azureSubscription');
     }
 
+    get treeItem(): AzExtTreeItem {
+        return this;
+    }
+
+    /**
+     * Needed by parent class.
+     */
+    get subscription(): ISubscriptionContext {
+        return this.subscriptionContext;
+    }
+
     public hasMoreChildrenImpl(): boolean {
-        return this._nextLink !== undefined;
+        return false;
     }
 
     public async loadMoreChildrenImpl(): Promise<AzExtTreeItem[]> {
