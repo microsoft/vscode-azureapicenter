@@ -9,7 +9,7 @@ import { TelemetryClient } from './common/telemetryClient';
 // Tree View UI
 import { registerAzureUtilsExtensionVariables } from '@microsoft/vscode-azext-azureutils';
 import { AzExtTreeDataProvider, AzExtTreeItem, CommandCallback, IActionContext, IParsedError, createAzExtOutputChannel, isUserCancelledError, parseError, registerCommand, registerEvent } from '@microsoft/vscode-azext-utils';
-import { selectSubscriptions, selectTenant, signInToAzure } from "./azure/azureLogin/azureAccount";
+import { AzureAccount } from "./azure/azureLogin/azureAccount";
 import { activateAzureSessionProvider, getSessionProvider } from "./azure/azureLogin/azureSessionProvider";
 import { cleanupSearchResult } from './commands/cleanUpSearch';
 import { detectBreakingChange } from './commands/detectBreakingChange';
@@ -111,9 +111,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
     registerCommandWithTelemetry('azure-api-center.apiCenterTreeView.refresh', async (context: IActionContext) => refreshTree(context));
 
-    registerCommandWithTelemetry("azure-api-center.signInToAzure", signInToAzure);
-    registerCommandWithTelemetry("azure-api-center.selectTenant", selectTenant);
-    registerCommandWithTelemetry("azure-api-center.selectSubscriptions", selectSubscriptions);
+    registerCommandWithTelemetry("azure-api-center.signInToAzure", AzureAccount.signInToAzure);
+    registerCommandWithTelemetry("azure-api-center.selectTenant", AzureAccount.selectTenant);
+    registerCommandWithTelemetry("azure-api-center.selectSubscriptions", AzureAccount.selectSubscriptions);
 }
 
 async function registerCommandWithTelemetry(commandId: string, callback: CommandCallback, debounce?: number): Promise<void> {

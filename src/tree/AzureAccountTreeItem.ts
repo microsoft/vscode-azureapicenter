@@ -10,12 +10,12 @@ import {
   TreeItemIconPath
 } from "@microsoft/vscode-azext-utils";
 import * as vscode from "vscode";
-import { AzureSessionProvider, isReady, ReadyAzureSessionProvider, SignInStatus } from "../azure/azureLogin/authTypes";
-import { getCredential, getEnvironment } from "../azure/azureLogin/azureAuth";
-import { getFilteredSubscriptionsChangeEvent, getSubscriptions, SelectionType } from "../azure/azureLogin/subscriptions";
+import { AzureSessionProvider, isReady, ReadyAzureSessionProvider, SelectionType, SignInStatus } from "../azure/azureLogin/authTypes";
+import { AzureAuth } from "../azure/azureLogin/azureAuth";
+import { AzureSubscriptionHelper } from "../azure/azureLogin/subscriptions";
 import { UiStrings } from "../uiStrings";
 import { treeUtils } from "../utils/treeUtils";
-import { failed } from "../utils/utils";
+import { Utils } from "../utils/utils";
 import { createSubscriptionTreeItem } from "./SubscriptionTreeItem";
 
 export function createAzureAccountTreeItem(
@@ -33,7 +33,7 @@ export class AzureAccountTreeItem extends AzExtParentTreeItem {
     this.autoSelectInTreeItemPicker = true;
 
     const onStatusChange = this.sessionProvider.signInStatusChangeEvent;
-    const onFilteredSubscriptionsChange = getFilteredSubscriptionsChangeEvent();
+    const onFilteredSubscriptionsChange = AzureSubscriptionHelper.getFilteredSubscriptionsChangeEvent();
     registerEvent("azureAccountTreeItem.onSignInStatusChange", onStatusChange, (context) => this.refresh(context));
     registerEvent("azureAccountTreeItem.onSubscriptionFilterChange", onFilteredSubscriptionsChange, (context) =>
       this.refresh(context),
@@ -108,7 +108,7 @@ export class AzureAccountTreeItem extends AzExtParentTreeItem {
     // because it requires extra interaction. Calling `getAuthSession` will complete that process.
     // We will need the returned auth session in any case for creating a subscription context.
     const session = await this.sessionProvider.getAuthSession();
-    if (failed(session) || !isReady(this.sessionProvider)) {
+    if (Utils.failed(session) || !isReady(this.sessionProvider)) {
       return [
         new GenericTreeItem(this, {
           label: UiStrings.ErrorAuthenticating,
@@ -119,8 +119,8 @@ export class AzureAccountTreeItem extends AzExtParentTreeItem {
       ];
     }
 
-    const subscriptions = await getSubscriptions(this.sessionProvider, SelectionType.AllIfNoFilters);
-    if (failed(subscriptions)) {
+    const subscriptions = await AzureSubscriptionHelper.getSubscriptions(this.sessionProvider, SelectionType.AllIfNoFilters);
+    if (Utils.failed(subscriptions)) {
       return [
         new GenericTreeItem(this, {
           label: UiStrings.ErrorLoadingSubscriptions,
@@ -173,8 +173,8 @@ function getSubscriptionContext(
   session: vscode.AuthenticationSession,
   subscription: Subscription,
 ): ISubscriptionContext {
-  const credentials = getCredential(sessionProvider);
-  const environment = getEnvironment();
+  const credentials = AzureAuth.getCredential(sessionProvider);
+  const environment = AzureAuth.getEnvironment();
 
   return {
     credentials,

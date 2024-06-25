@@ -1,23 +1,19 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
-import { SubscriptionClient, TenantIdDescription } from "@azure/arm-resources-subscriptions";
-import { TokenCredential } from "@azure/core-auth";
-import { Environment } from "@azure/ms-rest-azure-env";
+
 import {
-    authentication,
     AuthenticationGetSessionOptions,
     AuthenticationSession,
     Event,
     EventEmitter,
     ExtensionContext,
     Disposable as VsCodeDisposable,
+    authentication,
 } from "vscode";
-import { bindAsync, map as errmap, Errorable, getErrorMessage, succeeded } from "../../utils/utils";
-import { getConfiguredAzureEnv, listAll } from "./arm";
+import { Utils } from "../../utils/utils";
 import { AzureAuthenticationSession, AzureSessionProvider, GetAuthSessionOptions, SignInStatus, Tenant } from "./authTypes";
-import { getDefaultScope, quickPickTenant } from "./azureAuth";
-
-type AuthProviderId = "microsoft" | "microsoft-sovereign-cloud";
+import { AzureAccount } from "./azureAccount";
+import { AzureAuth } from "./azureAuth";
 
 enum AuthScenario {
     Initialization,
@@ -48,7 +44,7 @@ class AzureSessionProviderImpl extends VsCodeDisposable implements AzureSessionP
     public constructor() {
         const disposable = authentication.onDidChangeSessions(async (e) => {
             // Ignore events for non-microsoft providers
-            if (e.provider.id !== getConfiguredAuthProviderId()) {
+            if (e.provider.id !== AzureAuth.getConfiguredAuthProviderId()) {
                 return;
             }
 
@@ -121,13 +117,13 @@ class AzureSessionProviderImpl extends VsCodeDisposable implements AzureSessionP
         // but the resulting session will not allow tenant-level operations. For that,
         // we need to get a session for a specific tenant.
         const orgTenantId = "organizations";
-        const scopes = getScopes(orgTenantId, {});
+        const scopes = AzureAuth.getScopes(orgTenantId, {});
         const getSessionResult = await this.getArmSession(orgTenantId, scopes, authScenario);
 
         // Get the tenants
-        const getTenantsResult = await bindAsync(getSessionResult, (session) => getTenants(session));
-        const newTenants = succeeded(getTenantsResult) ? getTenantsResult.result : [];
-        const tenantsChanged = getIdString(newTenants) !== getIdString(this.tenants);
+        const getTenantsResult = await Utils.bindAsync(getSessionResult, (session) => AzureAccount.getTenants(session));
+        const newTenants = Utils.succeeded(getTenantsResult) ? getTenantsResult.result : [];
+        const tenantsChanged = AzureAccount.getIdString(newTenants) !== AzureAccount.getIdString(this.tenants);
 
         // Determine which tenant should be selected. We can't force the user to choose at this stage,
         // so this can be null, and will be set when the user tries to get a session.
@@ -152,7 +148,7 @@ class AzureSessionProviderImpl extends VsCodeDisposable implements AzureSessionP
      * @returns The current Azure session, if available. If the user is not signed in, or there are no tenants,
      * an error message is returned.
      */
-    public async getAuthSession(options?: GetAuthSessionOptions): Promise<Errorable<AzureAuthenticationSession>> {
+    public async getAuthSession(options?: GetAuthSessionOptions): Promise<Utils.Errorable<AzureAuthenticationSession>> {
         await this.initializePromise;
         if (this.signInStatusValue !== SignInStatus.SignedIn) {
             return { succeeded: false, error: `Not signed in (${this.signInStatusValue}).` };
@@ -164,7 +160,7 @@ class AzureSessionProviderImpl extends VsCodeDisposable implements AzureSessionP
 
         if (!this.selectedTenantValue) {
             if (this.tenants.length > 1) {
-                const selectedTenant = await quickPickTenant(this.tenants);
+                const selectedTenant = await AzureAuth.quickPickTenant(this.tenants);
                 if (!selectedTenant) {
                     return { succeeded: false, error: "No tenant selected." };
                 }
@@ -177,7 +173,7 @@ class AzureSessionProviderImpl extends VsCodeDisposable implements AzureSessionP
 
         // Get a session for a specific tenant.
         const tenantId = this.selectedTenantValue.id;
-        const scopes = getScopes(tenantId, options || {});
+        const scopes = AzureAuth.getScopes(tenantId, options || {});
         return await this.getArmSession(tenantId, scopes, AuthScenario.GetSession);
     }
 
@@ -216,18 +212,18 @@ class AzureSessionProviderImpl extends VsCodeDisposable implements AzureSessionP
         // to default to the tenant that the user has a valid token for.
         // Use the 'Initialization' scenario to ensure this is silent (no user interaction).
         const getSessionPromises = tenants.map((t) =>
-            this.getArmSession(t.id, getScopes(t.id, {}), AuthScenario.Initialization),
+            this.getArmSession(t.id, AzureAuth.getScopes(t.id, {}), AuthScenario.Initialization),
         );
         const results = await Promise.all(getSessionPromises);
-        const accessibleTenants = results.filter(succeeded).map((r) => r.result);
-        return accessibleTenants.length === 1 ? findTenant(tenants, accessibleTenants[0].tenantId) : null;
+        const accessibleTenants = results.filter(Utils.succeeded).map((r) => r.result);
+        return accessibleTenants.length === 1 ? AzureAccount.findTenant(tenants, accessibleTenants[0].tenantId) : null;
     }
 
     private async getArmSession(
         tenantId: string,
         scopes: string[],
         authScenario: AuthScenario,
-    ): Promise<Errorable<AzureAuthenticationSession>> {
+    ): Promise<Utils.Errorable<AzureAuthenticationSession>> {
         this.handleSessionChanges = false;
         try {
             let options: AuthenticationGetSessionOptions;
@@ -251,11 +247,11 @@ class AzureSessionProviderImpl extends VsCodeDisposable implements AzureSessionP
             let session: AuthenticationSession | undefined;
             if (silentFirst) {
                 // The 'silent' option is incompatible with most other options, so we completely replace the options object here.
-                session = await authentication.getSession(getConfiguredAuthProviderId(), scopes, { silent: true });
+                session = await authentication.getSession(AzureAuth.getConfiguredAuthProviderId(), scopes, { silent: true });
             }
 
             if (!session) {
-                session = await authentication.getSession(getConfiguredAuthProviderId(), scopes, options);
+                session = await authentication.getSession(AzureAuth.getConfiguredAuthProviderId(), scopes, options);
             }
 
             if (!session) {
@@ -264,48 +260,9 @@ class AzureSessionProviderImpl extends VsCodeDisposable implements AzureSessionP
 
             return { succeeded: true, result: Object.assign(session, { tenantId }) };
         } catch (e) {
-            return { succeeded: false, error: `Failed to retrieve Azure session: ${getErrorMessage(e)}` };
+            return { succeeded: false, error: `Failed to retrieve Azure session: ${Utils.getErrorMessage(e)}` };
         } finally {
             this.handleSessionChanges = true;
         }
     }
-}
-
-function getConfiguredAuthProviderId(): AuthProviderId {
-    return getConfiguredAzureEnv().name === Environment.AzureCloud.name ? "microsoft" : "microsoft-sovereign-cloud";
-}
-
-function getScopes(tenantId: string | null, options: GetAuthSessionOptions): string[] {
-    const defaultScopes = options.scopes || [getDefaultScope(getConfiguredAzureEnv().resourceManagerEndpointUrl)];
-    const tenantScopes = tenantId ? [`VSCODE_TENANT:${tenantId}`] : [];
-    const clientIdScopes = options.applicationClientId ? [`VSCODE_CLIENT_ID:${options.applicationClientId}`] : [];
-    return [...defaultScopes, ...tenantScopes, ...clientIdScopes];
-}
-
-async function getTenants(session: AuthenticationSession): Promise<Errorable<Tenant[]>> {
-    const armEndpoint = getConfiguredAzureEnv().resourceManagerEndpointUrl;
-    const credential: TokenCredential = {
-        getToken: async () => {
-            return { token: session.accessToken, expiresOnTimestamp: 0 };
-        },
-    };
-    const subscriptionClient = new SubscriptionClient(credential, { endpoint: armEndpoint });
-
-    const tenantsResult = await listAll(subscriptionClient.tenants.list());
-    return errmap(tenantsResult, (t) => t.filter(isTenant).map((t) => ({ name: t.displayName, id: t.tenantId })));
-}
-
-function findTenant(tenants: Tenant[], tenantId: string): Tenant | null {
-    return tenants.find((t) => t.id === tenantId) || null;
-}
-
-function isTenant(tenant: TenantIdDescription): tenant is { tenantId: string; displayName: string } {
-    return tenant.tenantId !== undefined && tenant.displayName !== undefined;
-}
-
-function getIdString(tenants: Tenant[]): string {
-    return tenants
-        .map((t) => t.id)
-        .sort()
-        .join(",");
 }
