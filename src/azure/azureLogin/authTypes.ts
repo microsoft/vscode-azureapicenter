@@ -55,6 +55,4 @@ export type ReadyAzureSessionProvider = AzureSessionProvider & {
     selectedTenant: Tenant;
 };
 
-export function isReady(provider: AzureSessionProvider): provider is ReadyAzureSessionProvider {
-    return provider.signInStatus === SignInStatus.SignedIn && provider.selectedTenant !== null;
-}
+

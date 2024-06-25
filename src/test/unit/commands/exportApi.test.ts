@@ -28,15 +28,15 @@ class RootTreeItem extends ParentTreeItemBase {
     }
 }
 
-suite("export API test cases", () => {
+describe("export API test cases", () => {
     let sandbox = null as any;
     let root: RootTreeItem;
     let node: ApiVersionDefinitionTreeItem;
-    suiteSetup(() => {
+    before(() => {
         sandbox = sinon.createSandbox();
         sinon.stub(TelemetryClient, "sendEvent").returns();
     });
-    setup(() => {
+    beforeEach(() => {
         root = new RootTreeItem(undefined);
         node = new ApiVersionDefinitionTreeItem(root,
             "fakeApiCenterName",
@@ -53,16 +53,16 @@ suite("export API test cases", () => {
         sandbox.stub(node, "subscription").value("fakeSub");
         sandbox.stub(node, "id").value("/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test/providers/Microsoft.ApiCenter/services/test/workspaces/default/apis/test/versions/v1/definitions/openapi");
     });
-    teardown(() => {
+    afterEach(() => {
         sandbox.restore();
     });
-    test('export API happy path with link type', async () => {
+    it('export API happy path with link type', async () => {
         const spyShowTempFile = sandbox.spy(ExportAPI, "showTempFile");
         sandbox.stub(ApiCenterService.prototype, "exportSpecification").resolves({ format: "link", value: "fakeValue" });
         await ExportAPI.exportApi({} as IActionContext, node);
         sandbox.assert.notCalled(spyShowTempFile);
     });
-    test('export API happy path with inline type', async () => {
+    it('export API happy path with inline type', async () => {
         let stubShowTempFile = sandbox.stub(ExportAPI, "showTempFile").resolves();
         sandbox.stub(ApiCenterService.prototype, "exportSpecification").resolves({ format: "inline", value: "fakeValue" });
         await ExportAPI.exportApi({} as IActionContext, node);

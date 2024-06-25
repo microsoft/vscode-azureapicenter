@@ -10,7 +10,7 @@ import { TelemetryClient } from './common/telemetryClient';
 import { registerAzureUtilsExtensionVariables } from '@microsoft/vscode-azext-azureutils';
 import { AzExtTreeDataProvider, AzExtTreeItem, CommandCallback, IActionContext, IParsedError, createAzExtOutputChannel, isUserCancelledError, parseError, registerCommand, registerEvent } from '@microsoft/vscode-azext-utils';
 import { AzureAccount } from "./azure/azureLogin/azureAccount";
-import { activateAzureSessionProvider, getSessionProvider } from "./azure/azureLogin/azureSessionProvider";
+import { AzureSessionProviderHelper } from "./azure/azureLogin/azureSessionProvider";
 import { cleanupSearchResult } from './commands/cleanUpSearch';
 import { detectBreakingChange } from './commands/detectBreakingChange';
 import { showOpenApi } from './commands/editOpenApi';
@@ -46,8 +46,8 @@ export async function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(ext.outputChannel);
     registerAzureUtilsExtensionVariables(ext);
 
-    activateAzureSessionProvider(context);
-    const sessionProvider = getSessionProvider();
+    AzureSessionProviderHelper.activateAzureSessionProvider(context);
+    const sessionProvider = AzureSessionProviderHelper.getSessionProvider();
 
     const azureAccountTreeItem = createAzureAccountTreeItem(sessionProvider);
     context.subscriptions.push(azureAccountTreeItem);

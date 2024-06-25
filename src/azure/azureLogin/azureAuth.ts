@@ -5,8 +5,8 @@ import { PagedAsyncIterableIterator } from "@azure/core-paging";
 import { Environment, EnvironmentParameters } from "@azure/ms-rest-azure-env";
 import * as vscode from "vscode";
 import { Utils } from "../../utils/utils";
-import { AzureSessionProvider, GetAuthSessionOptions, ReadyAzureSessionProvider, SignInStatus, Tenant, isReady } from "./authTypes";
-import { getSessionProvider } from "./azureSessionProvider";
+import { AzureSessionProvider, GetAuthSessionOptions, ReadyAzureSessionProvider, SignInStatus, Tenant } from "./authTypes";
+import { AzureSessionProviderHelper } from "./azureSessionProvider";
 export namespace AzureAuth {
     export function getEnvironment(): Environment {
         return getConfiguredAzureEnv();
@@ -43,8 +43,8 @@ export namespace AzureAuth {
     }
 
     export async function getReadySessionProvider(): Promise<Utils.Errorable<ReadyAzureSessionProvider>> {
-        const sessionProvider = getSessionProvider();
-        if (isReady(sessionProvider)) {
+        const sessionProvider = AzureSessionProviderHelper.getSessionProvider();
+        if (AzureAuth.isReady(sessionProvider)) {
             return { succeeded: true, result: sessionProvider };
         }
 
@@ -66,10 +66,9 @@ export namespace AzureAuth {
             return { succeeded: false, error: `Failed to get authentication session: ${session.error}` };
         }
 
-        if (!isReady(sessionProvider)) {
+        if (!AzureAuth.isReady(sessionProvider)) {
             return { succeeded: false, error: "Not signed in." };
         }
-
         return { succeeded: true, result: sessionProvider };
     }
 
@@ -143,5 +142,9 @@ export namespace AzureAuth {
 
     export function getConfiguredAuthProviderId(): AuthProviderId {
         return AzureAuth.getConfiguredAzureEnv().name === Environment.AzureCloud.name ? "microsoft" : "microsoft-sovereign-cloud";
+    }
+
+    export function isReady(provider: AzureSessionProvider): provider is ReadyAzureSessionProvider {
+        return provider.signInStatus === SignInStatus.SignedIn && provider.selectedTenant !== null;
     }
 }

@@ -10,13 +10,13 @@ import { GeneralUtils } from "../../../utils/generalUtils";
 const SuccessfulLlmResponse = ["ok"];
 const UnsuccessfulLlmResponse = ["Sorry, ", "I ", "can't", " assist!"];
 
-suite("generateApiFromCode", () => {
+describe("generateApiFromCode", () => {
     let sandbox: sinon.SinonSandbox;
-    suiteSetup(() => {
+    before(() => {
         sandbox = sinon.createSandbox();
     });
 
-    setup(() => {
+    beforeEach(() => {
         sandbox.stub(GeneralUtils, "sleep").resolves();
         const fakeEditor = {
             document: {
@@ -28,11 +28,11 @@ suite("generateApiFromCode", () => {
         sandbox.stub(fs.promises, 'readFile').resolves('function test() {}');
     });
 
-    teardown(() => {
+    afterEach(() => {
         sandbox.restore();
     });
 
-    test("fail to generate API", async () => {
+    it("fail to generate API", async () => {
         let sendRequestStub = sandbox.stub();
 
         for (let i = 0; i < 5; i++) {
@@ -48,7 +48,7 @@ suite("generateApiFromCode", () => {
         sinon.assert.callCount(sendRequestStub, 5);
     });
 
-    test("generate API with 2 retries", async () => {
+    it("generate API with 2 retries", async () => {
         let sendRequestStub = sandbox.stub();
 
         sendRequestStub.onCall(0).resolves({
@@ -65,7 +65,7 @@ suite("generateApiFromCode", () => {
         sinon.assert.callCount(sendRequestStub, 2);
     });
 
-    test("generate API without retry", async () => {
+    it("generate API without retry", async () => {
         let sendRequestStub = sandbox.stub();
 
         sendRequestStub.onCall(0).resolves({

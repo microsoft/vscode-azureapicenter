@@ -10,7 +10,7 @@ import {
   TreeItemIconPath
 } from "@microsoft/vscode-azext-utils";
 import * as vscode from "vscode";
-import { AzureSessionProvider, isReady, ReadyAzureSessionProvider, SelectionType, SignInStatus } from "../azure/azureLogin/authTypes";
+import { AzureSessionProvider, ReadyAzureSessionProvider, SelectionType, SignInStatus } from "../azure/azureLogin/authTypes";
 import { AzureAuth } from "../azure/azureLogin/azureAuth";
 import { AzureSubscriptionHelper } from "../azure/azureLogin/subscriptions";
 import { UiStrings } from "../uiStrings";
@@ -108,7 +108,7 @@ export class AzureAccountTreeItem extends AzExtParentTreeItem {
     // because it requires extra interaction. Calling `getAuthSession` will complete that process.
     // We will need the returned auth session in any case for creating a subscription context.
     const session = await this.sessionProvider.getAuthSession();
-    if (Utils.failed(session) || !isReady(this.sessionProvider)) {
+    if (Utils.failed(session) || !AzureAuth.isReady(this.sessionProvider)) {
       return [
         new GenericTreeItem(this, {
           label: UiStrings.ErrorAuthenticating,

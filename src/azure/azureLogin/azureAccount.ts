@@ -7,15 +7,15 @@ import { UiStrings } from "../../uiStrings";
 import { Utils } from "../../utils/utils";
 import { SelectionType, SignInStatus, SubscriptionFilter, Tenant } from "./authTypes";
 import { AzureAuth } from "./azureAuth";
-import { getSessionProvider } from "./azureSessionProvider";
+import { AzureSessionProviderHelper } from "./azureSessionProvider";
 import { AzureSubscriptionHelper } from "./subscriptions";
 export namespace AzureAccount {
     export async function signInToAzure(): Promise<void> {
-        await getSessionProvider().signIn();
+        await AzureSessionProviderHelper.getSessionProvider().signIn();
     }
 
     export async function selectTenant(): Promise<void> {
-        const sessionProvider = getSessionProvider();
+        const sessionProvider = AzureSessionProviderHelper.getSessionProvider();
         if (sessionProvider.signInStatus !== SignInStatus.SignedIn) {
             window.showInformationMessage(UiStrings.SelectTenantBeforeSignIn);
             return;
