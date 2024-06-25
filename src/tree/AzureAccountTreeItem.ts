@@ -41,7 +41,7 @@ export class AzureAccountTreeItem extends AzExtParentTreeItem {
   }
 
   public override get label() {
-    return "Azure";
+    return UiStrings.AzureAccount;
   }
 
   public override get iconPath(): TreeItemIconPath {
@@ -159,7 +159,7 @@ export class AzureAccountTreeItem extends AzExtParentTreeItem {
             session.result,
             subscription,
           );
-          return await createSubscriptionTreeItem(this, readySessionProvider, subscriptionContext);
+          return await createSubscriptionTreeItem(this, subscriptionContext);
         }
       }),
     );

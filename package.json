@@ -156,7 +156,7 @@
       "view/item/context": [
         {
           "command": "azure-api-center.selectSubscriptions",
-          "when": "view == apiCenterTreeView && viewItem == azureapicenter.azureSubscription",
+          "when": "view == apiCenterTreeView && viewItem == azureApiCenterAzureSubscription",
           "group": "inline"
         },
         {
