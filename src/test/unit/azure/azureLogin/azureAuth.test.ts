@@ -38,7 +38,7 @@ describe("azureLogin azureAuth base function", () => {
             dispose: function (): void {
                 throw new Error("Function not implemented.");
             },
-        }
+        };
     });
     afterEach(() => {
         sandbox.restore();
@@ -64,17 +64,17 @@ describe("azureLogin azureAuth base function", () => {
         };
         azureSessionProviderReady.getAuthSession = function (options?: GetAuthSessionOptions | undefined): Promise<Utils.Errorable<AzureAuthenticationSession>> {
             return Promise.resolve(failedSession);
-        }
+        };
         const res = AzureAuth.getCredential(azureSessionProviderReady);
         try {
             await res.getToken("test");
         } catch (err) {
-            assert.strictEqual((err as Error).message, "No Microsoft authentication session found: failed")
+            assert.strictEqual((err as Error).message, "No Microsoft authentication session found: failed");
         }
     });
     it("quickPickTenant happy path", async () => {
         const stubQiuckPick = sandbox.stub(vscode.window, "showQuickPick").resolves({ label: "abc", tenant: { name: "fakeTenant", id: "123-123-123" } });
-        let tenant: Tenant[] = []
+        let tenant: Tenant[] = [];
         let res = await AzureAuth.quickPickTenant(tenant);
         sandbox.assert.calledOnce(stubQiuckPick);
         assert.ok(res);
@@ -83,7 +83,7 @@ describe("azureLogin azureAuth base function", () => {
     });
     it("quickPickTenant not select", async () => {
         const stubQiuckPick = sandbox.stub(vscode.window, "showQuickPick").resolves(null);
-        let tenant: Tenant[] = []
+        let tenant: Tenant[] = [];
         let res = await AzureAuth.quickPickTenant(tenant);
         sandbox.assert.calledOnce(stubQiuckPick);
         assert.equal(res, undefined);
@@ -121,16 +121,16 @@ describe("getReadySessionProvider", () => {
             dispose: function (): void {
                 throw new Error("Function not implemented.");
             },
-        }
+        };
     });
     afterEach(() => {
         sandbox.restore();
-    })
+    });
     it("getReadySessionProvider not ready", async () => {
-        let fakeIsReady = sandbox.stub(AzureAuth, "isReady").returns(true)
+        let fakeIsReady = sandbox.stub(AzureAuth, "isReady").returns(true);
         let getSubscriptStub = sandbox.stub(AzureSessionProviderHelper, "getSessionProvider").returns(azureSessionProvider);
         const res = await AzureAuth.getReadySessionProvider();
-        sandbox.assert.calledOnce(fakeIsReady)
+        sandbox.assert.calledOnce(fakeIsReady);
         sandbox.assert.calledOnce(getSubscriptStub);
         assert.equal(res.succeeded, true);
     });
@@ -150,19 +150,19 @@ describe("getReadySessionProvider", () => {
         };
         azureSessionProvider.getAuthSession = function (options?: GetAuthSessionOptions | undefined): Promise<Utils.Errorable<AzureAuthenticationSession>> {
             return Promise.resolve(failedSession);
-        }
+        };
         sandbox.stub(AzureAuth, 'isReady').returns(false);
         let getSubscriptionsStub = sandbox.stub(AzureSessionProviderHelper, "getSessionProvider").returns(azureSessionProvider);
         const res = await AzureAuth.getReadySessionProvider();
         sandbox.assert.calledOnce(getSubscriptionsStub);
         assert.equal(res.succeeded, false);
         assert.equal((res as Utils.Failed).error, "Failed to get authentication session: failed");
-    })
+    });
 });
 
 describe("getConfiguredAzureEnv", () => {
     let sandbox = null as any;
-    let workspaceConfiguration: vscode.WorkspaceConfiguration
+    let workspaceConfiguration: vscode.WorkspaceConfiguration;
     before(() => {
         sandbox = sinon.createSandbox();
     });
@@ -181,7 +181,7 @@ describe("getConfiguredAzureEnv", () => {
                 throw new Error("Function not implemented.");
             }
         };
-    })
+    });
     afterEach(() => {
         sandbox.restore();
     });
@@ -208,4 +208,4 @@ describe("getConfiguredAzureEnv", () => {
             assert.strictEqual((err as Error).message, "The custom cloud choice is not configured. Please configure the setting microsoft-sovereign-cloud environment");
         }
     });
-})
+});

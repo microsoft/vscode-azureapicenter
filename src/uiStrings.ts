@@ -76,7 +76,7 @@ export class UiStrings {
     static readonly AIContentIncorrect = vscode.l10n.t("AI-generated content may be incorrect");
     static readonly NoActiveFileOpen = vscode.l10n.t("'No active file is open.");
     static readonly GeneratingOpenAPI = vscode.l10n.t("Generating OpenAPI Specification from Current File...");
-    static readonly SelectTenantBeforeSignIn = vscode.l10n.t("You must sign in before selecting a tenant.")
+    static readonly SelectTenantBeforeSignIn = vscode.l10n.t("You must sign in before selecting a tenant.");
     static readonly NoTenantSelected = vscode.l10n.t("No tenant selected.");
     static readonly NoSubscriptionsFoundAndSetup = vscode.l10n.t("No subscriptions were found. Set up your account if you have yet to do so.");
     static readonly SetUpAzureAccount = vscode.l10n.t("Set up Account");

@@ -17,7 +17,7 @@ export function createSubscriptionTreeItem(
 class SubscriptionTreeItem extends AzExtParentTreeItem {
     public readonly subscriptionContext: ISubscriptionContext;
     public readonly subscriptionId: string;
-    public static contextValue: string = "azureApiCenterAzureSubscription"
+    public static contextValue: string = "azureApiCenterAzureSubscription";
     public readonly contextValue: string = SubscriptionTreeItem.contextValue;
     public readonly label: string;
 
