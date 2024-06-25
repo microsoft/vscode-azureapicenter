@@ -90,7 +90,7 @@ describe("azureLogin azureAuth base function", () => {
     });
 });
 
-describe("test", async () => {
+describe("getReadySessionProvider", () => {
     let sandbox = null as any;
     let azureSessionProvider: AzureSessionProvider;
     before(async () => {
@@ -158,4 +158,54 @@ describe("test", async () => {
         assert.equal(res.succeeded, false);
         assert.equal((res as Utils.Failed).error, "Failed to get authentication session: failed");
     })
+});
+
+describe("getConfiguredAzureEnv", () => {
+    let sandbox = null as any;
+    let workspaceConfiguration: vscode.WorkspaceConfiguration
+    before(() => {
+        sandbox = sinon.createSandbox();
+    });
+    beforeEach(() => {
+        workspaceConfiguration = {
+            get: function <T>(section: string): T | undefined {
+                throw new Error("Function not implemented.");
+            },
+            has: function (section: string): boolean {
+                throw new Error("Function not implemented.");
+            },
+            inspect: function <T>(section: string): { key: string; defaultValue?: T | undefined; globalValue?: T | undefined; workspaceValue?: T | undefined; workspaceFolderValue?: T | undefined; defaultLanguageValue?: T | undefined; globalLanguageValue?: T | undefined; workspaceLanguageValue?: T | undefined; workspaceFolderLanguageValue?: T | undefined; languageIds?: string[] | undefined; } | undefined {
+                throw new Error("Function not implemented.");
+            },
+            update: function (section: string, value: any, configurationTarget?: boolean | vscode.ConfigurationTarget | null | undefined, overrideInLanguage?: boolean | undefined): Thenable<void> {
+                throw new Error("Function not implemented.");
+            }
+        };
+    })
+    afterEach(() => {
+        sandbox.restore();
+    });
+    it('getConfiguredAzureEnv return azure china', async () => {
+        sandbox.stub(workspaceConfiguration, "get").returns('ChinaCloud');
+        sandbox.stub(vscode.workspace, "getConfiguration").returns(workspaceConfiguration);
+        const res = AzureAuth.getConfiguredAzureEnv();
+        assert.strictEqual(res.name, "AzureChinaCloud");
+    });
+    it('getConfiguredAzureEnv return USGovernment', async () => {
+        sandbox.stub(workspaceConfiguration, "get").returns('USGovernment');
+        sandbox.stub(vscode.workspace, "getConfiguration").returns(workspaceConfiguration);
+        const res = AzureAuth.getConfiguredAzureEnv();
+        assert.strictEqual(res.name, "AzureUSGovernment");
+    });
+    it('getConfiguredAzureEnv return USGovernment', async () => {
+        let stubConfigGet = sandbox.stub(workspaceConfiguration, "get");
+        stubConfigGet.onCall(0).returns('custom');
+        stubConfigGet.onCall(0).returns(null);
+        sandbox.stub(vscode.workspace, "getConfiguration").returns(workspaceConfiguration);
+        try {
+            AzureAuth.getConfiguredAzureEnv();
+        } catch (err) {
+            assert.strictEqual((err as Error).message, "The custom cloud choice is not configured. Please configure the setting microsoft-sovereign-cloud environment");
+        }
+    });
 })

@@ -13,9 +13,10 @@ export default defineConfig({
         version: 'insiders',
         mocha: {
             timeout: 20000,
-            ui: 'bdd'
+            ui: 'bdd',
+            inlineDiffs: true,
+            color: true
         },
-        dependentExtensions: "ms-vscode.azure-account",
         launchArgs: [
             "--disable-extension",
             "vscode.git",
