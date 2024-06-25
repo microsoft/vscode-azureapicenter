@@ -3,7 +3,12 @@
 import { AuthenticationSession, Event } from "vscode";
 import { Errorable } from "../../utils/utils";
 
-export type SignInStatus = "Initializing" | "SigningIn" | "SignedIn" | "SignedOut";
+export enum SignInStatus {
+    Initializing = 'Initializing',
+    SigningIn = 'SigningIn',
+    SignedIn = 'SignedIn',
+    SignedOut = 'SignedOut',
+}
 
 export type TokenInfo = {
     token: string;
@@ -35,10 +40,10 @@ export type AzureSessionProvider = {
 };
 
 export type ReadyAzureSessionProvider = AzureSessionProvider & {
-    signInStatus: "SignedIn";
+    signInStatus: SignInStatus.SignedIn;
     selectedTenant: Tenant;
 };
 
 export function isReady(provider: AzureSessionProvider): provider is ReadyAzureSessionProvider {
-    return provider.signInStatus === "SignedIn" && provider.selectedTenant !== null;
+    return provider.signInStatus === SignInStatus.SignedIn && provider.selectedTenant !== null;
 }

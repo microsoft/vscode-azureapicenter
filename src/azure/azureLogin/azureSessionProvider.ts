@@ -43,7 +43,7 @@ class AzureSessionProviderImpl extends VsCodeDisposable implements AzureSessionP
     private selectedTenantValue: Tenant | null = null;
 
     public readonly onSignInStatusChangeEmitter = new EventEmitter<SignInStatus>();
-    public signInStatusValue: SignInStatus = "Initializing";
+    public signInStatusValue: SignInStatus = SignInStatus.Initializing;
 
     public constructor() {
         const disposable = authentication.onDidChangeSessions(async (e) => {
@@ -105,7 +105,7 @@ class AzureSessionProviderImpl extends VsCodeDisposable implements AzureSessionP
     public async signIn(): Promise<void> {
         await this.initializePromise;
 
-        const newSignInStatus = "SigningIn";
+        const newSignInStatus = SignInStatus.SigningIn;
         if (newSignInStatus !== this.signInStatusValue) {
             this.signInStatusValue = newSignInStatus;
             this.onSignInStatusChangeEmitter.fire(this.signInStatusValue);
@@ -135,7 +135,7 @@ class AzureSessionProviderImpl extends VsCodeDisposable implements AzureSessionP
         const selectedTenantChanged = newSelectedTenant?.id !== this.selectedTenantValue?.id;
 
         // Get the overall sign-in status. If the user has access to any tenants they are signed in.
-        const newSignInStatus = newTenants.length > 0 ? "SignedIn" : "SignedOut";
+        const newSignInStatus = newTenants.length > 0 ? SignInStatus.SignedIn : SignInStatus.SignedOut;
         const signInStatusChanged = newSignInStatus !== this.signInStatusValue;
 
         // Update the state and fire event if anything has changed.
@@ -154,7 +154,7 @@ class AzureSessionProviderImpl extends VsCodeDisposable implements AzureSessionP
      */
     public async getAuthSession(options?: GetAuthSessionOptions): Promise<Errorable<AzureAuthenticationSession>> {
         await this.initializePromise;
-        if (this.signInStatusValue !== "SignedIn") {
+        if (this.signInStatusValue !== SignInStatus.SignedIn) {
             return { succeeded: false, error: `Not signed in (${this.signInStatusValue}).` };
         }
 

@@ -1,7 +1,9 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 import { QuickPickItem, Uri, env, window } from "vscode";
+import { UiStrings } from "../../uiStrings";
 import { failed } from "../../utils/utils";
+import { SignInStatus } from "./authTypes";
 import { getReadySessionProvider, quickPickTenant } from "./azureAuth";
 import { getSessionProvider } from "./azureSessionProvider";
 import { SelectionType, SubscriptionFilter, getFilteredSubscriptions, getSubscriptions, setFilteredSubscriptions } from "./subscriptions";
@@ -11,8 +13,8 @@ export async function signInToAzure(): Promise<void> {
 
 export async function selectTenant(): Promise<void> {
     const sessionProvider = getSessionProvider();
-    if (sessionProvider.signInStatus !== "SignedIn") {
-        window.showInformationMessage("You must sign in before selecting a tenant.");
+    if (sessionProvider.signInStatus !== SignInStatus.SignedIn) {
+        window.showInformationMessage(UiStrings.SelectTenantBeforeSignIn);
         return;
     }
 
@@ -32,7 +34,7 @@ export async function selectTenant(): Promise<void> {
 
     const selectedTenant = await quickPickTenant(sessionProvider.availableTenants);
     if (!selectedTenant) {
-        window.showInformationMessage("No tenant selected.");
+        window.showInformationMessage(UiStrings.NoTenantSelected);
         return;
     }
 
@@ -55,8 +57,8 @@ export async function selectSubscriptions(): Promise<void> {
     }
 
     if (allSubscriptions.result.length === 0) {
-        const noSubscriptionsFound = "No subscriptions were found. Set up your account if you have yet to do so.";
-        const setupAccount = "Set up Account";
+        const noSubscriptionsFound = UiStrings.NoSubscriptionsFoundAndSetup;
+        const setupAccount = UiStrings.SetUpAzureAccount;
         const response = await window.showInformationMessage(noSubscriptionsFound, setupAccount);
         if (response === setupAccount) {
             env.openExternal(Uri.parse("https://azure.microsoft.com/"));
@@ -92,7 +94,7 @@ export async function selectSubscriptions(): Promise<void> {
 
     const selectedItems = await window.showQuickPick(quickPickItems, {
         canPickMany: true,
-        placeHolder: "Select Subscriptions",
+        placeHolder: UiStrings.SelectSubscription,
     });
 
     if (!selectedItems) {

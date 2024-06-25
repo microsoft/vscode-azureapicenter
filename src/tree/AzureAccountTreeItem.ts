@@ -10,9 +10,10 @@ import {
   TreeItemIconPath
 } from "@microsoft/vscode-azext-utils";
 import * as vscode from "vscode";
-import { AzureSessionProvider, isReady, ReadyAzureSessionProvider } from "../azure/azureLogin/authTypes";
+import { AzureSessionProvider, isReady, ReadyAzureSessionProvider, SignInStatus } from "../azure/azureLogin/authTypes";
 import { getCredential, getEnvironment } from "../azure/azureLogin/azureAuth";
 import { getFilteredSubscriptionsChangeEvent, getSubscriptions, SelectionType } from "../azure/azureLogin/subscriptions";
+import { UiStrings } from "../uiStrings";
 import { treeUtils } from "../utils/treeUtils";
 import { failed } from "../utils/utils";
 import { createSubscriptionTreeItem } from "./SubscriptionTreeItem";
@@ -25,7 +26,8 @@ export function createAzureAccountTreeItem(
 
 export class AzureAccountTreeItem extends AzExtParentTreeItem {
   private subscriptionTreeItems: AzExtTreeItem[] | undefined;
-
+  public static contextValue: string = "azureApiCenterAzureAccount";
+  public readonly contextValue: string = AzureAccountTreeItem.contextValue;
   constructor(private readonly sessionProvider: AzureSessionProvider) {
     super(undefined);
     this.autoSelectInTreeItemPicker = true;
@@ -40,10 +42,6 @@ export class AzureAccountTreeItem extends AzExtParentTreeItem {
 
   public override get label() {
     return "Azure";
-  }
-
-  public override get contextValue() {
-    return "azureapicenter.azureAccount";
   }
 
   public override get iconPath(): TreeItemIconPath {
@@ -61,19 +59,19 @@ export class AzureAccountTreeItem extends AzExtParentTreeItem {
     this.subscriptionTreeItems = [];
 
     switch (this.sessionProvider.signInStatus) {
-      case "Initializing":
+      case SignInStatus.Initializing:
         return [
           new GenericTreeItem(this, {
-            label: "Loading...",
+            label: UiStrings.Loading,
             contextValue: "azureCommand",
             id: "azureapicenterAccountLoading",
             iconPath: new vscode.ThemeIcon("loading~spin"),
           }),
         ];
-      case "SignedOut":
+      case SignInStatus.SignedOut:
         return [
           new GenericTreeItem(this, {
-            label: "Sign in to Azure...",
+            label: UiStrings.SignIntoAzure,
             commandId: "azure-api-center.signInToAzure",
             contextValue: "azureCommand",
             id: "azureapicenterAccountSignIn",
@@ -81,10 +79,10 @@ export class AzureAccountTreeItem extends AzExtParentTreeItem {
             includeInTreeItemPicker: true,
           })
         ];
-      case "SigningIn":
+      case SignInStatus.SigningIn:
         return [
           new GenericTreeItem(this, {
-            label: "Waiting for Azure sign-in...",
+            label: UiStrings.WaitForSignIn,
             contextValue: "azureCommand",
             id: "azureapicenterAccountSigningIn",
             iconPath: new vscode.ThemeIcon("loading~spin"),
@@ -96,7 +94,7 @@ export class AzureAccountTreeItem extends AzExtParentTreeItem {
       // Signed in, but no tenant selected, AND there is more than one tenant to choose from.
       return [
         new GenericTreeItem(this, {
-          label: "Select tenant...",
+          label: UiStrings.SelectTenant,
           commandId: "azure-api-center.selectTenant",
           contextValue: "azureCommand",
           id: "azureapicenterAccountSelectTenant",
@@ -113,7 +111,7 @@ export class AzureAccountTreeItem extends AzExtParentTreeItem {
     if (failed(session) || !isReady(this.sessionProvider)) {
       return [
         new GenericTreeItem(this, {
-          label: "Error authenticating",
+          label: UiStrings.ErrorAuthenticating,
           contextValue: "azureCommand",
           id: "AzureAccountError",
           iconPath: new vscode.ThemeIcon("error"),
@@ -125,7 +123,7 @@ export class AzureAccountTreeItem extends AzExtParentTreeItem {
     if (failed(subscriptions)) {
       return [
         new GenericTreeItem(this, {
-          label: "Error loading subscriptions",
+          label: UiStrings.ErrorLoadingSubscriptions,
           contextValue: "azureCommand",
           id: "AzureAccountError",
           iconPath: new vscode.ThemeIcon("error"),
@@ -137,7 +135,7 @@ export class AzureAccountTreeItem extends AzExtParentTreeItem {
     if (subscriptions.result.length === 0) {
       return [
         new GenericTreeItem(this, {
-          label: "No subscriptions found",
+          label: UiStrings.NoSubscriptionsFound,
           contextValue: "azureCommand",
           id: "AzureAccountError",
           iconPath: new vscode.ThemeIcon("info"),
@@ -154,7 +152,6 @@ export class AzureAccountTreeItem extends AzExtParentTreeItem {
           (ti) => ti.id === subscription.subscriptionId,
         );
         if (existingTreeItem) {
-          // Return existing treeItem (which might have many 'cached' tree items underneath it) rather than creating a brand new tree item every time
           return existingTreeItem;
         } else {
           const subscriptionContext = getSubscriptionContext(

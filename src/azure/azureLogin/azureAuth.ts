@@ -5,7 +5,7 @@ import { Environment } from "@azure/ms-rest-azure-env";
 import * as vscode from "vscode";
 import { Errorable, failed } from "../../utils/utils";
 import { getConfiguredAzureEnv } from "./arm";
-import { AzureSessionProvider, ReadyAzureSessionProvider, Tenant, isReady } from "./authTypes";
+import { AzureSessionProvider, isReady, ReadyAzureSessionProvider, SignInStatus, Tenant } from "./authTypes";
 import { getSessionProvider } from "./azureSessionProvider";
 
 export function getEnvironment(): Environment {
@@ -49,14 +49,14 @@ export async function getReadySessionProvider(): Promise<Errorable<ReadyAzureSes
     }
 
     switch (sessionProvider.signInStatus) {
-        case "Initializing":
-        case "SigningIn":
+        case SignInStatus.Initializing:
+        case SignInStatus.SigningIn:
             await waitForSignIn(sessionProvider);
             break;
-        case "SignedOut":
+        case SignInStatus.SignedOut:
             await sessionProvider.signIn();
             break;
-        case "SignedIn":
+        case SignInStatus.SignedIn:
             break;
     }
 
@@ -85,7 +85,7 @@ async function waitForSignIn(sessionProvider: AzureSessionProvider): Promise<voi
         token.onCancellationRequested(listener?.dispose());
         return new Promise((resolve) => {
             listener = sessionProvider.signInStatusChangeEvent((status) => {
-                if (status === "SignedIn") {
+                if (status === SignInStatus.SignedIn) {
                     listener?.dispose();
                     resolve(undefined);
                 }
