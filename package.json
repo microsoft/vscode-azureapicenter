@@ -124,6 +124,11 @@
         "command": "azure-api-center.generateMarkdownDocument",
         "title": "%azure-api-center.commands.generateMarkdownDocument.title%",
         "category": "Azure API Center"
+      },
+      {
+        "command": "azure-api-center.selectTenant",
+        "title": "%azure-api-center.commands.selectTenant.title%",
+        "category": "Azure API Center"
       }
     ],
     "views": {
