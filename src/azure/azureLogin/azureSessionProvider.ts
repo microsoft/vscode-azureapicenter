@@ -10,7 +10,7 @@ import {
     Disposable as VsCodeDisposable,
     authentication,
 } from "vscode";
-import { Utils } from "../../utils/utils";
+import { GeneralUtils } from "../../utils/generalUtils";
 import { AzureAuthenticationSession, AzureSessionProvider, GetAuthSessionOptions, SignInStatus, Tenant } from "./authTypes";
 import { AzureAccount } from "./azureAccount";
 import { AzureAuth } from "./azureAuth";
@@ -123,8 +123,8 @@ export namespace AzureSessionProviderHelper {
             const getSessionResult = await this.getArmSession(orgTenantId, scopes, authScenario);
 
             // Get the tenants
-            const getTenantsResult = await Utils.bindAsync(getSessionResult, (session) => AzureAccount.getTenants(session));
-            const newTenants = Utils.succeeded(getTenantsResult) ? getTenantsResult.result : [];
+            const getTenantsResult = await GeneralUtils.bindAsync(getSessionResult, (session) => AzureAccount.getTenants(session));
+            const newTenants = GeneralUtils.succeeded(getTenantsResult) ? getTenantsResult.result : [];
             const tenantsChanged = AzureAccount.getIdString(newTenants) !== AzureAccount.getIdString(this.tenants);
 
             // Determine which tenant should be selected. We can't force the user to choose at this stage,
@@ -150,7 +150,7 @@ export namespace AzureSessionProviderHelper {
          * @returns The current Azure session, if available. If the user is not signed in, or there are no tenants,
          * an error message is returned.
          */
-        public async getAuthSession(options?: GetAuthSessionOptions): Promise<Utils.Errorable<AzureAuthenticationSession>> {
+        public async getAuthSession(options?: GetAuthSessionOptions): Promise<GeneralUtils.Errorable<AzureAuthenticationSession>> {
             await this.initializePromise;
             if (this.signInStatusValue !== SignInStatus.SignedIn) {
                 return { succeeded: false, error: `Not signed in (${this.signInStatusValue}).` };
@@ -217,7 +217,7 @@ export namespace AzureSessionProviderHelper {
                 this.getArmSession(t.id, AzureAuth.getScopes(t.id, {}), AuthScenario.Initialization),
             );
             const results = await Promise.all(getSessionPromises);
-            const accessibleTenants = results.filter(Utils.succeeded).map((r) => r.result);
+            const accessibleTenants = results.filter(GeneralUtils.succeeded).map((r) => r.result);
             return accessibleTenants.length === 1 ? AzureAccount.findTenant(tenants, accessibleTenants[0].tenantId) : null;
         }
 
@@ -225,7 +225,7 @@ export namespace AzureSessionProviderHelper {
             tenantId: string,
             scopes: string[],
             authScenario: AuthScenario,
-        ): Promise<Utils.Errorable<AzureAuthenticationSession>> {
+        ): Promise<GeneralUtils.Errorable<AzureAuthenticationSession>> {
             this.handleSessionChanges = false;
             try {
                 let options: AuthenticationGetSessionOptions;
@@ -262,7 +262,7 @@ export namespace AzureSessionProviderHelper {
 
                 return { succeeded: true, result: Object.assign(session, { tenantId }) };
             } catch (e) {
-                return { succeeded: false, error: `Failed to retrieve Azure session: ${Utils.getErrorMessage(e)}` };
+                return { succeeded: false, error: `Failed to retrieve Azure session: ${GeneralUtils.getErrorMessage(e)}` };
             } finally {
                 this.handleSessionChanges = true;
             }

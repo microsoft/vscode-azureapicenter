@@ -4,7 +4,7 @@ import { TokenCredential } from "@azure/core-auth";
 import { PagedAsyncIterableIterator } from "@azure/core-paging";
 import { Environment, EnvironmentParameters } from "@azure/ms-rest-azure-env";
 import * as vscode from "vscode";
-import { Utils } from "../../utils/utils";
+import { GeneralUtils } from "../../utils/generalUtils";
 import { AzureSessionProvider, GetAuthSessionOptions, ReadyAzureSessionProvider, SignInStatus, Tenant } from "./authTypes";
 import { AzureSessionProviderHelper } from "./azureSessionProvider";
 export namespace AzureAuth {
@@ -16,7 +16,7 @@ export namespace AzureAuth {
         return {
             getToken: async () => {
                 const session = await sessionProvider.getAuthSession();
-                if (Utils.failed(session)) {
+                if (GeneralUtils.failed(session)) {
                     throw new Error(`No Microsoft authentication session found: ${session.error}`);
                 }
 
@@ -42,7 +42,7 @@ export namespace AzureAuth {
         return result ? result.tenant : undefined;
     }
 
-    export async function getReadySessionProvider(): Promise<Utils.Errorable<ReadyAzureSessionProvider>> {
+    export async function getReadySessionProvider(): Promise<GeneralUtils.Errorable<ReadyAzureSessionProvider>> {
         const sessionProvider = AzureSessionProviderHelper.getSessionProvider();
         if (AzureAuth.isReady(sessionProvider)) {
             return { succeeded: true, result: sessionProvider };
@@ -62,7 +62,7 @@ export namespace AzureAuth {
 
         // Get a session, which will prompt the user to select a tenant if necessary.
         const session = await sessionProvider.getAuthSession();
-        if (Utils.failed(session)) {
+        if (GeneralUtils.failed(session)) {
             return { succeeded: false, error: `Failed to get authentication session: ${session.error}` };
         }
 
@@ -119,7 +119,7 @@ export namespace AzureAuth {
         return Environment.get(Environment.AzureCloud.name);
     }
 
-    export async function listAll<T>(iterator: PagedAsyncIterableIterator<T>): Promise<Utils.Errorable<T[]>> {
+    export async function listAll<T>(iterator: PagedAsyncIterableIterator<T>): Promise<GeneralUtils.Errorable<T[]>> {
         const result: T[] = [];
         try {
             for await (const page of iterator.byPage()) {
@@ -127,7 +127,7 @@ export namespace AzureAuth {
             }
             return { succeeded: true, result };
         } catch (e) {
-            return { succeeded: false, error: `Failed to list resources: ${Utils.getErrorMessage(e)}` };
+            return { succeeded: false, error: `Failed to list resources: ${GeneralUtils.getErrorMessage(e)}` };
         }
     }
 

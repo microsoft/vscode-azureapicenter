@@ -6,7 +6,7 @@ import * as vscode from "vscode";
 import { AzureAuthenticationSession, AzureSessionProvider, GetAuthSessionOptions, ReadyAzureSessionProvider, SignInStatus, Tenant } from "../../../../azure/azureLogin/authTypes";
 import { AzureAuth } from "../../../../azure/azureLogin/azureAuth";
 import { AzureSessionProviderHelper } from "../../../../azure/azureLogin/azureSessionProvider";
-import { Utils } from "../../../../utils/utils";
+import { GeneralUtils } from "../../../../utils/generalUtils";
 describe("azureLogin azureAuth base function", () => {
     let sandbox = null as any;
     let azureSessionProviderReady: ReadyAzureSessionProvider;
@@ -15,7 +15,7 @@ describe("azureLogin azureAuth base function", () => {
     });
     beforeEach(() => {
         let mockEvent = <vscode.Event<SignInStatus>>{};
-        let successSession = <Utils.Succeeded<AzureAuthenticationSession>>{
+        let successSession = <GeneralUtils.Succeeded<AzureAuthenticationSession>>{
             succeeded: true,
             result: {
                 accessToken: "fakeToken"
@@ -32,7 +32,7 @@ describe("azureLogin azureAuth base function", () => {
                 id: "123"
             },
             signInStatusChangeEvent: mockEvent,
-            getAuthSession: function (options?: GetAuthSessionOptions): Promise<Utils.Errorable<AzureAuthenticationSession>> {
+            getAuthSession: function (options?: GetAuthSessionOptions): Promise<GeneralUtils.Errorable<AzureAuthenticationSession>> {
                 return Promise.resolve(successSession);
             },
             dispose: function (): void {
@@ -58,11 +58,11 @@ describe("azureLogin azureAuth base function", () => {
         assert.strictEqual(res1?.token, "fakeToken");
     });
     it("getCredential failed", async () => {
-        let failedSession = <Utils.Failed>{
+        let failedSession = <GeneralUtils.Failed>{
             succeeded: false,
             error: "failed"
         };
-        azureSessionProviderReady.getAuthSession = function (options?: GetAuthSessionOptions | undefined): Promise<Utils.Errorable<AzureAuthenticationSession>> {
+        azureSessionProviderReady.getAuthSession = function (options?: GetAuthSessionOptions | undefined): Promise<GeneralUtils.Errorable<AzureAuthenticationSession>> {
             return Promise.resolve(failedSession);
         };
         const res = AzureAuth.getCredential(azureSessionProviderReady);
@@ -98,7 +98,7 @@ describe("getReadySessionProvider", () => {
     });
     beforeEach(async () => {
         let mockEvent = <vscode.Event<SignInStatus>>{};
-        let successSession = <Utils.Succeeded<AzureAuthenticationSession>>{
+        let successSession = <GeneralUtils.Succeeded<AzureAuthenticationSession>>{
             succeeded: true,
             result: {
                 accessToken: "fakeToken"
@@ -115,7 +115,7 @@ describe("getReadySessionProvider", () => {
                 id: "123"
             },
             signInStatusChangeEvent: mockEvent,
-            getAuthSession: function (options?: GetAuthSessionOptions): Promise<Utils.Errorable<AzureAuthenticationSession>> {
+            getAuthSession: function (options?: GetAuthSessionOptions): Promise<GeneralUtils.Errorable<AzureAuthenticationSession>> {
                 return Promise.resolve(successSession);
             },
             dispose: function (): void {
@@ -144,11 +144,11 @@ describe("getReadySessionProvider", () => {
         assert.equal(res.succeeded, true);
     });
     it("getReadySessionProvider failed session", async () => {
-        let failedSession = <Utils.Failed>{
+        let failedSession = <GeneralUtils.Failed>{
             succeeded: false,
             error: "failed"
         };
-        azureSessionProvider.getAuthSession = function (options?: GetAuthSessionOptions | undefined): Promise<Utils.Errorable<AzureAuthenticationSession>> {
+        azureSessionProvider.getAuthSession = function (options?: GetAuthSessionOptions | undefined): Promise<GeneralUtils.Errorable<AzureAuthenticationSession>> {
             return Promise.resolve(failedSession);
         };
         sandbox.stub(AzureAuth, 'isReady').returns(false);
@@ -156,7 +156,7 @@ describe("getReadySessionProvider", () => {
         const res = await AzureAuth.getReadySessionProvider();
         sandbox.assert.calledOnce(getSubscriptionsStub);
         assert.equal(res.succeeded, false);
-        assert.equal((res as Utils.Failed).error, "Failed to get authentication session: failed");
+        assert.equal((res as GeneralUtils.Failed).error, "Failed to get authentication session: failed");
     });
 });
 

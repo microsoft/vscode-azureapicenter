@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 import { AuthenticationSession, Event } from "vscode";
-import { Utils } from "../../utils/utils";
+import { GeneralUtils } from "../../utils/generalUtils";
 
 export enum SignInStatus {
     Initializing = 'Initializing',
@@ -46,7 +46,7 @@ export type AzureSessionProvider = {
     availableTenants: Tenant[];
     selectedTenant: Tenant | null;
     signInStatusChangeEvent: Event<SignInStatus>;
-    getAuthSession(options?: GetAuthSessionOptions): Promise<Utils.Errorable<AzureAuthenticationSession>>;
+    getAuthSession(options?: GetAuthSessionOptions): Promise<GeneralUtils.Errorable<AzureAuthenticationSession>>;
     dispose(): void;
 };
 

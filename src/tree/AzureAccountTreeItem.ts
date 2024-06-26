@@ -15,8 +15,8 @@ import { AzureAuth } from "../azure/azureLogin/azureAuth";
 import { AzureSubscriptionHelper } from "../azure/azureLogin/subscriptions";
 import { AzureAccountType } from "../constants";
 import { UiStrings } from "../uiStrings";
+import { GeneralUtils } from "../utils/generalUtils";
 import { treeUtils } from "../utils/treeUtils";
-import { Utils } from "../utils/utils";
 import { createSubscriptionTreeItem } from "./SubscriptionTreeItem";
 
 export function createAzureAccountTreeItem(
@@ -129,7 +129,7 @@ export class AzureAccountTreeItem extends AzExtParentTreeItem {
     // because it requires extra interaction. Calling `getAuthSession` will complete that process.
     // We will need the returned auth session in any case for creating a subscription context.
     const session = await this.sessionProvider.getAuthSession();
-    if (Utils.failed(session) || !AzureAuth.isReady(this.sessionProvider)) {
+    if (GeneralUtils.failed(session) || !AzureAuth.isReady(this.sessionProvider)) {
       return [
         new GenericTreeItem(this, {
           label: UiStrings.ErrorAuthenticating,
@@ -141,7 +141,7 @@ export class AzureAccountTreeItem extends AzExtParentTreeItem {
     }
 
     const subscriptions = await AzureSubscriptionHelper.getSubscriptions(this.sessionProvider, SelectionType.AllIfNoFilters);
-    if (Utils.failed(subscriptions)) {
+    if (GeneralUtils.failed(subscriptions)) {
       return [
         new GenericTreeItem(this, {
           label: UiStrings.ErrorLoadingSubscriptions,

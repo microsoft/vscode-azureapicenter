@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 import { Subscription, SubscriptionClient } from "@azure/arm-resources-subscriptions";
 import * as vscode from "vscode";
-import { Utils } from "../../utils/utils";
+import { GeneralUtils } from "../../utils/generalUtils";
 import { ReadyAzureSessionProvider, SelectionType, SubscriptionFilter } from "./authTypes";
 import { AzureAuth } from "./azureAuth";
 
@@ -39,10 +39,10 @@ export namespace AzureSubscriptionHelper {
     export async function getSubscriptions(
         sessionProvider: ReadyAzureSessionProvider,
         selectionType: SelectionType,
-    ): Promise<Utils.Errorable<DefinedSubscription[]>> {
+    ): Promise<GeneralUtils.Errorable<DefinedSubscription[]>> {
         const client = getSubscriptionClient(sessionProvider);
         const subsResult = await AzureAuth.listAll(client.subscriptions.list());
-        return Utils.errMap(subsResult, (subs: any) => sortAndFilter(subs.filter(isDefinedSubscription), selectionType));
+        return GeneralUtils.errMap(subsResult, (subs: any) => sortAndFilter(subs.filter(isDefinedSubscription), selectionType));
     }
 
     function sortAndFilter(subscriptions: DefinedSubscription[], selectionType: SelectionType): DefinedSubscription[] {

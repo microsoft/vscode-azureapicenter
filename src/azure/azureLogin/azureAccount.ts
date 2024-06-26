@@ -4,7 +4,7 @@ import { SubscriptionClient, TenantIdDescription } from "@azure/arm-resources-su
 import { TokenCredential } from "@azure/core-auth";
 import { AuthenticationSession, QuickPickItem, Uri, env, window } from "vscode";
 import { UiStrings } from "../../uiStrings";
-import { Utils } from "../../utils/utils";
+import { GeneralUtils } from "../../utils/generalUtils";
 import { SelectionType, SignInStatus, SubscriptionFilter, Tenant } from "./authTypes";
 import { AzureAuth } from "./azureAuth";
 import { AzureSessionProviderHelper } from "./azureSessionProvider";
@@ -28,7 +28,7 @@ export namespace AzureAccount {
             // accessible (the user's current token didn't have access to it). Calling getAuthSession
             // will prompt the user to re-authenticate if necessary.
             const sessionResult = await sessionProvider.getAuthSession();
-            if (Utils.failed(sessionResult)) {
+            if (GeneralUtils.failed(sessionResult)) {
                 window.showErrorMessage(sessionResult.error);
             }
 
@@ -48,13 +48,13 @@ export namespace AzureAccount {
 
     export async function selectSubscriptions(): Promise<void> {
         const sessionProvider = await AzureAuth.getReadySessionProvider();
-        if (Utils.failed(sessionProvider)) {
+        if (GeneralUtils.failed(sessionProvider)) {
             window.showErrorMessage(sessionProvider.error);
             return;
         }
 
         const allSubscriptions = await AzureSubscriptionHelper.getSubscriptions(sessionProvider.result, SelectionType.All);
-        if (Utils.failed(allSubscriptions)) {
+        if (GeneralUtils.failed(allSubscriptions)) {
             window.showErrorMessage(allSubscriptions.error);
             return;
         }
@@ -71,7 +71,7 @@ export namespace AzureAccount {
         }
 
         const session = await sessionProvider.result.getAuthSession();
-        if (Utils.failed(session)) {
+        if (GeneralUtils.failed(session)) {
             window.showErrorMessage(session.error);
             return;
         }
@@ -112,7 +112,7 @@ export namespace AzureAccount {
         await AzureSubscriptionHelper.setFilteredSubscriptions(newFilteredSubscriptions);
     }
 
-    export async function getTenants(session: AuthenticationSession): Promise<Utils.Errorable<Tenant[]>> {
+    export async function getTenants(session: AuthenticationSession): Promise<GeneralUtils.Errorable<Tenant[]>> {
         const armEndpoint = AzureAuth.getConfiguredAzureEnv().resourceManagerEndpointUrl;
         const credential: TokenCredential = {
             getToken: async () => {
@@ -122,7 +122,7 @@ export namespace AzureAccount {
         const subscriptionClient = new SubscriptionClient(credential, { endpoint: armEndpoint });
 
         const tenantsResult = await AzureAuth.listAll(subscriptionClient.tenants.list());
-        return Utils.errMap(tenantsResult, (t) => t.filter(isTenant).map((t) => ({ name: t.displayName, id: t.tenantId })));
+        return GeneralUtils.errMap(tenantsResult, (t) => t.filter(isTenant).map((t) => ({ name: t.displayName, id: t.tenantId })));
     }
 
     export function findTenant(tenants: Tenant[], tenantId: string): Tenant | null {
