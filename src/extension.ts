@@ -21,6 +21,7 @@ import { GenerateHttpFile } from './commands/generateHttpFile';
 import { generateMarkdownDocument } from './commands/generateMarkdownDocument';
 import { importOpenApi } from './commands/importOpenApi';
 import { openAPiInSwagger } from './commands/openApiInSwagger';
+import { openUrlFromTreeNode } from './commands/openUrl';
 import { refreshTree } from './commands/refreshTree';
 import { registerApi } from './commands/registerApi';
 import { searchApi } from './commands/searchApi';
@@ -111,9 +112,12 @@ export async function activate(context: vscode.ExtensionContext) {
 
     registerCommandWithTelemetry('azure-api-center.apiCenterTreeView.refresh', async (context: IActionContext) => refreshTree(context));
 
-    registerCommandWithTelemetry("azure-api-center.signInToAzure", AzureAccount.signInToAzure);
-    registerCommandWithTelemetry("azure-api-center.selectTenant", AzureAccount.selectTenant);
-    registerCommandWithTelemetry("azure-api-center.selectSubscriptions", AzureAccount.selectSubscriptions);
+    registerCommandWithTelemetry('azure-api-center.signInToAzure', AzureAccount.signInToAzure);
+    registerCommandWithTelemetry('azure-api-center.selectTenant', AzureAccount.selectTenant);
+    registerCommandWithTelemetry('azure-api-center.selectSubscriptions', AzureAccount.selectSubscriptions);
+    registerCommandWithTelemetry('azure-api-center.openUrl', async (context: IActionContext, node?: AzExtTreeItem) => {
+        await openUrlFromTreeNode(context, node);
+    });
 }
 
 async function registerCommandWithTelemetry(commandId: string, callback: CommandCallback, debounce?: number): Promise<void> {

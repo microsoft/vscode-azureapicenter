@@ -89,4 +89,6 @@ export class UiStrings {
     static readonly ErrorLoadingSubscriptions = vscode.l10n.t("Error loading subscriptions");
     static readonly NoSubscriptionsFound = vscode.l10n.t("No subscriptions found");
     static readonly AzureAccount = vscode.l10n.t("Azure");
+    static readonly CreateAzureAccount = vscode.l10n.t("Create an Azure Account...");
+    static readonly CreateAzureStudentAccount = vscode.l10n.t("Create an Azure for Students Account...");
 }

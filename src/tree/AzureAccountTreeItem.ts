@@ -13,6 +13,7 @@ import * as vscode from "vscode";
 import { AzureSessionProvider, ReadyAzureSessionProvider, SelectionType, SignInStatus } from "../azure/azureLogin/authTypes";
 import { AzureAuth } from "../azure/azureLogin/azureAuth";
 import { AzureSubscriptionHelper } from "../azure/azureLogin/subscriptions";
+import { AzureAccountType } from "../constants";
 import { UiStrings } from "../uiStrings";
 import { treeUtils } from "../utils/treeUtils";
 import { Utils } from "../utils/utils";
@@ -54,6 +55,10 @@ export class AzureAccountTreeItem extends AzExtParentTreeItem {
     return false;
   }
 
+  public compareChildrenImpl(item1: AzExtTreeItem, item2: AzExtTreeItem): number {
+    return item1.id!.localeCompare(item2.id!);
+  }
+
   public async loadMoreChildrenImpl(): Promise<AzExtTreeItem[]> {
     const existingSubscriptionTreeItems: AzExtTreeItem[] = this.subscriptionTreeItems || [];
     this.subscriptionTreeItems = [];
@@ -76,6 +81,22 @@ export class AzureAccountTreeItem extends AzExtParentTreeItem {
             contextValue: "azureCommand",
             id: "azureapicenterAccountSignIn",
             iconPath: new vscode.ThemeIcon("sign-in"),
+            includeInTreeItemPicker: true,
+          }),
+          new GenericTreeItem(this, {
+            label: UiStrings.CreateAzureAccount,
+            commandId: "azure-api-center.openUrl",
+            contextValue: "azureCommand",
+            id: AzureAccountType.createAzureAccount,
+            iconPath: new vscode.ThemeIcon("add"),
+            includeInTreeItemPicker: true,
+          }),
+          new GenericTreeItem(this, {
+            label: UiStrings.CreateAzureStudentAccount,
+            commandId: "azure-api-center.openUrl",
+            contextValue: "azureCommand",
+            id: AzureAccountType.createAzureStudentAccount,
+            iconPath: new vscode.ThemeIcon("mortar-board"),
             includeInTreeItemPicker: true,
           })
         ];
