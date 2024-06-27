@@ -67,7 +67,7 @@ export class ApiTreesItem extends AzExtParentTreeItem {
         );
     }
     public hasMoreChildrenImpl(): boolean {
-        return false
+        return true
     }
     public static contextValue: string = "workspaceApiCenterApis";
     public contextValue: string = ApiTreesItem.contextValue;
