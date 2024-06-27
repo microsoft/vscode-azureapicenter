@@ -67,7 +67,7 @@ export class ApiTreesItem extends AzExtParentTreeItem {
         );
     }
     public hasMoreChildrenImpl(): boolean {
-        return true
+        return this._nextLink !== undefined;
     }
     public static contextValue: string = "workspaceApiCenterApis";
     public contextValue: string = ApiTreesItem.contextValue;
@@ -83,13 +83,13 @@ export class ApiTreesItem extends AzExtParentTreeItem {
     }
     private async getApis(): Promise<ApiCenter[]> {
         let accessToken = await getSessionToken(this.account.clientId, this.account.tenantId);
-        let result = [];
         if (accessToken) {
             let server = new fetchApiCenterServer(this.account.domain, accessToken);
-            let arrs = await server.getApis();
-            if (arrs) result.push(arrs)
+            const res = await server.getApis();
+            this._nextLink = res.nextLink;
+            return res.value;
         }
-        return result.flat();
+        return [];
     }
 }
 
@@ -105,12 +105,10 @@ export class ApiTreeItem extends AzExtParentTreeItem {
     }
     public label: string;
     public contextValue: string;
-    private readonly _apiCenterName: string;
     public readonly apiVersionsTreeItem: ApiVersionsTreeItem;
     constructor(parent: AzExtParentTreeItem, account: DataPlaneAccount, apiName: string, apiCenter: ApiCenter) {
         super(parent);
         this.label = apiCenter.name;
-        this._apiCenterName = apiName;
         this.contextValue = ApiTreeItem.contextValue;
         this.apiVersionsTreeItem = new ApiVersionsTreeItem(this, account, apiName, apiCenter);
     }
@@ -128,7 +126,7 @@ export class ApiVersionsTreeItem extends AzExtParentTreeItem {
         );
     }
     public hasMoreChildrenImpl(): boolean {
-        return false;
+        return this._nextLink !== undefined;
     }
     public get iconPath(): TreeItemIconPath {
         return new vscode.ThemeIcon("versions");
@@ -140,6 +138,7 @@ export class ApiVersionsTreeItem extends AzExtParentTreeItem {
     }
     private readonly _apiCenterName: string;
     private readonly _apiCenterApi: ApiCenter;
+    private _nextLink: string | undefined;
     constructor(parent: AzExtParentTreeItem, public account: DataPlaneAccount, apiCenterName: string, apiCenterApi: ApiCenter) {
         super(parent);
         this._apiCenterName = apiCenterName;
@@ -147,13 +146,13 @@ export class ApiVersionsTreeItem extends AzExtParentTreeItem {
     }
     private async getVersions(): Promise<ApiVersion[]> {
         let accessToken = await getSessionToken(this.account.clientId, this.account.tenantId);
-        let result = [];
         if (accessToken) {
             let server = new fetchApiCenterServer(this.account.domain, accessToken);
-            let arrs = await server.getVersions(this._apiCenterApi.name);
-            if (arrs) result.push(arrs)
+            let res = await server.getVersions(this._apiCenterApi.name);
+            this._nextLink = res.nextLink;
+            return res.value;
         }
-        return result.flat();
+        return [];
     }
 }
 export class ApiVersionTreeItem extends AzExtParentTreeItem {
@@ -193,8 +192,9 @@ export class ApiDefinitionsTreeItem extends AzExtParentTreeItem {
     private readonly _apiCenterName: string;
     private readonly _apiCenterApiName: string;
     private readonly _apiCenterApiVersion: ApiVersion;
+    private _nextLink: string | undefined;
     public hasMoreChildrenImpl(): boolean {
-        return false;
+        return this._nextLink !== undefined;
     }
     public get iconPath(): TreeItemIconPath {
         return new vscode.ThemeIcon("list-selection");
@@ -211,15 +211,13 @@ export class ApiDefinitionsTreeItem extends AzExtParentTreeItem {
     }
     private async getDefinitions(): Promise<ApiDefinitions[]> {
         let accessToken = await getSessionToken(this.account.clientId, this.account.tenantId);
-        let result = [];
         if (accessToken) {
             let server = new fetchApiCenterServer(this.account.domain, accessToken);
-            let arrs = await server.getDefinitions(this._apiCenterApiName, this._apiCenterApiVersion.name);
-            if (arrs) {
-                result.push(arrs)
-            }
+            let res = await server.getDefinitions(this._apiCenterApiName, this._apiCenterApiVersion.name);
+            this._nextLink = res.nextLink;
+            return res.value;
         }
-        return result.flat();
+        return [];
     }
 }
 export class ApiDefinitionTreeItem extends AzExtTreeItem {
@@ -296,17 +294,17 @@ export class fetchApiCenterServer {
         }
 
         const dataJson = await response.json();
-        return dataJson.value;
+        return dataJson;
     }
-    public async getApis(queryString?: string): Promise<any> {
+    public async getApis(queryString?: string): Promise<{ value: ApiCenter[]; nextLink: string }> {
         return queryString ? await this.requestApis(`apis?${queryString}`) : await this.requestApis(`apis`);
     }
 
-    public async getApi(id: string) {
+    public async getApi(id: string): Promise<{ value: ApiCenter[]; nextLink: string }> {
         return await this.requestApis(`apis/${id}`);
     }
 
-    public async getVersions(apiId: string) {
+    public async getVersions(apiId: string): Promise<{ value: ApiVersion[]; nextLink: string }> {
         return await this.requestApis(`apis/${apiId}/versions`);
     }
 
@@ -314,7 +312,7 @@ export class fetchApiCenterServer {
         return await this.requestApis(`apis/${apiId}/deployments`);
     }
 
-    public async getDefinitions(apiId: string, version: string) {
+    public async getDefinitions(apiId: string, version: string): Promise<{ value: ApiDefinitions[]; nextLink: string }> {
         return await this.requestApis(`apis/${apiId}/versions/${version}/definitions`);
     }
 
