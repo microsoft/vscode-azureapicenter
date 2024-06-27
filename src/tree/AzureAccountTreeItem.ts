@@ -55,8 +55,9 @@ export class AzureAccountTreeItem extends AzExtParentTreeItem {
     return false;
   }
 
+  // no need to sort the array
   public compareChildrenImpl(item1: AzExtTreeItem, item2: AzExtTreeItem): number {
-    return item1.id!.localeCompare(item2.id!);
+    return 0;
   }
 
   public async loadMoreChildrenImpl(): Promise<AzExtTreeItem[]> {
