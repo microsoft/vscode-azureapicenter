@@ -140,6 +140,11 @@
         "command": "azure-api-center.apiCenterWorkspace.refresh",
         "title": "refresh workspace treeview",
         "icon": "$(refresh)"
+      },
+      {
+        "command": "azure-api-center.apiCenterWorkspace.logout",
+        "title": "logout dataplane",
+        "icon": "$(sign-out)"
       }
     ],
     "views": {
@@ -180,6 +185,11 @@
         },
         {
           "command": "azure-api-center.apiCenterWorkspace.refresh",
+          "when": "view == apiCenterWorkspace",
+          "group": "navigation@1"
+        },
+        {
+          "command": "azure-api-center.apiCenterWorkspace.logout",
           "when": "view == apiCenterWorkspace",
           "group": "navigation@0"
         }
