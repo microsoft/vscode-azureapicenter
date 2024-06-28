@@ -6,8 +6,7 @@ import {
   AzExtTreeItem,
   GenericTreeItem,
   ISubscriptionContext,
-  registerEvent,
-  TreeItemIconPath
+  registerEvent
 } from "@microsoft/vscode-azext-utils";
 import * as vscode from "vscode";
 import { AzureSessionProvider, ReadyAzureSessionProvider, SelectionType, SignInStatus } from "../azure/azureLogin/authTypes";
@@ -16,7 +15,6 @@ import { AzureSubscriptionHelper } from "../azure/azureLogin/subscriptions";
 import { AzureAccountType } from "../constants";
 import { UiStrings } from "../uiStrings";
 import { GeneralUtils } from "../utils/generalUtils";
-import { treeUtils } from "../utils/treeUtils";
 import { createSubscriptionTreeItem } from "./SubscriptionTreeItem";
 
 export function createAzureAccountTreeItem(
@@ -43,10 +41,6 @@ export class AzureAccountTreeItem extends AzExtParentTreeItem {
 
   public override get label() {
     return UiStrings.AzureAccount;
-  }
-
-  public override get iconPath(): TreeItemIconPath {
-    return treeUtils.getIconPath('azureAccount');
   }
 
   public dispose(): void { }
@@ -104,7 +98,7 @@ export class AzureAccountTreeItem extends AzExtParentTreeItem {
       case SignInStatus.SigningIn:
         return [
           new GenericTreeItem(this, {
-            label: UiStrings.WaitForSignIn,
+            label: UiStrings.WaitForAzureSignIn,
             contextValue: "azureCommand",
             id: "azureapicenterAccountSigningIn",
             iconPath: new vscode.ThemeIcon("loading~spin"),

@@ -9,7 +9,9 @@ import {
     ExtensionContext,
     Disposable as VsCodeDisposable,
     authentication,
+    l10n
 } from "vscode";
+import { UiStrings } from "../../uiStrings";
 import { GeneralUtils } from "../../utils/generalUtils";
 import { AzureAuthenticationSession, AzureSessionProvider, GetAuthSessionOptions, SignInStatus, Tenant } from "./authTypes";
 import { AzureAccount } from "./azureAccount";
@@ -153,18 +155,18 @@ export namespace AzureSessionProviderHelper {
         public async getAuthSession(options?: GetAuthSessionOptions): Promise<GeneralUtils.Errorable<AzureAuthenticationSession>> {
             await this.initializePromise;
             if (this.signInStatusValue !== SignInStatus.SignedIn) {
-                return { succeeded: false, error: `Not signed in (${this.signInStatusValue}).` };
+                return { succeeded: false, error: l10n.t(UiStrings.NotSignInStatus, this.signInStatusValue) };
             }
 
             if (this.tenants.length === 0) {
-                return { succeeded: false, error: "No tenants found." };
+                return { succeeded: false, error: UiStrings.NoTenantFound };
             }
 
             if (!this.selectedTenantValue) {
                 if (this.tenants.length > 1) {
                     const selectedTenant = await AzureAuth.quickPickTenant(this.tenants);
                     if (!selectedTenant) {
-                        return { succeeded: false, error: "No tenant selected." };
+                        return { succeeded: false, error: UiStrings.NoTenantSelected };
                     }
 
                     this.selectedTenantValue = selectedTenant;
@@ -257,12 +259,12 @@ export namespace AzureSessionProviderHelper {
                 }
 
                 if (!session) {
-                    return { succeeded: false, error: "No Azure session found." };
+                    return { succeeded: false, error: UiStrings.NoAzureSessionFound };
                 }
 
                 return { succeeded: true, result: Object.assign(session, { tenantId }) };
             } catch (e) {
-                return { succeeded: false, error: `Failed to retrieve Azure session: ${GeneralUtils.getErrorMessage(e)}` };
+                return { succeeded: false, error: l10n.t(UiStrings.FailedTo, GeneralUtils.getErrorMessage(e)) };
             } finally {
                 this.handleSessionChanges = true;
             }

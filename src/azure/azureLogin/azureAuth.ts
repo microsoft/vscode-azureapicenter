@@ -4,6 +4,7 @@ import { TokenCredential } from "@azure/core-auth";
 import { PagedAsyncIterableIterator } from "@azure/core-paging";
 import { Environment, EnvironmentParameters } from "@azure/ms-rest-azure-env";
 import * as vscode from "vscode";
+import { UiStrings } from "../../uiStrings";
 import { GeneralUtils } from "../../utils/generalUtils";
 import { AzureSessionProvider, GetAuthSessionOptions, ReadyAzureSessionProvider, SignInStatus, Tenant } from "./authTypes";
 import { AzureSessionProviderHelper } from "./azureSessionProvider";
@@ -17,7 +18,7 @@ export namespace AzureAuth {
             getToken: async () => {
                 const session = await sessionProvider.getAuthSession();
                 if (GeneralUtils.failed(session)) {
-                    throw new Error(`No Microsoft authentication session found: ${session.error}`);
+                    throw new Error(vscode.l10n.t(UiStrings.NoMSAuthSessionFound, session.error));
                 }
 
                 return { token: session.result.accessToken, expiresOnTimestamp: 0 };
@@ -37,7 +38,7 @@ export namespace AzureAuth {
             tenant: t,
         }));
         const result = await vscode.window.showQuickPick(items, {
-            placeHolder: "Select a tenant",
+            placeHolder: UiStrings.SelectATenant,
         });
         return result ? result.tenant : undefined;
     }
@@ -75,7 +76,7 @@ export namespace AzureAuth {
     async function waitForSignIn(sessionProvider: AzureSessionProvider): Promise<void> {
         const options: vscode.ProgressOptions = {
             location: vscode.ProgressLocation.Notification,
-            title: "Waiting for sign-in",
+            title: UiStrings.WaitForSignIn,
             cancellable: true,
         };
 
@@ -111,9 +112,7 @@ export namespace AzureAuth {
                 return new Environment(customCloud);
             }
 
-            throw new Error(
-                `The custom cloud choice is not configured. Please configure the setting ${section}.${settingName}.`,
-            );
+            throw new Error(vscode.l10n.t(UiStrings.CustomCloudChoiseNotConfigured, section, settingName));
         }
 
         return Environment.get(Environment.AzureCloud.name);
@@ -127,7 +126,7 @@ export namespace AzureAuth {
             }
             return { succeeded: true, result };
         } catch (e) {
-            return { succeeded: false, error: `Failed to list resources: ${GeneralUtils.getErrorMessage(e)}` };
+            return { succeeded: false, error: vscode.l10n.t(UiStrings.FailedToListGroup, GeneralUtils.getErrorMessage(e)) };
         }
     }
 
