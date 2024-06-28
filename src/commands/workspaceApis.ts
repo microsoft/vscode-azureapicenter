@@ -28,7 +28,7 @@ export async function getSessionToken(clientId: string, tenantId: string) {
         `VSCODE_TENANT:${tenantId}`, // Replace with the tenant ID or common if multi-tenant
         "offline_access", // Required for the refresh token.
         "https://azure-apicenter.net/user_impersonation"
-    ], { createIfNone: false });
+    ], { silent: true });
     if (session?.accessToken) {
         return session.accessToken;
     } else {
