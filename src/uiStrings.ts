@@ -39,7 +39,7 @@ export class UiStrings {
     static readonly CopilotNoMoreApiSpec = vscode.l10n.t("⚠️ There are no more API specification documents.");
     static readonly CopilotParseApiSpec = vscode.l10n.t("Parsing API Specifications...");
     static readonly CopilotParseApiSpecFor = vscode.l10n.t("Parsing API Specifications for '{0}'...");
-    static readonly CopilotExceedsTokenLimit = vscode.l10n.t("The contents of the current file are too large for GitHub Copilot. Please try again with a smaller file.");
+    static readonly CopilotExceedsTokenLimit = vscode.l10n.t("The size of the current file is large for GitHub Copilot. Please try again with a file of smaller size.");
     static readonly RegisterApiOptionStepByStep = vscode.l10n.t("Manual");
     static readonly RegisterApiOptionCicd = vscode.l10n.t("CI/CD");
     static readonly ApiRulesetOptionDefault = vscode.l10n.t("Default");
