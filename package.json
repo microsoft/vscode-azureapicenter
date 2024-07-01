@@ -31,9 +31,6 @@
   "activationEvents": [],
   "main": "./dist/extension.js",
   "l10n": "l10n",
-  "extensionDependencies": [
-    "ms-vscode.azure-account"
-  ],
   "contributes": {
     "commands": [
       {
@@ -127,6 +124,11 @@
         "command": "azure-api-center.generateMarkdownDocument",
         "title": "%azure-api-center.commands.generateMarkdownDocument.title%",
         "category": "Azure API Center"
+      },
+      {
+        "command": "azure-api-center.selectTenant",
+        "title": "%azure-api-center.commands.selectTenant.title%",
+        "category": "Azure API Center"
       }
     ],
     "views": {
@@ -159,7 +161,7 @@
       "view/item/context": [
         {
           "command": "azure-api-center.selectSubscriptions",
-          "when": "view == apiCenterTreeView && viewItem == azureextensionui.azureSubscription",
+          "when": "view == apiCenterTreeView && viewItem == azureApiCenterAzureSubscription",
           "group": "inline"
         },
         {
@@ -287,6 +289,19 @@
           }
         ]
       }
+    ],
+    "configuration": [
+      {
+        "properties": {
+          "azure-api-center.selectedSubscriptions": {
+            "type": "array",
+            "description": "Selected Azure subscriptions",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
     ]
   },
   "scripts": {
@@ -337,13 +352,17 @@
     "@apidevtools/swagger-parser": "^10.1.0",
     "@azure/arm-apicenter": "^1.0.0-beta.1",
     "@azure/arm-resourcegraph": "^4.2.1",
+    "@azure/arm-resources-subscriptions": "^2.1.0",
     "@azure/arm-subscriptions": "^5.1.0",
+    "@azure/core-auth": "^1.7.2",
+    "@azure/core-paging": "^1.6.2",
     "@azure/identity": "^3.4.2",
+    "@azure/ms-rest-azure-env": "^2.0.0",
     "@azure/ms-rest-js": "^2.7.0",
     "@azure/ms-rest-nodeauth": "^3.1.1",
     "@microsoft/vscode-azext-azureauth": "^1.2.1",
     "@microsoft/vscode-azext-azureutils": "^2.0.0",
-    "@microsoft/vscode-azext-utils": "^2.1.1",
+    "@microsoft/vscode-azext-utils": "^2.5.1",
     "@vscode/extension-telemetry": "^0.6.2",
     "ajv": "^8.12.0",
     "axios": "^1.6.0",

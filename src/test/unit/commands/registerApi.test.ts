@@ -9,15 +9,15 @@ import { RegisterViaCICD } from "../../../commands/registerApiSubCommands/regist
 import { TelemetryClient } from "../../../common/telemetryClient";
 import { ApisTreeItem } from "../../../tree/ApisTreeItem";
 
-suite("registerAPI", () => {
+describe("registerAPI", () => {
     let sandbox = null as any;
-    suiteSetup(() => {
+    before(() => {
         sandbox = sinon.createSandbox();
     });
-    teardown(() => {
+    afterEach(() => {
         sandbox.restore();
     });
-    test('register API with CICD happy path', async () => {
+    it('register API with CICD happy path', async () => {
         const showQuickPick = sandbox.stub(vscode.window, 'showQuickPick').resolves('CI/CD' as any);
         sandbox.stub(TelemetryClient, "sendEvent").resolves();
         sandbox.stub(TelemetryClient, "sendErrorEvent").resolves();
@@ -26,7 +26,7 @@ suite("registerAPI", () => {
         sandbox.assert.calledOnce(showQuickPick);
         sandbox.assert.calledOnce(stubCICD);
     });
-    test('register API with StepByStep happy path', async () => {
+    it('register API with StepByStep happy path', async () => {
         const showQuickPick = sandbox.stub(vscode.window, 'showQuickPick').resolves('Manual' as any);
         sandbox.stub(TelemetryClient, "sendEvent").resolves();
         sandbox.stub(TelemetryClient, "sendErrorEvent").resolves();
@@ -35,7 +35,7 @@ suite("registerAPI", () => {
         sandbox.assert.calledOnce(showQuickPick);
         sandbox.assert.calledOnce(stubStepByStep);
     });
-    test('register API with cancel', async () => {
+    it('register API with cancel', async () => {
         const showQuickPick = sandbox.stub(vscode.window, 'showQuickPick').resolves(undefined);
         const telemetryClientSyb = sandbox.stub(TelemetryClient, "sendEvent").resolves();
         const stubStepByStep = sandbox.stub(registerStepByStep, 'registerStepByStep').resolves();

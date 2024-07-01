@@ -8,12 +8,12 @@ import * as sinon from "sinon";
 import * as vscode from "vscode";
 import { RegisterViaCICD } from "../../../../commands/registerApiSubCommands/registerViaCICD";
 
-suite("test registerViaCICD", () => {
+describe("test registerViaCICD", () => {
     let sandbox = null as any;
-    suiteSetup(() => {
+    before(() => {
         sandbox = sinon.createSandbox();
     });
-    teardown(() => {
+    afterEach(() => {
         cleanUpWorkspace();
         sandbox.restore();
     });
@@ -29,7 +29,7 @@ suite("test registerViaCICD", () => {
             }
         }
     }
-    test("registerViaCICD happy path with github", async () => {
+    it("registerViaCICD happy path with github", async () => {
         sandbox.stub(RegisterViaCICD, "getTemplatesFolder").callsFake(() => {
             const tempPath = path.join(__dirname, "..", "..", "..", "..", "..", "templates");
             return tempPath;
@@ -47,7 +47,7 @@ suite("test registerViaCICD", () => {
         sandbox.assert.calledOnce(stubQiuckPick);
         sandbox.assert.calledOnce(showTextDocument);
     });
-    test("registerViaCICD happy path with azurepipelines", async () => {
+    it("registerViaCICD happy path with azurepipelines", async () => {
         sandbox.stub(RegisterViaCICD, "getTemplatesFolder").callsFake(() => {
             const tempPath = path.join(__dirname, "..", "..", "..", "..", "..", "templates");
             return tempPath;
@@ -65,7 +65,7 @@ suite("test registerViaCICD", () => {
         sandbox.assert.calledOnce(stubQiuckPick);
         sandbox.assert.calledOnce(showTextDocument);
     });
-    test('registerViaCICD with cancel', async () => {
+    it('registerViaCICD with cancel', async () => {
         const stubQiuckPick = sandbox.stub(vscode.window, "showQuickPick").resolves(undefined);
         const showTextDocument = sandbox.stub(vscode.window, "showTextDocument").resolves();
         await RegisterViaCICD.registerViaCICD({} as unknown as IActionContext);
@@ -75,7 +75,7 @@ suite("test registerViaCICD", () => {
         assert.ok(!await fs.pathExists(path.join(workspaceFolder![0].uri.fsPath, ".azure-pipelines")));
         sandbox.assert.notCalled(showTextDocument);
     });
-    test('throw error when no workspace folder', async () => {
+    it('throw error when no workspace folder', async () => {
         sinon.stub(vscode.workspace, "workspaceFolders").get(() => undefined);
         try {
             await RegisterViaCICD.registerViaCICD({} as unknown as IActionContext);

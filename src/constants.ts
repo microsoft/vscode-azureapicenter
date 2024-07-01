@@ -17,6 +17,16 @@ export const spectralOwaspRulesetFile = "https://unpkg.com/@stoplight/spectral-o
 export const MODEL_SELECTOR: vscode.LanguageModelChatSelector = { vendor: 'copilot', family: 'gpt-4' };
 export const ExceedTokenLimit = "Message exceeds token limit";
 
+export const AzureAccountType = {
+    createAzureAccount: "azureapicenterCreateAzureAccount",
+    createAzureStudentAccount: "azureapicenterCreateAzureStudentAccount",
+};
+
+export const AzureAccountCreateUrl = {
+    createAzureAccountUrl: "https://aka.ms/VSCodeCreateAzureAccount",
+    createAzureStudentUrl: "https://aka.ms/student-account"
+};
+
 export const RegisterApiOptions = {
     stepByStep: UiStrings.RegisterApiOptionStepByStep,
     cicd: UiStrings.RegisterApiOptionCicd,

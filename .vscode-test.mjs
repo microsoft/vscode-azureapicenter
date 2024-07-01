@@ -12,9 +12,11 @@ export default defineConfig({
         workspaceFolder: 'out/test',
         version: 'insiders',
         mocha: {
-            timeout: 20000
+            timeout: 20000,
+            ui: 'bdd',
+            inlineDiffs: true,
+            color: true
         },
-        dependentExtensions: "ms-vscode.azure-account",
         launchArgs: [
             "--disable-extension",
             "vscode.git",
