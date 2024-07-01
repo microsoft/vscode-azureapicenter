@@ -197,7 +197,7 @@ describe("getConfiguredAzureEnv", () => {
         const res = AzureAuth.getConfiguredAzureEnv();
         assert.strictEqual(res.name, "AzureUSGovernment");
     });
-    it('getConfiguredAzureEnv return USGovernment', async () => {
+    it('getConfiguredAzureEnv return USGovernment without custom cloud config', async () => {
         let stubConfigGet = sandbox.stub(workspaceConfiguration, "get");
         stubConfigGet.onCall(0).returns('custom');
         stubConfigGet.onCall(0).returns(null);
