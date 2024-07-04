@@ -1,9 +1,11 @@
-//@ts-check
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 
 'use strict';
 
 const path = require('path');
 const terserWebpackPlugin = require('terser-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 
 //@ts-check
 /** @typedef {import('webpack').Configuration} WebpackConfig **/
@@ -56,5 +58,12 @@ const extensionConfig = {
       })
     ]
   },
+  plugins: [
+    new CopyPlugin({
+      patterns: [
+        { from: 'node_modules/widdershins/templates/openapi3', to: '../templates/openapi3' },
+      ],
+    }),
+  ],
 };
 module.exports = [extensionConfig];

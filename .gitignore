@@ -135,3 +135,6 @@ l10n/bundle.l10n.json
 # testing resources
 test-results/**/*
 extensions
+
+# templates from widdershins
+templates/openapi3

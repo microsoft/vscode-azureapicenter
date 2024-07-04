@@ -1,16 +1,14 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 import { IActionContext } from "@microsoft/vscode-azext-utils";
-import * as fse from 'fs-extra';
 import { JSONSchemaFaker } from 'json-schema-faker';
 import { OpenAPIV3 } from "openapi-types";
-import * as path from 'path';
 import * as vscode from 'vscode';
 import { ext } from "../extensionVariables";
 import { ApiVersionDefinitionTreeItem } from "../tree/ApiVersionDefinitionTreeItem";
 import { UiStrings } from "../uiStrings";
 import { ensureExtension } from "../utils/ensureExtension";
-import { createTemporaryFolder } from "../utils/fsUtil";
+import { writeToTemporaryFile } from "../utils/fsUtil";
 import { OpenApiUtils } from "../utils/openApiUtils";
 
 export namespace GenerateHttpFile {
@@ -158,13 +156,11 @@ ${httpRequestsContent}`;
 
     async function writeToHttpFile(node: ApiVersionDefinitionTreeItem, httpFileContent: string) {
         const folderName = getFolderName(node);
-        const folderPath = await createTemporaryFolder(folderName);
         const fileName = getFilename(node);
-        const localFilePath: string = path.join(folderPath, fileName);
-        await fse.ensureFile(localFilePath);
-        const document: vscode.TextDocument = await vscode.workspace.openTextDocument(localFilePath);
-        await vscode.workspace.fs.writeFile(vscode.Uri.file(localFilePath), Buffer.from(httpFileContent));
-        await vscode.window.showTextDocument(document);
+
+        const fileUri = await writeToTemporaryFile(httpFileContent, folderName, fileName);
+
+        await vscode.window.showTextDocument(fileUri);
     }
 
     function getFolderName(treeItem: ApiVersionDefinitionTreeItem): string {

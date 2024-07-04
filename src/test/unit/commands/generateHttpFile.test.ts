@@ -7,39 +7,39 @@ import * as sinon from "sinon";
 import { GenerateHttpFile } from "../../../commands/generateHttpFile";
 import { OpenApiUtils } from "../../../utils/openApiUtils";
 
-suite("generateHttpFile", () => {
+describe("generateHttpFile", () => {
     let sandbox = null as any;
-    suiteSetup(() => {
+    before(() => {
         sandbox = sinon.createSandbox();
     });
-    teardown(() => {
+    afterEach(() => {
         sandbox.restore();
     });
-    test("repair API - JSON", async () => {
+    it("repair API - JSON", async () => {
         await testHttpFileGeneration("repairJson");
     });
-    test("repair API - YAML", async () => {
+    it("repair API - YAML", async () => {
         await testHttpFileGeneration("repairYaml");
     });
-    test("header with parameters", async () => {
+    it("header with parameters", async () => {
         await testHttpFileGeneration("header");
     });
-    test("query string with parameters", async () => {
+    it("query string with parameters", async () => {
         await testHttpFileGeneration("queryString");
     });
-    test("body using json-schema-faker", async () => {
+    it("body using json-schema-faker", async () => {
         await testHttpFileGeneration("body");
     });
-    test("example value", async () => {
+    it("example value", async () => {
         await testHttpFileGeneration("example");
     });
-    test("default value", async () => {
+    it("default value", async () => {
         await testHttpFileGeneration("default");
     });
-    test("no url", async () => {
+    it("no url", async () => {
         await testHttpFileGeneration("noUrl");
     });
-    test("multiple urls", async () => {
+    it("multiple urls", async () => {
         await testHttpFileGeneration("multiUrls");
     });
 });

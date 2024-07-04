@@ -4,10 +4,10 @@ import { IActionContext, UserCancelledError } from "@microsoft/vscode-azext-util
 import * as fse from 'fs-extra';
 import * as path from 'path';
 import * as vscode from 'vscode';
-import { ApiSpecificationOptions, openapi } from "../constants";
 import { ext } from "../extensionVariables";
 import { ApiVersionDefinitionTreeItem } from "../tree/ApiVersionDefinitionTreeItem";
 import { UiStrings } from "../uiStrings";
+import { getApiSpecification } from "../utils/apiSpecificationUtils";
 import { createTemporaryFolder } from "../utils/fsUtil";
 import { DefinitionFileType, inferDefinitionFileType } from "../utils/inferDefinitionFileType";
 import { checkNodeVersion } from "../utils/nodeUtils";
@@ -41,24 +41,6 @@ export async function detectBreakingChange(context: IActionContext) {
         await opticDiff(fileInfo1.fileUri.fsPath, fileInfo2.fileUri.fsPath),
         await vscode.commands.executeCommand('vscode.diff', fileInfo1.fileUri, fileInfo2.fileUri, `${fileInfo1.fileTitle} ↔ ${fileInfo2.fileTitle}`)
     ]);
-}
-
-async function getApiSpecification(title: string, context: IActionContext): Promise<ApiVersionDefinitionTreeItem | vscode.Uri | undefined> {
-    const apiSpecificationOption = await vscode.window.showQuickPick(Object.values(ApiSpecificationOptions), { title, ignoreFocusOut: true });
-    if (!apiSpecificationOption) {
-        return undefined;
-    }
-
-    switch (apiSpecificationOption) {
-        case ApiSpecificationOptions.apiCenter:
-            const node = await ext.treeDataProvider.showTreeItemPicker<ApiVersionDefinitionTreeItem>(`${ApiVersionDefinitionTreeItem.contextValue}-${openapi}`, context);
-            return node;
-        case ApiSpecificationOptions.localFile:
-            const fileUri = await vscode.window.showOpenDialog();
-            return fileUri?.[0];
-        case ApiSpecificationOptions.activeEditor:
-            return vscode.window.activeTextEditor?.document.uri;
-    }
 }
 
 async function getFileInfoFromApiSpecification(apiSpecification: ApiVersionDefinitionTreeItem | vscode.Uri): Promise<{ fileUri: vscode.Uri, fileTitle: string }> {

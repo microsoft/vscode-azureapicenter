@@ -21,6 +21,7 @@ jobs:
     permissions:
       actions: read
       contents: write
+      id-token: write
 
     steps:
       - name: setup node
@@ -29,10 +30,6 @@ jobs:
           node-version: lts/*
 
       - uses: actions/checkout@v2
-
-      - name: Install VSCE command
-        run: |
-          npm install @vscode/vsce -g
 
       - name: Download release artifacts
         uses: Legit-Labs/action-download-artifact@v2
@@ -57,12 +54,18 @@ jobs:
           commit: ${{ github.sha }}
           prerelease: ${{ github.event.inputs.preview }}
 
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          enable-AzPSSession: true
+
       - name: releae to VSCode marketplace
-        env:
-          PAT: ${{ secrets.VSCE_PAT }}
         run: |
           if [ "${{ github.event.inputs.preview }}" == "true" ]; then
-            vsce publish --pre-release --pat $PAT --packagePath ./release/*.vsix --noVerify
+            npx @vscode/vsce publish --pre-release --azure-credential --packagePath ./release/*.vsix --noVerify
           else
-            vsce publish --pat $PAT --packagePath ./release/*.vsix --noVerify
+            npx @vscode/vsce publish --azure-credential --packagePath ./release/*.vsix --noVerify
           fi
