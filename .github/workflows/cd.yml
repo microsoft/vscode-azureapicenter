@@ -53,6 +53,8 @@ jobs:
       - name: commit change
         if: ${{ github.event.inputs.preview == 'true' || github.event.inputs.release == 'true' }}
         run: |
+          git config --global user.email "you@example.com"
+          git config --global user.name "Your Name"
           git add package.json
           git commit -m "chore: update pkg.json for release"
 
