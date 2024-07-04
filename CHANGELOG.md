@@ -1,5 +1,7 @@
 # Changelog
 
+> Note: This changelog only includes the changes for the stable versions of Azure API Center for Visual Studio Code. For the changelog of pre-released versions, please refer to the [Pre-release Changelog of Azure API Center for Visual Studio Code](https://github.com/microsoft/vscode-azureapicenter/blob/main/PRERELEASE.md).
+
 ## 1.0.0
 
 The 1.0.0 general availability (GA) release of the Azure API Center extension for Visual Studio Code provides new capabilities such as the ability to export API specification, defining default rules for API linting and displaying new strings in tree view
