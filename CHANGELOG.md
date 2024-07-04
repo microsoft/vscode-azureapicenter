@@ -1,6 +1,6 @@
 # Changelog
 
-> Note: This changelog only includes the changes for the stable versions of Teams Toolkit. For the changelog of pre-released versions, please refer to the [Teams Toolkit Pre-release Changelog](https://github.com/microsoft/vscode-azureapicenter/blob/main/PRERELEASE.md).
+> Note: This changelog only includes the changes for the stable versions of VSCode API Center. For the changelog of pre-released versions, please refer to the [VSCode APICenter Changelog](https://github.com/microsoft/vscode-azureapicenter/blob/main/PRERELEASE.md).
 
 ## 1.0.0
 
