@@ -27,12 +27,12 @@ jobs:
         with:
           node-version: lts/*
 
-      # - uses: jossef/action-set-json-field@v1
-      #   if: ${{ github.event_name == 'workflow_dispatch' && (github.event.inputs.release == 'true' || github.ref == 'refs/heads/main') }}
-      #   with:
-      #     file: ./package.json
-      #     field: aiKey
-      #     value: ${{ secrets.PUBLIC_AIKEY }}
+      - uses: jossef/action-set-json-field@v1
+        if: ${{ github.event_name == 'workflow_dispatch' && (github.event.inputs.release == 'true' || github.ref == 'refs/heads/main') }}
+        with:
+          file: ./package.json
+          field: aiKey
+          value: ${{ secrets.PUBLIC_AIKEY }}
 
       - name: update visx for preview
         if: ${{ github.event.inputs.preview == 'true'}}
@@ -49,6 +49,12 @@ jobs:
           echo '----------------- prerelease version:' $VERSION
           jq --arg VERSION "$VERSION" '.version=$VERSION' package.json > tmp.$$.json
           mv tmp.$$.json package.json
+
+      - name: commit change
+        if: ${{ github.event.inputs.preview == 'true' || github.event.inputs.release == 'true' }}
+        run: |
+          git add package.json
+          git commit -m "chore: update pkg.json for release"
 
       - name: Build visx
         run: |
