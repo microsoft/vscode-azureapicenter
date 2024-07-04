@@ -1,6 +1,6 @@
 # Changelog
 
-> Note: This changelog only includes the changes for the stable versions of VSCode API Center. For the changelog of pre-released versions, please refer to the [VSCode APICenter Changelog](https://github.com/microsoft/vscode-azureapicenter/blob/main/PRERELEASE.md).
+> Note: This changelog only includes the changes for the stable versions of Azure API Center for Visual Studio Code. For the changelog of pre-released versions, please refer to the [Pre-release Changelog of Azure API Center for Visual Studio Code](https://github.com/microsoft/vscode-azureapicenter/blob/main/PRERELEASE.md).
 
 ## 1.0.0
 
