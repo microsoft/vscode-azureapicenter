@@ -54,7 +54,7 @@ jobs:
         run: |
           npm install
           echo "=============== Building visx ===============" ${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
-          npx @vscode/vsce package --no-dependencies --pre-release
+          npx @vscode/vsce package --no-dependencies --githubBranch ${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}} --pre-release
 
       - uses: actions/upload-artifact@v3
         with:
