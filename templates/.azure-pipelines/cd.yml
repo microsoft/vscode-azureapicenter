@@ -15,4 +15,5 @@ steps:
       scriptType: "ps"
       scriptLocation: "inlineScript"
       inlineScript: |
+        az extension add --name apic-extension --version 1.0.0
         az apic api register -g ${env:RESOURCE_GROUP} -n ${env:RESOURCE_NAME} --api-location ${env:FILE_LOCATION}

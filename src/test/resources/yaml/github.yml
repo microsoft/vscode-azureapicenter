@@ -35,4 +35,5 @@ jobs:
         with:
           azcliversion: latest
           inlineScript: |
+            az extension add --name apic-extension --version 1.0.0
             az apic api register -g ${{ vars.RESOURCE_GROUP }} -n ${{ vars.RESOURCE_NAME }} --api-location ${{ vars.FILE_LOCATION }}
