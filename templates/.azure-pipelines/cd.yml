@@ -15,4 +15,4 @@ steps:
       scriptType: "ps"
       scriptLocation: "inlineScript"
       inlineScript: |
-        az apic api register -g ${env:RESOURCE_GROUP} -s ${env:RESOURCE_NAME} --api-location ${env:FILE_LOCATION}
+        az apic api register -g ${env:RESOURCE_GROUP} -n ${env:RESOURCE_NAME} --api-location ${env:FILE_LOCATION}
