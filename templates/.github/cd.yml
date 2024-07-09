@@ -13,12 +13,12 @@ jobs:
     # https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment#creating-an-environment
     environment: production
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       # https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-azure
       # https://github.com/marketplace/actions/azure-login#login-with-openid-connect-oidc-recommended
       - name: Azure login
-        uses: azure/login@v1
+        uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
