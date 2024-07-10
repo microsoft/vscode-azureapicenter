@@ -7,10 +7,8 @@ import { FunctionTreeItem } from "./FunctionTreeItem";
 export class FunctionsTreeItem extends AzExtParentTreeItem {
     public static contextValue: string = "azureApiCenterFunctions";
     public readonly contextValue: string = FunctionsTreeItem.contextValue;
-    private readonly _functionNames: string[];
-    constructor(parent: AzExtParentTreeItem, functionNames: string[]) {
+    constructor(parent: AzExtParentTreeItem, public rulesFolderPath: string, public functionsDir: string, public functionNames: string[]) {
         super(parent);
-        this._functionNames = functionNames;
     }
 
     public get label(): string {
@@ -22,7 +20,7 @@ export class FunctionsTreeItem extends AzExtParentTreeItem {
     }
 
     public async loadMoreChildrenImpl(clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
-        return this._functionNames.map((functionName) => new FunctionTreeItem(this, functionName));
+        return this.functionNames.map((functionName) => new FunctionTreeItem(this, this.rulesFolderPath, this.functionsDir, functionName));
     }
 
     public hasMoreChildrenImpl(): boolean {

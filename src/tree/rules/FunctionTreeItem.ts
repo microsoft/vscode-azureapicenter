@@ -1,15 +1,16 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 import { AzExtParentTreeItem, AzExtTreeItem, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
+import * as path from 'path';
 import * as vscode from 'vscode';
 
 export class FunctionTreeItem extends AzExtTreeItem {
     public static contextValue: string = "azureApiCenterFunction";
     public readonly contextValue: string = FunctionTreeItem.contextValue;
-    private readonly _functionName: string;
-    constructor(parent: AzExtParentTreeItem, functionName: string) {
+    public readonly fullFilePath: string;
+    constructor(parent: AzExtParentTreeItem, public rulesFolderPath: string, public functionsDir: string, public functionName: string) {
         super(parent);
-        this._functionName = functionName;
+        this.fullFilePath = path.join(rulesFolderPath, functionsDir, functionName);
     }
 
     public get iconPath(): TreeItemIconPath {
@@ -17,6 +18,10 @@ export class FunctionTreeItem extends AzExtTreeItem {
     }
 
     public get label(): string {
-        return this._functionName;
+        return this.functionName;
+    }
+
+    public get commandId(): string {
+        return 'azure-api-center.openRule';
     }
 }

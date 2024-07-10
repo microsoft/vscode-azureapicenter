@@ -2,11 +2,17 @@
 // Licensed under the MIT license.
 import { getResourceGroupFromId } from "@microsoft/vscode-azext-azureutils";
 import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
+import * as path from 'path';
 import * as vscode from 'vscode';
 import { ApiCenterService } from "../../azure/ApiCenter/ApiCenterService";
 import { ApiCenter } from "../../azure/ApiCenter/contracts";
+import { getFilenamesInFolder } from "../../utils/fsUtil";
+import { getRulesFolderPath } from "../../utils/ruleUtils";
+import { upzip } from "../../utils/zipUtils";
 import { FunctionsTreeItem } from "./FunctionsTreeItem";
 import { RuleTreeItem } from "./RuleTreeItem";
+
+const functionsDir = "functions";
 
 export class RulesTreeItem extends AzExtParentTreeItem {
     public static contextValue: string = "azureApiCenterRules";
@@ -32,9 +38,15 @@ export class RulesTreeItem extends AzExtParentTreeItem {
         const apiCenterService = new ApiCenterService(this.parent?.subscription!, resourceGroupName, this._apiCenter.name);
         const rules = await apiCenterService.getApiCenterRules();
 
+        const rulesFolderPath = await getRulesFolderPath(this._apiCenter.name);
+        await upzip("C:\\code\\vscode-azureapicenter\\test-rules\\Ruleset.zip", rulesFolderPath);
+
+        const ruleFilename = (await getFilenamesInFolder(rulesFolderPath))[0];
+        const functionsFilenames = await getFilenamesInFolder(path.join(rulesFolderPath, functionsDir));
+
         return [
-            new RuleTreeItem(this, rules.value.name),
-            new FunctionsTreeItem(this, rules.value.functions.map(f => f.name)),
+            new RuleTreeItem(this, rulesFolderPath, ruleFilename),
+            new FunctionsTreeItem(this, rulesFolderPath, functionsDir, functionsFilenames),
         ];
     }
 

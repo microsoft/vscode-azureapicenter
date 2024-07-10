@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 import * as crypto from "crypto";
+import * as fs from "fs";
 import * as fse from 'fs-extra';
 import * as path from 'path';
 import * as vscode from 'vscode';
@@ -61,4 +62,19 @@ export function getRandomHexString(length: number = 10): string {
 
 export function getDefaultWorkspacePath(): string {
     return path.join(ext.context.globalStoragePath, extensionName);
+}
+
+export async function getFilenamesInFolder(directoryPath: string) {
+    const files = await fs.promises.readdir(directoryPath);
+    const filenames = [];
+
+    for (const file of files) {
+        const fullPath = path.join(directoryPath, file);
+        const stat = await fs.promises.stat(fullPath);
+        if (stat.isFile()) {
+            filenames.push(file);
+        }
+    }
+
+    return filenames;
 }
