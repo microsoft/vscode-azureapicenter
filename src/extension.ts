@@ -24,6 +24,9 @@ import { openAPiInSwagger } from './commands/openApiInSwagger';
 import { openUrlFromTreeNode } from './commands/openUrl';
 import { refreshTree } from './commands/refreshTree';
 import { registerApi } from './commands/registerApi';
+import { deployRules } from './commands/rules/deployRules';
+import { enableRules } from './commands/rules/enableRules';
+import { exportRules } from './commands/rules/exportRules';
 import { searchApi } from './commands/searchApi';
 import { setApiRuleset } from './commands/setApiRuleset';
 import { testInPostman } from './commands/testInPostman';
@@ -109,6 +112,12 @@ export async function activate(context: vscode.ExtensionContext) {
     registerCommandWithTelemetry('azure-api-center.detectBreakingChange', detectBreakingChange);
 
     registerCommandWithTelemetry('azure-api-center.generateMarkdownDocument', generateMarkdownDocument);
+
+    registerCommandWithTelemetry('azure-api-center.enableRules', enableRules);
+
+    registerCommandWithTelemetry('azure-api-center.exportRules', exportRules);
+
+    registerCommandWithTelemetry('azure-api-center.deployRules', deployRules);
 
     registerCommandWithTelemetry('azure-api-center.apiCenterTreeView.refresh', async (context: IActionContext) => refreshTree(context));
 

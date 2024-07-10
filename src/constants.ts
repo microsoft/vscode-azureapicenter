@@ -36,6 +36,7 @@ export const ApiRulesetOptions = {
     default: UiStrings.ApiRulesetOptionDefault,
     azureApiGuideline: UiStrings.ApiRulesetOptionAzureApiGuideline,
     spectralOwasp: UiStrings.ApiRulesetOptionSpectralOwasp,
+    activeFile: UiStrings.ApiRulesetOptionActiveFile,
     selectFile: UiStrings.ApiRulesetOptionSelectFile,
     inputUrl: UiStrings.ApiRulesetOptionInputUrl,
 };

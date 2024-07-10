@@ -45,8 +45,9 @@ export class UiStrings {
     static readonly ApiRulesetOptionDefault = vscode.l10n.t("Default");
     static readonly ApiRulesetOptionAzureApiGuideline = vscode.l10n.t("Microsoft Azure REST API");
     static readonly ApiRulesetOptionSpectralOwasp = vscode.l10n.t("OWASP API Security Top 10");
-    static readonly ApiRulesetOptionSelectFile = vscode.l10n.t("Select Local File");
-    static readonly ApiRulesetOptionInputUrl = vscode.l10n.t("Input Remote URL");
+    static readonly ApiRulesetOptionActiveFile = vscode.l10n.t("Active File");
+    static readonly ApiRulesetOptionSelectFile = vscode.l10n.t("Select Local File...");
+    static readonly ApiRulesetOptionInputUrl = vscode.l10n.t("Input Remote URL...");
     static readonly CICDTypeGitHub = vscode.l10n.t("GitHub");
     static readonly CICDTypeAzure = vscode.l10n.t("Azure DevOps");
     static readonly ApiSpecificationOptionApiCenter = vscode.l10n.t("Azure API Center");

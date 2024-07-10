@@ -126,6 +126,21 @@
         "category": "Azure API Center"
       },
       {
+        "command": "azure-api-center.enableRules",
+        "title": "Enable Rules",
+        "category": "Azure API Center"
+      },
+      {
+        "command": "azure-api-center.exportRules",
+        "title": "Export Rules",
+        "category": "Azure API Center"
+      },
+      {
+        "command": "azure-api-center.deployRules",
+        "title": "Deploy Rules",
+        "category": "Azure API Center"
+      },
+      {
         "command": "azure-api-center.selectTenant",
         "title": "%azure-api-center.commands.selectTenant.title%",
         "category": "Azure API Center"
@@ -213,6 +228,21 @@
           "command": "azure-api-center.cleanupSearchResult",
           "when": "view == apiCenterTreeView && viewItem == azureApiCenterApis-search",
           "group": "inline@1"
+        },
+        {
+          "command": "azure-api-center.enableRules",
+          "when": "view == apiCenterTreeView && viewItem == azureApiCenterRules",
+          "group": "rule@0"
+        },
+        {
+          "command": "azure-api-center.exportRules",
+          "when": "view == apiCenterTreeView && viewItem == azureApiCenterRules",
+          "group": "rule@1"
+        },
+        {
+          "command": "azure-api-center.deployRules",
+          "when": "view == apiCenterTreeView && viewItem == azureApiCenterRules",
+          "group": "rule@2"
         }
       ],
       "copilot": [

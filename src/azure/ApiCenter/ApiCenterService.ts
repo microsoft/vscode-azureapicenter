@@ -4,13 +4,14 @@ import { RequestPrepareOptions, ServiceClient } from "@azure/ms-rest-js";
 import { ISubscriptionContext } from "@microsoft/vscode-azext-utils";
 import { getCredentialForToken } from "../../utils/credentialUtil";
 import { APICenterRestAPIs } from "./ApiCenterRestAPIs";
-import { ApiCenter, ApiCenterApi, ApiCenterApiDeployment, ApiCenterApiVersion, ApiCenterApiVersionDefinition, ApiCenterApiVersionDefinitionExport, ApiCenterApiVersionDefinitionImport, ApiCenterEnvironment } from "./contracts";
+import { ApiCenter, ApiCenterApi, ApiCenterApiDeployment, ApiCenterApiVersion, ApiCenterApiVersionDefinition, ApiCenterApiVersionDefinitionExport, ApiCenterApiVersionDefinitionImport, ApiCenterEnvironment, ApiCenterRule } from "./contracts";
 
 export class ApiCenterService {
   private susbcriptionContext: ISubscriptionContext;
   private resourceGroupName: string;
   private apiCenterName: string;
   private apiVersion: string = "2023-07-01-preview";
+  private apiVersionPreview: string = "2023-07-01-preview";
   constructor(susbcriptionContext: ISubscriptionContext, resourceGroupName: string, apiCenterName: string) {
     this.susbcriptionContext = susbcriptionContext;
     this.apiCenterName = apiCenterName;
@@ -82,6 +83,50 @@ export class ApiCenterService {
     const options: RequestPrepareOptions = {
       method: "GET",
       url: APICenterRestAPIs.GetAPIDefinition(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, apiName, apiVersion, this.apiVersion)
+    };
+    const response = await client.sendRequest(options);
+    return response.parsedBody;
+  }
+
+  public async getApiCenterRules(): Promise<{ value: ApiCenterRule; nextLink: string | undefined }> {
+    if (new Date().getFullYear() > 2000) {
+      return {
+        value: {
+          id: "",
+          location: "",
+          name: "Ruleset.yaml",
+          functions: [
+            {
+              id: "",
+              location: "",
+              name: "infoValueBeHello.js",
+              properties: {},
+              type: ""
+            },
+            {
+              id: "",
+              location: "",
+              name: "uniqueOperationId.js",
+              properties: {},
+              type: ""
+            }
+          ],
+          properties: {
+            title: "",
+            kind: ""
+          },
+          type: ""
+        },
+        nextLink: undefined
+      };
+
+    }
+
+    const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
+    const client = new ServiceClient(creds);
+    const options: RequestPrepareOptions = {
+      method: "GET",
+      url: APICenterRestAPIs.GetAPIRules(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, this.apiVersionPreview)
     };
     const response = await client.sendRequest(options);
     return response.parsedBody;

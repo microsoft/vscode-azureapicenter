@@ -32,6 +32,13 @@ export async function setApiRuleset(context: IActionContext) {
         case ApiRulesetOptions.spectralOwasp:
             await setRulesetFile(spectralOwaspRulesetFile);
             break;
+        case ApiRulesetOptions.activeFile:
+            const activeEditor = vscode.window.activeTextEditor;
+            if (!activeEditor) {
+                throw new Error(UiStrings.NoActiveFileOpen);
+            }
+            await setRulesetFile(activeEditor.document.uri.fsPath);
+            break;
         case ApiRulesetOptions.selectFile:
             const fileUri = await vscode.window.showOpenDialog({
                 openLabel: UiStrings.SelectRulesetFile,

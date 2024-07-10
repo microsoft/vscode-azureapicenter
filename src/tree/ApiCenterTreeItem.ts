@@ -6,6 +6,7 @@ import { UiStrings } from "../uiStrings";
 import { treeUtils } from "../utils/treeUtils";
 import { ApisTreeItem } from "./ApisTreeItem";
 import { EnvironmentsTreeItem } from "./EnvironmentsTreeItem";
+import { RulesTreeItem } from "./rules/RulesTreeItem";
 
 export class ApiCenterTreeItem extends AzExtParentTreeItem {
   public readonly childTypeLabel: string = UiStrings.ApiCenterTreeItemTreeItemChildTypeLabel;
@@ -15,11 +16,13 @@ export class ApiCenterTreeItem extends AzExtParentTreeItem {
   private _nextLink: string | undefined;
   public readonly apisTreeItem: ApisTreeItem;
   public readonly environmentsTreeItem: EnvironmentsTreeItem;
+  public readonly rulesTreeItem: RulesTreeItem;
   constructor(parent: AzExtParentTreeItem, apicenter: ApiCenter) {
     super(parent);
     this._apicenter = apicenter;
     this.apisTreeItem = new ApisTreeItem(this, apicenter);
     this.environmentsTreeItem = new EnvironmentsTreeItem(this, apicenter);
+    this.rulesTreeItem = new RulesTreeItem(this, apicenter);
   }
 
   public get iconPath(): TreeItemIconPath {
@@ -39,6 +42,6 @@ export class ApiCenterTreeItem extends AzExtParentTreeItem {
   }
 
   public async loadMoreChildrenImpl(clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
-    return [this.apisTreeItem, this.environmentsTreeItem];
+    return [this.apisTreeItem, this.environmentsTreeItem, this.rulesTreeItem];
   }
 }
