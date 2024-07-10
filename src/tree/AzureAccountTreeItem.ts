@@ -135,7 +135,7 @@ export class AzureAccountTreeItem extends AzExtParentTreeItem {
       ];
     }
 
-    const subscriptions = await AzureSubscriptionHelper.getSubscriptions(this.sessionProvider, SelectionType.AllIfNoFilters);
+    const subscriptions = await AzureSubscriptionHelper.getSubscriptions(this.sessionProvider, SelectionType.Filtered);
     if (GeneralUtils.failed(subscriptions)) {
       return [
         new GenericTreeItem(this, {
@@ -151,10 +151,11 @@ export class AzureAccountTreeItem extends AzExtParentTreeItem {
     if (subscriptions.result.length === 0) {
       return [
         new GenericTreeItem(this, {
-          label: UiStrings.NoSubscriptionsFound,
+          label: UiStrings.SelectSubscriptions,
+          commandId: "azure-api-center.selectSubscriptions",
           contextValue: "azureCommand",
-          id: "AzureAccountError",
-          iconPath: new vscode.ThemeIcon("info"),
+          id: "azureapicenterSubscription",
+          includeInTreeItemPicker: true,
         }),
       ];
     }
