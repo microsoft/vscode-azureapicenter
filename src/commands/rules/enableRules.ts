@@ -5,6 +5,6 @@ import * as vscode from 'vscode';
 import { RulesTreeItem } from "../../tree/rules/RulesTreeItem";
 
 export async function enableRules(context: IActionContext, node: RulesTreeItem) {
-    const a = node.apicenter;
+    const a = node.apiCenter;
     vscode.window.showInformationMessage(`Enable rules for ${a.name}`);
 }

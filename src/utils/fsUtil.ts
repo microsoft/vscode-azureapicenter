@@ -78,3 +78,12 @@ export async function getFilenamesInFolder(directoryPath: string) {
 
     return filenames;
 }
+
+export async function hasFiles(folderPath: string) {
+    try {
+        const files = await fs.promises.readdir(folderPath);
+        return files.length > 0;
+    } catch (err) {
+        return false;
+    }
+}

@@ -1,18 +1,22 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 
-import * as path from 'path';
 import * as vscode from "vscode";
 import { UiStrings } from "../uiStrings";
-import { getDefaultWorkspacePath, getSessionWorkingFolderName } from './fsUtil';
 
-export async function getRulesFolderPath(apiCenterName: string): Promise<string> {
-    return path.join(getDefaultWorkspacePath(), getSessionWorkingFolderName(), 'rules', apiCenterName);
-}
+const rulesetFileKey = "rulesetFile";
 
-export async function setRulesetFile(rulesetFile: string) {
+export async function setRulesetFile(newRulesetFile: string, alwaysShowSetInfo: boolean = true) {
     const spectralLinterConfig = vscode.workspace.getConfiguration("spectral");
-    await spectralLinterConfig.update("rulesetFile", rulesetFile, vscode.ConfigurationTarget.Global);
+    const currentRulesetFile = spectralLinterConfig.get<string>(rulesetFileKey);
 
-    vscode.window.showInformationMessage(vscode.l10n.t(UiStrings.RulesetFileSet, rulesetFile));
+    const needToUpdate = newRulesetFile !== currentRulesetFile;
+
+    if (needToUpdate) {
+        await spectralLinterConfig.update("rulesetFile", newRulesetFile, vscode.ConfigurationTarget.Global);
+    }
+
+    if (needToUpdate || alwaysShowSetInfo) {
+        vscode.window.showInformationMessage(vscode.l10n.t(UiStrings.RulesetFileSet, newRulesetFile));
+    }
 }

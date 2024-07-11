@@ -6,8 +6,8 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import { ApiCenterService } from "../../azure/ApiCenter/ApiCenterService";
 import { ApiCenter } from "../../azure/ApiCenter/contracts";
-import { getFilenamesInFolder } from "../../utils/fsUtil";
-import { getRulesFolderPath } from "../../utils/ruleUtils";
+import { UiStrings } from "../../uiStrings";
+import { getFilenamesInFolder, hasFiles } from "../../utils/fsUtil";
 import { upzip } from "../../utils/zipUtils";
 import { FunctionsTreeItem } from "./FunctionsTreeItem";
 import { RuleTreeItem } from "./RuleTreeItem";
@@ -17,11 +17,10 @@ const functionsDir = "functions";
 export class RulesTreeItem extends AzExtParentTreeItem {
     public static contextValue: string = "azureApiCenterRules";
     public readonly contextValue: string = RulesTreeItem.contextValue;
-    private readonly _apiCenter: ApiCenter;
+    public rulesFolderPath: string = "";
     private readonly _isEnabled: boolean;
-    constructor(parent: AzExtParentTreeItem, public apicenter: ApiCenter, isEnabled: boolean = false) {
+    constructor(parent: AzExtParentTreeItem, public apiCenter: ApiCenter, isEnabled: boolean = false) {
         super(parent);
-        this._apiCenter = apicenter;
         this._isEnabled = isEnabled;
     }
 
@@ -34,23 +33,39 @@ export class RulesTreeItem extends AzExtParentTreeItem {
     }
 
     public async loadMoreChildrenImpl(clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
-        const resourceGroupName = getResourceGroupFromId(this._apiCenter.id);
-        const apiCenterService = new ApiCenterService(this.parent?.subscription!, resourceGroupName, this._apiCenter.name);
-        const rules = await apiCenterService.getApiCenterRules();
+        this.rulesFolderPath = this.getRulesFolderPath();
 
-        const rulesFolderPath = await getRulesFolderPath(this._apiCenter.name);
-        await upzip("C:\\code\\vscode-azureapicenter\\test-rules\\Ruleset.zip", rulesFolderPath);
+        if (!await hasFiles(this.rulesFolderPath)) {
+            await this.exportRulesToLocalFolder(this.rulesFolderPath);
+        }
 
-        const ruleFilename = (await getFilenamesInFolder(rulesFolderPath))[0];
-        const functionsFilenames = await getFilenamesInFolder(path.join(rulesFolderPath, functionsDir));
+        const ruleFilename = (await getFilenamesInFolder(this.rulesFolderPath))[0];
+        const ruleFullFilePath = path.join(this.rulesFolderPath, ruleFilename);
+        const functionsFilenames = await getFilenamesInFolder(path.join(this.rulesFolderPath, functionsDir));
 
         return [
-            new RuleTreeItem(this, rulesFolderPath, ruleFilename),
-            new FunctionsTreeItem(this, rulesFolderPath, functionsDir, functionsFilenames),
+            new RuleTreeItem(this, this.rulesFolderPath, ruleFullFilePath, ruleFilename),
+            new FunctionsTreeItem(this, this.rulesFolderPath, ruleFullFilePath, functionsDir, functionsFilenames),
         ];
     }
 
     public hasMoreChildrenImpl(): boolean {
         return false;
+    }
+
+    public async exportRulesToLocalFolder(rulesFolderPath: string): Promise<void> {
+        const resourceGroupName = getResourceGroupFromId(this.apiCenter.id);
+        const apiCenterService = new ApiCenterService(this.parent?.subscription!, resourceGroupName, this.apiCenter.name);
+        const rules = await apiCenterService.getApiCenterRules();
+
+        await upzip("C:\\code\\vscode-azureapicenter\\test-rules\\Ruleset.zip", rulesFolderPath);
+    }
+
+    public getRulesFolderPath(): string {
+        const workspaceFolders = vscode.workspace.workspaceFolders;
+        if (!workspaceFolders) {
+            throw new Error(UiStrings.NoFolderOpenedForRules);
+        }
+        return path.join(workspaceFolders[0].uri.fsPath, '.api-center-rules', this.apiCenter.name);
     }
 }

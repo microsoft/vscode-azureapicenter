@@ -8,7 +8,7 @@ export class FunctionTreeItem extends AzExtTreeItem {
     public static contextValue: string = "azureApiCenterFunction";
     public readonly contextValue: string = FunctionTreeItem.contextValue;
     public readonly fullFilePath: string;
-    constructor(parent: AzExtParentTreeItem, public rulesFolderPath: string, public functionsDir: string, public functionName: string) {
+    constructor(parent: AzExtParentTreeItem, public rulesFolderPath: string, public ruleFullFilePath: string, public functionsDir: string, public functionName: string) {
         super(parent);
         this.fullFilePath = path.join(rulesFolderPath, functionsDir, functionName);
     }

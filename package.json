@@ -132,12 +132,12 @@
       },
       {
         "command": "azure-api-center.exportRules",
-        "title": "Export Rules",
+        "title": "Sync Latest Rules to Local",
         "category": "Azure API Center"
       },
       {
         "command": "azure-api-center.deployRules",
-        "title": "Deploy Rules",
+        "title": "Deploy Rules to Remote",
         "category": "Azure API Center"
       },
       {

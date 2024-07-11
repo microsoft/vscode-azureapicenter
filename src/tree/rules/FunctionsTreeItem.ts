@@ -7,7 +7,7 @@ import { FunctionTreeItem } from "./FunctionTreeItem";
 export class FunctionsTreeItem extends AzExtParentTreeItem {
     public static contextValue: string = "azureApiCenterFunctions";
     public readonly contextValue: string = FunctionsTreeItem.contextValue;
-    constructor(parent: AzExtParentTreeItem, public rulesFolderPath: string, public functionsDir: string, public functionNames: string[]) {
+    constructor(parent: AzExtParentTreeItem, public rulesFolderPath: string, public ruleFullFilePath: string, public functionsDir: string, public functionNames: string[]) {
         super(parent);
     }
 
@@ -20,7 +20,7 @@ export class FunctionsTreeItem extends AzExtParentTreeItem {
     }
 
     public async loadMoreChildrenImpl(clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
-        return this.functionNames.map((functionName) => new FunctionTreeItem(this, this.rulesFolderPath, this.functionsDir, functionName));
+        return this.functionNames.map((functionName) => new FunctionTreeItem(this, this.rulesFolderPath, this.ruleFullFilePath, this.functionsDir, functionName));
     }
 
     public hasMoreChildrenImpl(): boolean {

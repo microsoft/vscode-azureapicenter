@@ -8,7 +8,7 @@ export class RuleTreeItem extends AzExtTreeItem {
     public static contextValue: string = "azureApiCenterRule";
     public readonly contextValue: string = RuleTreeItem.contextValue;
     public readonly fullFilePath: string;
-    constructor(parent: AzExtParentTreeItem, public rulesFolderPath: string, public ruleName: string) {
+    constructor(parent: AzExtParentTreeItem, public rulesFolderPath: string, public ruleFullFilePath: string, public ruleName: string) {
         super(parent);
         this.fullFilePath = path.join(rulesFolderPath, ruleName);
     }
