@@ -7,6 +7,7 @@ import { TelemetryEvent, TelemetryProperties } from "../common/telemetryEvent";
 import { ApiRulesetOptions, azureApiGuidelineRulesetFile, defaultRulesetFile, spectralOwaspRulesetFile } from "../constants";
 import { UiStrings } from "../uiStrings";
 import { ensureExtension } from "../utils/ensureExtension";
+import { setRulesetFile } from "../utils/ruleUtils";
 
 const rulesetFileTypes = ['json', 'yml', 'yaml', 'js', "mjs", "cjs"];
 
@@ -69,11 +70,4 @@ export async function setApiRuleset(context: IActionContext) {
             }
             break;
     }
-}
-
-async function setRulesetFile(rulesetFile: string) {
-    const spectralLinterConfig = vscode.workspace.getConfiguration("spectral");
-    await spectralLinterConfig.update("rulesetFile", rulesetFile, vscode.ConfigurationTarget.Global);
-
-    vscode.window.showInformationMessage(vscode.l10n.t(UiStrings.RulesetFileSet, rulesetFile));
 }

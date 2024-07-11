@@ -17,7 +17,7 @@ const functionsDir = "functions";
 export class RulesTreeItem extends AzExtParentTreeItem {
     public static contextValue: string = "azureApiCenterRules";
     public readonly contextValue: string = RulesTreeItem.contextValue;
-    public readonly _apiCenter: ApiCenter;
+    private readonly _apiCenter: ApiCenter;
     private readonly _isEnabled: boolean;
     constructor(parent: AzExtParentTreeItem, public apicenter: ApiCenter, isEnabled: boolean = false) {
         super(parent);
