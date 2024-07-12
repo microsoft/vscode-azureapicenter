@@ -13,9 +13,9 @@ The 1.1 release of the Azure API Center extension for Visual Studio Code provide
 Generating Markdown documentation for a API
 We have added a new command in the tree view of API definition called "Generate Markdown" to allow developers to easily generate markdown documentation.
 
-(https://github.com/microsoft/vscode-azureapicenter/tree/sthirthala-1.1-release/media/generate-markdown.png)
+[Generate markdown](.media/generate-markdown.png)
 
 Generating Open API specification from a API code
 Developers now can right click on any API code and invoke the "Generate API documentation" menu (under Copilot) to generate Open API specification document when provided with API code.  
 
-(https://github.com/microsoft/vscode-azureapicenter/tree/sthirthala-1.1-release/media/generate-api-documentation.gif)
+[Generate Open API specification](./media/generate-api-documentation.gif)
