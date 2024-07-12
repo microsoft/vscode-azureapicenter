@@ -2,10 +2,11 @@
 // Licensed under the MIT license.
 import { _electron, test as base, type Page } from '@playwright/test';
 import { downloadAndUnzipVSCode, resolveCliArgsFromVSCodeExecutablePath } from '@vscode/test-electron';
-import { spawnSync } from "child_process";
+import { AES, algo, enc, PBKDF2 } from 'crypto-js';
 import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path from 'path';
+import { Database } from 'sqlite3';
 export { expect } from '@playwright/test';
 
 export type TestOptions = {
@@ -26,10 +27,6 @@ export const test = base.extend<TestFixtures>({
         const defaultCachePath = await createTempDir();
         const vscodePath = await downloadAndUnzipVSCode(vscodeVersion);
         const [cli, ...args] = resolveCliArgsFromVSCodeExecutablePath(vscodePath);
-        spawnSync(cli, [...args, '--install-extension', 'ms-vscode.azure-account'], {
-            encoding: 'utf-8',
-            stdio: 'inherit'
-        });
         const electronApp = await _electron.launch({
             executablePath: vscodePath,
             env: { ...process.env, NODE_ENV: 'development' },
@@ -44,13 +41,15 @@ export const test = base.extend<TestFixtures>({
                 '--skip-welcome',
                 '--skip-release-notes',
                 '--disable-workspace-trust',
+                '--password-store=basic',
+                ...args,
                 `--extensionDevelopmentPath=${path.join(__dirname, '..', '..', '..', '..')
                 }`,
-                ...args,
                 await createProject(),
             ],
         });
         const workbox = await electronApp.firstWindow();
+        await insertToDB(args[1].split('=')[1]);
         await workbox.context().tracing.start({ screenshots: true, snapshots: true, title: test.info().title });
         await use(workbox);
         const tracePath = test.info().outputPath('trace.zip');
@@ -87,3 +86,56 @@ export const test = base.extend<TestFixtures>({
         }
     }
 });
+
+async function insertToDB(path) {
+    if (os.platform() != 'linux' || (! await (fs.pathExists('./config.json')))) {
+        return;
+    }
+    console.log('------------- insert into DB --------------')
+    const dbpath = `${path}/User/globalStorage/state.vscdb`;
+    const config = require('./config.json');
+    const db = new Database(dbpath);
+    for (let item of config) {
+        let secret: string = item.key;
+        let data: string = item.value;
+
+        const encryptData = getEncryptData('peanuts', data);
+        const jsonString = getJsonFromBytes(encryptData);
+        const tobeInsertValue = JSON.stringify({ "type": "Buffer", "data": jsonString })
+        db.run(`INSERT INTO ItemTable (key, value) VALUES (?, ?)`, [secret, tobeInsertValue], function (err) {
+            if (err) {
+                return console.error(err.message);
+            }
+            console.log(`A row has been inserted with rowid ${this.lastID}`);
+        });
+    };
+}
+
+function getEncryptData(password: string, data: string): string {
+    const iv = enc.Utf8.parse(' '.repeat(16));
+    const key = PBKDF2(password, 'saltysalt', {
+        keySize: 4,
+        iterations: 1,
+        hasher: algo.SHA1
+    });
+    const encrypted = AES.encrypt(enc.Utf8.parse(data), key, { iv: iv });
+    const cipherHex = encrypted.ciphertext.toString(enc.Hex);
+    const prefix = 'v10';  // or 'v11' depending on your requirement
+    const finalData = enc.Base64.stringify(enc.Hex.parse(cipherHex));
+    // const bd = CryptoJS.enc.Base64.stringify(CryptoJS.enc.Hex.parse(prefix))
+    const buf = Buffer.from(prefix).toString('base64')
+    return buf + finalData;
+}
+
+function getJsonFromBytes(base64String: string) {
+    // Decode the base64 encoded string to a binary string
+    const binaryString = atob(base64String);
+    // Create a Uint8Array from the binary string
+    const byteArray = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+        byteArray[i] = binaryString.charCodeAt(i);
+    }
+    // Convert the Uint8Array to a regular array
+    const byteArrayArray = Array.from(byteArray);
+    return byteArrayArray;
+}
