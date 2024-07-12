@@ -41,6 +41,15 @@ Export API specification document for a specific API either from the tree view o
 
 ![Export API specification](./media/export-api.gif)
 
+### Generate Open API specification from API Code
+
+Generate Open API specification file from API code
+![Generate Open API specification](./media/generate-api-documentation.gif)
+
+### Generate markdown
+
+Generate markdown documentation for a API definition 
+![Generate markdown](./media/generate-markdown.png)
 
 
 ## Contributing
