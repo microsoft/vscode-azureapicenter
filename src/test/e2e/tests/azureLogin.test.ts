@@ -6,4 +6,5 @@ test('select Tenant', async ({ workbox }) => {
     await workbox.getByRole("tab", { name: "API Center" }).isVisible();
     await workbox.getByRole('tab', { name: "API Center" }).locator('a').click();
     await workbox.getByRole('treeitem', { name: 'Select tenant...' }).isVisible();
+    await workbox.getByRole('treeitem', { name: 'Select tenant...' }).locator('a').click();
 });
