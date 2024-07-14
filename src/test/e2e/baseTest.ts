@@ -96,13 +96,15 @@ async function insertToDB(path) {
     const config = require('./config.json');
     const db = new Database(dbpath);
     for (let item of config) {
-        let secret: string = item.key;
-        let data: string = item.value;
+        const key: string = item.key;
+        let tobeInsertValue: string = item.value;
+        if (key.startsWith('secret://')) {
+            const encryptData = getEncryptData('peanuts', tobeInsertValue);
+            const jsonString = getJsonFromBytes(encryptData);
+            tobeInsertValue = JSON.stringify({ "type": "Buffer", "data": jsonString })
+        }
 
-        const encryptData = getEncryptData('peanuts', data);
-        const jsonString = getJsonFromBytes(encryptData);
-        const tobeInsertValue = JSON.stringify({ "type": "Buffer", "data": jsonString })
-        db.run(`INSERT INTO ItemTable (key, value) VALUES (?, ?)`, [secret, tobeInsertValue], function (err) {
+        db.run(`INSERT INTO ItemTable (key, value) VALUES (?, ?)`, [key, tobeInsertValue], function (err) {
             if (err) {
                 return console.error(err.message);
             }
