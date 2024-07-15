@@ -37,6 +37,10 @@ class SubscriptionTreeItem extends AzExtParentTreeItem {
         return this;
     }
 
+    public printTreeContext() {
+        console.log('=====', this.label)
+    }
+
     /**
      * Needed by parent class.
      */
@@ -50,7 +54,7 @@ class SubscriptionTreeItem extends AzExtParentTreeItem {
 
     public async loadMoreChildrenImpl(): Promise<AzExtTreeItem[]> {
         TelemetryClient.sendEvent(TelemetryEvent.treeviewListApiCenters);
-
+        this.printTreeContext();
         const resourceGraphService = new ResourceGraphService(this.subscription);
 
         const apiCenters = await resourceGraphService.listApiCenters();

@@ -1,15 +1,15 @@
 import { defineConfig } from '@vscode/test-cli';
-import * as semver from "semver";
-
-import { readFileSync } from "fs";
-const pkg = JSON.parse(readFileSync("./package.json"));
-const vscodeVer = semver.minVersion(pkg.engines.vscode).version;
+import { dirname } from "path";
+import { fileURLToPath } from "url";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 export default defineConfig({
     tests: [{
         label: 'unitTests',
-        files: 'out/test/unit/**/*.test.js',
-        workspaceFolder: 'out/test',
+        files: "./__tests__/__integration__/out/test/unit/**/*.test.js",
+        srcDir: "./__tests__/__integration__/out/src",
+        workspaceFolder: '${__dirname}/__tests__/__integration__/resources',
         version: 'insiders',
         mocha: {
             timeout: 20000,
@@ -31,7 +31,10 @@ export default defineConfig({
     }],
     coverage: {
         includeAll: true,
-        exclude: ['node_modules/**', 'src/test/**'],
+        exclude: [
+            `${__dirname}/out`,
+            `${__dirname}/__tests__/__integration__/out/__tests__`,
+        ],
         reporter: ["text-summary", "html", "json-summary", "lcov"],
         lines: 30
     }
