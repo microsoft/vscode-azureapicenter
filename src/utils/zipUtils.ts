@@ -6,15 +6,15 @@ import { emptyDir } from 'fs-extra';
 import { PassThrough } from 'stream';
 import * as unzipper from 'unzipper';
 
-export async function upzip(zipFilePath: string, outputFolderPath: string) {
+export async function upzip(zipBuffer: Buffer, outputFolderPath: string) {
     // Ensure the output folder exists
     await fs.promises.mkdir(outputFolderPath, { recursive: true });
 
     // Deletes directory contents if the directory is not empty.
     await emptyDir(outputFolderPath);
 
-    // unzip the file
-    const directory = await unzipper.Open.file(zipFilePath);
+    // unzip the buffer to the output folder
+    const directory = await unzipper.Open.buffer(zipBuffer);
     await directory.extract({ path: outputFolderPath });
 }
 

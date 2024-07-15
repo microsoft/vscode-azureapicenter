@@ -7,7 +7,7 @@ import * as vscode from 'vscode';
 import { ApiCenterService } from "../../azure/ApiCenter/ApiCenterService";
 import { ApiCenter } from "../../azure/ApiCenter/contracts";
 import { UiStrings } from "../../uiStrings";
-import { getFilenamesInFolder, hasFiles, writeToTemporaryFile } from "../../utils/fsUtil";
+import { getFilenamesInFolder, hasFiles } from "../../utils/fsUtil";
 import { upzip } from "../../utils/zipUtils";
 import { FunctionsTreeItem } from "./FunctionsTreeItem";
 import { RuleTreeItem } from "./RuleTreeItem";
@@ -60,9 +60,7 @@ export class RulesTreeItem extends AzExtParentTreeItem {
         const { value } = await apiCenterService.exportRuleset();
         const zipFileContent = Buffer.from(value, 'base64');
 
-        const zipFileUri = await writeToTemporaryFile(zipFileContent, "rules", `${this.apiCenter.name}.zip`);
-
-        await upzip(zipFileUri.fsPath, rulesFolderPath);
+        await upzip(zipFileContent, rulesFolderPath);
     }
 
     public getRulesFolderPath(): string {
