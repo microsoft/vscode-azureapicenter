@@ -5,6 +5,7 @@ import { expect, test } from '../baseTest';
 test('trigger generateAPIviaCICD with Azure DevOps', async ({ workbox }) => {
     // wait API Center extension installed on VS Code.
     await workbox.getByRole("tab", { name: "API Center" }).isVisible();
+    await workbox.getByRole("tab", { name: "API Center" }).locator('a').click();
     // trigger command palette.
     await workbox.keyboard.press('Control+Shift+KeyP');
     await workbox.getByRole("combobox", { name: "INPUT" }).fill('>Azure API Center: Register API');
@@ -20,6 +21,7 @@ test('trigger generateAPIviaCICD with Azure DevOps', async ({ workbox }) => {
 test('trigger generateAPIviaCICD with GitHub', async ({ workbox }) => {
     // wait API Center extension installed on VS Code.
     await workbox.getByRole("tab", { name: "API Center" }).isVisible();
+    await workbox.getByRole("tab", { name: "API Center" }).locator('a').click();
     // trigger command palette.
     await workbox.keyboard.press('Control+Shift+KeyP');
     await workbox.getByRole("combobox", { name: "INPUT" }).fill('>Azure API Center: Register API');
