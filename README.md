@@ -14,6 +14,10 @@ Ensure that new API versions don't break API consumers with breaking change dete
 
 ![Breaking Change Detection](./media/breaking-change.png)
 
+[pre-release] Generate Open API specification file from API code.
+
+![Generate Open API specification](./media/generate-api-documentation.gif)
+
 ### Discover
 
 Find the right API, fast from your organization's hand-crafted API catalog with API Center.
@@ -30,6 +34,10 @@ Explore APIs without leaving Visual Studio Code with inline API documentation an
 Explore API requests and responses with automated .http file generation powered by the [REST Client extension for Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=humao.rest-client).
 
 ![generate-http-file](./media/generate-http-file.png)
+
+[pre-release] Generate markdown documentation for an API definition.
+
+![Generate Markdown](./media/generate-markdown.png)
 
 ### Consume
 
