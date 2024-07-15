@@ -5,6 +5,6 @@
 
 ### July 16, 2024
 
-* Generating Markdown documentation for a API: We have added a new command in the tree view of API definition called "Generate Markdown" to allow developers to easily generate markdown documentation.
-* Generating Open API specification from a API code: Developers now can right click on any API code and invoke the "Generate API Documentation" menu (under "Copilot" menu) to generate Open API specification document when provided with API code.
+* Generating Markdown documentation for an API: We have added a new command in the tree view of API definition called "Generate Markdown" to allow developers to easily generate markdown documentation.
+* Generating Open API specification from an API code: Developers now can right click on any API code and invoke the "Generate API Documentation" menu (under "Copilot" menu) to generate Open API specification document when provided with API code.
 * Deprecation of Azure account extension

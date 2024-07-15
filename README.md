@@ -35,7 +35,7 @@ Explore API requests and responses with automated .http file generation powered 
 
 ![generate-http-file](./media/generate-http-file.png)
 
-[pre-release] Generate markdown documentation for a API definition.
+[pre-release] Generate markdown documentation for an API definition.
 
 ![Generate Markdown](./media/generate-markdown.png)
 
