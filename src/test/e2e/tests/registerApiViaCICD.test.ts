@@ -14,6 +14,7 @@ test('trigger generateAPIviaCICD with Azure DevOps', async ({ workbox }) => {
     await workbox.getByRole('option', { name: "CI/CD" }).locator('a').click();
     // select the next option.
     await workbox.getByRole('option', { name: 'Azure DevOps' }).locator('a').click();
+    await workbox.getByRole("tab", { name: "Explorer" }).locator('a').click();
     // check result.
     await expect(workbox.getByRole('treeitem', { name: 'register-api.yml' })).toHaveCount(1);
 });
@@ -30,6 +31,7 @@ test('trigger generateAPIviaCICD with GitHub', async ({ workbox }) => {
     await workbox.getByRole('option', { name: "CI/CD" }).locator('a').click();
     // select the next option.
     await workbox.getByRole('option', { name: 'GitHub' }).locator('a').click();
+    await workbox.getByRole("tab", { name: "Explorer" }).locator('a').click();
     // check result.
     await expect(workbox.getByRole('treeitem', { name: 'register-api.yml' })).toHaveCount(1);
 });
