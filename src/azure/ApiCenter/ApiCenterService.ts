@@ -1,10 +1,10 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
-import { RequestPrepareOptions, ServiceClient } from "@azure/ms-rest-js";
+import { HttpOperationResponse, RequestPrepareOptions, ServiceClient } from "@azure/ms-rest-js";
 import { ISubscriptionContext } from "@microsoft/vscode-azext-utils";
 import { getCredentialForToken } from "../../utils/credentialUtil";
 import { APICenterRestAPIs } from "./ApiCenterRestAPIs";
-import { ApiCenter, ApiCenterApi, ApiCenterApiDeployment, ApiCenterApiVersion, ApiCenterApiVersionDefinition, ApiCenterApiVersionDefinitionExport, ApiCenterApiVersionDefinitionImport, ApiCenterEnvironment, ApiCenterRule } from "./contracts";
+import { ApiCenter, ApiCenterApi, ApiCenterApiDeployment, ApiCenterApiVersion, ApiCenterApiVersionDefinition, ApiCenterApiVersionDefinitionExport, ApiCenterApiVersionDefinitionImport, ApiCenterEnvironment, ApiCenterRule, ApiCenterRulesetExport, ApiCenterRulesetImport } from "./contracts";
 
 export class ApiCenterService {
   private susbcriptionContext: ISubscriptionContext;
@@ -231,6 +231,31 @@ export class ApiCenterService {
     const options: RequestPrepareOptions = {
       method: "POST",
       url: APICenterRestAPIs.ExportApiSpecification(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, apiName, apiVersionName, apiCenterApiVersionDefinitionName, this.apiVersion),
+    };
+    const response = await client.sendRequest(options);
+    return response.parsedBody;
+  }
+
+  public async importRuleset(importPayload: ApiCenterRulesetImport): Promise<HttpOperationResponse> {
+    const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
+    const client = new ServiceClient(creds);
+    const options: RequestPrepareOptions = {
+      method: "POST",
+      // url: APICenterRestAPIs.ImportRuleset(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, this.apiVersionPreview)
+      url: APICenterRestAPIs.ImportRuleset("4cbb6e3d-c279-43fa-ae86-f4c7882dd1fc", "apicatalog-dogfood", "contoso", this.apiVersionPreview),
+      body: importPayload
+    };
+    const response = await client.sendRequest(options);
+    return response;
+  }
+
+  public async exportRuleset(): Promise<ApiCenterRulesetExport> {
+    const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
+    const client = new ServiceClient(creds);
+    const options: RequestPrepareOptions = {
+      method: "POST",
+      // url: APICenterRestAPIs.ExportRuleset(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, this.apiVersionPreview)
+      url: APICenterRestAPIs.ExportRuleset("4cbb6e3d-c279-43fa-ae86-f4c7882dd1fc", "apicatalog-dogfood", "contoso", this.apiVersionPreview)
     };
     const response = await client.sendRequest(options);
     return response.parsedBody;

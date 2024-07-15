@@ -24,6 +24,8 @@ export async function exportRules(context: IActionContext, node: RulesTreeItem) 
 
     await node.exportRulesToLocalFolder(rulesFolderPath);
     await node.refresh(context);
+
+    vscode.window.showInformationMessage(`Rules exported to '${rulesFolderPath}'`);
 }
 
 
