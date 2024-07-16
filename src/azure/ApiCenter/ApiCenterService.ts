@@ -4,7 +4,7 @@ import { HttpOperationResponse, RequestPrepareOptions, ServiceClient } from "@az
 import { ISubscriptionContext } from "@microsoft/vscode-azext-utils";
 import { getCredentialForToken } from "../../utils/credentialUtil";
 import { APICenterRestAPIs } from "./ApiCenterRestAPIs";
-import { ApiCenter, ApiCenterApi, ApiCenterApiDeployment, ApiCenterApiVersion, ApiCenterApiVersionDefinition, ApiCenterApiVersionDefinitionExport, ApiCenterApiVersionDefinitionImport, ApiCenterEnvironment, ApiCenterRule, ApiCenterRulesetExport, ApiCenterRulesetImport } from "./contracts";
+import { ApiCenter, ApiCenterApi, ApiCenterApiDeployment, ApiCenterApiVersion, ApiCenterApiVersionDefinition, ApiCenterApiVersionDefinitionExport, ApiCenterApiVersionDefinitionImport, ApiCenterEnvironment, ApiCenterRulesetConfig, ApiCenterRulesetExport, ApiCenterRulesetImport } from "./contracts";
 
 export class ApiCenterService {
   private susbcriptionContext: ISubscriptionContext;
@@ -88,48 +88,25 @@ export class ApiCenterService {
     return response.parsedBody;
   }
 
-  public async getApiCenterRules(): Promise<{ value: ApiCenterRule; nextLink: string | undefined }> {
-    if (new Date().getFullYear() > 2000) {
-      return {
-        value: {
-          id: "",
-          location: "",
-          name: "Ruleset.yaml",
-          functions: [
-            {
-              id: "",
-              location: "",
-              name: "infoValueBeHello.js",
-              properties: {},
-              type: ""
-            },
-            {
-              id: "",
-              location: "",
-              name: "uniqueOperationId.js",
-              properties: {},
-              type: ""
-            }
-          ],
-          properties: {
-            title: "",
-            kind: ""
-          },
-          type: ""
-        },
-        nextLink: undefined
-      };
-
-    }
-
+  public async getApiCenterRulesetConfig(): Promise<HttpOperationResponse> {
     const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
     const client = new ServiceClient(creds);
     const options: RequestPrepareOptions = {
       method: "GET",
-      url: APICenterRestAPIs.GetAPIRules(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, this.apiVersionPreview)
+      // url: APICenterRestAPIs.GetRulesetConfig(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, this.apiVersionPreview)
+      url: APICenterRestAPIs.GetRulesetConfig("4cbb6e3d-c279-43fa-ae86-f4c7882dd1fc", "apicatalog-dogfood", "contoso", this.apiVersionPreview)
     };
     const response = await client.sendRequest(options);
-    return response.parsedBody;
+    return response;
+  }
+
+  public async isApiCenterRulesetEnabled(): Promise<boolean> {
+    try {
+      const response = await this.getApiCenterRulesetConfig();
+      return response.status === 200;
+    } catch (error) {
+      return false;
+    }
   }
 
   public async createOrUpdateApi(apiCenterApi: ApiCenterApi): Promise<ApiCenterApi> {
@@ -187,6 +164,21 @@ export class ApiCenterService {
     const response = await client.sendRequest(options);
 
     return response.parsedBody;
+  }
+
+  public async createOrUpdateApiCenterRulesetConfig(apiCenterRulesetConfig: ApiCenterRulesetConfig): Promise<HttpOperationResponse> {
+    const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
+    const client = new ServiceClient(creds);
+    const options: RequestPrepareOptions = {
+      method: "PUT",
+      // url: APICenterRestAPIs.GetRulesetConfig(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, this.apiVersionPreview),
+      url: APICenterRestAPIs.GetRulesetConfig("4cbb6e3d-c279-43fa-ae86-f4c7882dd1fc", "apicatalog-dogfood", "contoso", this.apiVersionPreview),
+      body: {
+        properties: apiCenterRulesetConfig.properties
+      }
+    };
+    const response = await client.sendRequest(options);
+    return response;
   }
 
   public async importSpecification(

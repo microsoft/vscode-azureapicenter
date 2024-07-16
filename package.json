@@ -246,12 +246,12 @@
         },
         {
           "command": "azure-api-center.exportRules",
-          "when": "view == apiCenterTreeView && viewItem == azureApiCenterRules",
+          "when": "view == apiCenterTreeView && viewItem == azureApiCenterRules-enabled",
           "group": "rule@1"
         },
         {
           "command": "azure-api-center.deployRules",
-          "when": "view == apiCenterTreeView && viewItem == azureApiCenterRules",
+          "when": "view == apiCenterTreeView && viewItem == azureApiCenterRules-enabled",
           "group": "rule@2"
         },
         {
