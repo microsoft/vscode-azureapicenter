@@ -3,8 +3,9 @@
 import { getResourceGroupFromId } from "@microsoft/vscode-azext-azureutils";
 import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import * as vscode from 'vscode';
+import { ApiCenterDataPlaneService } from "../azure/ApiCenter/ApiCenterDataPlaneAPIs";
 import { ApiCenterService } from "../azure/ApiCenter/ApiCenterService";
-import { ApiCenterApiVersion } from "../azure/ApiCenter/contracts";
+import { GeneralApiCenterApiVersion, GeneralApiCenterApiVersionDefinition } from "../azure/ApiCenter/contracts";
 import { UiStrings } from "../uiStrings";
 import { ApiVersionDefinitionTreeItem } from "./ApiVersionDefinitionTreeItem";
 
@@ -14,13 +15,13 @@ export class ApiVersionDefinitionsTreeItem extends AzExtParentTreeItem {
   public readonly contextValue: string = ApiVersionDefinitionsTreeItem.contextValue;
   private readonly _apiCenterName: string;
   private readonly _apiCenterApiName: string;
-  private readonly _apiCenterApiVersion: ApiCenterApiVersion;
+  private readonly _apiCenterApiVersion: GeneralApiCenterApiVersion;
   private _nextLink: string | undefined;
   constructor(
     parent: AzExtParentTreeItem,
     apiCenterName: string,
     apiCenterApiName: string,
-    apiCenterApiVersion: ApiCenterApiVersion) {
+    apiCenterApiVersion: GeneralApiCenterApiVersion) {
     super(parent);
     this._apiCenterApiVersion = apiCenterApiVersion;
     this._apiCenterName = apiCenterName;
@@ -36,23 +37,36 @@ export class ApiVersionDefinitionsTreeItem extends AzExtParentTreeItem {
   }
 
   public async loadMoreChildrenImpl(clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
-    const resourceGroupName = getResourceGroupFromId(this._apiCenterApiVersion.id);
-    const apiCenterService = new ApiCenterService(this.parent?.subscription!, resourceGroupName, this._apiCenterName);
 
-    const definitions = await apiCenterService.getApiCenterApiVersionDefinitions(this._apiCenterApiName, this._apiCenterApiVersion.name);
+    let difinitions = await this.getDefinitions();
 
-    this._nextLink = definitions.nextLink;
     return await this.createTreeItemsWithErrorHandling(
-      definitions.value,
+      difinitions,
       'invalidResource',
-      resource => new ApiVersionDefinitionTreeItem(
+      difinition => new ApiVersionDefinitionTreeItem(
         this,
         this._apiCenterName,
         this._apiCenterApiName,
         this._apiCenterApiVersion.name,
-        resource),
-      resource => resource.name
+        difinition),
+      difinition => difinition.name
     );
+  }
+
+  private async getDefinitions(): Promise<GeneralApiCenterApiVersionDefinition[]> {
+    if ('id' in this._apiCenterApiVersion) {
+      const resourceGroupName = getResourceGroupFromId(this._apiCenterApiVersion.id);
+      const apiCenterService = new ApiCenterService(this.parent?.subscription!, resourceGroupName, this._apiCenterName);
+
+      const definitions = await apiCenterService.getApiCenterApiVersionDefinitions(this._apiCenterApiName, this._apiCenterApiVersion.name);
+      this._nextLink = definitions.nextLink;
+      return definitions.value;
+    } else {
+      const server = new ApiCenterDataPlaneService(this.parent?.subscription!);
+      const res = await server.getApiCenterApiDefinitions(this._apiCenterApiName, this._apiCenterApiVersion.name);
+      this._nextLink = res.nextLink;
+      return res.value;
+    }
   }
 
   public hasMoreChildrenImpl(): boolean {

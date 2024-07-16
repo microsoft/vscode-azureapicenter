@@ -4,7 +4,6 @@ import { AzExtParentTreeItem, AzExtTreeDataProvider, IAzExtOutputChannel } from 
 import { ExtensionContext } from "vscode";
 import { DataPlaneAccount } from "./azure/ApiCenter/ApiCenterDataPlaneAPIs";
 import { ApiVersionDefinitionTreeItem } from "./tree/ApiVersionDefinitionTreeItem";
-import { DataPlanAccountManagerTreeItem } from "./tree/DataPlaneAccount";
 import { OpenApiEditor } from "./tree/Editors/openApi/OpenApiEditor";
 /**
  * Namespace for common variables used throughout the extension. They must be initialized in the activate() method of extension.ts
@@ -22,5 +21,5 @@ export namespace ext {
 
     export let dataPlaneAccounts: DataPlaneAccount[];
     export let workspaceProvider: AzExtTreeDataProvider;
-    export let workspaceItem: DataPlanAccountManagerTreeItem;
+    export let workspaceItem: AzExtParentTreeItem & { dispose(): unknown; };
 }

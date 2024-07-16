@@ -167,7 +167,7 @@
       },
       {
         "command": "azure-api-center.apiCenterWorkspace.addApis",
-        "title": "Add Api",
+        "title": "Add Data Plane Api",
         "icon": "$(add)",
         "category": "Azure API Center"
       },
@@ -175,12 +175,6 @@
         "command": "azure-api-center.apiCenterWorkspace.refresh",
         "title": "Refresh",
         "icon": "$(refresh)",
-        "category": "Azure API Center"
-      },
-      {
-        "command": "azure-api-center.apiCenterWorkspace.logout",
-        "title": "Sign out",
-        "icon": "$(sign-out)",
         "category": "Azure API Center"
       },
       {
@@ -206,7 +200,7 @@
         },
         {
           "id": "apiCenterWorkspace",
-          "name": "API Center Workspace",
+          "name": "API Center Data View",
           "visibility": "visible"
         }
       ]
@@ -236,11 +230,6 @@
           "command": "azure-api-center.apiCenterWorkspace.refresh",
           "when": "view == apiCenterWorkspace",
           "group": "navigation@1"
-        },
-        {
-          "command": "azure-api-center.apiCenterWorkspace.logout",
-          "when": "view == apiCenterWorkspace",
-          "group": "navigation@0"
         },
         {
           "command": "azure-api-center.apiCenterWorkspace.collapse",
@@ -276,7 +265,7 @@
         },
         {
           "command": "azure-api-center.exportApi",
-          "when": "(view == apiCenterTreeView && viewItem =~ /azureApiCenterApiVersionDefinitionTreeItem/) || (view == apiCenterWorkspace && viewItem == WorkspaceAPICenter-Definition)"
+          "when": "(view == apiCenterTreeView && viewItem =~ /azureApiCenterApiVersionDefinitionTreeItem/) || (view == apiCenterWorkspace && viewItem =~ /azureApiCenterApiVersionDataPlaneDefinitionTreeItem/)"
         },
         {
           "command": "azure-api-center.showOpenApi",
@@ -335,7 +324,7 @@
         },
         {
           "command": "azure-api-center.apiCenterWorkspace.removeApi",
-          "when": "view == apiCenterWorkspace && viewItem == WorkspaceAPICenter-Server",
+          "when": "view == apiCenterWorkspace && viewItem == azureApiCenterDataPlane",
           "group": "inline@0"
         }
       ],

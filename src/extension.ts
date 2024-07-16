@@ -11,6 +11,8 @@ import { registerAzureUtilsExtensionVariables } from '@microsoft/vscode-azext-az
 import { AzExtTreeDataProvider, AzExtTreeItem, CommandCallback, IActionContext, IParsedError, createAzExtOutputChannel, isUserCancelledError, parseError, registerCommand, registerEvent } from '@microsoft/vscode-azext-utils';
 import { AzureAccount } from "./azure/azureLogin/azureAccount";
 import { AzureSessionProviderHelper } from "./azure/azureLogin/azureSessionProvider";
+import { AzureDataSessionProviderHelper } from "./azure/azureLogin/dataSessionProvider";
+import { getDataPlaneApis } from "./commands/addDataPlaneApis";
 import { cleanupSearchResult } from './commands/cleanUpSearch';
 import { detectBreakingChange } from './commands/detectBreakingChange';
 import { showOpenApi } from './commands/editOpenApi';
@@ -19,11 +21,13 @@ import { GenerateApiFromCode } from './commands/generateApiFromCode';
 import { generateApiLibrary } from './commands/generateApiLibrary';
 import { GenerateHttpFile } from './commands/generateHttpFile';
 import { generateMarkdownDocument } from './commands/generateMarkdownDocument';
+import { handleUri } from './commands/handleUri';
 import { importOpenApi } from './commands/importOpenApi';
 import { openAPiInSwagger } from './commands/openApiInSwagger';
 import { openUrlFromTreeNode } from './commands/openUrl';
 import { refreshTree } from './commands/refreshTree';
 import { registerApi } from './commands/registerApi';
+import { removeDataplaneAPI } from './commands/removeDataplaneApi';
 import { addCustomFunction } from './commands/rules/addCustomFunction';
 import { deleteCustomFunction } from './commands/rules/deleteCustomFunction';
 import { deployRules } from './commands/rules/deployRules';
@@ -33,17 +37,16 @@ import { openRule } from './commands/rules/openRule';
 import { renameCustomFunction } from './commands/rules/renameCustomFunction';
 import { searchApi } from './commands/searchApi';
 import { setApiRuleset } from './commands/setApiRuleset';
+import { SignInToDataPlane } from "./commands/signInToDataPlane";
 import { testInPostman } from './commands/testInPostman';
 import { doubleClickDebounceDelay, selectedNodeKey } from './constants';
 import { ext } from './extensionVariables';
 import { ApiVersionDefinitionTreeItem } from './tree/ApiVersionDefinitionTreeItem';
 import { createAzureAccountTreeItem } from "./tree/AzureAccountTreeItem";
+import { createAzureDataAccountTreeItem } from './tree/DataPlaneAccount';
 import { OpenApiEditor } from './tree/Editors/openApi/OpenApiEditor';
 // Copilot Chat
-import { removeDataplaneAPI } from './commands/removeDataplaneApi';
-import { exitFromSession, getDataPlaneApis, setAccountToExt } from "./commands/workspaceApis";
 import { ErrorProperties, TelemetryProperties } from './common/telemetryEvent';
-import { ApiDefinitionTreeItem, DataPlanAccountManagerTreeItem } from './tree/DataPlaneAccount';
 export async function activate(context: vscode.ExtensionContext) {
     console.log('Congratulations, your extension "azure-api-center" is now active!');
 
@@ -74,10 +77,10 @@ export async function activate(context: vscode.ExtensionContext) {
     const treeView = vscode.window.createTreeView("apiCenterTreeView", { treeDataProvider });
     context.subscriptions.push(treeView);
 
-    // DataPlaneSessionProviderHelper.activateAzureSessionProvider(context);
-    // const dataPlaneSessionProvider = AzureSessionProviderHelper.getSessionProvider();
-    const dataPlanAccountManagerTreeItem = new DataPlanAccountManagerTreeItem();
-    // context.subscriptions.push(dataPlanAccountManagerTreeItem);
+    AzureDataSessionProviderHelper.activateAzureSessionProvider(context);
+    const dataPlaneSessionProvider = AzureDataSessionProviderHelper.getSessionProvider();
+    const dataPlanAccountManagerTreeItem = createAzureDataAccountTreeItem(dataPlaneSessionProvider);
+    context.subscriptions.push(dataPlanAccountManagerTreeItem);
     ext.workspaceItem = dataPlanAccountManagerTreeItem;
 
     const workspaceTreeDataProvider = new AzExtTreeDataProvider(dataPlanAccountManagerTreeItem, "appService.loadMore");
@@ -96,7 +99,7 @@ export async function activate(context: vscode.ExtensionContext) {
     // TODO: move all three to their separate files
     registerCommandWithTelemetry('azure-api-center.importOpenApiByFile', async (context: IActionContext, node?: ApiVersionDefinitionTreeItem) => { await importOpenApi(context, node, false); });
     registerCommandWithTelemetry('azure-api-center.importOpenApiByLink', async (context: IActionContext, node?: ApiVersionDefinitionTreeItem) => { await importOpenApi(context, node, true); });
-    registerCommandWithTelemetry('azure-api-center.exportApi', async (context: IActionContext, node?: ApiVersionDefinitionTreeItem | ApiDefinitionTreeItem) => { await ExportAPI.exportApi(context, node); });
+    registerCommandWithTelemetry('azure-api-center.exportApi', async (context: IActionContext, node?: ApiVersionDefinitionTreeItem) => { await ExportAPI.exportApi(context, node); });
 
     // TODO: move this to a separate file
     const openApiEditor: OpenApiEditor = new OpenApiEditor();
@@ -153,37 +156,15 @@ export async function activate(context: vscode.ExtensionContext) {
     registerCommandWithTelemetry('azure-api-center.signInToAzure', AzureAccount.signInToAzure);
     registerCommandWithTelemetry('azure-api-center.selectTenant', AzureAccount.selectTenant);
     registerCommandWithTelemetry('azure-api-center.selectSubscriptions', AzureAccount.selectSubscriptions);
-    registerCommandWithTelemetry('azure-api-center.openUrl', async (context: IActionContext, node?: AzExtTreeItem) => {
-        await openUrlFromTreeNode(context, node);
-    });
+    registerCommandWithTelemetry('azure-api-center.openUrl', openUrlFromTreeNode);
+    registerCommandWithTelemetry('azure-api-center.apiCenterWorkspace.signInToDataPlane', SignInToDataPlane);
     registerCommandWithTelemetry('azure-api-center.apiCenterWorkspace.refresh', async (context: IActionContext) => ext.workspaceItem.refresh(context));
-    registerCommandWithTelemetry('azure-api-center.apiCenterWorkspace.addApis', async (context: IActionContext) => {
-        await getDataPlaneApis(context);
-        ext.workspaceItem.refresh(context);
-    });
-    registerCommandWithTelemetry('azure-api-center.apiCenterWorkspace.logout', async (context: IActionContext) => {
-        if (ext.dataPlaneAccounts) {
-            for (let account of ext.dataPlaneAccounts) {
-                await exitFromSession(account.clientId, account.tenantId);
-            }
-        }
-        vscode.commands.executeCommand('workbench.actions.treeView.apiCenterWorkspace.collapseAll');
-        ext.workspaceItem.refresh(context);
-    });
+    registerCommandWithTelemetry('azure-api-center.apiCenterWorkspace.addApis', getDataPlaneApis);
     registerCommandWithTelemetry('azure-api-center.apiCenterWorkspace.collapse', () => {
         vscode.commands.executeCommand('workbench.actions.treeView.apiCenterWorkspace.collapseAll');
     });
 
     registerCommandWithTelemetry('azure-api-center.apiCenterWorkspace.removeApi', removeDataplaneAPI);
-
-    const handleUri = async (uri: vscode.Uri) => {
-        const queryParams = new URLSearchParams(uri.query);
-        let tenantId = queryParams.get('tenantId') as string;
-        let clientId = queryParams.get('clientId') as string;
-        let runtimeUrl = queryParams.get('runtimeUrl') as string;
-        setAccountToExt(runtimeUrl, clientId, tenantId);
-        vscode.commands.executeCommand('azure-api-center.apiCenterWorkspace.refresh')
-    };
 
     context.subscriptions.push(
         vscode.window.registerUriHandler({

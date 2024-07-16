@@ -4,7 +4,7 @@
 import { ResourceGraphClient } from "@azure/arm-resourcegraph";
 import { ISubscriptionContext } from "@microsoft/vscode-azext-utils";
 import { getCredentialForToken } from "../../utils/credentialUtil";
-import { ApiCenter } from "./contracts";
+import { ApiCenter } from "../ApiCenter/contracts";
 
 export class ResourceGraphService {
   private susbcriptionContext: ISubscriptionContext;

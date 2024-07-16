@@ -7,22 +7,22 @@ import * as http from 'http';
 import * as https from 'https';
 import * as path from "path";
 import * as vscode from "vscode";
+import { ApiCenterDataPlaneService } from "../azure/ApiCenter/ApiCenterDataPlaneAPIs";
 import { ApiCenterService } from "../azure/ApiCenter/ApiCenterService";
 import { ApiSpecExportResultFormat } from "../azure/ApiCenter/contracts";
 import { TelemetryClient } from '../common/telemetryClient';
 import { ext } from "../extensionVariables";
 import { ApiVersionDefinitionTreeItem } from "../tree/ApiVersionDefinitionTreeItem";
-import { ApiDefinitionTreeItem, fetchApiCenterServer } from "../tree/DataPlaneAccount";
 import { createTemporaryFolder } from "../utils/fsUtil";
-import { getSessionToken } from "./workspaceApis";
 export namespace ExportAPI {
     export async function exportApi(
         context: IActionContext,
-        node?: ApiVersionDefinitionTreeItem | ApiDefinitionTreeItem): Promise<void> {
+        node?: ApiVersionDefinitionTreeItem): Promise<void> {
         if (!node) {
             node = await ext.treeDataProvider.showTreeItemPicker<ApiVersionDefinitionTreeItem>(new RegExp(`${ApiVersionDefinitionTreeItem.contextValue}*`), context);
         }
-        if (node instanceof ApiVersionDefinitionTreeItem) {
+
+        if (node.contextValue.startsWith(ApiVersionDefinitionTreeItem.contextValue)) {
             const apiCenterService = new ApiCenterService(
                 node?.subscription!,
                 getResourceGroupFromId(node?.id!),
@@ -32,20 +32,18 @@ export namespace ExportAPI {
                 node?.apiCenterApiVersionName!,
                 node?.apiCenterApiVersionDefinition.name!);
             await writeToTempFile(node!, exportedSpec.format, exportedSpec.value);
-        } else if (node instanceof ApiDefinitionTreeItem) {
-            let accessToken = await getSessionToken(node.account.clientId, node.account.tenantId);
-            if (accessToken) {
-                let server = new fetchApiCenterServer(node.account.domain, accessToken);
-                let results = await server.exportDefinitionLink(node.apiName, node.apiVersion, node.label);
-                if (results) {
-                    const folderName = `${node.apiCenterName}-${node.apiName}`;
-                    const folderPath = await createTemporaryFolder(folderName);
-                    const localFilePath: string = path.join(folderPath, node.label);
-                    await fs.ensureFile(localFilePath);
-                    await downloadFile(results, localFilePath);
-                    const document: vscode.TextDocument = await vscode.workspace.openTextDocument(localFilePath);
-                    await vscode.window.showTextDocument(document);
-                }
+        } else if (node.contextValue.startsWith(ApiVersionDefinitionTreeItem.dataPlaneContextValue)) {
+            let server = new ApiCenterDataPlaneService(node.parent?.subscription!);
+            let results = await server.exportSpecification(node?.apiCenterApiName!,
+                node?.apiCenterApiVersionName!, node?.apiCenterApiVersionDefinition.name!);
+            if (results) {
+                const folderName = `${node.apiCenterName}-${node.apiCenterApiName}`;
+                const folderPath = await createTemporaryFolder(folderName);
+                const localFilePath: string = path.join(folderPath, node.label);
+                await fs.ensureFile(localFilePath);
+                await downloadFile(results.value, localFilePath);
+                const document: vscode.TextDocument = await vscode.workspace.openTextDocument(localFilePath);
+                await vscode.window.showTextDocument(document);
             }
         }
     }
@@ -82,7 +80,6 @@ export namespace ExportAPI {
                 response.pipe(fileStream);
 
                 fileStream.on('finish', () => {
-                    console.log('finished!!!!!!!!');
                     fileStream.close();
                     resolve();
                 });

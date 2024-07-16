@@ -16,6 +16,9 @@ export async function registerStepByStep(context: IActionContext, node?: ApisTre
         const apiCenterNode = await ext.treeDataProvider.showTreeItemPicker<ApiCenterTreeItem>(ApiCenterTreeItem.contextValue, context);
         node = apiCenterNode.apisTreeItem;
     }
+    if (!('id' in node.apiCenter)) {
+        return;
+    }
 
     const apiTitle = await vscode.window.showInputBox({ title: UiStrings.ApiTitle, ignoreFocusOut: true, validateInput: validateInputForTitle });
     if (!apiTitle) {
