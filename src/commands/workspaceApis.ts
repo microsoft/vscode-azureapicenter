@@ -2,7 +2,8 @@
 // Licensed under the MIT license.
 import { IActionContext } from "@microsoft/vscode-azext-utils";
 import * as vscode from 'vscode';
-import { DataPlaneAccount, ext } from "../extensionVariables";
+import { DataPlaneAccount } from "../azure/ApiCenter/ApiCenterDataPlaneAPIs";
+import { ext } from "../extensionVariables";
 export async function getDataPlaneApis(context: IActionContext): Promise<any | void> {
     const endpointUrl = await vscode.window.showInputBox({ title: "Input Runtime URL", ignoreFocusOut: true });
     const clientid = await vscode.window.showInputBox({ title: "Input Client ID", ignoreFocusOut: true });
