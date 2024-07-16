@@ -3,7 +3,7 @@
 import { getResourceGroupFromId } from "@microsoft/vscode-azext-azureutils";
 import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import { ApiCenterService } from "../azure/ApiCenter/ApiCenterService";
-import { ApiCenter } from "../azure/ResourceGraph/contracts";
+import { ApiCenter } from "../azure/ApiCenter/contracts";
 import { UiStrings } from "../uiStrings";
 import { treeUtils } from "../utils/treeUtils";
 import { ApisTreeItem } from "./ApisTreeItem";

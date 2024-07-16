@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 import { AuthenticationSession, Event } from "vscode";
 import { GeneralUtils } from "../../utils/generalUtils";
+import { DataPlaneAccount } from "../ApiCenter/ApiCenterDataPlaneAPIs";
 
 export enum SignInStatus {
     Initializing = 'Initializing',
@@ -51,10 +52,12 @@ export type AzureSessionProvider = {
 };
 
 export type AzureDataSessionProvider = {
-    signIn(): Promise<void>;
+    signIn(_scopes: string[]): Promise<void>;
+    signOut(_scopes: string[]): Promise<void>;
+    signOutAll(_accounts: DataPlaneAccount[]): Promise<void>;
     signInStatus: SignInStatus;
     signInStatusChangeEvent: Event<SignInStatus>;
-    getAuthSession(options?: GetAuthSessionOptions): Promise<GeneralUtils.Errorable<AzureAuthenticationSession>>;
+    getAuthSession(scopes?: string[]): Promise<GeneralUtils.Errorable<AzureAuthenticationSession>>;
     dispose(): void;
 }
 
@@ -62,5 +65,3 @@ export type ReadyAzureSessionProvider = AzureSessionProvider & {
     signInStatus: SignInStatus.SignedIn;
     selectedTenant: Tenant;
 };
-
-

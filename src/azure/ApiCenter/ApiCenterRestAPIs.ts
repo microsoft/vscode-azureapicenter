@@ -24,4 +24,11 @@ export const APICenterRestAPIs = {
 };
 
 export const APICenterDataPlaneRestAPIs = {
+    GetApi: (domain: string, apiName: string) => `https://${domain}/workspaces/default/apis/${apiName}`,
+    ListApis: (domain: string) => `https://${domain}/workspaces/default/apis`,
+    ListAllApis: (domain: string) => `https://${domain}/apis`,
+    GetApiVersion: (domain: string, apiName: string, versionName: string) => `https://${domain}/workspaces/default/apis/${apiName}/versions/${versionName}`,
+    ListApiVersions: (domain: string, apiName: string) => `https://${domain}/workspaces/default/apis/${apiName}/versions`,
+    ListApiDefinitions: (domain: string, apiName: string, apiVersion: string) => `https://${domain}/workspaces/default/apis/${apiName}/versions/${apiVersion}/definitions`,
+    ExportApiDefinitions: (domain: string, apiName: string, apiVersion: string, definitionName: string) => `https://${domain}/workspaces/default/apis/${apiName}/versions/${apiVersion}/definitions/${definitionName}:exportSpecification`
 }

@@ -8,6 +8,7 @@ import { UiStrings } from "../../uiStrings";
 import { GeneralUtils } from "../../utils/generalUtils";
 import { AzureSessionProvider, GetAuthSessionOptions, ReadyAzureSessionProvider, SignInStatus, Tenant } from "./authTypes";
 import { AzureSessionProviderHelper } from "./azureSessionProvider";
+import { AzureDataSessionProviderHelper, generateScopes } from "./dataSessionProvider";
 export namespace AzureAuth {
     export function getEnvironment(): Environment {
         return getConfiguredAzureEnv();
@@ -24,6 +25,18 @@ export namespace AzureAuth {
                 return { token: session.result.accessToken, expiresOnTimestamp: 0 };
             },
         };
+    }
+
+    export function getDataPlaneCredential(clientId: string, tenantId: string): TokenCredential {
+        return {
+            getToken: async () => {
+                const session = await AzureDataSessionProviderHelper.getSessionProvider().getAuthSession(generateScopes(clientId, tenantId));
+                if (GeneralUtils.failed(session)) {
+                    throw new Error(vscode.l10n.t(UiStrings.NoMSAuthSessionFound, session.error));
+                }
+                return { token: session.result.accessToken, expiresOnTimestamp: 0 };
+            }
+        }
     }
 
     export function getDefaultScope(endpointUrl: string): string {
