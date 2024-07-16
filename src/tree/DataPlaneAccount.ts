@@ -2,17 +2,12 @@
 // Licensed under the MIT license.
 import { AzExtParentTreeItem, AzExtTreeItem, GenericTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import * as vscode from "vscode";
+import { DataPlaneAccount } from "../azure/ApiCenter/ApiCenterDataPlaneAPIs";
 import { SignInStatus } from "../azure/azureLogin/authTypes";
 import { getSessionToken } from "../commands/workspaceApis";
-import { DataPlaneAccount, ext } from "../extensionVariables";
+import { ext } from "../extensionVariables";
 import { UiStrings } from "../uiStrings";
 import { treeUtils } from "../utils/treeUtils";
-
-// export function createDataPlaneAccountTreeItem(
-//     sessionProvider: AzureSessionProvider,
-// ): DataPlanAccountManagerTreeItem {
-//     return new DataPlanAccountManagerTreeItem(sessionProvider);
-// }
 
 export class DataPlanAccountManagerTreeItem extends AzExtParentTreeItem {
     public contextValue: string = DataPlanAccountManagerTreeItem.contextValue;

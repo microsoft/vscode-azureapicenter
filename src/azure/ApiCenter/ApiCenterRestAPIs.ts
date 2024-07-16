@@ -22,3 +22,6 @@ export const APICenterRestAPIs = {
     ImportRuleset: (subscriptionId: string, resourceGroupName: string, apiCenterName: string, restApiVersion: string) => `https://management.azure.com/subscriptions/${subscriptionId}/resourceGroups/${resourceGroupName}/providers/Microsoft.ApiCenter/services/${apiCenterName}/workspaces/default/staticAnalyzers/spectral/importRuleset?api-version=${restApiVersion}`,
     ExportRuleset: (subscriptionId: string, resourceGroupName: string, apiCenterName: string, restApiVersion: string) => `https://management.azure.com/subscriptions/${subscriptionId}/resourceGroups/${resourceGroupName}/providers/Microsoft.ApiCenter/services/${apiCenterName}/workspaces/default/staticAnalyzers/spectral/exportRuleset?api-version=${restApiVersion}`,
 };
+
+export const APICenterDataPlaneRestAPIs = {
+}
