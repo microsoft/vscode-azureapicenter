@@ -102,4 +102,5 @@ export class UiStrings {
     static readonly NoAzureSessionFound = vscode.l10n.t("No Azure session found.");
     static readonly FailedTo = vscode.l10n.t("Failed to retrieve Azure session: {0}");
     static readonly NoFolderOpenedForRules = vscode.l10n.t("No folder is opened. Please open a folder to export and view rules.");
+    static readonly InputCustomFunctionName = vscode.l10n.t("Please input the name of custom function.");
 }

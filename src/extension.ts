@@ -24,6 +24,7 @@ import { openAPiInSwagger } from './commands/openApiInSwagger';
 import { openUrlFromTreeNode } from './commands/openUrl';
 import { refreshTree } from './commands/refreshTree';
 import { registerApi } from './commands/registerApi';
+import { addCustomFunction } from './commands/rules/addCustomFunction';
 import { deployRules } from './commands/rules/deployRules';
 import { enableRules } from './commands/rules/enableRules';
 import { exportRules } from './commands/rules/exportRules';
@@ -122,6 +123,8 @@ export async function activate(context: vscode.ExtensionContext) {
     registerCommandWithTelemetry('azure-api-center.deployRules', deployRules);
 
     registerCommandWithTelemetry('azure-api-center.openRule', openRule);
+
+    registerCommandWithTelemetry('azure-api-center.addCustomFunction', addCustomFunction);
 
     registerCommandWithTelemetry('azure-api-center.testRule', testRule);
 

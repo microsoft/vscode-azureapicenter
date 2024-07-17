@@ -146,6 +146,11 @@
         "category": "Azure API Center"
       },
       {
+        "command": "azure-api-center.addCustomFunction",
+        "title": "Add Custom Function",
+        "category": "Azure API Center"
+      },
+      {
         "command": "azure-api-center.testRule",
         "title": "Live Test Rule in Local",
         "category": "Azure API Center"
@@ -252,6 +257,11 @@
         {
           "command": "azure-api-center.deployRules",
           "when": "view == apiCenterTreeView && viewItem == azureApiCenterRules-enabled",
+          "group": "rule@2"
+        },
+        {
+          "command": "azure-api-center.addCustomFunction",
+          "when": "view == apiCenterTreeView && viewItem == azureApiCenterFunctions",
           "group": "rule@2"
         },
         {
