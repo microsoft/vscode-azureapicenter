@@ -26,7 +26,7 @@ import { refreshTree } from './commands/refreshTree';
 import { registerApi } from './commands/registerApi';
 import { addCustomFunction } from './commands/rules/addCustomFunction';
 import { deployRules } from './commands/rules/deployRules';
-import { enableRules } from './commands/rules/enableRules';
+import { EnableRules } from './commands/rules/enableRules';
 import { exportRules } from './commands/rules/exportRules';
 import { openRule } from './commands/rules/openRule';
 import { searchApi } from './commands/searchApi';
@@ -115,7 +115,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
     registerCommandWithTelemetry('azure-api-center.generateMarkdownDocument', generateMarkdownDocument);
 
-    registerCommandWithTelemetry('azure-api-center.enableRules', enableRules);
+    registerCommandWithTelemetry('azure-api-center.enableRules', EnableRules.enableRules);
 
     registerCommandWithTelemetry('azure-api-center.exportRules', exportRules);
 
