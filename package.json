@@ -151,11 +151,6 @@
         "category": "Azure API Center"
       },
       {
-        "command": "azure-api-center.testRule",
-        "title": "Live Test Rule in Local",
-        "category": "Azure API Center"
-      },
-      {
         "command": "azure-api-center.selectTenant",
         "title": "%azure-api-center.commands.selectTenant.title%",
         "category": "Azure API Center"
@@ -262,11 +257,6 @@
         {
           "command": "azure-api-center.addCustomFunction",
           "when": "view == apiCenterTreeView && viewItem == azureApiCenterFunctions",
-          "group": "rule@2"
-        },
-        {
-          "command": "azure-api-center.testRule",
-          "when": "view == apiCenterTreeView && (viewItem == azureApiCenterRule || viewItem == azureApiCenterFunction2222)",
           "group": "rule@2"
         }
       ],

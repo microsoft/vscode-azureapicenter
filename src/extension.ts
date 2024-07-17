@@ -29,7 +29,6 @@ import { deployRules } from './commands/rules/deployRules';
 import { enableRules } from './commands/rules/enableRules';
 import { exportRules } from './commands/rules/exportRules';
 import { openRule } from './commands/rules/openRule';
-import { testRule } from './commands/rules/testRule';
 import { searchApi } from './commands/searchApi';
 import { setApiRuleset } from './commands/setApiRuleset';
 import { testInPostman } from './commands/testInPostman';
@@ -125,8 +124,6 @@ export async function activate(context: vscode.ExtensionContext) {
     registerCommandWithTelemetry('azure-api-center.openRule', openRule);
 
     registerCommandWithTelemetry('azure-api-center.addCustomFunction', addCustomFunction);
-
-    registerCommandWithTelemetry('azure-api-center.testRule', testRule);
 
     registerCommandWithTelemetry('azure-api-center.apiCenterTreeView.refresh', async (context: IActionContext) => refreshTree(context));
 
