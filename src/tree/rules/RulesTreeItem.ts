@@ -26,7 +26,7 @@ export class RulesTreeItem extends AzExtParentTreeItem {
     }
 
     public get label(): string {
-        return "Rules";
+        return UiStrings.TreeitemLabelRules;
     }
 
     public get iconPath(): TreeItemIconPath {
@@ -41,7 +41,7 @@ export class RulesTreeItem extends AzExtParentTreeItem {
     public async loadMoreChildrenImpl(clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
         if (!this.isEnabled) {
             const infoNode = new GenericTreeItem(this, {
-                label: "Ruleset is not enabled. Click here to enable it.",
+                label: UiStrings.RulesNotEnabled,
                 commandId: "azure-api-center.enableRules",
                 contextValue: "enableRules",
                 iconPath: new vscode.ThemeIcon("info"),

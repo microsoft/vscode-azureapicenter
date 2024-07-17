@@ -104,4 +104,17 @@ export class UiStrings {
     static readonly SelectSubscriptions = vscode.l10n.t("Select Subscriptions...");
     static readonly NoFolderOpenedForRules = vscode.l10n.t("No folder is opened. Please open a folder to export and view rules.");
     static readonly InputCustomFunctionName = vscode.l10n.t("Please input the name of custom function.");
+    static readonly FileAlreadyExists = vscode.l10n.t("The file '{0}' already exists. Please input a different name.");
+    static readonly NoRulesFolder = vscode.l10n.t("The rules folder '{0}' is empty. No files to deploy.");
+    static readonly RulesDeployed = vscode.l10n.t("Rules deployed to '{0}'.");
+    static readonly FailedToDeployRules = vscode.l10n.t("Failed to deploy rules. Error: {0}");
+    static readonly RulesEnabled = vscode.l10n.t("Rules enabled for '{0}'.");
+    static readonly FailedToEnableRules = vscode.l10n.t("Failed to enable rules. Error: {0}");
+    static readonly RulesFolderNotEmpty = vscode.l10n.t("The rules folder '{0}' is not empty. Do you want to overwrite the existing files?");
+    static readonly Yes = vscode.l10n.t("Yes");
+    static readonly No = vscode.l10n.t("No");
+    static readonly RulesExported = vscode.l10n.t("Rules exported to '{0}'.");
+    static readonly TreeitemLabelFunctions = vscode.l10n.t("Functions");
+    static readonly TreeitemLabelRules = vscode.l10n.t("Rules");
+    static readonly RulesNotEnabled = vscode.l10n.t("Ruleset is not enabled. Click here to enable it.");
 }

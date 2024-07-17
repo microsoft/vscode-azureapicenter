@@ -127,27 +127,27 @@
       },
       {
         "command": "azure-api-center.enableRules",
-        "title": "Enable Rules",
+        "title": "%azure-api-center.commands.enableRules.title%",
         "category": "Azure API Center"
       },
       {
         "command": "azure-api-center.exportRules",
-        "title": "Sync Latest Rules to Local",
+        "title": "%azure-api-center.commands.exportRules.title%",
         "category": "Azure API Center"
       },
       {
         "command": "azure-api-center.deployRules",
-        "title": "Deploy Rules to Remote",
+        "title": "%azure-api-center.commands.deployRules.title%",
         "category": "Azure API Center"
       },
       {
         "command": "azure-api-center.openRule",
-        "title": "Open Rule",
+        "title": "%azure-api-center.commands.openRule.title%",
         "category": "Azure API Center"
       },
       {
         "command": "azure-api-center.addCustomFunction",
-        "title": "Add Custom Function",
+        "title": "%azure-api-center.commands.addCustomFunction.title%",
         "category": "Azure API Center"
       },
       {

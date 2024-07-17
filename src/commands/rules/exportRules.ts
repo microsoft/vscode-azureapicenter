@@ -3,6 +3,7 @@
 import { IActionContext } from "@microsoft/vscode-azext-utils";
 import * as vscode from 'vscode';
 import { RulesTreeItem } from "../../tree/rules/RulesTreeItem";
+import { UiStrings } from "../../uiStrings";
 import { hasFiles } from "../../utils/fsUtil";
 const fs = require('fs').promises;
 const path = require('path');
@@ -13,11 +14,11 @@ export async function exportRules(context: IActionContext, node: RulesTreeItem) 
 
     if (await hasFiles(rulesFolderPath)) {
         const overwrite = await vscode.window.showWarningMessage(
-            `The rules folder '${rulesFolderPath}' is not empty. Do you want to overwrite the existing files?`,
+            vscode.l10n.t(UiStrings.RulesFolderNotEmpty, rulesFolderPath),
             { modal: true },
-            'Yes',
-            'No');
-        if (overwrite !== 'Yes') {
+            UiStrings.Yes,
+            UiStrings.No);
+        if (overwrite !== UiStrings.Yes) {
             return;
         }
     }
@@ -25,7 +26,7 @@ export async function exportRules(context: IActionContext, node: RulesTreeItem) 
     await node.exportRulesToLocalFolder(rulesFolderPath);
     await node.refresh(context);
 
-    vscode.window.showInformationMessage(`Rules exported to '${rulesFolderPath}'`);
+    vscode.window.showInformationMessage(vscode.l10n.t(UiStrings.RulesExported, rulesFolderPath));
 }
 
 

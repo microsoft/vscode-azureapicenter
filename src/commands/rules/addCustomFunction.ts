@@ -18,7 +18,7 @@ export async function addCustomFunction(context: IActionContext, node: Functions
 
     try {
         await vscode.workspace.fs.stat(targetPathUri);
-        vscode.window.showWarningMessage(`The file '${targetPathUri.fsPath}' already exists.`);
+        vscode.window.showWarningMessage(vscode.l10n.t(UiStrings.FileAlreadyExists, targetPathUri.fsPath));
         return;
     } catch (error) {
         // If the file does not exist, the error is caught here, and the function continues

@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import * as vscode from 'vscode';
+import { UiStrings } from "../../uiStrings";
 import { FunctionTreeItem } from "./FunctionTreeItem";
 
 export class FunctionsTreeItem extends AzExtParentTreeItem {
@@ -12,7 +13,7 @@ export class FunctionsTreeItem extends AzExtParentTreeItem {
     }
 
     public get label(): string {
-        return "Functions";
+        return UiStrings.TreeitemLabelFunctions;
     }
 
     public get iconPath(): TreeItemIconPath {

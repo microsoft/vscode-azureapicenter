@@ -6,6 +6,7 @@ import * as vscode from 'vscode';
 import { ApiCenterService } from "../../azure/ApiCenter/ApiCenterService";
 import { ApiCenterRulesetImport } from "../../azure/ApiCenter/contracts";
 import { RulesTreeItem } from "../../tree/rules/RulesTreeItem";
+import { UiStrings } from "../../uiStrings";
 import { hasFiles } from "../../utils/fsUtil";
 import { zipFolderToBuffer } from "../../utils/zipUtils";
 
@@ -13,7 +14,7 @@ export async function deployRules(context: IActionContext, node: RulesTreeItem) 
     const rulesFolderPath = node.getRulesFolderPath();
 
     if (!await hasFiles(rulesFolderPath)) {
-        vscode.window.showWarningMessage(`The rules folder '${rulesFolderPath}' is empty. No files to deploy.`);
+        vscode.window.showWarningMessage(vscode.l10n.t(UiStrings.NoRulesFolder, rulesFolderPath));
         return;
     }
 
@@ -29,8 +30,8 @@ export async function deployRules(context: IActionContext, node: RulesTreeItem) 
     const response = await apiCenterService.importRuleset(importPayload);
 
     if (response.status === 200) {
-        vscode.window.showInformationMessage(`Rules deployed to '${node.apiCenter.name}'`);
+        vscode.window.showInformationMessage(vscode.l10n.t(UiStrings.RulesDeployed, node.apiCenter.name));
     } else {
-        vscode.window.showErrorMessage(`Failed to deploy rules with status code ${response.status}${response.bodyAsText ? ", error message: " + response.bodyAsText : ""}`);
+        vscode.window.showErrorMessage(vscode.l10n.t(UiStrings.FailedToDeployRules, response.bodyAsText ?? `status code ${response.status}`));
     }
 }
