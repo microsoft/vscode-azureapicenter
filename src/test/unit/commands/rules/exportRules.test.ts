@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 import { AzExtParentTreeItem, IActionContext } from "@microsoft/vscode-azext-utils";
+import * as assert from "assert";
 import * as fs from 'fs';
 import * as sinon from "sinon";
 import * as vscode from "vscode";
@@ -39,6 +40,8 @@ describe("exportRules", () => {
         await exportRules({} as IActionContext, node);
 
         sandbox.assert.calledOnce(showInformationMessage);
+        assert.ok(fs.existsSync(path.join(node.getRulesFolderPath(), "functions", "equals.js")));
+        assert.ok(fs.existsSync(path.join(node.getRulesFolderPath(), "ruleset.yml")));
     });
     it('export rules with existing files', async () => {
         const showInformationMessage = sandbox.spy(vscode.window, "showInformationMessage");
