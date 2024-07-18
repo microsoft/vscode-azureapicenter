@@ -8,7 +8,6 @@ import { hasFiles } from "../../utils/fsUtil";
 const fs = require('fs').promises;
 const path = require('path');
 
-
 export async function exportRules(context: IActionContext, node: RulesTreeItem) {
     const rulesFolderPath = node.getRulesFolderPath();
 
@@ -28,5 +27,3 @@ export async function exportRules(context: IActionContext, node: RulesTreeItem) 
 
     vscode.window.showInformationMessage(vscode.l10n.t(UiStrings.RulesExported, rulesFolderPath));
 }
-
-

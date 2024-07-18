@@ -6,7 +6,7 @@ import * as sinon from "sinon";
 import * as vscode from "vscode";
 import { ApiCenterService } from "../../../../azure/ApiCenter/ApiCenterService";
 import { ApiCenter } from "../../../../azure/ApiCenter/contracts";
-import { EnableRules } from "../../../../commands/rules/enableRules";
+import { enableRules } from "../../../../commands/rules/enableRules";
 import { RulesTreeItem } from "../../../../tree/rules/RulesTreeItem";
 
 describe("enableRules", () => {
@@ -32,13 +32,13 @@ describe("enableRules", () => {
     it('enable rules with status code 200', async () => {
         const showInformationMessage = sandbox.spy(vscode.window, "showInformationMessage");
         sandbox.stub(ApiCenterService.prototype, "createOrUpdateApiCenterRulesetConfig").resolves({ status: 200 } as HttpOperationResponse);
-        await EnableRules.enableRules({} as IActionContext, node);
+        await enableRules({} as IActionContext, node);
         sandbox.assert.calledOnce(showInformationMessage);
     });
     it('enable rules with no status code 200', async () => {
         const showErrorMessage = sandbox.spy(vscode.window, "showErrorMessage");
         sandbox.stub(ApiCenterService.prototype, "createOrUpdateApiCenterRulesetConfig").resolves({ status: 400 } as HttpOperationResponse);
-        await EnableRules.enableRules({} as IActionContext, node);
+        await enableRules({} as IActionContext, node);
         sandbox.assert.calledOnce(showErrorMessage);
     });
 });
