@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 import { HttpOperationResponse } from "@azure/ms-rest-js";
 import { AzExtParentTreeItem, IActionContext } from "@microsoft/vscode-azext-utils";
+import * as assert from "assert";
 import * as sinon from "sinon";
 import * as vscode from "vscode";
 import { ApiCenterService } from "../../../../azure/ApiCenter/ApiCenterService";
@@ -34,11 +35,13 @@ describe("enableRules", () => {
         sandbox.stub(ApiCenterService.prototype, "createOrUpdateApiCenterRulesetConfig").resolves({ status: 200 } as HttpOperationResponse);
         await enableRules({} as IActionContext, node);
         sandbox.assert.calledOnce(showInformationMessage);
+        assert.ok(node.isEnabled);
     });
     it('enable rules with no status code 200', async () => {
         const showErrorMessage = sandbox.spy(vscode.window, "showErrorMessage");
         sandbox.stub(ApiCenterService.prototype, "createOrUpdateApiCenterRulesetConfig").resolves({ status: 400 } as HttpOperationResponse);
         await enableRules({} as IActionContext, node);
         sandbox.assert.calledOnce(showErrorMessage);
+        assert.ok(!node.isEnabled);
     });
 });

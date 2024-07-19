@@ -311,6 +311,26 @@
         {
           "command": "azure-api-center.generateApiFromCode",
           "when": "never"
+        },
+        {
+          "command": "azure-api-center.enableRules",
+          "when": "never"
+        },
+        {
+          "command": "azure-api-center.exportRules",
+          "when": "never"
+        },
+        {
+          "command": "azure-api-center.deployRules",
+          "when": "never"
+        },
+        {
+          "command": "azure-api-center.openRule",
+          "when": "never"
+        },
+        {
+          "command": "azure-api-center.addCustomFunction",
+          "when": "never"
         }
       ]
     },
