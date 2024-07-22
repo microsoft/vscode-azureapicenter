@@ -1,7 +1,7 @@
 # Azure API Center for Visual Studio Code
-[![CI](https://github.com/microsoft/vscode-azureapicenter/actions/workflows/ci.yml/badge.svg)](https://github.com/microsoft/vscode-azureapicenter/actions/workflows/ci.yml)
-[![E2E](https://github.com/microsoft/vscode-azureapicenter/actions/workflows/e2e.yml/badge.svg)](https://github.com/microsoft/vscode-azureapicenter/actions/workflows/e2e.yml)
-[![CodeQL](https://github.com/microsoft/vscode-azureapicenter/actions/workflows/codeql.yml/badge.svg)](https://github.com/microsoft/vscode-azureapicenter/actions/workflows/codeql.yml)
+[![CI](https://github.com/microsoft/vscode-azureapicenter/actions/workflows/ci.yml/badge.svg?branch=dev)](https://github.com/microsoft/vscode-azureapicenter/actions/workflows/ci.yml)
+[![E2E](https://github.com/microsoft/vscode-azureapicenter/actions/workflows/e2e.yml/badge.svg?branch=dev)](https://github.com/microsoft/vscode-azureapicenter/actions/workflows/e2e.yml)
+[![CodeQL](https://github.com/microsoft/vscode-azureapicenter/actions/workflows/codeql.yml/badge.svg?branch=dev)](https://github.com/microsoft/vscode-azureapicenter/actions/workflows/codeql.yml)
 [![codecov](https://codecov.io/gh/microsoft/vscode-azureapicenter/graph/badge.svg?token=TIJgHIZNDD)](https://codecov.io/gh/microsoft/vscode-azureapicenter)
 
 Build, discover, try, and consume APIs using your favorite development environment.
