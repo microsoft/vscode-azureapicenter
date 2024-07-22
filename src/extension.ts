@@ -94,6 +94,8 @@ export async function activate(context: vscode.ExtensionContext) {
 
     registerCommandWithTelemetry('azure-api-center.generate-api-client', generateApiLibrary);
 
+    registerCommandWithTelemetry('azure-api-center.generate-api-plugin', generateApiLibrary);
+
     registerCommandWithTelemetry('azure-api-center.generateHttpFile', GenerateHttpFile.generateHttpFile);
 
     registerCommandWithTelemetry('azure-api-center.registerApi', registerApi);

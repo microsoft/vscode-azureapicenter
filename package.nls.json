@@ -4,6 +4,7 @@
     "azure-api-center.commands.open-api-docs.title": "Open API Documentation",
     "azure-api-center.commands.open-postman.title": "Test in Postman",
     "azure-api-center.commands.generate-api-client.title": "Generate API Client",
+    "azure-api-center.commands.generate-api-plugin.title": "Create Microsoft Copilot plugin",
     "azure-api-center.commands.importOpenApiByFile.title": "Import OpenAPI from File",
     "azure-api-center.commands.importOpenApiByLink.title": "Import OpenAPI from Link",
     "azure-api-center.commands.exportApi.title": "Export API Specification Document",
