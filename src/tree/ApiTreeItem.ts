@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import * as vscode from 'vscode';
-import { GeneralApiCenterApi } from "../azure/ApiCenter/contracts";
+import { GeneralApiCenterApi, isApiManagement } from "../azure/ApiCenter/contracts";
 import { UiStrings } from "../uiStrings";
 import { ApiDeploymentsTreeItem } from "./ApiDeploymentsTreeItem";
 import { ApiVersionsTreeItem } from "./ApiVersionsTreeItem";
@@ -21,7 +21,7 @@ export class ApiTreeItem extends AzExtParentTreeItem {
     this._apiCenterName = apiCenterName;
     this._apiCenterApi = apiCenterApi;
     this.apiVersionsTreeItem = new ApiVersionsTreeItem(this, apiCenterName, apiCenterApi);
-    if ('id' in apiCenterApi) {
+    if (isApiManagement(apiCenterApi)) {
       this.apiDeploymentsTreeItem = new ApiDeploymentsTreeItem(this, apiCenterName, apiCenterApi);
     }
   }
@@ -31,11 +31,11 @@ export class ApiTreeItem extends AzExtParentTreeItem {
   }
 
   public get id(): string {
-    return 'id' in this._apiCenterApi ? this._apiCenterApi.id : this._apiCenterApi.name;
+    return isApiManagement(this._apiCenterApi) ? this._apiCenterApi.id : this._apiCenterApi.name;
   }
 
   public get label(): string {
-    return 'id' in this._apiCenterApi ? this._apiCenterApi.properties.title : this._apiCenterApi.title;
+    return isApiManagement(this._apiCenterApi) ? this._apiCenterApi.properties.title : this._apiCenterApi.title;
   }
 
   public hasMoreChildrenImpl(): boolean {

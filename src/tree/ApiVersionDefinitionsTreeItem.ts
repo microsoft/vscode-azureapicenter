@@ -5,7 +5,7 @@ import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } 
 import * as vscode from 'vscode';
 import { ApiCenterDataPlaneService } from "../azure/ApiCenter/ApiCenterDataPlaneAPIs";
 import { ApiCenterService } from "../azure/ApiCenter/ApiCenterService";
-import { GeneralApiCenterApiVersion, GeneralApiCenterApiVersionDefinition } from "../azure/ApiCenter/contracts";
+import { GeneralApiCenterApiVersion, GeneralApiCenterApiVersionDefinition, isApiVersionManagement } from "../azure/ApiCenter/contracts";
 import { UiStrings } from "../uiStrings";
 import { ApiVersionDefinitionTreeItem } from "./ApiVersionDefinitionTreeItem";
 
@@ -54,7 +54,7 @@ export class ApiVersionDefinitionsTreeItem extends AzExtParentTreeItem {
   }
 
   private async getDefinitions(): Promise<GeneralApiCenterApiVersionDefinition[]> {
-    if ('id' in this._apiCenterApiVersion) {
+    if (isApiVersionManagement(this._apiCenterApiVersion)) {
       const resourceGroupName = getResourceGroupFromId(this._apiCenterApiVersion.id);
       const apiCenterService = new ApiCenterService(this.parent?.subscription!, resourceGroupName, this._apiCenterName);
 
