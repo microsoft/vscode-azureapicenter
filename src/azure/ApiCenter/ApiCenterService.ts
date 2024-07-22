@@ -18,7 +18,7 @@ export class ApiCenterService {
   }
 
   public async getApiCenter(): Promise<ApiCenter> {
-    const client = new ServiceClient(this.susbcriptionContext.credentials);
+    const client = new ServiceClient(await this.susbcriptionContext.credentials.getToken());
     const options: RequestPrepareOptions = {
       method: "GET",
       url: APICenterRestAPIs.GetAPIService(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, this.apiVersion)
@@ -28,7 +28,7 @@ export class ApiCenterService {
   }
 
   public async getApiCenterApis(searchContent: string): Promise<{ value: ApiCenterApi[]; nextLink: string }> {
-    const client = new ServiceClient(this.susbcriptionContext.credentials);
+    const client = new ServiceClient(await this.susbcriptionContext.credentials.getToken());
     let url = APICenterRestAPIs.ListAPIs(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, this.apiVersion);
     if (searchContent) {
       url += `&$search=${searchContent}`;
@@ -42,7 +42,7 @@ export class ApiCenterService {
   }
 
   public async getApiCenterEnvironments(): Promise<{ value: ApiCenterEnvironment[]; nextLink: string }> {
-    const client = new ServiceClient(this.susbcriptionContext.credentials);
+    const client = new ServiceClient(await this.susbcriptionContext.credentials.getToken());
     const options: RequestPrepareOptions = {
       method: "GET",
       url: APICenterRestAPIs.GetAPIEnvironments(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, this.apiVersion)
@@ -52,7 +52,7 @@ export class ApiCenterService {
   }
 
   public async getApiCenterApiVersions(apiName: string): Promise<{ value: ApiCenterApiVersion[]; nextLink: string }> {
-    const client = new ServiceClient(this.susbcriptionContext.credentials);
+    const client = new ServiceClient(await this.susbcriptionContext.credentials.getToken());
     const options: RequestPrepareOptions = {
       method: "GET",
       url: APICenterRestAPIs.GetAPIVersions(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, apiName, this.apiVersion)
@@ -62,7 +62,7 @@ export class ApiCenterService {
   }
 
   public async getApiCenterApiDeployments(apiName: string): Promise<{ value: ApiCenterApiDeployment[]; nextLink: string }> {
-    const client = new ServiceClient(this.susbcriptionContext.credentials);
+    const client = new ServiceClient(await this.susbcriptionContext.credentials.getToken());
     const options: RequestPrepareOptions = {
       method: "GET",
       url: APICenterRestAPIs.GetAPIDeployments(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, apiName, this.apiVersion)
@@ -72,7 +72,7 @@ export class ApiCenterService {
   }
 
   public async getApiCenterApiVersionDefinitions(apiName: string, apiVersion: string): Promise<{ value: ApiCenterApiVersionDefinition[]; nextLink: string }> {
-    const client = new ServiceClient(this.susbcriptionContext.credentials);
+    const client = new ServiceClient(await this.susbcriptionContext.credentials.getToken());
     const options: RequestPrepareOptions = {
       method: "GET",
       url: APICenterRestAPIs.GetAPIDefinition(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, apiName, apiVersion, this.apiVersion)
@@ -102,7 +102,7 @@ export class ApiCenterService {
   }
 
   public async createOrUpdateApi(apiCenterApi: ApiCenterApi): Promise<ApiCenterApi> {
-    const client = new ServiceClient(this.susbcriptionContext.credentials);
+    const client = new ServiceClient(await this.susbcriptionContext.credentials.getToken());
     const options: RequestPrepareOptions = {
       method: "PUT",
       url: APICenterRestAPIs.CreateAPI(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, apiCenterApi.name, this.apiVersion),
@@ -115,7 +115,7 @@ export class ApiCenterService {
   }
 
   public async createOrUpdateApiVersion(apiName: string, apiCenterApiVersion: ApiCenterApiVersion): Promise<ApiCenterApiVersion> {
-    const client = new ServiceClient(this.susbcriptionContext.credentials);
+    const client = new ServiceClient(await this.susbcriptionContext.credentials.getToken());
     const options: RequestPrepareOptions = {
       method: "PUT",
       url: APICenterRestAPIs.CreateAPIVersion(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, apiName, apiCenterApiVersion.name, this.apiVersion),
@@ -129,7 +129,7 @@ export class ApiCenterService {
   }
 
   public async createOrUpdateApiDeployment(apiName: string, apiCenterApiDeployment: ApiCenterApiDeployment): Promise<ApiCenterApiDeployment> {
-    const client = new ServiceClient(this.susbcriptionContext.credentials);
+    const client = new ServiceClient(await this.susbcriptionContext.credentials.getToken());
     const options: RequestPrepareOptions = {
       method: "PUT",
       url: APICenterRestAPIs.CreateAPIDeployment(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, apiName, apiCenterApiDeployment.name, this.apiVersion),
@@ -141,7 +141,7 @@ export class ApiCenterService {
   }
 
   public async createOrUpdateApiVersionDefinition(apiName: string, apiVersionName: string, apiCenterApiVersionDefinition: ApiCenterApiVersionDefinition): Promise<ApiCenterApiVersionDefinition> {
-    const client = new ServiceClient(this.susbcriptionContext.credentials);
+    const client = new ServiceClient(await this.susbcriptionContext.credentials.getToken());
     const options: RequestPrepareOptions = {
       method: "PUT",
       url: APICenterRestAPIs.CreateAPIDefinition(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, apiName, apiVersionName, apiCenterApiVersionDefinition.name, this.apiVersion),
@@ -173,7 +173,7 @@ export class ApiCenterService {
     apiVersionName: string,
     apiCenterApiVersionDefinitionName: string,
     importPayload: ApiCenterApiVersionDefinitionImport): Promise<boolean> {
-    const client = new ServiceClient(this.susbcriptionContext.credentials);
+    const client = new ServiceClient(await this.susbcriptionContext.credentials.getToken());
 
     let options: RequestPrepareOptions = {
       method: "POST",
@@ -204,7 +204,7 @@ export class ApiCenterService {
     apiName: string,
     apiVersionName: string,
     apiCenterApiVersionDefinitionName: string): Promise<ApiCenterApiVersionDefinitionExport> {
-    const client = new ServiceClient(this.susbcriptionContext.credentials);
+    const client = new ServiceClient(await this.susbcriptionContext.credentials.getToken());
     const options: RequestPrepareOptions = {
       method: "POST",
       url: APICenterRestAPIs.ExportApiSpecification(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, apiName, apiVersionName, apiCenterApiVersionDefinitionName, this.apiVersion),
