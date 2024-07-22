@@ -93,8 +93,7 @@ export class ApiCenterService {
     const client = new ServiceClient(creds);
     const options: RequestPrepareOptions = {
       method: "GET",
-      // url: APICenterRestAPIs.GetRulesetConfig(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, this.apiVersionPreview)
-      url: APICenterRestAPIs.GetRulesetConfig("4cbb6e3d-c279-43fa-ae86-f4c7882dd1fc", "apicatalog-dogfood", "contoso", this.apiVersionPreview)
+      url: APICenterRestAPIs.GetRulesetConfig(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, this.apiVersionPreview)
     };
     const response = await client.sendRequest(options);
     return response;
@@ -171,8 +170,7 @@ export class ApiCenterService {
     const client = new ServiceClient(creds);
     const options: RequestPrepareOptions = {
       method: "PUT",
-      // url: APICenterRestAPIs.GetRulesetConfig(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, this.apiVersionPreview),
-      url: APICenterRestAPIs.GetRulesetConfig("4cbb6e3d-c279-43fa-ae86-f4c7882dd1fc", "apicatalog-dogfood", "contoso", this.apiVersionPreview),
+      url: APICenterRestAPIs.GetRulesetConfig(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, this.apiVersionPreview),
       body: {
         properties: apiCenterRulesetConfig.properties
       }
@@ -233,8 +231,7 @@ export class ApiCenterService {
     const client = new ServiceClient(creds);
     const options: RequestPrepareOptions = {
       method: "POST",
-      // url: APICenterRestAPIs.ImportRuleset(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, this.apiVersionPreview)
-      url: APICenterRestAPIs.ImportRuleset("4cbb6e3d-c279-43fa-ae86-f4c7882dd1fc", "apicatalog-dogfood", "contoso", this.apiVersionPreview),
+      url: APICenterRestAPIs.ImportRuleset(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, this.apiVersionPreview),
       body: importPayload
     };
     const response = await client.sendRequest(options);
@@ -246,8 +243,7 @@ export class ApiCenterService {
     const client = new ServiceClient(creds);
     const options: RequestPrepareOptions = {
       method: "POST",
-      // url: APICenterRestAPIs.ExportRuleset(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, this.apiVersionPreview)
-      url: APICenterRestAPIs.ExportRuleset("4cbb6e3d-c279-43fa-ae86-f4c7882dd1fc", "apicatalog-dogfood", "contoso", this.apiVersionPreview)
+      url: APICenterRestAPIs.ExportRuleset(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, this.apiVersionPreview)
     };
     const response = await client.sendRequest(options);
     return response.parsedBody;
