@@ -77,16 +77,6 @@ export type ApiCenterRulesetConfig = {
     };
 };
 
-export type ApiCenterFunction = {
-    id: string;
-    location: string;
-    name: string;
-    properties: {
-    };
-    // tslint:disable-next-line:no-reserved-keywords
-    type: string;
-};
-
 export type ApiCenterApiVersionDefinitionImport = {
     format: string;
     value: string;
