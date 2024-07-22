@@ -9,15 +9,14 @@ import {
     ExtensionContext,
     Disposable as VsCodeDisposable
 } from "vscode";
+import { UiStrings } from "../../uiStrings";
 import { GeneralUtils } from "../../utils/generalUtils";
-import { DataPlaneAccount } from "../ApiCenter/ApiCenterDataPlaneAPIs";
 import { AzureAuthenticationSession, AzureDataSessionProvider, SignInStatus } from "./authTypes";
 import { AzureAuth } from "./azureAuth";
 enum AuthScenario {
     Initialization,
     SignIn,
-    GetSession,
-    SignedOut,
+    GetSession
 }
 
 export function generateScopes(clientId: string, tenantId: string): string[] {
@@ -42,6 +41,7 @@ export namespace AzureDataSessionProviderHelper {
     }
 
     class AzureDataSessionProviderImpl extends VsCodeDisposable implements AzureDataSessionProvider {
+        public static MicrosoftAuthProviderId: string = 'microsoft';
         private handleSessionChanges: boolean = true;
         public signInStatusValue: SignInStatus = SignInStatus.Initializing;
         // private accountSet: Set<DataPlaneAccount> = new Set<DataPlaneAccount>();
@@ -67,9 +67,9 @@ export namespace AzureDataSessionProviderHelper {
             });
         }
         private async updateSignInStatus(_scopes: string[], authScenario: AuthScenario): Promise<void> {
-            const orgTenantId = "organizations";
-            const scopes = _scopes.length == 0 ? AzureAuth.getScopes(orgTenantId, {}) : _scopes;
-            await this.getArmSession(orgTenantId, scopes, authScenario);
+            if (_scopes.length != 0) {
+                await this.getArmSession(AzureDataSessionProviderImpl.MicrosoftAuthProviderId, _scopes, authScenario);
+            }
             this.onSignInStatusChangeEmitter.fire(this.signInStatusValue);
         }
         public get signInStatus(): SignInStatus {
@@ -77,7 +77,7 @@ export namespace AzureDataSessionProviderHelper {
         }
 
         public async getAuthSession(scopes?: string[]): Promise<GeneralUtils.Errorable<AzureAuthenticationSession>> {
-            return await this.getArmSession('microsoft', scopes!, AuthScenario.GetSession);
+            return await this.getArmSession(AzureDataSessionProviderImpl.MicrosoftAuthProviderId, scopes!, AuthScenario.GetSession);
         }
         public async signIn(_scopes: string[]): Promise<void> {
             await this.updateSignInStatus(_scopes, AuthScenario.SignIn);
@@ -85,18 +85,6 @@ export namespace AzureDataSessionProviderHelper {
         }
         public get signInStatusChangeEvent(): Event<SignInStatus> {
             return this.onSignInStatusChangeEmitter.event;
-        }
-
-        public async signOutAll(dataPlaneAccounts: DataPlaneAccount[]): Promise<void> {
-            for (let account of dataPlaneAccounts) {
-                await this.getArmSession("microsoft", generateScopes(account.clientId, account.tenantId), AuthScenario.SignedOut);
-            }
-            this.onSignInStatusChangeEmitter.fire(this.signInStatusValue);
-        }
-
-        public async signOut(_scopes: string[]): Promise<void> {
-            await this.getArmSession("microsoft", _scopes, AuthScenario.SignedOut);
-            this.onSignInStatusChangeEmitter.fire(this.signInStatusValue);
         }
 
         private async getArmSession(
@@ -111,21 +99,21 @@ export namespace AzureDataSessionProviderHelper {
                 switch (authScenario) {
                     case AuthScenario.Initialization:
                         options = { createIfNone: false, clearSessionPreference: true, silent: true };
-                        session = await authentication.getSession('microsoft', scopes, options);
+                        session = await authentication.getSession(AzureDataSessionProviderImpl.MicrosoftAuthProviderId, scopes, options);
                         break;
                     case AuthScenario.SignIn:
                         options = { createIfNone: true, clearSessionPreference: true, silent: false };
-                        session = await authentication.getSession('microsoft', scopes, options);
+                        session = await authentication.getSession(AzureDataSessionProviderImpl.MicrosoftAuthProviderId, scopes, options);
                         break;
                     case AuthScenario.GetSession:
                         // the 'createIfNone' option cannot be used with 'silent', but really we want both
                         // flags here (i.e. create a session silently, but do create one if it doesn't exist).
                         // To allow this, we first try to get a session silently.
-                        session = await authentication.getSession('microsoft', scopes, { silent: true });
+                        session = await authentication.getSession(AzureDataSessionProviderImpl.MicrosoftAuthProviderId, scopes, { silent: true });
                         break;
                 }
                 if (!session) {
-                    return { succeeded: false, error: "No Session Found" };
+                    return { succeeded: false, error: UiStrings.NoAzureSessionFound };
                 }
                 return { succeeded: true, result: Object.assign(session, { tenantId }) };
             } catch (e) {

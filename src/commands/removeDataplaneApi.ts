@@ -7,9 +7,9 @@ import { ApiServerItem } from "../tree/DataPlaneAccount";
 export async function removeDataplaneAPI(context: IActionContext, node: ApiServerItem) {
     let accounts = ext.dataPlaneAccounts;
     let indexToRemove = accounts.findIndex(account =>
-        account.domain === node.parent?.subscription!.subscriptionPath! &&
-        account.tenantId === node.parent?.subscription!.tenantId! &&
-        account.clientId === node.parent?.subscription!.userId
+        account.domain === node.subscription.subscriptionPath! &&
+        account.tenantId === node.subscription.tenantId! &&
+        account.clientId === node.subscription.userId!
     );
     if (indexToRemove !== -1) {
         accounts.splice(indexToRemove, 1);
