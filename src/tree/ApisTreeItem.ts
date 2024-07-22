@@ -5,7 +5,7 @@ import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } 
 import * as vscode from 'vscode';
 import { ApiCenterDataPlaneService } from "../azure/ApiCenter/ApiCenterDataPlaneAPIs";
 import { ApiCenterService } from "../azure/ApiCenter/ApiCenterService";
-import { GeneralApiCenter, GeneralApiCenterApi } from "../azure/ApiCenter/contracts";
+import { GeneralApiCenter, GeneralApiCenterApi, isApiServerManagement } from "../azure/ApiCenter/contracts";
 import { UiStrings } from "../uiStrings";
 import { ApiTreeItem } from "./ApiTreeItem";
 export class ApisTreeItem extends AzExtParentTreeItem {
@@ -50,7 +50,7 @@ export class ApisTreeItem extends AzExtParentTreeItem {
   }
 
   private async getApis(): Promise<GeneralApiCenterApi[]> {
-    if ('id' in this.apiCenter) {
+    if (isApiServerManagement(this.apiCenter)) {
       const resourceGroupName = getResourceGroupFromId(this.apiCenter.id);
       const apiCenterService = new ApiCenterService(this.parent?.subscription!, resourceGroupName, this.apiCenter.name);
       const apis = await apiCenterService.getApiCenterApis(this.searchContent);

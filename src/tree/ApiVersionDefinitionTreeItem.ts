@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 import { AzExtParentTreeItem, AzExtTreeItem, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import * as vscode from 'vscode';
-import { GeneralApiCenterApiVersionDefinition } from "../azure/ApiCenter/contracts";
+import { GeneralApiCenterApiVersionDefinition, isDefinitionManagement } from "../azure/ApiCenter/contracts";
 
 export class ApiVersionDefinitionTreeItem extends AzExtTreeItem {
   public static contextValue: string = "azureApiCenterApiVersionDefinitionTreeItem";
@@ -15,7 +15,7 @@ export class ApiVersionDefinitionTreeItem extends AzExtTreeItem {
     public apiCenterApiVersionName: string,
     public apiCenterApiVersionDefinition: GeneralApiCenterApiVersionDefinition) {
     super(parent);
-    if ('id' in apiCenterApiVersionDefinition) {
+    if (isDefinitionManagement(apiCenterApiVersionDefinition)) {
       this.contextValue += "-" + apiCenterApiVersionDefinition.properties.specification.name.toLowerCase();
     } else {
       this.contextValue = ApiVersionDefinitionTreeItem.dataPlaneContextValue + "-" + apiCenterApiVersionDefinition.name.toLowerCase();
@@ -27,10 +27,10 @@ export class ApiVersionDefinitionTreeItem extends AzExtTreeItem {
   }
 
   public get id(): string {
-    return 'id' in this.apiCenterApiVersionDefinition ? this.apiCenterApiVersionDefinition.id : this.apiCenterApiVersionDefinition.name
+    return isDefinitionManagement(this.apiCenterApiVersionDefinition) ? this.apiCenterApiVersionDefinition.id : this.apiCenterApiVersionDefinition.name
   }
 
   public get label(): string {
-    return 'id' in this.apiCenterApiVersionDefinition ? this.apiCenterApiVersionDefinition.properties.title : this.apiCenterApiVersionDefinition.name;
+    return isDefinitionManagement(this.apiCenterApiVersionDefinition) ? this.apiCenterApiVersionDefinition.properties.title : this.apiCenterApiVersionDefinition.name;
   }
 }
