@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 import { IActionContext } from '@microsoft/vscode-azext-utils';
 import * as vscode from 'vscode';
+import { SpectralExtensionId } from '../../constants';
 import { FunctionTreeItem } from '../../tree/rules/FunctionTreeItem';
 import { RuleTreeItem } from '../../tree/rules/RuleTreeItem';
 import { UiStrings } from '../../uiStrings';
@@ -13,7 +14,7 @@ export async function openRule(context: IActionContext, node: RuleTreeItem | Fun
     await vscode.window.showTextDocument(document);
 
     ensureExtension(context, {
-        extensionId: 'stoplight.spectral',
+        extensionId: SpectralExtensionId,
         noExtensionErrorMessage: UiStrings.NoSpectralExtension,
     });
 

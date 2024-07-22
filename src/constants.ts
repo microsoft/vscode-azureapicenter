@@ -16,6 +16,7 @@ export const azureApiGuidelineRulesetFile = "https://raw.githubusercontent.com/a
 export const spectralOwaspRulesetFile = "https://unpkg.com/@stoplight/spectral-owasp-ruleset/dist/ruleset.mjs";
 export const MODEL_SELECTOR: vscode.LanguageModelChatSelector = { vendor: 'copilot', family: 'gpt-4' };
 export const ExceedTokenLimit = "Message exceeds token limit";
+export const SpectralExtensionId = "stoplight.spectral";
 
 export const AzureAccountType = {
     createAzureAccount: "azureapicenterCreateAzureAccount",

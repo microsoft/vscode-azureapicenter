@@ -4,7 +4,7 @@ import { IActionContext } from "@microsoft/vscode-azext-utils";
 import * as vscode from "vscode";
 import { TelemetryClient } from "../common/telemetryClient";
 import { TelemetryEvent, TelemetryProperties } from "../common/telemetryEvent";
-import { ApiRulesetOptions, azureApiGuidelineRulesetFile, defaultRulesetFile, spectralOwaspRulesetFile } from "../constants";
+import { ApiRulesetOptions, azureApiGuidelineRulesetFile, defaultRulesetFile, SpectralExtensionId, spectralOwaspRulesetFile } from "../constants";
 import { UiStrings } from "../uiStrings";
 import { ensureExtension } from "../utils/ensureExtension";
 import { setRulesetFile } from "../utils/ruleUtils";
@@ -13,7 +13,7 @@ const rulesetFileTypes = ['json', 'yml', 'yaml', 'js', "mjs", "cjs"];
 
 export async function setApiRuleset(context: IActionContext) {
     ensureExtension(context, {
-        extensionId: 'stoplight.spectral',
+        extensionId: SpectralExtensionId,
         noExtensionErrorMessage: UiStrings.NoSpectralExtension,
     });
 
