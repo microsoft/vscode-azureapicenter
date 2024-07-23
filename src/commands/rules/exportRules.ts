@@ -5,8 +5,6 @@ import * as vscode from 'vscode';
 import { RulesTreeItem } from "../../tree/rules/RulesTreeItem";
 import { UiStrings } from "../../uiStrings";
 import { hasFiles } from "../../utils/fsUtil";
-const fs = require('fs').promises;
-const path = require('path');
 
 export async function exportRules(context: IActionContext, node: RulesTreeItem) {
     const rulesFolderPath = node.getRulesFolderPath();

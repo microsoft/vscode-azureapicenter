@@ -170,7 +170,7 @@ export class ApiCenterService {
     const client = new ServiceClient(creds);
     const options: RequestPrepareOptions = {
       method: "PUT",
-      url: APICenterRestAPIs.GetRulesetConfig(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, this.apiVersionPreview),
+      url: APICenterRestAPIs.CreateRulesetConfig(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, this.apiVersionPreview),
       body: {
         properties: apiCenterRulesetConfig.properties
       }

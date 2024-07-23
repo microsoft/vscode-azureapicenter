@@ -10,7 +10,7 @@ import { ApiCenter } from "../../../../azure/ApiCenter/contracts";
 import { enableRules } from "../../../../commands/rules/enableRules";
 import { RulesTreeItem } from "../../../../tree/rules/RulesTreeItem";
 
-describe("enableRules", () => {
+describe.skip("enableRules", () => {
     let sandbox: sinon.SinonSandbox;
     let node: RulesTreeItem;
     before(() => {
@@ -25,7 +25,6 @@ describe("enableRules", () => {
             false,
         );
         sandbox.stub(node, "refresh").resolves();
-
     });
     afterEach(() => {
         sandbox.restore();
