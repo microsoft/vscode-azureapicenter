@@ -8,11 +8,13 @@ import { ApiCenterService } from "../../azure/ApiCenter/ApiCenterService";
 import { ApiCenter } from "../../azure/ApiCenter/contracts";
 import { UiStrings } from "../../uiStrings";
 import { getFilenamesInFolder, hasFiles } from "../../utils/fsUtil";
+import { getApiCenterWorkspacePath } from "../../utils/ruleUtils";
 import { upzip } from "../../utils/zipUtils";
 import { FunctionsTreeItem } from "./FunctionsTreeItem";
 import { RuleTreeItem } from "./RuleTreeItem";
 
 const functionsDir = "functions";
+const rulesDir = ".api-center-rules";
 
 export class RulesTreeItem extends AzExtParentTreeItem {
     public static contextValue: string = "azureApiCenterRules";
@@ -82,9 +84,7 @@ export class RulesTreeItem extends AzExtParentTreeItem {
 
     public getRulesFolderPath(): string {
         const workspaceFolders = vscode.workspace.workspaceFolders;
-        if (!workspaceFolders) {
-            throw new Error(UiStrings.NoFolderOpenedForRules);
-        }
-        return path.join(workspaceFolders[0].uri.fsPath, '.api-center-rules', this.apiCenter.name);
+        const workspacePath = workspaceFolders ? workspaceFolders[0].uri.fsPath : getApiCenterWorkspacePath();
+        return path.join(workspacePath, rulesDir, this.apiCenter.name);
     }
 }

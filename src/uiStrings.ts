@@ -117,4 +117,5 @@ export class UiStrings {
     static readonly TreeitemLabelFunctions = vscode.l10n.t("Functions");
     static readonly TreeitemLabelRules = vscode.l10n.t("Rules");
     static readonly RulesNotEnabled = vscode.l10n.t("Ruleset is not enabled. Click here to enable it.");
+    static readonly OpenApiCenterFolder = vscode.l10n.t("Rules folder is required to be opened to enable live API linting. Click 'Yes' to open the rules folder in current window.");
 }
