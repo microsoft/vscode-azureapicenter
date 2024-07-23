@@ -30,6 +30,7 @@ export async function enableRules(context: IActionContext, node: RulesTreeItem) 
         await node.refresh(context);
     } else {
         vscode.window.showErrorMessage(vscode.l10n.t(UiStrings.FailedToEnableRules, response.bodyAsText ?? `status code ${response.status}`));
+        return;
     }
 
     // Temporary workaround to deploy default rules after enabling rules
