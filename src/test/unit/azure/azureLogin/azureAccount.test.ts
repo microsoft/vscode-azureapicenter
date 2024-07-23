@@ -23,4 +23,4 @@ describe("Azure Account test case", () => {
         sandbox.assert.calledOnce(spyConf);
         assert.strictEqual(res, "test");
     });
-})
+});
