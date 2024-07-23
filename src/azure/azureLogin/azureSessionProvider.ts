@@ -143,6 +143,9 @@ export namespace AzureSessionProviderHelper {
             this.tenants = newTenants;
             this.signInStatusValue = newSignInStatus;
             if (signInStatusChanged || tenantsChanged || selectedTenantChanged) {
+                if (newSignInStatus == SignInStatus.SignedOut) {
+                    await AzureAccount.updateSelectedTenant();
+                }
                 this.onSignInStatusChangeEmitter.fire(this.signInStatusValue);
             }
         }
@@ -220,7 +223,11 @@ export namespace AzureSessionProviderHelper {
             );
             const results = await Promise.all(getSessionPromises);
             const accessibleTenants = results.filter(GeneralUtils.succeeded).map((r) => r.result);
-            return accessibleTenants.length === 1 ? AzureAccount.findTenant(tenants, accessibleTenants[0].tenantId) : null;
+            if (accessibleTenants.length === 1) {
+                return AzureAccount.findTenant(tenants, accessibleTenants[0].tenantId);
+            }
+            const lastTenant = AzureAccount.getSelectedTenant();
+            return lastTenant && accessibleTenants.some(item => item.tenantId == lastTenant.id) ? lastTenant : null;
         }
 
         private async getArmSession(
