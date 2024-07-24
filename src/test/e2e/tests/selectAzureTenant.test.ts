@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 
 import { expect, test } from '../baseTest';
-import { APICenter, Timeout, VSCode, TestENV } from '../utils/constants';
+import { APICenter, TestENV, Timeout, VSCode } from '../utils/constants';
 import VscodeOperator from '../utils/vscodeOperator';
 
 test('select Tenant', async ({ workbox }) => {
@@ -13,7 +13,7 @@ test('select Tenant', async ({ workbox }) => {
     // select tenant
     expect(await VscodeOperator.isTreeItemExist(workbox, APICenter.SELECT_TENANT)).toBeTruthy();
     await VscodeOperator.clickTreeItem(workbox, APICenter.SELECT_TENANT);
-    await VscodeOperator.selectOptionByIndex(workbox, 0);
+    await VscodeOperator.selectOptionByName(workbox, TestENV.AZURE_TENANT_NAME!);
     // check subscription
     const isSelectSubsExist = await VscodeOperator.isTreeItemExist(workbox, APICenter.SELECT_SUBS);
     if (isSelectSubsExist) {
