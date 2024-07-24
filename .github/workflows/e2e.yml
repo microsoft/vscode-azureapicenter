@@ -3,7 +3,7 @@ on:
   push:
     branches: ["dev", "main"]
   pull_request_target:
-    branches: ["dev", "main", "wenyt/test"]
+    branches: ["dev", "main"]
 
 jobs:
   e2e-test:
