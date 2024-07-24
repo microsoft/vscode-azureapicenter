@@ -1,10 +1,20 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 
+import dotenv from "dotenv";
+import fs from "fs";
+dotenv.config();
+
+fs.existsSync(".env.local") && fs.readFileSync(".env.local", "utf-8").split("\n").forEach((line) => {
+    const [key, value] = line.split("=");
+    process.env[key] = value;
+});
+
 export class Timeout {
     public static readonly CLICK_WAIT = 1000;
     public static readonly PREPARE_TEST = 5000;
-    public static readonly PREPARE_EXT = 5000;
+    public static readonly PREPARE_EXT = 10000;
+    public static readonly SHORT_WAIT = 5000;
 }
 
 export class VSCode {
@@ -31,6 +41,7 @@ export class APICenter {
     public static readonly REGISTER_API = ">Azure API Center: Register API";
     // tree items
     public static readonly SELECT_TENANT = "Select tenant...";
+    public static readonly SELECT_SUBS = "Select Subscriptions...";
     // cicd
     public static readonly CI_CD = "CI/CD";
     public static readonly AZURE_DEVOPS = "Azure DevOps";
@@ -39,7 +50,7 @@ export class APICenter {
 }
 
 export class TestENV {
-    public static readonly AZURE_TENANT_NAME = "MICROSOFT";
-    public static readonly AZURE_TENANT_ID = "72f988bf-86f1-41af-91ab-2d7cd011db47";
-    public static readonly AZURE_SUBSCRIPTION_NAME = "Teams Cloud - Dev Test with TTL = 3 Days";
+    public static readonly AZURE_TENANT_NAME = process.env["AZURE_TENANT_NAME"];
+    public static readonly AZURE_TENANT_ID = process.env["AZURE_TENANT_ID"];
+    public static readonly AZURE_SUBSCRIPTION_NAME = process.env["AZURE_SUBSCRIPTION_NAME"];
 }

@@ -7,10 +7,15 @@ export default class VscodeOperator {
     static async execCommandInCommandPalette(page: Page, command: string) {
         await page.keyboard.press(VSCode.CMD_PALETTE_KEY);
         await page.waitForTimeout(Timeout.CLICK_WAIT);
-        await page.getByRole(VSCode.CMD_PALETTE, { name: VSCode.INPUT }).fill(command);
+        const cmdPalette = await VscodeOperator.getCMDPalette(page);
+        await cmdPalette.fill(command);
         await page.waitForTimeout(Timeout.CLICK_WAIT);
         await page.getByRole(VSCode.CMD_PALETTE_LIST).first().press(VSCode.ENTER);
         await page.waitForTimeout(Timeout.CLICK_WAIT);
+    }
+
+    static async getCMDPalette(page: Page) {
+        return page.getByRole(VSCode.CMD_PALETTE, { name: VSCode.INPUT });
     }
 
     static async selectOptionByName(page: Page, option: string) {
@@ -38,6 +43,17 @@ export default class VscodeOperator {
 
     static async clickTreeItem(page: Page, treeItemName: string) {
         await page.getByRole(VSCode.TREE_ITEM, { name: treeItemName }).locator(VSCode.LINK).click();
+        await page.waitForTimeout(Timeout.CLICK_WAIT);
+    }
+
+    static async getCheckallCheckbox(page: Page) {
+        return await page.waitForSelector('input.quick-input-check-all[type="checkbox"]', { timeout: Timeout.SHORT_WAIT });
+    }
+
+    static async checkallCheckbox(page: Page) {
+        await (await VscodeOperator.getCheckallCheckbox(page)).check();
+        await page.waitForTimeout(Timeout.CLICK_WAIT);
+        await (await VscodeOperator.getCMDPalette(page)).press(VSCode.ENTER);
         await page.waitForTimeout(Timeout.CLICK_WAIT);
     }
 }
