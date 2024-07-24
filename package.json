@@ -350,6 +350,14 @@
         {
           "command": "azure-api-center.addCustomFunction",
           "when": "never"
+        },
+        {
+          "command": "azure-api-center.renameCustomFunction",
+          "when": "never"
+        },
+        {
+          "command": "azure-api-center.deleteCustomFunction",
+          "when": "never"
         }
       ]
     },
