@@ -22,6 +22,8 @@
     "azure-api-center.commands.deployRules.title": "Deploy Rules to API Center",
     "azure-api-center.commands.openRule.title": "Open Ruleset",
     "azure-api-center.commands.addCustomFunction.title": "Add Custom Function",
+    "azure-api-center.commands.renameCustomFunction.title": "Rename",
+    "azure-api-center.commands.deleteCustomFunction.title": "Delete",
     "azure-api-center.chatParticipants.apicenter.description": "Build, discover, and consume great APIs.",
     "azure-api-center.chatParticipants.apicenter.commands.list.description": "List available APIs.",
     "azure-api-center.chatParticipants.apicenter.commands.find.description": "Find an API given a search query."

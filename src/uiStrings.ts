@@ -103,6 +103,7 @@ export class UiStrings {
     static readonly FailedTo = vscode.l10n.t("Failed to retrieve Azure session: {0}");
     static readonly SelectSubscriptions = vscode.l10n.t("Select Subscriptions...");
     static readonly InputCustomFunctionName = vscode.l10n.t("Please provide the name of a custom function.");
+    static readonly DeleteCustomFunction = vscode.l10n.t("Are you sure you want to delete '{0}'?");
     static readonly FileAlreadyExists = vscode.l10n.t("The file '{0}' already exists. Please input a different name.");
     static readonly NoRulesFolder = vscode.l10n.t("Rules folder '{0}' is empty. No files to deploy.");
     static readonly RulesDeployed = vscode.l10n.t("Rules deployed to '{0}'.");

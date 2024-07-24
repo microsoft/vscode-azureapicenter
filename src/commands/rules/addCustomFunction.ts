@@ -1,11 +1,11 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 import { IActionContext } from '@microsoft/vscode-azext-utils';
+import * as path from 'path';
 import * as vscode from 'vscode';
 import { ext } from '../../extensionVariables';
 import { FunctionsTreeItem } from '../../tree/rules/FunctionsTreeItem';
 import { UiStrings } from '../../uiStrings';
-import path = require('path');
 
 export async function addCustomFunction(context: IActionContext, node: FunctionsTreeItem) {
     const customFunctionName = await vscode.window.showInputBox({ title: UiStrings.InputCustomFunctionName, ignoreFocusOut: true });
