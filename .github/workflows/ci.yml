@@ -1,9 +1,10 @@
 name: "CI"
 on:
-  pull_request:
+  pull_request_target:
     branches:
       - main
       - dev
+      - wenyt/test
   push:
     branches:
       - main
