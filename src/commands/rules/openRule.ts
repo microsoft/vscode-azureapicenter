@@ -7,7 +7,8 @@ import { FunctionTreeItem } from '../../tree/rules/FunctionTreeItem';
 import { RuleTreeItem } from '../../tree/rules/RuleTreeItem';
 import { UiStrings } from '../../uiStrings';
 import { ensureExtension } from '../../utils/ensureExtension';
-import { getApiCenterWorkspacePath, setRulesetFile } from '../../utils/ruleUtils';
+import { GeneralUtils } from '../../utils/generalUtils';
+import { setRulesetFile } from '../../utils/ruleUtils';
 
 export async function openRule(context: IActionContext, node: RuleTreeItem | FunctionTreeItem) {
     const document = await vscode.workspace.openTextDocument(node.fullFilePath);
@@ -27,7 +28,7 @@ export async function openRule(context: IActionContext, node: RuleTreeItem | Fun
             UiStrings.Yes,
             UiStrings.No);
         if (openFolder === UiStrings.Yes) {
-            await vscode.commands.executeCommand('vscode.openFolder', vscode.Uri.file(getApiCenterWorkspacePath()), false);
+            await vscode.commands.executeCommand('vscode.openFolder', vscode.Uri.file(GeneralUtils.getApiCenterWorkspacePath()), false);
         }
     }
 }

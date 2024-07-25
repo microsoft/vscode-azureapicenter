@@ -11,17 +11,18 @@ import { RulesTreeItem } from "../../tree/rules/RulesTreeItem";
 import { UiStrings } from "../../uiStrings";
 import { zipFolderToBuffer } from "../../utils/zipUtils";
 
+const apiCenterRulesetConfig: ApiCenterRulesetConfig = {
+    properties: {
+        analyzerVersion: "1.0.0",
+        apiType: "rest",
+        lifecycleStage: "testing",
+    }
+};
+
 export async function enableRules(context: IActionContext, node: RulesTreeItem) {
     const resourceGroupName = getResourceGroupFromId(node.apiCenter.id);
     const apiCenterService = new ApiCenterService(node.parent?.subscription!, resourceGroupName, node.apiCenter.name);
 
-    const apiCenterRulesetConfig: ApiCenterRulesetConfig = {
-        properties: {
-            analyzerVersion: "1.0.0",
-            apiType: "rest",
-            lifecycleStage: "testing",
-        }
-    };
     let response = await apiCenterService.createOrUpdateApiCenterRulesetConfig(apiCenterRulesetConfig);
 
     if (response.status === 200) {
