@@ -2,7 +2,8 @@
 // Licensed under the MIT license.
 import { SubscriptionClient, TenantIdDescription } from "@azure/arm-resources-subscriptions";
 import { TokenCredential } from "@azure/core-auth";
-import { AuthenticationSession, QuickPickItem, Uri, env, window } from "vscode";
+import { AuthenticationSession, ConfigurationTarget, QuickPickItem, Uri, env, window, workspace } from "vscode";
+import { extensionName, tenantSetting } from "../../constants";
 import { UiStrings } from "../../uiStrings";
 import { GeneralUtils } from "../../utils/generalUtils";
 import { SelectionType, SignInStatus, SubscriptionFilter, Tenant } from "./authTypes";
@@ -12,6 +13,14 @@ import { AzureSubscriptionHelper } from "./subscriptions";
 export namespace AzureAccount {
     export async function signInToAzure(): Promise<void> {
         await AzureSessionProviderHelper.getSessionProvider().signIn();
+    }
+
+    export function getSelectedTenant(): Tenant | undefined {
+        return workspace.getConfiguration(extensionName).get<Tenant>(tenantSetting);
+    }
+
+    export async function updateSelectedTenant(value?: Tenant): Promise<void> {
+        await workspace.getConfiguration(extensionName).update(tenantSetting, value, ConfigurationTarget.Global, true);
     }
 
     export async function selectTenant(): Promise<void> {
@@ -42,6 +51,7 @@ export namespace AzureAccount {
         }
 
         sessionProvider.selectedTenant = selectedTenant;
+        await updateSelectedTenant(selectedTenant);
     }
 
     type SubscriptionQuickPickItem = QuickPickItem & { subscription: SubscriptionFilter };

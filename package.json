@@ -299,6 +299,20 @@
             "items": {
               "type": "string"
             }
+          },
+          "azure-api-center.tenant": {
+            "type": "object",
+            "description": "A specific tenant to sign in to",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "tenant name"
+              },
+              "id": {
+                "type": "string",
+                "description": "tenant id"
+              }
+            }
           }
         }
       }
