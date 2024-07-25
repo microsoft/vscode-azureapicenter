@@ -2,28 +2,7 @@
 // Licensed under the MIT license.
 
 import dotenv from "dotenv";
-import fs from "fs";
 dotenv.config();
-
-if (fs.existsSync(".env.local")) {
-    const lines = fs.readFileSync(".env.local", "utf-8").split("\n");
-    lines.forEach((line) => {
-        const indexOfEquals = line.indexOf("=");
-        if (indexOfEquals !== -1) {
-            const key = line.slice(0, indexOfEquals).trim();
-            let value = line.slice(indexOfEquals + 1).trim();
-
-            // Remove surrounding quotes if present
-            if ((value.startsWith('"') && value.endsWith('"')) ||
-                (value.startsWith("'") && value.endsWith("'"))) {
-                value = value.slice(1, -1);
-            }
-
-            process.env[key] = value;
-        }
-    });
-}
-
 export class Timeout {
     public static readonly CLICK_WAIT = 1000;
     public static readonly PREPARE_TEST = 5000;
