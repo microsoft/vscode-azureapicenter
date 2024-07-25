@@ -10,7 +10,7 @@ coverage:
         if_ci_failed: error #success, failure, error, ignore
 
 ignore:
-  - "src/test/**/*"
+  - "src/test/**"
 
 comment:
   layout: "reach, diff, flags, files"
