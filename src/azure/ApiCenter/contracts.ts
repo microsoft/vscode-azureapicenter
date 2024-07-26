@@ -72,6 +72,11 @@ export type ApiCenterApiVersionDefinition = {
     type: string;
 };
 
+export type ApiCenterRulesetConfig = {
+    properties: {
+    };
+};
+
 export type ApiCenterApiVersionDefinitionImport = {
     format: string;
     value: string;
@@ -86,6 +91,15 @@ export type ApiCenterApiVersionDefinitionExport = {
     value: string;
 };
 
+export type ApiCenterRulesetImport = {
+    format: string;
+    value: string;
+};
+
+export type ApiCenterRulesetExport = {
+    format: string;
+    value: string;
+};
 
 export enum ApiKind {
     rest = 'REST',

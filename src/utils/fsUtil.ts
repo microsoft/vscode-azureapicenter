@@ -1,19 +1,22 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 import * as crypto from "crypto";
+import * as fs from "fs";
 import * as fse from 'fs-extra';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import { extensionName, sessionFolderKey } from '../constants';
 import { ext } from '../extensionVariables';
 
-export async function writeToTemporaryFile(fileContent: string, folderName: string, fileName: string): Promise<vscode.Uri> {
+export async function writeToTemporaryFile(fileContent: string | Buffer, folderName: string, fileName: string): Promise<vscode.Uri> {
     const folderPath = await createTemporaryFolder(folderName);
     const localFilePath: string = path.join(folderPath, fileName);
     await fse.ensureFile(localFilePath);
 
     const fileUri = vscode.Uri.file(localFilePath);
-    await vscode.workspace.fs.writeFile(fileUri, Buffer.from(fileContent));
+
+    const content = fileContent instanceof Buffer ? fileContent : Buffer.from(fileContent);
+    await vscode.workspace.fs.writeFile(fileUri, content);
 
     return fileUri;
 }
@@ -61,4 +64,28 @@ export function getRandomHexString(length: number = 10): string {
 
 export function getDefaultWorkspacePath(): string {
     return path.join(ext.context.globalStoragePath, extensionName);
+}
+
+export async function getFilenamesInFolder(directoryPath: string) {
+    const files = await fs.promises.readdir(directoryPath);
+    const filenames = [];
+
+    for (const file of files) {
+        const fullPath = path.join(directoryPath, file);
+        const stat = await fs.promises.stat(fullPath);
+        if (stat.isFile()) {
+            filenames.push(file);
+        }
+    }
+
+    return filenames;
+}
+
+export async function hasFiles(folderPath: string) {
+    try {
+        const files = await fs.promises.readdir(folderPath);
+        return files.length > 0;
+    } catch (err) {
+        return false;
+    }
 }
