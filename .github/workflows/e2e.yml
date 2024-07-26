@@ -8,6 +8,11 @@ on:
 jobs:
   e2e-test:
     runs-on: ubuntu-latest
+    env:
+      CI: true
+      AZURE_TENANT_NAME: microsoft
+      AZURE_TENANT_ID: 72f988bf-86f1-41af-91ab-2d7cd011db47
+      AZURE_SUBSCRIPTION_NAME: 'Teams Cloud - E2E Testing with TTL = 1 Days'
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
