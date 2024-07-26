@@ -1,10 +1,10 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
+import * as path from 'path';
 import * as vscode from 'vscode';
 import { UiStrings } from "../../uiStrings";
 import { FunctionTreeItem } from "./FunctionTreeItem";
-import path = require("path");
 
 export class FunctionsTreeItem extends AzExtParentTreeItem {
     public static contextValue: string = "azureApiCenterFunctions";
