@@ -4,15 +4,16 @@ import { IActionContext } from "@microsoft/vscode-azext-utils";
 import * as vscode from "vscode";
 import { TelemetryClient } from "../common/telemetryClient";
 import { TelemetryEvent, TelemetryProperties } from "../common/telemetryEvent";
-import { ApiRulesetOptions, azureApiGuidelineRulesetFile, defaultRulesetFile, spectralOwaspRulesetFile } from "../constants";
+import { ApiRulesetOptions, azureApiGuidelineRulesetFile, defaultRulesetFile, SpectralExtensionId, spectralOwaspRulesetFile } from "../constants";
 import { UiStrings } from "../uiStrings";
 import { ensureExtension } from "../utils/ensureExtension";
+import { setRulesetFile } from "../utils/ruleUtils";
 
 const rulesetFileTypes = ['json', 'yml', 'yaml', 'js', "mjs", "cjs"];
 
 export async function setApiRuleset(context: IActionContext) {
     ensureExtension(context, {
-        extensionId: 'stoplight.spectral',
+        extensionId: SpectralExtensionId,
         noExtensionErrorMessage: UiStrings.NoSpectralExtension,
     });
 
@@ -31,6 +32,13 @@ export async function setApiRuleset(context: IActionContext) {
             break;
         case ApiRulesetOptions.spectralOwasp:
             await setRulesetFile(spectralOwaspRulesetFile);
+            break;
+        case ApiRulesetOptions.activeFile:
+            const activeEditor = vscode.window.activeTextEditor;
+            if (!activeEditor) {
+                throw new Error(UiStrings.NoActiveFileOpen);
+            }
+            await setRulesetFile(activeEditor.document.uri.fsPath);
             break;
         case ApiRulesetOptions.selectFile:
             const fileUri = await vscode.window.showOpenDialog({
@@ -62,11 +70,4 @@ export async function setApiRuleset(context: IActionContext) {
             }
             break;
     }
-}
-
-async function setRulesetFile(rulesetFile: string) {
-    const spectralLinterConfig = vscode.workspace.getConfiguration("spectral");
-    await spectralLinterConfig.update("rulesetFile", rulesetFile, vscode.ConfigurationTarget.Global);
-
-    vscode.window.showInformationMessage(vscode.l10n.t(UiStrings.RulesetFileSet, rulesetFile));
 }

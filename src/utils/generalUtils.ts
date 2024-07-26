@@ -1,7 +1,11 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
+import * as os from "os";
+import * as path from "path";
 
 export namespace GeneralUtils {
+    const apiCenterFolder = ".api-center";
+
     export async function sleep(ms: number) {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
@@ -45,5 +49,9 @@ export namespace GeneralUtils {
             return Promise.resolve(e);
         }
         return fn(e.result);
+    }
+
+    export function getApiCenterWorkspacePath(): string {
+        return path.join(os.homedir(), apiCenterFolder);
     }
 }

@@ -9,7 +9,7 @@
   "engines": {
     "vscode": "^1.91.0"
   },
-  "aiKey": "0655b027-8c75-4e4f-af1a-891dc8312948",
+  "aiKey": "20f6d4af-3678-4602-ae98-f6724f057cd5",
   "repository": {
     "type": "git",
     "url": "https://github.com/microsoft/vscode-azureapicenter.git"
@@ -126,6 +126,41 @@
         "category": "Azure API Center"
       },
       {
+        "command": "azure-api-center.enableRules",
+        "title": "%azure-api-center.commands.enableRules.title%",
+        "category": "Azure API Center"
+      },
+      {
+        "command": "azure-api-center.exportRules",
+        "title": "%azure-api-center.commands.exportRules.title%",
+        "category": "Azure API Center"
+      },
+      {
+        "command": "azure-api-center.deployRules",
+        "title": "%azure-api-center.commands.deployRules.title%",
+        "category": "Azure API Center"
+      },
+      {
+        "command": "azure-api-center.openRule",
+        "title": "%azure-api-center.commands.openRule.title%",
+        "category": "Azure API Center"
+      },
+      {
+        "command": "azure-api-center.addCustomFunction",
+        "title": "%azure-api-center.commands.addCustomFunction.title%",
+        "category": "Azure API Center"
+      },
+      {
+        "command": "azure-api-center.renameCustomFunction",
+        "title": "%azure-api-center.commands.renameCustomFunction.title%",
+        "category": "Azure API Center"
+      },
+      {
+        "command": "azure-api-center.deleteCustomFunction",
+        "title": "%azure-api-center.commands.deleteCustomFunction.title%",
+        "category": "Azure API Center"
+      },
+      {
         "command": "azure-api-center.selectTenant",
         "title": "%azure-api-center.commands.selectTenant.title%",
         "category": "Azure API Center"
@@ -213,6 +248,35 @@
           "command": "azure-api-center.cleanupSearchResult",
           "when": "view == apiCenterTreeView && viewItem == azureApiCenterApis-search",
           "group": "inline@1"
+        },
+        {
+          "command": "azure-api-center.enableRules",
+          "when": "view == apiCenterTreeView && viewItem == azureApiCenterRules",
+          "group": "rule@0"
+        },
+        {
+          "command": "azure-api-center.exportRules",
+          "when": "view == apiCenterTreeView && viewItem == azureApiCenterRules-enabled",
+          "group": "rule@1"
+        },
+        {
+          "command": "azure-api-center.deployRules",
+          "when": "view == apiCenterTreeView && viewItem == azureApiCenterRules-enabled",
+          "group": "rule@2"
+        },
+        {
+          "command": "azure-api-center.addCustomFunction",
+          "when": "view == apiCenterTreeView && viewItem == azureApiCenterFunctions"
+        },
+        {
+          "command": "azure-api-center.renameCustomFunction",
+          "when": "view == apiCenterTreeView && viewItem == azureApiCenterFunction",
+          "group": "function@0"
+        },
+        {
+          "command": "azure-api-center.deleteCustomFunction",
+          "when": "view == apiCenterTreeView && viewItem == azureApiCenterFunction",
+          "group": "function@1"
         }
       ],
       "copilot": [
@@ -266,6 +330,34 @@
         {
           "command": "azure-api-center.generateApiFromCode",
           "when": "never"
+        },
+        {
+          "command": "azure-api-center.enableRules",
+          "when": "never"
+        },
+        {
+          "command": "azure-api-center.exportRules",
+          "when": "never"
+        },
+        {
+          "command": "azure-api-center.deployRules",
+          "when": "never"
+        },
+        {
+          "command": "azure-api-center.openRule",
+          "when": "never"
+        },
+        {
+          "command": "azure-api-center.addCustomFunction",
+          "when": "never"
+        },
+        {
+          "command": "azure-api-center.renameCustomFunction",
+          "when": "never"
+        },
+        {
+          "command": "azure-api-center.deleteCustomFunction",
+          "when": "never"
         }
       ]
     },
@@ -299,6 +391,20 @@
             "items": {
               "type": "string"
             }
+          },
+          "azure-api-center.tenant": {
+            "type": "object",
+            "description": "A specific tenant to sign in to",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "tenant name"
+              },
+              "id": {
+                "type": "string",
+                "description": "tenant id"
+              }
+            }
           }
         }
       }
@@ -320,6 +426,7 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.42.1",
+    "@types/archiver": "^6.0.2",
     "@types/express": "^4.17.20",
     "@types/fs-extra": "^11.0.2",
     "@types/js-yaml": "^4.0.8",
@@ -327,6 +434,7 @@
     "@types/node": "18.x",
     "@types/sinon": "^17.0.3",
     "@types/swagger2openapi": "^7.0.4",
+    "@types/unzipper": "^0.10.9",
     "@types/vscode": "^1.90.0",
     "@typescript-eslint/eslint-plugin": "^6.7.3",
     "@typescript-eslint/parser": "^6.7.3",
@@ -368,6 +476,7 @@
     "@microsoft/vscode-azext-utils": "^2.5.1",
     "@vscode/extension-telemetry": "^0.6.2",
     "ajv": "^8.12.0",
+    "archiver": "^7.0.1",
     "axios": "^1.6.0",
     "express": "^4.19.2",
     "fs-extra": "^11.1.1",
@@ -375,6 +484,7 @@
     "json-schema-faker": "^0.5.6",
     "openapi-types": "^12.1.3",
     "swagger2openapi": "^7.0.8",
+    "unzipper": "^0.12.1",
     "vscode-nls": "^5.2.0",
     "widdershins": "^4.0.1"
   },

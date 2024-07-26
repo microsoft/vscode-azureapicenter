@@ -24,6 +24,13 @@ import { openAPiInSwagger } from './commands/openApiInSwagger';
 import { openUrlFromTreeNode } from './commands/openUrl';
 import { refreshTree } from './commands/refreshTree';
 import { registerApi } from './commands/registerApi';
+import { addCustomFunction } from './commands/rules/addCustomFunction';
+import { deleteCustomFunction } from './commands/rules/deleteCustomFunction';
+import { deployRules } from './commands/rules/deployRules';
+import { enableRules } from './commands/rules/enableRules';
+import { exportRules } from './commands/rules/exportRules';
+import { openRule } from './commands/rules/openRule';
+import { renameCustomFunction } from './commands/rules/renameCustomFunction';
 import { searchApi } from './commands/searchApi';
 import { setApiRuleset } from './commands/setApiRuleset';
 import { testInPostman } from './commands/testInPostman';
@@ -109,6 +116,20 @@ export async function activate(context: vscode.ExtensionContext) {
     registerCommandWithTelemetry('azure-api-center.detectBreakingChange', detectBreakingChange);
 
     registerCommandWithTelemetry('azure-api-center.generateMarkdownDocument', generateMarkdownDocument);
+
+    registerCommandWithTelemetry('azure-api-center.enableRules', enableRules);
+
+    registerCommandWithTelemetry('azure-api-center.exportRules', exportRules);
+
+    registerCommandWithTelemetry('azure-api-center.deployRules', deployRules);
+
+    registerCommandWithTelemetry('azure-api-center.openRule', openRule);
+
+    registerCommandWithTelemetry('azure-api-center.addCustomFunction', addCustomFunction);
+
+    registerCommandWithTelemetry('azure-api-center.renameCustomFunction', renameCustomFunction);
+
+    registerCommandWithTelemetry('azure-api-center.deleteCustomFunction', deleteCustomFunction);
 
     registerCommandWithTelemetry('azure-api-center.apiCenterTreeView.refresh', async (context: IActionContext) => refreshTree(context));
 

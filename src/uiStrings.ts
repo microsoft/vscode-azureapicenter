@@ -45,8 +45,9 @@ export class UiStrings {
     static readonly ApiRulesetOptionDefault = vscode.l10n.t("Default");
     static readonly ApiRulesetOptionAzureApiGuideline = vscode.l10n.t("Microsoft Azure REST API");
     static readonly ApiRulesetOptionSpectralOwasp = vscode.l10n.t("OWASP API Security Top 10");
-    static readonly ApiRulesetOptionSelectFile = vscode.l10n.t("Select Local File");
-    static readonly ApiRulesetOptionInputUrl = vscode.l10n.t("Input Remote URL");
+    static readonly ApiRulesetOptionActiveFile = vscode.l10n.t("Active File");
+    static readonly ApiRulesetOptionSelectFile = vscode.l10n.t("Select Local File...");
+    static readonly ApiRulesetOptionInputUrl = vscode.l10n.t("Input Remote URL...");
     static readonly CICDTypeGitHub = vscode.l10n.t("GitHub");
     static readonly CICDTypeAzure = vscode.l10n.t("Azure DevOps");
     static readonly ApiSpecificationOptionApiCenter = vscode.l10n.t("Azure API Center");
@@ -101,4 +102,20 @@ export class UiStrings {
     static readonly NoAzureSessionFound = vscode.l10n.t("No Azure session found.");
     static readonly FailedTo = vscode.l10n.t("Failed to retrieve Azure session: {0}");
     static readonly SelectSubscriptions = vscode.l10n.t("Select Subscriptions...");
+    static readonly InputCustomFunctionName = vscode.l10n.t("Please provide the name of a custom function.");
+    static readonly DeleteCustomFunction = vscode.l10n.t("Are you sure you want to delete '{0}'?");
+    static readonly FileAlreadyExists = vscode.l10n.t("The file '{0}' already exists. Please input a different name.");
+    static readonly NoRulesFolder = vscode.l10n.t("Rules folder '{0}' is empty. No files to deploy.");
+    static readonly RulesDeployed = vscode.l10n.t("Rules deployed to '{0}'.");
+    static readonly FailedToDeployRules = vscode.l10n.t("Failed to deploy rules. Error: {0}");
+    static readonly RulesEnabled = vscode.l10n.t("API Analysis enabled for '{0}'.");
+    static readonly FailedToEnableRules = vscode.l10n.t("Failed to enable API Analysis. Error: {0}");
+    static readonly RulesFolderNotEmpty = vscode.l10n.t("The rules folder '{0}' is not empty. Do you want to overwrite the existing files?");
+    static readonly Yes = vscode.l10n.t("Yes");
+    static readonly No = vscode.l10n.t("No");
+    static readonly RulesExported = vscode.l10n.t("Rules exported to '{0}'.");
+    static readonly TreeitemLabelFunctions = vscode.l10n.t("Functions");
+    static readonly TreeitemLabelRules = vscode.l10n.t("Rules");
+    static readonly RulesNotEnabled = vscode.l10n.t("API Analysis is not enabled. Click here to enable it.");
+    static readonly OpenApiCenterFolder = vscode.l10n.t("Rules folder is required to be opened to enable live API linting. Click 'Yes' to open the rules folder in current window.");
 }
