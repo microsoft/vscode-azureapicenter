@@ -11,6 +11,8 @@ export class RuleTreeItem extends AzExtTreeItem {
     constructor(parent: AzExtParentTreeItem, public rulesFolderPath: string, public ruleFullFilePath: string, public ruleName: string) {
         super(parent);
         this.fullFilePath = path.join(rulesFolderPath, ruleName);
+        this.description = this.fullFilePath;
+        this.tooltip = this.fullFilePath;
     }
 
     public get iconPath(): TreeItemIconPath {

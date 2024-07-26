@@ -4,12 +4,16 @@ import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } 
 import * as vscode from 'vscode';
 import { UiStrings } from "../../uiStrings";
 import { FunctionTreeItem } from "./FunctionTreeItem";
+import path = require("path");
 
 export class FunctionsTreeItem extends AzExtParentTreeItem {
     public static contextValue: string = "azureApiCenterFunctions";
     public readonly contextValue: string = FunctionsTreeItem.contextValue;
     constructor(parent: AzExtParentTreeItem, public rulesFolderPath: string, public ruleFullFilePath: string, public functionsDir: string, public functionNames: string[]) {
         super(parent);
+        const functionsFolderPath = path.join(this.rulesFolderPath, this.functionsDir);
+        this.description = functionsFolderPath;
+        this.tooltip = functionsFolderPath;
     }
 
     public get label(): string {
