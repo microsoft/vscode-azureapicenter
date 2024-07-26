@@ -11,7 +11,7 @@ export class ApiCenterService {
   private resourceGroupName: string;
   private apiCenterName: string;
   private apiVersion: string = "2023-07-01-preview";
-  private apiVersionPreview: string = "2023-07-01-preview";
+  private apiVersionPreview: string = "2024-03-15-preview";
   constructor(susbcriptionContext: ISubscriptionContext, resourceGroupName: string, apiCenterName: string) {
     this.susbcriptionContext = susbcriptionContext;
     this.apiCenterName = apiCenterName;
