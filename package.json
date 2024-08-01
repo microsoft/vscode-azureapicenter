@@ -411,6 +411,10 @@
         {
           "command": "azure-api-center.apiCenterWorkspace.removeApi",
           "when": "never"
+        },
+        {
+          "command": "azure-api-center.apiCenterWorkspace.collapse",
+          "when": "never"
         }
       ]
     },
