@@ -122,6 +122,6 @@ export class UiStrings {
     static readonly AddDataPlaneRuntimeUrl = vscode.l10n.t("Input Runtime URL");
     static readonly AddDataPlaneClientId = vscode.l10n.t("Input Entra App Client ID");
     static readonly AddDataPlaneTenantId = vscode.l10n.t("Input Entra App Tenant ID");
-    static readonly RequestFailedWithStatusCode = vscode.l10n.t("request failed with status code: ${0}");
-    static readonly DownloadDefinitionFileWithErrorMsg = vscode.l10n.t("download error: {0}");
+    static readonly RequestFailedWithStatusCode = vscode.l10n.t("Request failed with status code: {0}");
+    static readonly DownloadDefinitionFileWithErrorMsg = vscode.l10n.t("Download API Center Definition File error: {0}");
 }
