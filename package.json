@@ -245,7 +245,7 @@
         },
         {
           "command": "azure-api-center.open-api-docs",
-          "when": "view == apiCenterTreeView && viewItem == azureApiCenterApiVersionDefinitionTreeItem-openapi"
+          "when": "(view == apiCenterTreeView && viewItem == azureApiCenterApiVersionDefinitionTreeItem-openapi) || (view == apiCenterWorkspace && viewItem == azureApiCenterApiVersionDataPlaneDefinitionTreeItem-openapi)"
         },
         {
           "command": "azure-api-center.open-postman",
@@ -253,7 +253,7 @@
         },
         {
           "command": "azure-api-center.generate-api-client",
-          "when": "view == apiCenterTreeView && viewItem == azureApiCenterApiVersionDefinitionTreeItem-openapi"
+          "when": "(view == apiCenterTreeView && viewItem == azureApiCenterApiVersionDefinitionTreeItem-openapi) || (view == apiCenterWorkspace && viewItem == azureApiCenterApiVersionDataPlaneDefinitionTreeItem-openapi)"
         },
         {
           "command": "azure-api-center.importOpenApiByFile",
