@@ -15,6 +15,7 @@ import { RuleTreeItem } from "./RuleTreeItem";
 
 const functionsDir = "functions";
 const rulesDir = ".api-center-rules";
+const validRuleFileNames = ["ruleset.yml", "ruleset.yaml", "ruleset.json"];
 
 export class RulesTreeItem extends AzExtParentTreeItem {
     public static contextValue: string = "azureApiCenterRules";
@@ -58,7 +59,13 @@ export class RulesTreeItem extends AzExtParentTreeItem {
             await this.exportRulesToLocalFolder(this.rulesFolderPath);
         }
 
-        const ruleFilename = (await getFilenamesInFolder(this.rulesFolderPath))[0];
+        const filenames = await getFilenamesInFolder(this.rulesFolderPath);
+        const ruleFilename = filenames.find((filename) => validRuleFileNames.includes(filename.toLowerCase()));
+
+        if (!ruleFilename) {
+            throw new Error(vscode.l10n.t(UiStrings.NoRuleFileFound, validRuleFileNames.join("' or '"), this.rulesFolderPath));
+        }
+
         const ruleFullFilePath = path.join(this.rulesFolderPath, ruleFilename);
         const functionsFilenames = await getFilenamesInFolder(path.join(this.rulesFolderPath, functionsDir));
 
