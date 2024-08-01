@@ -4,7 +4,7 @@ import { getResourceGroupFromId } from "@microsoft/vscode-azext-azureutils";
 import { IActionContext } from "@microsoft/vscode-azext-utils";
 import * as fse from 'fs-extra';
 import * as vscode from 'vscode';
-import { isApiCenterServiceManagement } from "../../azure/ApiCenter/ApiCenterDistinct";
+import { ApiCenterVersionDefinitionManagement } from "../../azure/ApiCenter/ApiCenterDefinition";
 import { ApiCenterService } from "../../azure/ApiCenter/ApiCenterService";
 import { ApiCenterApi, ApiCenterApiVersion, ApiCenterApiVersionDefinition, ApiCenterApiVersionDefinitionImport, ApiKind, ApiVersionLifecycleStage, SpecificationName } from "../../azure/ApiCenter/contracts";
 import { ext } from "../../extensionVariables";
@@ -17,7 +17,7 @@ export async function registerStepByStep(context: IActionContext, node?: ApisTre
         const apiCenterNode = await ext.treeDataProvider.showTreeItemPicker<ApiCenterTreeItem>(ApiCenterTreeItem.contextValue, context);
         node = apiCenterNode.apisTreeItem;
     }
-    if (!(isApiCenterServiceManagement(node.apiCenter))) {
+    if (node.apiCenter instanceof ApiCenterVersionDefinitionManagement) {
         return;
     }
 
@@ -64,8 +64,8 @@ export async function registerStepByStep(context: IActionContext, node?: ApisTre
         return;
     }
 
-    const resourceGroupName = getResourceGroupFromId(node.apiCenter.id);
-    const apiCenterService = new ApiCenterService(node.parent?.subscription!, resourceGroupName, node.apiCenter.name);
+    const resourceGroupName = getResourceGroupFromId(node.apiCenter.getId());
+    const apiCenterService = new ApiCenterService(node.parent?.subscription!, resourceGroupName, node.apiCenter.getName());
 
     await createApiResources(apiCenterService, apiTitle, apiKind, apiVersionTitle, apiVersionLifecycleStage,
         apiDefinitionTitle, specificationName, filePath);

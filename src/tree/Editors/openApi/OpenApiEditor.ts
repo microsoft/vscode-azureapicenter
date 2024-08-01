@@ -1,7 +1,10 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 import { getResourceGroupFromId } from "@microsoft/vscode-azext-azureutils";
+import fetch from 'node-fetch';
 import { ProgressLocation, window } from "vscode";
+import { ApiCenterDataPlaneService } from '../../../azure/ApiCenter/ApiCenterDataPlaneAPIs';
+import { ApiCenterVersionDefinitionManagement } from '../../../azure/ApiCenter/ApiCenterDefinition';
 import { ApiCenterService } from "../../../azure/ApiCenter/ApiCenterService";
 import { ApiCenterApiVersionDefinitionImport } from "../../../azure/ApiCenter/contracts";
 import { showSavePromptConfigKey } from "../../../constants";
@@ -15,6 +18,15 @@ export class OpenApiEditor extends Editor<ApiVersionDefinitionTreeItem> {
     }
 
     public async getData(treeItem: ApiVersionDefinitionTreeItem): Promise<string> {
+        if (treeItem.apiCenterApiVersionDefinition instanceof ApiCenterVersionDefinitionManagement) {
+            return this.getManagementData(treeItem);
+        }
+        else {
+            return this.getDataplaneData(treeItem);
+        }
+    }
+
+    private async getManagementData(treeItem: ApiVersionDefinitionTreeItem): Promise<string> {
         const apiCenterService = new ApiCenterService(
             treeItem?.subscription!,
             getResourceGroupFromId(treeItem?.id!),
@@ -23,10 +35,26 @@ export class OpenApiEditor extends Editor<ApiVersionDefinitionTreeItem> {
         const exportedSpec = await apiCenterService.exportSpecification(
             treeItem?.apiCenterApiName!,
             treeItem?.apiCenterApiVersionName!,
-            treeItem?.apiCenterApiVersionDefinition.name!
+            treeItem?.apiCenterApiVersionDefinition.getName()
         );
 
         return exportedSpec.value;
+    }
+
+    private async getDataplaneData(treeItem: ApiVersionDefinitionTreeItem): Promise<string> {
+        const apiCenterService = new ApiCenterDataPlaneService(treeItem?.subscription!);
+        const exportedSpec = await apiCenterService.exportSpecification(
+            treeItem?.apiCenterApiName!,
+            treeItem?.apiCenterApiVersionName!,
+            treeItem?.apiCenterApiVersionDefinition.getName()
+        );
+        try {
+            const rawData = await fetch(exportedSpec.value);
+            const data = await rawData.json();
+            return JSON.stringify(data);
+        } catch (err) {
+            throw err;
+        }
     }
 
     public async updateData(treeItem: ApiVersionDefinitionTreeItem, data: string): Promise<string> {
@@ -57,7 +85,7 @@ export class OpenApiEditor extends Editor<ApiVersionDefinitionTreeItem> {
                 await apiCenterService.importSpecification(
                     treeItem?.apiCenterApiName!,
                     treeItem?.apiCenterApiVersionName!,
-                    treeItem?.apiCenterApiVersionDefinition.name!,
+                    treeItem?.apiCenterApiVersionDefinition.getName(),
                     importPayload
                 );
             }
@@ -67,15 +95,15 @@ export class OpenApiEditor extends Editor<ApiVersionDefinitionTreeItem> {
         });
     }
     public async getFilename(treeItem: ApiVersionDefinitionTreeItem, options: EditorOptions): Promise<string> {
-        return `${treeItem.apiCenterName}-${treeItem.apiCenterApiName}-${treeItem.apiCenterApiVersionName}--${treeItem.apiCenterApiVersionDefinition.name}-openapi-tempFile${options.fileType}`;
+        return `${treeItem.apiCenterName}-${treeItem.apiCenterApiName}-${treeItem.apiCenterApiVersionName}--${treeItem.apiCenterApiVersionDefinition.getName()}-openapi-tempFile${options.fileType}`;
     }
 
     public async getDiffFilename(treeItem: ApiVersionDefinitionTreeItem, options: EditorOptions): Promise<string> {
-        return `${treeItem.apiCenterName}-${treeItem.apiCenterApiName}-${treeItem.apiCenterApiVersionName}--${treeItem.apiCenterApiVersionDefinition.name}-openapi.json${options.fileType}`;
+        return `${treeItem.apiCenterName}-${treeItem.apiCenterApiName}-${treeItem.apiCenterApiVersionName}--${treeItem.apiCenterApiVersionDefinition.getName()}-openapi.json${options.fileType}`;
     }
 
     public async getSaveConfirmationText(treeItem: ApiVersionDefinitionTreeItem): Promise<string> {
-        return localize("", `Saving will update the API spec '${treeItem.apiCenterApiVersionDefinition.name}'.`);
+        return localize("", `Saving will update the API spec '${treeItem.apiCenterApiVersionDefinition.getName()}'.`);
     }
 
     public getSize(context: ApiVersionDefinitionTreeItem): Promise<number> {

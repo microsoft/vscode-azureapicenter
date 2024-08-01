@@ -1,12 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
-import { getResourceGroupFromId } from "@microsoft/vscode-azext-azureutils";
 import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import * as vscode from 'vscode';
-import { ApiCenterDataPlaneService } from "../azure/ApiCenter/ApiCenterDataPlaneAPIs";
-import { isApiCenterServiceManagement } from "../azure/ApiCenter/ApiCenterDistinct";
-import { ApiCenterService } from "../azure/ApiCenter/ApiCenterService";
-import { GeneralApiCenter, GeneralApiCenterApi } from "../azure/ApiCenter/contracts";
+import { IApiCenterServiceBase } from "../azure/ApiCenter/ApiCenterDefinition";
 import { UiStrings } from "../uiStrings";
 import { ApiTreeItem } from "./ApiTreeItem";
 export class ApisTreeItem extends AzExtParentTreeItem {
@@ -15,7 +11,7 @@ export class ApisTreeItem extends AzExtParentTreeItem {
   public searchContent: string = "";
   public contextValue: string = ApisTreeItem.contextValue;
   private _nextLink: string | undefined;
-  constructor(parent: AzExtParentTreeItem, public apiCenter: GeneralApiCenter) {
+  constructor(parent: AzExtParentTreeItem, public apiCenter: IApiCenterServiceBase) {
     super(parent);
   }
 
@@ -41,29 +37,13 @@ export class ApisTreeItem extends AzExtParentTreeItem {
   }
 
   public async loadMoreChildrenImpl(clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
-    const apis = await this.getApis();
+    const apis = await this.apiCenter.getChild(this.parent?.subscription!, this.searchContent);
     return await this.createTreeItemsWithErrorHandling(
       apis,
       'invalidResource',
-      resource => new ApiTreeItem(this, this.apiCenter.name, resource),
+      resource => new ApiTreeItem(this, this.apiCenter.getName(), this.apiCenter.generateChild(resource)),
       resource => resource.name
     );
-  }
-
-  private async getApis(): Promise<GeneralApiCenterApi[]> {
-    if (isApiCenterServiceManagement(this.apiCenter)) {
-      const resourceGroupName = getResourceGroupFromId(this.apiCenter.id);
-      const apiCenterService = new ApiCenterService(this.parent?.subscription!, resourceGroupName, this.apiCenter.name);
-      const apis = await apiCenterService.getApiCenterApis(this.searchContent);
-
-      this._nextLink = apis.nextLink;
-      return apis.value;
-    } else {
-      let server = new ApiCenterDataPlaneService(this.parent?.subscription!);
-      const res = await server.getApiCenterApis();
-      this._nextLink = res.nextLink;
-      return res.value;
-    }
   }
 
   public hasMoreChildrenImpl(): boolean {

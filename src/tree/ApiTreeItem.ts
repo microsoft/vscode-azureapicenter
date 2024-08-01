@@ -2,28 +2,25 @@
 // Licensed under the MIT license.
 import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import * as vscode from 'vscode';
-import { isApiCenterManagement } from "../azure/ApiCenter/ApiCenterDistinct";
-import { GeneralApiCenterApi } from "../azure/ApiCenter/contracts";
+import { ApiCenterApiManagement, IApiCenterBase } from "../azure/ApiCenter/ApiCenterDefinition";
 import { UiStrings } from "../uiStrings";
 import { ApiDeploymentsTreeItem } from "./ApiDeploymentsTreeItem";
 import { ApiVersionsTreeItem } from "./ApiVersionsTreeItem";
-
 export class ApiTreeItem extends AzExtParentTreeItem {
   public readonly childTypeLabel: string = UiStrings.ApiTreeItemChildTypeLabel;
   public static contextValue: string = "azureApiCenterApi";
   public readonly contextValue: string = ApiTreeItem.contextValue;
   public readonly apiVersionsTreeItem: ApiVersionsTreeItem;
   public readonly apiDeploymentsTreeItem?: ApiDeploymentsTreeItem;
-  private readonly _apiCenterApi: GeneralApiCenterApi;
+  private readonly _apiCenterApi: IApiCenterBase;
   private readonly _apiCenterName: string;
-  private _nextLink: string | undefined;
-  constructor(parent: AzExtParentTreeItem, apiCenterName: string, apiCenterApi: GeneralApiCenterApi) {
+  constructor(parent: AzExtParentTreeItem, apiCenterName: string, apiCenterApi: IApiCenterBase) {
     super(parent);
     this._apiCenterName = apiCenterName;
     this._apiCenterApi = apiCenterApi;
     this.apiVersionsTreeItem = new ApiVersionsTreeItem(this, apiCenterName, apiCenterApi);
-    if (isApiCenterManagement(apiCenterApi)) {
-      this.apiDeploymentsTreeItem = new ApiDeploymentsTreeItem(this, apiCenterName, apiCenterApi);
+    if (apiCenterApi instanceof ApiCenterApiManagement) {
+      this.apiDeploymentsTreeItem = new ApiDeploymentsTreeItem(this, apiCenterName, (apiCenterApi as ApiCenterApiManagement).getData());
     }
   }
 
@@ -32,15 +29,15 @@ export class ApiTreeItem extends AzExtParentTreeItem {
   }
 
   public get id(): string {
-    return isApiCenterManagement(this._apiCenterApi) ? this._apiCenterApi.id : this._apiCenterApi.name;
+    return this._apiCenterApi.getId();
   }
 
   public get label(): string {
-    return isApiCenterManagement(this._apiCenterApi) ? this._apiCenterApi.properties.title : this._apiCenterApi.title;
+    return this._apiCenterApi.getLable();
   }
 
   public hasMoreChildrenImpl(): boolean {
-    return this._nextLink !== undefined;
+    return this._apiCenterApi.getNextLink() !== undefined;
   }
 
   public async loadMoreChildrenImpl(clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {

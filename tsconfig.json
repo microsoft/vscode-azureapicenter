@@ -1,6 +1,7 @@
 {
 	"compilerOptions": {
 		"module": "commonjs",
+		"experimentalDecorators": true,
 		"target": "ES2020",
 		"lib": [
 			"ES2020"

@@ -1,28 +1,22 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
-import { getResourceGroupFromId } from "@microsoft/vscode-azext-azureutils";
 import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import * as vscode from 'vscode';
-import { ApiCenterDataPlaneService } from "../azure/ApiCenter/ApiCenterDataPlaneAPIs";
-import { isApiCenterVersionManagement } from "../azure/ApiCenter/ApiCenterDistinct";
-import { ApiCenterService } from "../azure/ApiCenter/ApiCenterService";
-import { GeneralApiCenterApiVersion, GeneralApiCenterApiVersionDefinition } from "../azure/ApiCenter/contracts";
+import { IVersionBase } from "../azure/ApiCenter/ApiCenterDefinition";
 import { UiStrings } from "../uiStrings";
 import { ApiVersionDefinitionTreeItem } from "./ApiVersionDefinitionTreeItem";
-
 export class ApiVersionDefinitionsTreeItem extends AzExtParentTreeItem {
   public readonly childTypeLabel: string = UiStrings.ApiVersionDefinitionsTreeItemChildTypeLabel;
   public static contextValue: string = "azureApiCenterApiVersionDefinitions";
   public readonly contextValue: string = ApiVersionDefinitionsTreeItem.contextValue;
   private readonly _apiCenterName: string;
   private readonly _apiCenterApiName: string;
-  private readonly _apiCenterApiVersion: GeneralApiCenterApiVersion;
-  private _nextLink: string | undefined;
+  private readonly _apiCenterApiVersion: IVersionBase;
   constructor(
     parent: AzExtParentTreeItem,
     apiCenterName: string,
     apiCenterApiName: string,
-    apiCenterApiVersion: GeneralApiCenterApiVersion) {
+    apiCenterApiVersion: IVersionBase) {
     super(parent);
     this._apiCenterApiVersion = apiCenterApiVersion;
     this._apiCenterName = apiCenterName;
@@ -38,43 +32,21 @@ export class ApiVersionDefinitionsTreeItem extends AzExtParentTreeItem {
   }
 
   public async loadMoreChildrenImpl(clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
-
-    let difinitions = await this.getDefinitions();
-
+    let definitions = await this._apiCenterApiVersion.getChild(this.parent?.subscription!, this._apiCenterName, this._apiCenterApiName);
     return await this.createTreeItemsWithErrorHandling(
-      difinitions,
+      definitions,
       'invalidResource',
-      difinition => new ApiVersionDefinitionTreeItem(
+      definition => new ApiVersionDefinitionTreeItem(
         this,
         this._apiCenterName,
         this._apiCenterApiName,
-        this._apiCenterApiVersion.name,
-        generateApiDefinition(definition)),
-      difinition => difinition.name
+        this._apiCenterApiVersion.getName(),
+        this._apiCenterApiVersion.generateChild(definition)),
+      definition => definition.name
     );
   }
 
-  private async getDefinitions(): Promise<GeneralApiCenterApiVersionDefinition[]> {
-    if (isApiCenterVersionManagement(this._apiCenterApiVersion)) {
-      const resourceGroupName = getResourceGroupFromId(this._apiCenterApiVersion.id);
-      const apiCenterService = new ApiCenterService(this.parent?.subscription!, resourceGroupName, this._apiCenterName);
-
-      const definitions = await apiCenterService.getApiCenterApiVersionDefinitions(this._apiCenterApiName, this._apiCenterApiVersion.name);
-      this._nextLink = definitions.nextLink;
-      return definitions.value;
-    } else {
-      const server = new ApiCenterDataPlaneService(this.parent?.subscription!);
-      const res = await server.getApiCenterApiDefinitions(this._apiCenterApiName, this._apiCenterApiVersion.name);
-      this._nextLink = res.nextLink;
-      return res.value;
-    }
-  }
-
-  // private generateApiDefinition(data: GeneralApiCenterApiVersionDefinition) {
-  //   if (isApiCenterVersionManagement(data))
-  // }
-
   public hasMoreChildrenImpl(): boolean {
-    return this._nextLink !== undefined;
+    return this._apiCenterApiVersion.getNextLink() !== undefined;
   }
 }

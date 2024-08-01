@@ -4,9 +4,7 @@ import { AzExtParentTreeItem, AzExtTreeItem, TreeItemIconPath } from "@microsoft
 import * as vscode from 'vscode';
 import { IDefinitionBase } from "../azure/ApiCenter/ApiCenterDefinition";
 export class ApiVersionDefinitionTreeItem extends AzExtTreeItem {
-  public static contextValue: string = "azureApiCenterApiVersionDefinitionTreeItem";
-  public static dataPlaneContextValue: string = "azureApiCenterApiVersionDataPlaneDefinitionTreeItem"
-  public readonly contextValue: string = ApiVersionDefinitionTreeItem.contextValue;
+  public readonly contextValue: string = "";
   constructor(
     parent: AzExtParentTreeItem,
     public apiCenterName: string,

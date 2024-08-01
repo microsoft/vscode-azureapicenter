@@ -3,6 +3,7 @@
 
 import { IActionContext } from "@microsoft/vscode-azext-utils";
 import * as vscode from 'vscode';
+import { ApiCenterVersionDefinitionManagement } from "../azure/ApiCenter/ApiCenterDefinition";
 import { ApiSpecificationOptions, openapi } from "../constants";
 import { ext } from "../extensionVariables";
 import { ApiVersionDefinitionTreeItem } from "../tree/ApiVersionDefinitionTreeItem";
@@ -15,7 +16,7 @@ export async function getApiSpecification(title: string, context: IActionContext
 
     switch (apiSpecificationOption) {
         case ApiSpecificationOptions.apiCenter:
-            const node = await ext.treeDataProvider.showTreeItemPicker<ApiVersionDefinitionTreeItem>(`${ApiVersionDefinitionTreeItem.contextValue}-${openapi}`, context);
+            const node = await ext.treeDataProvider.showTreeItemPicker<ApiVersionDefinitionTreeItem>(`${ApiCenterVersionDefinitionManagement.contextValue}-${openapi}`, context);
             return node;
         case ApiSpecificationOptions.localFile:
             const fileUri = await vscode.window.showOpenDialog();
