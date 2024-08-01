@@ -3,7 +3,7 @@
 import { AzExtParentTreeItem, AzExtTreeItem, ISubscriptionContext } from "@microsoft/vscode-azext-utils";
 import { ResourceGraphService } from "../azure/ResourceGraph/ResourceGraphService";
 import { TelemetryClient } from "../common/telemetryClient";
-import { TelemetryEvent } from "../common/telemetryEvent";
+import { TelemetryEvent, TelemetryProperties } from "../common/telemetryEvent";
 import { treeUtils } from "../utils/treeUtils";
 import { ApiCenterTreeItem } from "./ApiCenterTreeItem";
 
@@ -49,7 +49,7 @@ class SubscriptionTreeItem extends AzExtParentTreeItem {
     }
 
     public async loadMoreChildrenImpl(): Promise<AzExtTreeItem[]> {
-        TelemetryClient.sendEvent(TelemetryEvent.treeviewListApiCenters);
+        TelemetryClient.sendEvent(TelemetryEvent.treeviewListApiCenters, { [TelemetryProperties.treeItemFullId]: this.fullId });
 
         const resourceGraphService = new ResourceGraphService(this.subscription);
 
