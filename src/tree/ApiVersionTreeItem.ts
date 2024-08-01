@@ -2,7 +2,8 @@
 // Licensed under the MIT license.
 import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import * as vscode from 'vscode';
-import { GeneralApiCenterApiVersion, isApiVersionManagement } from "../azure/ApiCenter/contracts";
+import { isApiCenterVersionManagement } from "../azure/ApiCenter/ApiCenterDistinct";
+import { GeneralApiCenterApiVersion } from "../azure/ApiCenter/contracts";
 import { UiStrings } from "../uiStrings";
 import { ApiVersionDefinitionsTreeItem } from "./ApiVersionDefinitionsTreeItem";
 
@@ -28,11 +29,11 @@ export class ApiVersionTreeItem extends AzExtParentTreeItem {
   }
 
   public get id(): string {
-    return isApiVersionManagement(this._apiCenterApiVersion) ? this._apiCenterApiVersion.id : this._apiCenterApiVersion.name;
+    return isApiCenterVersionManagement(this._apiCenterApiVersion) ? this._apiCenterApiVersion.id : this._apiCenterApiVersion.name;
   }
 
   public get label(): string {
-    return isApiVersionManagement(this._apiCenterApiVersion) ? this._apiCenterApiVersion.properties.title : this._apiCenterApiVersion.title;
+    return isApiCenterVersionManagement(this._apiCenterApiVersion) ? this._apiCenterApiVersion.properties.title : this._apiCenterApiVersion.title;
   }
 
   public hasMoreChildrenImpl(): boolean {

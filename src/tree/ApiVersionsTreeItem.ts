@@ -4,8 +4,9 @@ import { getResourceGroupFromId } from "@microsoft/vscode-azext-azureutils";
 import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import * as vscode from 'vscode';
 import { ApiCenterDataPlaneService } from "../azure/ApiCenter/ApiCenterDataPlaneAPIs";
+import { isApiCenterManagement } from "../azure/ApiCenter/ApiCenterDistinct";
 import { ApiCenterService } from "../azure/ApiCenter/ApiCenterService";
-import { GeneralApiCenterApi, GeneralApiCenterApiVersion, isApiServerManagement } from "../azure/ApiCenter/contracts";
+import { GeneralApiCenterApi, GeneralApiCenterApiVersion } from "../azure/ApiCenter/contracts";
 import { UiStrings } from "../uiStrings";
 import { ApiVersionTreeItem } from "./ApiVersionTreeItem";
 
@@ -41,7 +42,7 @@ export class ApiVersionsTreeItem extends AzExtParentTreeItem {
   }
 
   private async getApiVersions(): Promise<GeneralApiCenterApiVersion[]> {
-    if (isApiServerManagement(this._apiCenterApi)) {
+    if (isApiCenterManagement(this._apiCenterApi)) {
       const resourceGroupName = getResourceGroupFromId(this._apiCenterApi.id);
       const apiCenterService = new ApiCenterService(this.parent?.subscription!, resourceGroupName, this._apiCenterName);
       const apis = await apiCenterService.getApiCenterApiVersions(this._apiCenterApi.name);

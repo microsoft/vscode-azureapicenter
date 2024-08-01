@@ -1,11 +1,11 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
-
-export type GeneralApiCenter = ApiCenter | DataPlaneApiCenter;
-export function isApiServerManagement(obj: GeneralApiCenter): obj is ApiCenter {
-    const keys = Object.keys(obj) as (keyof ApiCenter)[];
-    return (keys.length === Object.keys({} as ApiCenter).length) && keys.every(key => key in obj);
+export enum IApiCenterType {
+    management = "management",
+    dataplane = "dataplane"
 }
+export type GeneralApiCenter = ApiCenter | DataPlaneApiCenter;
+
 export type ApiCenter = {
     id: string;
     location: string;
@@ -22,10 +22,7 @@ export type DataPlaneApiCenter = {
 }
 
 export type GeneralApiCenterApi = ApiCenterApi | DataPlaneApiCenterApi;
-export function isApiManagement(obj: GeneralApiCenterApi): obj is ApiCenterApi {
-    const keys = Object.keys(obj) as (keyof ApiCenterApi)[];
-    return (keys.length === Object.keys({} as ApiCenterApi).length) && keys.every(key => key in obj);
-}
+
 export type ApiCenterApi = {
     id: string;
     location: string;
@@ -59,10 +56,7 @@ export type ApiCenterEnvironment = {
 };
 
 export type GeneralApiCenterApiVersion = ApiCenterApiVersion | DataPlaneApiCenterApiVersion;
-export function isApiVersionManagement(obj: GeneralApiCenterApiVersion): obj is ApiCenterApiVersion {
-    const keys = Object.keys(obj) as (keyof ApiCenterApiVersion)[];
-    return (keys.length === Object.keys({} as ApiCenterApiVersion).length) && keys.every(key => key in obj);
-}
+
 export type ApiCenterApiVersion = {
     id: string;
     location: string;
@@ -92,11 +86,6 @@ export type ApiCenterApiDeployment = {
 };
 
 export type GeneralApiCenterApiVersionDefinition = ApiCenterApiVersionDefinition | DataPlaneApiCenterApiVersionDefinition;
-
-export function isDefinitionManagement(obj: GeneralApiCenterApiVersionDefinition): obj is ApiCenterApiVersionDefinition {
-    const keys = Object.keys(obj) as (keyof ApiCenterApiVersionDefinition)[];
-    return (keys.length === Object.keys({} as ApiCenterApiVersionDefinition).length) && keys.every(key => key in obj);
-}
 
 export type ApiCenterApiVersionDefinition = {
     id: string;
