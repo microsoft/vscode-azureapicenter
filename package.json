@@ -167,25 +167,25 @@
       },
       {
         "command": "azure-api-center.apiCenterWorkspace.addApis",
-        "title": "Add Data Plane Api",
+        "title": "%azure-api-center.commands.apiCenterWorkspace.addApis.title%",
         "icon": "$(add)",
         "category": "Azure API Center"
       },
       {
         "command": "azure-api-center.apiCenterWorkspace.refresh",
-        "title": "Refresh",
+        "title": "%azure-api-center.commands.apiCenterTreeView.refresh.title%",
         "icon": "$(refresh)",
         "category": "Azure API Center"
       },
       {
         "command": "azure-api-center.apiCenterWorkspace.collapse",
-        "title": "Collapse",
+        "title": "%azure-api-center.commands.apiCenterWorkspace.collapse.title%",
         "icon": "$(collapse-all)",
         "category": "Azure API Center"
       },
       {
         "command": "azure-api-center.apiCenterWorkspace.removeApi",
-        "title": "Remove Dataplane",
+        "title": "%azure-api-center.commands.apiCenterWorkspace.removeApis.title%",
         "icon": "$(close)",
         "category": "Azure API Center"
       }
@@ -194,13 +194,13 @@
       "api-center-treeview": [
         {
           "id": "apiCenterTreeView",
-          "name": "API Center",
+          "name": "%azure-api-center.views.api-center-treeview.controlplane.title%",
           "icon": "media/api-center-icon.svg",
           "contextualTitle": "Azure API Center"
         },
         {
           "id": "apiCenterWorkspace",
-          "name": "API Center Data View",
+          "name": "%azure-api-center.views.api-center-treeview.dataplane.title%",
           "visibility": "visible"
         }
       ]

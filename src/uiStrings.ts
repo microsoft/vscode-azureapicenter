@@ -119,4 +119,9 @@ export class UiStrings {
     static readonly RulesNotEnabled = vscode.l10n.t("API Analysis is not enabled. Click here to enable it.");
     static readonly OpenApiCenterFolder = vscode.l10n.t("Rules folder is required to be opened to enable live API linting. Click 'Yes' to open the rules folder in current window.");
     static readonly NoRuleFileFound = vscode.l10n.t("No rule file ('{0}') found in the rules folder '{1}'. Please add a rule file to enable API Analysis.");
+    static readonly AddDataPlaneRuntimeUrl = vscode.l10n.t("Input Runtime URL");
+    static readonly AddDataPlaneClientId = vscode.l10n.t("Input Entra App Client ID");
+    static readonly AddDataPlaneTenantId = vscode.l10n.t("Input Entra App Tenant ID");
+    static readonly RequestFailedWithStatusCode = vscode.l10n.t("request failed with status code: ${0}");
+    static readonly DownloadDefinitionFileWithErrorMsg = vscode.l10n.t("download error: {0}");
 }
