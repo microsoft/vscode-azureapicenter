@@ -43,9 +43,12 @@ describe("export API test cases", () => {
             "fakeApiCenterApiName",
             "fakeApiCenterApiVersionName",
             {
+                id: "fakeId",
                 properties: {
+                    title: "name",
                     specification: {
-                        name: "fakeName"
+                        name: "openapi",
+                        version: "fakeVersion",
                     }
                 }
             } as ApiCenterApiVersionDefinition
