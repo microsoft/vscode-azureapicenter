@@ -4,16 +4,17 @@ import { IActionContext } from "@microsoft/vscode-azext-utils";
 import * as vscode from 'vscode';
 import { DataPlaneAccount } from "../azure/ApiCenter/ApiCenterDataPlaneAPIs";
 import { ext } from "../extensionVariables";
+import { UiStrings } from "../uiStrings";
 export async function getDataPlaneApis(context: IActionContext): Promise<any | void> {
-    const endpointUrl = await vscode.window.showInputBox({ title: "Input Runtime URL", ignoreFocusOut: true });
+    const endpointUrl = await vscode.window.showInputBox({ title: UiStrings.AddDataPlaneRuntimeUrl, ignoreFocusOut: true });
     if (!endpointUrl) {
         return;
     }
-    const clientid = await vscode.window.showInputBox({ title: "Input Client ID", ignoreFocusOut: true });
+    const clientid = await vscode.window.showInputBox({ title: UiStrings.AddDataPlaneClientId, ignoreFocusOut: true });
     if (!clientid) {
         return;
     }
-    const tenantid = await vscode.window.showInputBox({ title: "Input Tenant ID", ignoreFocusOut: true });
+    const tenantid = await vscode.window.showInputBox({ title: UiStrings.AddDataPlaneTenantId, ignoreFocusOut: true });
     if (!tenantid) {
         return;
     }

@@ -13,6 +13,7 @@ import { ApiSpecExportResultFormat } from "../azure/ApiCenter/contracts";
 import { TelemetryClient } from '../common/telemetryClient';
 import { ext } from "../extensionVariables";
 import { ApiVersionDefinitionTreeItem } from "../tree/ApiVersionDefinitionTreeItem";
+import { UiStrings } from "../uiStrings";
 import { createTemporaryFolder } from "../utils/fsUtil";
 export namespace ExportAPI {
     export async function exportApi(
@@ -71,7 +72,7 @@ export namespace ExportAPI {
 
             client.get(url, (response) => {
                 if (response.statusCode !== 200) {
-                    reject(new Error(`request failed with status code: ${response.statusCode}`));
+                    reject(new Error(vscode.l10n.t(UiStrings.RequestFailedWithStatusCode, response.statusCode!)));
                     return;
                 }
 
@@ -85,7 +86,7 @@ export namespace ExportAPI {
                 });
 
             }).on('error', (err) => {
-                reject(new Error('download error: ' + err.message));
+                reject(new Error(vscode.l10n.t(UiStrings.DownloadDefinitionFileWithErrorMsg, err.message)));
             });
         });
     }
