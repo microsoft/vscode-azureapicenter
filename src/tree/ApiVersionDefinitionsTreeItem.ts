@@ -49,7 +49,7 @@ export class ApiVersionDefinitionsTreeItem extends AzExtParentTreeItem {
         this._apiCenterName,
         this._apiCenterApiName,
         this._apiCenterApiVersion.name,
-        difinition),
+        generateApiDefinition(definition)),
       difinition => difinition.name
     );
   }
@@ -69,6 +69,10 @@ export class ApiVersionDefinitionsTreeItem extends AzExtParentTreeItem {
       return res.value;
     }
   }
+
+  // private generateApiDefinition(data: GeneralApiCenterApiVersionDefinition) {
+  //   if (isApiCenterVersionManagement(data))
+  // }
 
   public hasMoreChildrenImpl(): boolean {
     return this._nextLink !== undefined;
