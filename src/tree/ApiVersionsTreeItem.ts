@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import * as vscode from 'vscode';
-import { IApiCenterBase } from "../azure/ApiCenter/ApiCenterDefinition";
+import { IVersionsBase } from "../azure/ApiCenterDefines/ApiCenterVersion";
 import { UiStrings } from "../uiStrings";
 import { ApiVersionTreeItem } from "./ApiVersionTreeItem";
 
@@ -11,8 +11,8 @@ export class ApiVersionsTreeItem extends AzExtParentTreeItem {
   public static contextValue: string = "azureApiCenterApiVersions";
   public readonly contextValue: string = ApiVersionsTreeItem.contextValue;
   private readonly _apiCenterName: string;
-  private readonly _apiCenterApi: IApiCenterBase;
-  constructor(parent: AzExtParentTreeItem, apiCenterName: string, apiCenterApi: IApiCenterBase) {
+  private readonly _apiCenterApi: IVersionsBase;
+  constructor(parent: AzExtParentTreeItem, apiCenterName: string, apiCenterApi: IVersionsBase) {
     super(parent);
     this._apiCenterName = apiCenterName;
     this._apiCenterApi = apiCenterApi;

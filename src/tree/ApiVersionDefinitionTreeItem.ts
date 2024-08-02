@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 import { AzExtParentTreeItem, AzExtTreeItem, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import * as vscode from 'vscode';
-import { IDefinitionBase } from "../azure/ApiCenter/ApiCenterDefinition";
+import { IDefinitionBase } from "../azure/ApiCenterDefines/ApiCenterDefinition";
 export class ApiVersionDefinitionTreeItem extends AzExtTreeItem {
   public readonly contextValue: string = "";
   constructor(

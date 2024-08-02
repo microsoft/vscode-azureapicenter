@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import * as vscode from 'vscode';
-import { IVersionBase } from "../azure/ApiCenter/ApiCenterDefinition";
+import { IVersionBase } from "../azure/ApiCenterDefines/ApiCenterVersion";
 import { UiStrings } from "../uiStrings";
 import { ApiVersionDefinitionsTreeItem } from "./ApiVersionDefinitionsTreeItem";
 export class ApiVersionTreeItem extends AzExtParentTreeItem {
@@ -18,7 +18,7 @@ export class ApiVersionTreeItem extends AzExtParentTreeItem {
     apiCenterApiVersion: IVersionBase) {
     super(parent);
     this._apiCenterApiVersion = apiCenterApiVersion;
-    this.apiVersionDefinitionsTreeItem = new ApiVersionDefinitionsTreeItem(this, apiCenterName, apiCenterApiName, apiCenterApiVersion);
+    this.apiVersionDefinitionsTreeItem = new ApiVersionDefinitionsTreeItem(this, apiCenterName, apiCenterApiName, apiCenterApiVersion.generateChild());
   }
 
   public get iconPath(): TreeItemIconPath {
@@ -34,7 +34,7 @@ export class ApiVersionTreeItem extends AzExtParentTreeItem {
   }
 
   public hasMoreChildrenImpl(): boolean {
-    return this._apiCenterApiVersion.getNextLink() !== undefined;
+    return false;
   }
 
   public async loadMoreChildrenImpl(clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {

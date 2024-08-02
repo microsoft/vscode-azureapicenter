@@ -2,8 +2,8 @@
 // Licensed under the MIT license.
 import { AzExtParentTreeItem, AzExtTreeItem, IActionContext } from "@microsoft/vscode-azext-utils";
 import * as sinon from "sinon";
-import { ApiCenterVersionDefinitionManagement } from "../../../azure/ApiCenter/ApiCenterDefinition";
 import { ApiCenterApiVersionDefinition } from "../../../azure/ApiCenter/contracts";
+import { ApiCenterVersionDefinitionManagement } from "../../../azure/ApiCenterDefines/ApiCenterDefinition";
 import { ExportAPI } from "../../../commands/exportApi";
 import { TelemetryClient } from "../../../common/telemetryClient";
 import { ApiVersionDefinitionTreeItem } from "../../../tree/ApiVersionDefinitionTreeItem";

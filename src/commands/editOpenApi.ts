@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 import { IActionContext } from "@microsoft/vscode-azext-utils";
 import { commands } from "vscode";
-import { ApiCenterVersionDefinitionManagement } from "../azure/ApiCenter/ApiCenterDefinition";
+import { ApiCenterVersionDefinitionManagement } from "../azure/ApiCenterDefines/ApiCenterDefinition";
 import { ext } from "../extensionVariables";
 import { ApiVersionDefinitionTreeItem } from "../tree/ApiVersionDefinitionTreeItem";
 

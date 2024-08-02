@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import * as vscode from 'vscode';
-import { IApiCenterServiceBase } from "../azure/ApiCenter/ApiCenterDefinition";
+import { IApiCenterApisBase } from "../azure/ApiCenterDefines/ApiCenterApi";
 import { UiStrings } from "../uiStrings";
 import { ApiTreeItem } from "./ApiTreeItem";
 export class ApisTreeItem extends AzExtParentTreeItem {
@@ -11,7 +11,7 @@ export class ApisTreeItem extends AzExtParentTreeItem {
   public searchContent: string = "";
   public contextValue: string = ApisTreeItem.contextValue;
   private _nextLink: string | undefined;
-  constructor(parent: AzExtParentTreeItem, public apiCenter: IApiCenterServiceBase) {
+  constructor(parent: AzExtParentTreeItem, public apiCenter: IApiCenterApisBase) {
     super(parent);
   }
 

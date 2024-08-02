@@ -3,7 +3,7 @@
 
 import { IActionContext } from "@microsoft/vscode-azext-utils";
 import * as vscode from 'vscode';
-import { ApiCenterVersionDefinitionManagement } from "../azure/ApiCenter/ApiCenterDefinition";
+import { ApiCenterVersionDefinitionManagement } from "../azure/ApiCenterDefines/ApiCenterDefinition";
 import { ApiSpecificationOptions, openapi } from "../constants";
 import { ext } from "../extensionVariables";
 import { ApiVersionDefinitionTreeItem } from "../tree/ApiVersionDefinitionTreeItem";

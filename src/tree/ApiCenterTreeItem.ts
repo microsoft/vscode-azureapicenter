@@ -2,9 +2,9 @@
 // Licensed under the MIT license.
 import { getResourceGroupFromId } from "@microsoft/vscode-azext-azureutils";
 import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
-import { ApiCenterServiceManagement } from "../azure/ApiCenter/ApiCenterDefinition";
 import { ApiCenterService } from "../azure/ApiCenter/ApiCenterService";
 import { ApiCenter } from "../azure/ApiCenter/contracts";
+import { ApiCenterApisManagement } from "../azure/ApiCenterDefines/ApiCenterApi";
 import { UiStrings } from "../uiStrings";
 import { treeUtils } from "../utils/treeUtils";
 import { ApisTreeItem } from "./ApisTreeItem";
@@ -22,7 +22,7 @@ export class ApiCenterTreeItem extends AzExtParentTreeItem {
   constructor(parent: AzExtParentTreeItem, apicenter: ApiCenter) {
     super(parent);
     this._apicenter = apicenter;
-    this.apisTreeItem = new ApisTreeItem(this, new ApiCenterServiceManagement(apicenter));
+    this.apisTreeItem = new ApisTreeItem(this, new ApiCenterApisManagement(apicenter));
     this.environmentsTreeItem = new EnvironmentsTreeItem(this, apicenter);
   }
 

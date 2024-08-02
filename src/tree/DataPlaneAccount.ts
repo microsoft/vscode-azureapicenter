@@ -3,7 +3,7 @@
 import { AzExtParentTreeItem, AzExtTreeItem, GenericTreeItem, IActionContext, ISubscriptionContext, TreeItemIconPath, registerEvent } from "@microsoft/vscode-azext-utils";
 import * as vscode from "vscode";
 import { DataPlaneAccount } from "../azure/ApiCenter/ApiCenterDataPlaneAPIs";
-import { ApiCenterServiceDataPlane } from "../azure/ApiCenter/ApiCenterDefinition";
+import { ApiCenterApisDataplane } from "../azure/ApiCenterDefines/ApiCenterApi";
 import { AzureDataSessionProvider } from "../azure/azureLogin/authTypes";
 import { AzureAuth } from "../azure/azureLogin/azureAuth";
 import { AzureDataSessionProviderHelper, generateScopes } from "../azure/azureLogin/dataSessionProvider";
@@ -84,7 +84,7 @@ export class ApiServerItem extends AzExtParentTreeItem {
         super(parent);
         this.label = subContext.subscriptionPath.split('.')[0];
         this.subscriptionContext = subContext;
-        this.apisTreeItem = new ApisTreeItem(this, new ApiCenterServiceDataPlane({ name: this.label }));
+        this.apisTreeItem = new ApisTreeItem(this, new ApiCenterApisDataplane({ name: this.label }));
     }
     public get id(): string {
         return this.label;
