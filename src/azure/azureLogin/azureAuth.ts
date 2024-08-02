@@ -36,7 +36,7 @@ export namespace AzureAuth {
                 }
                 return { token: session.result.accessToken, expiresOnTimestamp: 0 };
             }
-        }
+        };
     }
 
     export function getDefaultScope(endpointUrl: string): string {

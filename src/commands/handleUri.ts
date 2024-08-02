@@ -8,5 +8,5 @@ export async function handleUri(uri: vscode.Uri) {
     let clientId = queryParams.get('clientId') as string;
     let runtimeUrl = queryParams.get('runtimeUrl') as string;
     setAccountToExt(runtimeUrl, clientId, tenantId);
-    vscode.commands.executeCommand('azure-api-center.apiCenterWorkspace.refresh')
+    vscode.commands.executeCommand('azure-api-center.apiCenterWorkspace.refresh');
 };

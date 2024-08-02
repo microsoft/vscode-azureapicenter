@@ -3,7 +3,6 @@
 import { AzExtParentTreeItem, AzExtTreeItem, IActionContext } from "@microsoft/vscode-azext-utils";
 import * as sinon from "sinon";
 import { ApiCenterVersionDefinitionManagement } from "../../../azure/ApiCenter/ApiCenterDefinition";
-import { ApiCenterService } from "../../../azure/ApiCenter/ApiCenterService";
 import { ApiCenterApiVersionDefinition } from "../../../azure/ApiCenter/contracts";
 import { ExportAPI } from "../../../commands/exportApi";
 import { TelemetryClient } from "../../../common/telemetryClient";
@@ -33,7 +32,7 @@ const data: ApiCenterApiVersionDefinition = {
     },
     // tslint:disable-next-line:no-reserved-keywords
     type: "fakeType",
-}
+};
 
 class RootTreeItem extends ParentTreeItemBase {
     public label: string = 'root';
@@ -67,15 +66,15 @@ describe("export API test cases", () => {
         sandbox.restore();
     });
     it('export API happy path with link type', async () => {
-        sandbox.stub(ExportAPI, "fetchDataFromLink").resolves('fakeTest');
         let stubShowTempFile = sandbox.stub(ExportAPI, "showTempFile").resolves();
-        sandbox.stub(ApiCenterService.prototype, "exportSpecification").resolves({ format: "link", value: "fakeValue" });
+        sandbox.stub(node.apiCenterApiVersionDefinition, "getDefinitions").resolves({ format: "link", value: "fakeValue" });
+        sandbox.stub(ExportAPI, "fetchDataFromLink").resolves();
         await ExportAPI.exportApi({} as IActionContext, node);
         sandbox.assert.calledOnce(stubShowTempFile);
     });
     it('export API happy path with inline type', async () => {
         let stubShowTempFile = sandbox.stub(ExportAPI, "showTempFile").resolves();
-        sandbox.stub(ApiCenterService.prototype, "exportSpecification").resolves({ format: "inline", value: "fakeValue" });
+        sandbox.stub(node.apiCenterApiVersionDefinition, "getDefinitions").resolves({ format: "inline", value: "fakeValue" });
         await ExportAPI.exportApi({} as IActionContext, node);
         sandbox.assert.calledOnce(stubShowTempFile);
     });

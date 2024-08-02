@@ -19,7 +19,7 @@ export type ApiCenter = {
 
 export type DataPlaneApiCenter = {
     name: string;
-}
+};
 
 export type GeneralApiCenterApi = ApiCenterApi | DataPlaneApiCenterApi;
 
@@ -43,7 +43,7 @@ export type DataPlaneApiCenterApi = {
     externalDocumentation: [];
     contacts: [];
     customProperties: {};
-}
+};
 
 export type ApiCenterEnvironment = {
     id: string;
@@ -73,7 +73,7 @@ export type DataPlaneApiCenterApiVersion = {
     name: string;
     title: string;
     lifecycleStage: string;
-}
+};
 
 export type ApiCenterApiDeployment = {
     id: string;
@@ -112,7 +112,7 @@ export type DataPlaneApiCenterApiVersionDefinition = {
     specification: {
         name: string;
     }
-}
+};
 
 export type ApiCenterApiVersionDefinitionImport = {
     format: string;

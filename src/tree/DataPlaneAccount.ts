@@ -25,7 +25,7 @@ export class DataPlanAccountManagerTreeItem extends AzExtParentTreeItem {
 
         const onStatusChange = this.sessionProvider.signInStatusChangeEvent;
         registerEvent("DataPlanAccountManagerTreeItem.onSignInStatusChange", onStatusChange, (context) => {
-            this.refresh(context)
+            this.refresh(context);
         });
     }
     public dispose(): void { }
@@ -36,7 +36,7 @@ export class DataPlanAccountManagerTreeItem extends AzExtParentTreeItem {
             'inValidResource',
             async account => new ApiServerItem(this, getSubscriptionContext(account)),
             account => account.domain.split('0')[0]
-        )
+        );
     }
 
     public hasMoreChildrenImpl(): boolean {
@@ -70,9 +70,9 @@ export class ApiServerItem extends AzExtParentTreeItem {
                     iconPath: new vscode.ThemeIcon("sign-in"),
                     includeInTreeItemPicker: true,
                 })
-            ]
+            ];
         }
-        return [this.apisTreeItem]
+        return [this.apisTreeItem];
     }
     public hasMoreChildrenImpl(): boolean {
         return false;

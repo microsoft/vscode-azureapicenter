@@ -25,7 +25,7 @@ export function generateScopes(clientId: string, tenantId: string): string[] {
         `VSCODE_TENANT:${tenantId}`, // Replace with the tenant ID or common if multi-tenant
         "offline_access", // Required for the refresh token.
         "https://azure-apicenter.net/user_impersonation"
-    ]
+    ];
 }
 
 export namespace AzureDataSessionProviderHelper {
@@ -67,7 +67,7 @@ export namespace AzureDataSessionProviderHelper {
             });
         }
         private async updateSignInStatus(_scopes: string[], authScenario: AuthScenario): Promise<void> {
-            if (_scopes.length != 0) {
+            if (_scopes.length !== 0) {
                 await this.getArmSession(AzureDataSessionProviderImpl.MicrosoftAuthProviderId, _scopes, authScenario);
             }
             this.onSignInStatusChangeEmitter.fire(this.signInStatusValue);

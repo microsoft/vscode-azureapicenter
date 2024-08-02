@@ -12,7 +12,7 @@ export interface DataPlaneAccount {
 export class ApiCenterDataPlaneService {
     private susbcriptionContext: ISubscriptionContext;
     constructor(susbcriptionContext: ISubscriptionContext) {
-        this.susbcriptionContext = susbcriptionContext
+        this.susbcriptionContext = susbcriptionContext;
     };
     public async getApiCenterApis(): Promise<{ value: DataPlaneApiCenterApi[]; nextLink: string }> {
         const client = new ServiceClient(this.susbcriptionContext.credentials);

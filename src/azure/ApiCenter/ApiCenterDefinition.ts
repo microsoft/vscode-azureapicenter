@@ -26,7 +26,7 @@ export type IApiCenterServiceBase = {
     getId: () => string,
     getChild: (context: ISubscriptionContext, content: string) => Promise<GeneralApiCenterApi[]>;
     generateChild: (data: GeneralApiCenterApi) => IApiCenterBase;
-}
+};
 
 export class ApiCenterServiceManagement implements IApiCenterServiceBase {
     constructor(public data: ApiCenter) { }
@@ -34,7 +34,7 @@ export class ApiCenterServiceManagement implements IApiCenterServiceBase {
         return this.data.name;
     }
     getId(): string {
-        return this.data.id
+        return this.data.id;
     }
     async getChild(context: ISubscriptionContext, content: string): Promise<GeneralApiCenterApi[]> {
         const resourceGroupName = getResourceGroupFromId(this.data.id);
@@ -50,7 +50,7 @@ export class ApiCenterServiceManagement implements IApiCenterServiceBase {
     getNextLink(): string | undefined {
         return this._nextLink;
     }
-}
+};
 
 export class ApiCenterServiceDataPlane implements IApiCenterServiceBase {
     constructor(public data: DataPlaneApiCenter) { }
@@ -73,7 +73,7 @@ export class ApiCenterServiceDataPlane implements IApiCenterServiceBase {
     generateChild(data: GeneralApiCenterApi): IApiCenterBase {
         return new ApiCenterApiDataPlane(data as DataPlaneApiCenterApi);
     }
-}
+};
 
 export type IApiCenterBase = {
     _nextLink: string | undefined;
@@ -83,7 +83,7 @@ export type IApiCenterBase = {
     getLable: () => string;
     getChild: (context: ISubscriptionContext, apiName: string) => Promise<GeneralApiCenterApiVersion[]>;
     generateChild: (data: GeneralApiCenterApiVersion) => IVersionBase;
-}
+};
 
 export class ApiCenterApiManagement implements IApiCenterBase {
     constructor(public data: ApiCenterApi) { }
@@ -113,7 +113,7 @@ export class ApiCenterApiManagement implements IApiCenterBase {
     generateChild(data: GeneralApiCenterApiVersion): IVersionBase {
         return new ApiCenterVersionManagement(data as ApiCenterApiVersion);
     }
-}
+};
 
 export class ApiCenterApiDataPlane implements IApiCenterBase {
     constructor(public data: DataPlaneApiCenterApi) { }
@@ -139,7 +139,7 @@ export class ApiCenterApiDataPlane implements IApiCenterBase {
     generateChild(data: GeneralApiCenterApiVersion): IVersionBase {
         return new ApiCenterVersionDataplane(data as DataPlaneApiCenterApiVersion);
     }
-}
+};
 
 export type IVersionBase = {
     _nextLink: string | undefined;
@@ -149,7 +149,7 @@ export type IVersionBase = {
     getName: () => string,
     getChild: (context: ISubscriptionContext, apiName: string, apiServiceName: string) => Promise<GeneralApiCenterApiVersionDefinition[]>;
     generateChild: (data: GeneralApiCenterApiVersionDefinition) => IDefinitionBase;
-}
+};
 
 export class ApiCenterVersionManagement implements IVersionBase {
     constructor(public data: ApiCenterApiVersion) { }
@@ -177,7 +177,7 @@ export class ApiCenterVersionManagement implements IVersionBase {
     getId() {
         return this.data.id;
     }
-}
+};
 
 export class ApiCenterVersionDataplane implements IVersionBase {
     constructor(public data: DataPlaneApiCenterApiVersion) { }
@@ -203,7 +203,7 @@ export class ApiCenterVersionDataplane implements IVersionBase {
     getId() {
         return this.data.name;
     }
-}
+};
 
 export type IDefinitionBase = {
     getLabel: () => string,
@@ -211,7 +211,7 @@ export type IDefinitionBase = {
     getContext: () => string,
     getName: () => string;
     getDefinitions: (context: ISubscriptionContext, apiServiceName: string, apiName: string, apiVersionName: string) => Promise<ApiCenterApiVersionDefinitionExport>;
-}
+};
 
 export class ApiCenterVersionDefinitionManagement implements IDefinitionBase {
     constructor(public data: ApiCenterApiVersionDefinition) { }
@@ -230,7 +230,7 @@ export class ApiCenterVersionDefinitionManagement implements IDefinitionBase {
     static contextValue: string = "azureApiCenterApiVersionDefinitionTreeItem";
     getName(): string {
         return this.data.name;
-    }
+    };
     getContext() {
         return ApiCenterVersionDefinitionManagement.contextValue + "-" + this.data.properties.specification.name.toLowerCase();
     };
@@ -240,7 +240,7 @@ export class ApiCenterVersionDefinitionManagement implements IDefinitionBase {
     getId() {
         return this.data.id;
     };
-}
+};
 
 export class ApiCenterVersionDefinitionDataPlane implements IDefinitionBase {
     constructor(public data: DataPlaneApiCenterApiVersionDefinition) { }
@@ -249,11 +249,11 @@ export class ApiCenterVersionDefinitionDataPlane implements IDefinitionBase {
         let results = await server.exportSpecification(apiName,
             apiVersionName, this.data.name);
         return results;
-    }
+    };
     static contextValue: string = "azureApiCenterApiVersionDataPlaneDefinitionTreeItem";
     getName(): string {
         return this.data.name;
-    }
+    };
     getContext() {
         return ApiCenterVersionDefinitionDataPlane.contextValue + "-" + this.data.specification.name.toLowerCase();
     };
@@ -263,4 +263,4 @@ export class ApiCenterVersionDefinitionDataPlane implements IDefinitionBase {
     getId() {
         return this.data.name;
     };
-}
+};

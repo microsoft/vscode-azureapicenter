@@ -33,7 +33,7 @@ export namespace ExportAPI {
     async function writeToTempFile(node: ApiVersionDefinitionTreeItem, specFormat: string, specValue: string) {
         if (specFormat === ApiSpecExportResultFormat.inline) {
             await ExportAPI.showTempFile(node, specValue);
-        } else if (specFormat == ApiSpecExportResultFormat.link) {
+        } else if (specFormat === ApiSpecExportResultFormat.link) {
             await ExportAPI.showTempFile(node, await ExportAPI.fetchDataFromLink(specValue));
         }
     }
