@@ -50,6 +50,7 @@ export const test = base.extend<TestFixtures>({
         });
         const workbox = await electronApp.firstWindow();
         await insertToDB(args[1].split('=')[1]);
+        await setupTenantAndSub(args[1].split('=')[1]);
         await workbox.context().tracing.start({ screenshots: true, snapshots: true, title: test.info().title });
         await use(workbox);
         const tracePath = test.info().outputPath('trace.zip');
@@ -140,4 +141,21 @@ function getJsonFromBytes(base64String: string) {
     // Convert the Uint8Array to a regular array
     const byteArrayArray = Array.from(byteArray);
     return byteArrayArray;
+}
+
+async function setupTenantAndSub(path) {
+    const setJson = `${path}/User/settings.json`;
+    await fs.ensureFile(setJson);
+    let data = {
+        "azure-api-center.selectedSubscriptions": [
+            "72f988bf-86f1-41af-91ab-2d7cd011db47/af46c703-f714-4f4c-af42-835a673c2b13"
+        ],
+        "azure-api-center.tenant": {
+            "name": "Microsoft",
+            "id": "72f988bf-86f1-41af-91ab-2d7cd011db47"
+        }
+    };
+
+    let dataString = JSON.stringify(data);
+    await fs.writeFile(setJson, dataString, { encoding: 'utf8', flag: 'w' });
 }

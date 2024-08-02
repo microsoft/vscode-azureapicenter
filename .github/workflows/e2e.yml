@@ -10,9 +10,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CI: true
-      AZURE_TENANT_NAME: Microsoft
-      AZURE_TENANT_ID: 72f988bf-86f1-41af-91ab-2d7cd011db47
-      AZURE_SUBSCRIPTION_NAME: 'Teams Cloud - E2E Testing with TTL = 1 Days'
     steps:
       - name: checkout
         uses: actions/checkout@v3
@@ -32,8 +29,6 @@ jobs:
           name: "config.json"
           json: ${{ secrets.ACCOUNT_CONFIG }}
           dir: "./src/test/e2e"
-      - run: |
-          echo "====================================>>>>>>>>>>>>>"
       - run: |
           xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" npx playwright test
         working-directory: ./src/test/e2e
