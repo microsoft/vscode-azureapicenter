@@ -1,10 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 import { getResourceGroupFromId } from "@microsoft/vscode-azext-azureutils";
-import fetch from 'node-fetch';
 import { ProgressLocation, window } from "vscode";
-import { ApiCenterDataPlaneService } from '../../../azure/ApiCenter/ApiCenterDataPlaneAPIs';
-import { ApiCenterVersionDefinitionManagement } from '../../../azure/ApiCenter/ApiCenterDefinition';
 import { ApiCenterService } from "../../../azure/ApiCenter/ApiCenterService";
 import { ApiCenterApiVersionDefinitionImport } from "../../../azure/ApiCenter/contracts";
 import { showSavePromptConfigKey } from "../../../constants";
@@ -18,43 +15,8 @@ export class OpenApiEditor extends Editor<ApiVersionDefinitionTreeItem> {
     }
 
     public async getData(treeItem: ApiVersionDefinitionTreeItem): Promise<string> {
-        if (treeItem.apiCenterApiVersionDefinition instanceof ApiCenterVersionDefinitionManagement) {
-            return this.getManagementData(treeItem);
-        }
-        else {
-            return this.getDataplaneData(treeItem);
-        }
-    }
-
-    private async getManagementData(treeItem: ApiVersionDefinitionTreeItem): Promise<string> {
-        const apiCenterService = new ApiCenterService(
-            treeItem?.subscription!,
-            getResourceGroupFromId(treeItem?.id!),
-            treeItem?.apiCenterName!);
-
-        const exportedSpec = await apiCenterService.exportSpecification(
-            treeItem?.apiCenterApiName!,
-            treeItem?.apiCenterApiVersionName!,
-            treeItem?.apiCenterApiVersionDefinition.getName()
-        );
-
+        const exportedSpec = await treeItem.apiCenterApiVersionDefinition.getDefinitions(treeItem?.subscription!, treeItem?.apiCenterName!, treeItem?.apiCenterApiName!, treeItem?.apiCenterApiVersionName!);
         return exportedSpec.value;
-    }
-
-    private async getDataplaneData(treeItem: ApiVersionDefinitionTreeItem): Promise<string> {
-        const apiCenterService = new ApiCenterDataPlaneService(treeItem?.subscription!);
-        const exportedSpec = await apiCenterService.exportSpecification(
-            treeItem?.apiCenterApiName!,
-            treeItem?.apiCenterApiVersionName!,
-            treeItem?.apiCenterApiVersionDefinition.getName()
-        );
-        try {
-            const rawData = await fetch(exportedSpec.value);
-            const data = await rawData.json();
-            return JSON.stringify(data);
-        } catch (err) {
-            throw err;
-        }
     }
 
     public async updateData(treeItem: ApiVersionDefinitionTreeItem, data: string): Promise<string> {

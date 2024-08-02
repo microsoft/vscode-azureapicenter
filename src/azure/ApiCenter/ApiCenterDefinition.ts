@@ -9,6 +9,7 @@ import {
     ApiCenterApi,
     ApiCenterApiVersion,
     ApiCenterApiVersionDefinition,
+    ApiCenterApiVersionDefinitionExport,
     DataPlaneApiCenter,
     DataPlaneApiCenterApi,
     DataPlaneApiCenterApiVersion,
@@ -209,10 +210,23 @@ export type IDefinitionBase = {
     getId: () => string,
     getContext: () => string,
     getName: () => string;
+    getDefinitions: (context: ISubscriptionContext, apiServiceName: string, apiName: string, apiVersionName: string) => Promise<ApiCenterApiVersionDefinitionExport>;
 }
 
 export class ApiCenterVersionDefinitionManagement implements IDefinitionBase {
     constructor(public data: ApiCenterApiVersionDefinition) { }
+    async getDefinitions(context: ISubscriptionContext, apiServiceName: string, apiName: string, apiVersionName: string): Promise<ApiCenterApiVersionDefinitionExport> {
+        const resourceGroupName = getResourceGroupFromId(this.data.id);
+        const apiCenterService = new ApiCenterService(
+            context,
+            resourceGroupName,
+            apiServiceName);
+        const exportedSpec = await apiCenterService.exportSpecification(
+            apiName,
+            apiVersionName,
+            this.data.name);
+        return exportedSpec;
+    }
     static contextValue: string = "azureApiCenterApiVersionDefinitionTreeItem";
     getName(): string {
         return this.data.name;
@@ -230,6 +244,12 @@ export class ApiCenterVersionDefinitionManagement implements IDefinitionBase {
 
 export class ApiCenterVersionDefinitionDataPlane implements IDefinitionBase {
     constructor(public data: DataPlaneApiCenterApiVersionDefinition) { }
+    async getDefinitions(context: ISubscriptionContext, apiServiceName: string, apiName: string, apiVersionName: string): Promise<ApiCenterApiVersionDefinitionExport> {
+        let server = new ApiCenterDataPlaneService(context);
+        let results = await server.exportSpecification(apiName,
+            apiVersionName, this.data.name);
+        return results;
+    }
     static contextValue: string = "azureApiCenterApiVersionDataPlaneDefinitionTreeItem";
     getName(): string {
         return this.data.name;

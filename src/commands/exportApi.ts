@@ -1,14 +1,11 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
-import { getResourceGroupFromId } from "@microsoft/vscode-azext-azureutils";
 import { IActionContext } from "@microsoft/vscode-azext-utils";
 import * as fs from "fs-extra";
 import fetch from 'node-fetch';
 import * as path from "path";
 import * as vscode from "vscode";
-import { ApiCenterDataPlaneService } from "../azure/ApiCenter/ApiCenterDataPlaneAPIs";
-import { ApiCenterVersionDefinitionDataPlane, ApiCenterVersionDefinitionManagement } from "../azure/ApiCenter/ApiCenterDefinition";
-import { ApiCenterService } from "../azure/ApiCenter/ApiCenterService";
+import { ApiCenterVersionDefinitionManagement } from "../azure/ApiCenter/ApiCenterDefinition";
 import { ApiSpecExportResultFormat } from "../azure/ApiCenter/contracts";
 import { ext } from "../extensionVariables";
 import { ApiVersionDefinitionTreeItem } from "../tree/ApiVersionDefinitionTreeItem";
@@ -21,22 +18,8 @@ export namespace ExportAPI {
             node = await ext.treeDataProvider.showTreeItemPicker<ApiVersionDefinitionTreeItem>(new RegExp(`${ApiCenterVersionDefinitionManagement.contextValue}*`), context);
         }
 
-        if (node?.apiCenterApiVersionDefinition instanceof ApiCenterVersionDefinitionManagement) {
-            const apiCenterService = new ApiCenterService(
-                node?.subscription!,
-                getResourceGroupFromId(node?.id!),
-                node?.apiCenterName!);
-            const exportedSpec = await apiCenterService.exportSpecification(
-                node?.apiCenterApiName!,
-                node?.apiCenterApiVersionName!,
-                node?.apiCenterApiVersionDefinition.getName()!);
-            await writeToTempFile(node!, exportedSpec.format, exportedSpec.value);
-        } else if (node?.apiCenterApiVersionDefinition instanceof ApiCenterVersionDefinitionDataPlane) {
-            let server = new ApiCenterDataPlaneService(node.parent?.subscription!);
-            let results = await server.exportSpecification(node?.apiCenterApiName!,
-                node?.apiCenterApiVersionName!, node?.apiCenterApiVersionDefinition.getName());
-            await writeToTempFile(node!, results.format, results.value);
-        }
+        const exportedSpec = await node?.apiCenterApiVersionDefinition.getDefinitions(node?.subscription!, node?.apiCenterName!, node?.apiCenterApiName!, node?.apiCenterApiVersionName!);
+        await writeToTempFile(node!, exportedSpec.format, exportedSpec.value);
     }
 
     function getFolderName(treeItem: ApiVersionDefinitionTreeItem): string {
@@ -50,11 +33,19 @@ export namespace ExportAPI {
     async function writeToTempFile(node: ApiVersionDefinitionTreeItem, specFormat: string, specValue: string) {
         if (specFormat === ApiSpecExportResultFormat.inline) {
             await ExportAPI.showTempFile(node, specValue);
-        } else {
-            // Currently at server side did not exist link, so just monitor this event.
-            const res = await fetch(specValue);
+        } else if (specFormat == ApiSpecExportResultFormat.link) {
+            await ExportAPI.showTempFile(node, await ExportAPI.fetchDataFromLink(specValue));
+        }
+    }
+
+    export async function fetchDataFromLink(link: string): Promise<string> {
+        try {
+            const res = await fetch(link);
             const rawData = await res.json();
-            await ExportAPI.showTempFile(node, JSON.stringify(rawData));
+            return JSON.stringify(rawData);
+        }
+        catch (err) {
+            throw err;
         }
     }
 

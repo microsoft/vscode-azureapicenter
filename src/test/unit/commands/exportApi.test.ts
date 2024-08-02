@@ -67,10 +67,11 @@ describe("export API test cases", () => {
         sandbox.restore();
     });
     it('export API happy path with link type', async () => {
-        const spyShowTempFile = sandbox.spy(ExportAPI, "showTempFile");
+        sandbox.stub(ExportAPI, "fetchDataFromLink").resolves('fakeTest');
+        let stubShowTempFile = sandbox.stub(ExportAPI, "showTempFile").resolves();
         sandbox.stub(ApiCenterService.prototype, "exportSpecification").resolves({ format: "link", value: "fakeValue" });
         await ExportAPI.exportApi({} as IActionContext, node);
-        sandbox.assert.notCalled(spyShowTempFile);
+        sandbox.assert.calledOnce(stubShowTempFile);
     });
     it('export API happy path with inline type', async () => {
         let stubShowTempFile = sandbox.stub(ExportAPI, "showTempFile").resolves();
