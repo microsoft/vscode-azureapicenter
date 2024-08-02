@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 import { IActionContext } from "@microsoft/vscode-azext-utils";
 import * as fs from "fs-extra";
-import fetch from 'node-fetch';
+
 import * as path from "path";
 import * as vscode from "vscode";
 import { ApiSpecExportResultFormat } from "../azure/ApiCenter/contracts";
@@ -10,6 +10,7 @@ import { ApiCenterVersionDefinitionManagement } from "../azure/ApiCenterDefines/
 import { ext } from "../extensionVariables";
 import { ApiVersionDefinitionTreeItem } from "../tree/ApiVersionDefinitionTreeItem";
 import { createTemporaryFolder } from "../utils/fsUtil";
+import { GeneralUtils } from "../utils/generalUtils";
 export namespace ExportAPI {
     export async function exportApi(
         context: IActionContext,
@@ -34,18 +35,7 @@ export namespace ExportAPI {
         if (specFormat === ApiSpecExportResultFormat.inline) {
             await ExportAPI.showTempFile(node, specValue);
         } else if (specFormat === ApiSpecExportResultFormat.link) {
-            await ExportAPI.showTempFile(node, await ExportAPI.fetchDataFromLink(specValue));
-        }
-    }
-
-    export async function fetchDataFromLink(link: string): Promise<string> {
-        try {
-            const res = await fetch(link);
-            const rawData = await res.json();
-            return JSON.stringify(rawData);
-        }
-        catch (err) {
-            throw err;
+            await ExportAPI.showTempFile(node, await GeneralUtils.fetchDataFromLink(specValue));
         }
     }
 

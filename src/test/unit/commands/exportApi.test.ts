@@ -7,6 +7,7 @@ import { ApiCenterVersionDefinitionManagement } from "../../../azure/ApiCenterDe
 import { ExportAPI } from "../../../commands/exportApi";
 import { TelemetryClient } from "../../../common/telemetryClient";
 import { ApiVersionDefinitionTreeItem } from "../../../tree/ApiVersionDefinitionTreeItem";
+import { GeneralUtils } from "../../../utils/generalUtils";
 abstract class ParentTreeItemBase extends AzExtParentTreeItem {
     private _childIndex: number = 0;
     public async loadMoreChildrenImpl(clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
@@ -68,7 +69,7 @@ describe("export API test cases", () => {
     it('export API happy path with link type', async () => {
         let stubShowTempFile = sandbox.stub(ExportAPI, "showTempFile").resolves();
         sandbox.stub(node.apiCenterApiVersionDefinition, "getDefinitions").resolves({ format: "link", value: "fakeValue" });
-        sandbox.stub(ExportAPI, "fetchDataFromLink").resolves();
+        sandbox.stub(GeneralUtils, "fetchDataFromLink").resolves();
         await ExportAPI.exportApi({} as IActionContext, node);
         sandbox.assert.calledOnce(stubShowTempFile);
     });

@@ -73,7 +73,7 @@ export type IApiCenterApiBase = {
     getNextLink: () => string | undefined;
     getName: () => string;
     getId: () => string;
-    getLable: () => string;
+    getLabel: () => string;
     generateChild: () => IVersionsBase;
 };
 
@@ -92,7 +92,7 @@ export class ApiCenterApiManagement implements IApiCenterApiBase {
     getId(): string {
         return this.data.id;
     }
-    getLable(): string {
+    getLabel(): string {
         return this.data.properties.title;
     }
     generateChild(): IVersionsBase {
@@ -102,7 +102,7 @@ export class ApiCenterApiManagement implements IApiCenterApiBase {
 
 export class ApiCenterApiDataPlane implements IApiCenterApiBase {
     constructor(private data: DataPlaneApiCenterApi) { }
-    getLable(): string {
+    getLabel(): string {
         return this.data.name;
     }
     getId(): string {

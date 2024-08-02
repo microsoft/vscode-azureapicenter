@@ -62,7 +62,7 @@ export class ApiCneterVersionsDataplane implements IVersionsBase {
 }
 
 export type IVersionBase = {
-    getLable: () => string,
+    getLabel: () => string,
     getId: () => string,
     getName: () => string,
     generateChild: () => IDefinitionsBase;
@@ -76,7 +76,7 @@ export class ApiCenterVersionManagement implements IVersionBase {
     generateChild(): IDefinitionsBase {
         return new ApiCenterVersionDefinitionsManagement(this.data);
     }
-    getLable() {
+    getLabel() {
         return this.data.properties.title;
     }
     getId() {
@@ -92,7 +92,7 @@ export class ApiCenterVersionDataplane implements IVersionBase {
     generateChild(): IDefinitionsBase {
         return new ApiCenterVersionDefinitionsDataplane(this.data);
     }
-    getLable() {
+    getLabel() {
         return this.data.name;
     }
     getId() {

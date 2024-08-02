@@ -30,7 +30,7 @@ export class ApiVersionTreeItem extends AzExtParentTreeItem {
   }
 
   public get label(): string {
-    return this._apiCenterApiVersion.getLable();
+    return this._apiCenterApiVersion.getLabel();
   }
 
   public hasMoreChildrenImpl(): boolean {

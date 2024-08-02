@@ -33,7 +33,7 @@ export class ApiTreeItem extends AzExtParentTreeItem {
   }
 
   public get label(): string {
-    return this._apiCenterApi.getLable();
+    return this._apiCenterApi.getLabel();
   }
 
   public hasMoreChildrenImpl(): boolean {

@@ -3,12 +3,12 @@
 import { getResourceGroupFromId } from "@microsoft/vscode-azext-azureutils";
 import { ProgressLocation, window } from "vscode";
 import { ApiCenterService } from "../../../azure/ApiCenter/ApiCenterService";
-import { ApiCenterApiVersionDefinitionImport } from "../../../azure/ApiCenter/contracts";
+import { ApiCenterApiVersionDefinitionImport, ApiSpecExportResultFormat } from "../../../azure/ApiCenter/contracts";
 import { showSavePromptConfigKey } from "../../../constants";
 import { localize } from "../../../localize";
+import { GeneralUtils } from "../../../utils/generalUtils";
 import { ApiVersionDefinitionTreeItem } from "../../ApiVersionDefinitionTreeItem";
 import { Editor, EditorOptions } from "../Editor";
-
 export class OpenApiEditor extends Editor<ApiVersionDefinitionTreeItem> {
     constructor() {
         super(showSavePromptConfigKey);
@@ -16,7 +16,12 @@ export class OpenApiEditor extends Editor<ApiVersionDefinitionTreeItem> {
 
     public async getData(treeItem: ApiVersionDefinitionTreeItem): Promise<string> {
         const exportedSpec = await treeItem.apiCenterApiVersionDefinition.getDefinitions(treeItem?.subscription!, treeItem?.apiCenterName!, treeItem?.apiCenterApiName!, treeItem?.apiCenterApiVersionName!);
-        return exportedSpec.value;
+        if (exportedSpec.format === ApiSpecExportResultFormat.inline) {
+            return exportedSpec.value;
+        } else {
+            let rawData = GeneralUtils.fetchDataFromLink(exportedSpec.value);
+            return rawData;
+        }
     }
 
     public async updateData(treeItem: ApiVersionDefinitionTreeItem, data: string): Promise<string> {

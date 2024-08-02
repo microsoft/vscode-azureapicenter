@@ -103,8 +103,7 @@ export class ApiCenterVersionDefinitionDataPlane implements IDefinitionBase {
     constructor(private data: DataPlaneApiCenterApiVersionDefinition) { }
     async getDefinitions(context: ISubscriptionContext, apiServiceName: string, apiName: string, apiVersionName: string): Promise<ApiCenterApiVersionDefinitionExport> {
         let server = new ApiCenterDataPlaneService(context);
-        let results = await server.exportSpecification(apiName,
-            apiVersionName, this.data.name);
+        let results = await server.exportSpecification(apiName, apiVersionName, this.data.name);
         return results;
     };
     static contextValue: string = "azureApiCenterApiVersionDataPlaneDefinitionTreeItem";
