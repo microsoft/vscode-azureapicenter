@@ -157,6 +157,9 @@ async function registerCommandWithTelemetry(commandId: string, callback: Command
         } finally {
             const end: number = Date.now();
             properties[TelemetryProperties.duration] = ((end - start) / 1000).toString();
+            if (args[0] && args[0] instanceof AzExtTreeItem && args[0].fullId) {
+                properties[TelemetryProperties.treeItemFullId] = args[0].fullId;
+            }
             if (parsedError) {
                 properties[ErrorProperties.errorType] = parsedError.errorType;
                 properties[ErrorProperties.errorMessage] = parsedError.message;
