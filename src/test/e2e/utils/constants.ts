@@ -46,4 +46,5 @@ export class TestENV {
     public static readonly AZURE_TENANT_NAME = process.env["AZURE_TENANT_NAME"];
     public static readonly AZURE_TENANT_ID = process.env["AZURE_TENANT_ID"];
     public static readonly AZURE_SUBSCRIPTION_NAME = process.env["AZURE_SUBSCRIPTION_NAME"];
+
 }
