@@ -7,6 +7,7 @@ import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path from 'path';
 import { Database } from 'sqlite3';
+import { TestENV } from "./utils/constants";
 export { expect } from '@playwright/test';
 
 export type TestOptions = {
@@ -148,11 +149,11 @@ async function setupTenantAndSub(path) {
     await fs.ensureFile(setJson);
     let data = {
         "azure-api-center.selectedSubscriptions": [
-            "72f988bf-86f1-41af-91ab-2d7cd011db47/af46c703-f714-4f4c-af42-835a673c2b13"
+            `${TestENV.AZURE_TENANT_ID}/${TestENV.AZURE_TENANT_ID_2}`
         ],
         "azure-api-center.tenant": {
-            "name": "Microsoft",
-            "id": "72f988bf-86f1-41af-91ab-2d7cd011db47"
+            "name": TestENV.AZURE_TENANT_NAME,
+            "id": TestENV.AZURE_TENANT_ID
         }
     };
 

@@ -43,8 +43,8 @@ export class APICenter {
 }
 
 export class TestENV {
-    public static readonly AZURE_TENANT_NAME = process.env["AZURE_TENANT_NAME"];
-    public static readonly AZURE_TENANT_ID = process.env["AZURE_TENANT_ID"];
-    public static readonly AZURE_SUBSCRIPTION_NAME = process.env["AZURE_SUBSCRIPTION_NAME"];
-
+    public static readonly AZURE_TENANT_NAME = process.env["AZURE_TENANT_NAME"] || "Microsoft";
+    public static readonly AZURE_TENANT_ID = process.env["AZURE_TENANT_ID"] || "72f988bf-86f1-41af-91ab-2d7cd011db47";
+    public static readonly AZURE_SUBSCRIPTION_NAME = process.env["AZURE_SUBSCRIPTION_NAME"] || "Teams Cloud - E2E Testing with TTL = 1 Days";
+    public static readonly AZURE_TENANT_ID_2 = process.env["AZURE_TENANT_ID"] || "af46c703-f714-4f4c-af42-835a673c2b13";
 }
