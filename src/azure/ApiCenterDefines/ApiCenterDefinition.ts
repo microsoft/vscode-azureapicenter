@@ -18,7 +18,7 @@ export type IDefinitionsBase = {
     getNextLink: () => string | undefined;
     getChild: (context: ISubscriptionContext, apiName: string, apiServiceName: string) => Promise<GeneralApiCenterApiVersionDefinition[]>;
     generateChild: (data: GeneralApiCenterApiVersionDefinition) => IDefinitionBase;
-}
+};
 
 export class ApiCenterVersionDefinitionsManagement implements IDefinitionsBase {
     constructor(public data: ApiCenterApiVersion) { }

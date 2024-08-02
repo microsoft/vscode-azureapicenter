@@ -19,7 +19,7 @@ export type IApiCenterApisBase = {
     getNextLink: () => string | undefined;
     getChild: (context: ISubscriptionContext, content: string) => Promise<GeneralApiCenterApi[]>;
     generateChild: (data: GeneralApiCenterApi) => IApiCenterApiBase;
-}
+};
 
 export class ApiCenterApisManagement implements IApiCenterApisBase {
     constructor(public data: ApiCenter) { }
@@ -51,7 +51,7 @@ export class ApiCenterApisDataplane implements IApiCenterApisBase {
         return this.data.name;
     }
     getName(): string {
-        return this.data.name
+        return this.data.name;
     }
     _nextLink: string | undefined;
     getNextLink(): string | undefined {
@@ -71,8 +71,8 @@ export class ApiCenterApisDataplane implements IApiCenterApisBase {
 export type IApiCenterApiBase = {
     _nextLink: string | undefined;
     getNextLink: () => string | undefined;
-    getName: () => string,
-    getId: () => string,
+    getName: () => string;
+    getId: () => string;
     getLable: () => string;
     generateChild: () => IVersionsBase;
 };

@@ -18,7 +18,7 @@ export type IVersionsBase = {
     getNextLink: () => string | undefined;
     getChild: (context: ISubscriptionContext, apiName: string) => Promise<GeneralApiCenterApiVersion[]>;
     generateChild: (data: GeneralApiCenterApiVersion) => IVersionBase;
-}
+};
 
 export class ApiCenterVersionsManagement implements IVersionsBase {
     constructor(public data: ApiCenterApi) { }
