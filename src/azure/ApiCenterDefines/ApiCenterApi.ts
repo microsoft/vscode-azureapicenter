@@ -22,7 +22,7 @@ export type IApiCenterApisBase = {
 };
 
 export class ApiCenterApisManagement implements IApiCenterApisBase {
-    constructor(public data: ApiCenter) { }
+    constructor(private data: ApiCenter) { }
     getId(): string {
         return this.data.id;
     }
@@ -78,7 +78,7 @@ export type IApiCenterApiBase = {
 };
 
 export class ApiCenterApiManagement implements IApiCenterApiBase {
-    constructor(public data: ApiCenterApi) { }
+    constructor(private data: ApiCenterApi) { }
     getData(): ApiCenterApi {
         return this.data;
     }
@@ -101,7 +101,7 @@ export class ApiCenterApiManagement implements IApiCenterApiBase {
 };
 
 export class ApiCenterApiDataPlane implements IApiCenterApiBase {
-    constructor(public data: DataPlaneApiCenterApi) { }
+    constructor(private data: DataPlaneApiCenterApi) { }
     getLable(): string {
         return this.data.name;
     }

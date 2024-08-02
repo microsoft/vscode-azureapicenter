@@ -21,7 +21,7 @@ export type IDefinitionsBase = {
 };
 
 export class ApiCenterVersionDefinitionsManagement implements IDefinitionsBase {
-    constructor(public data: ApiCenterApiVersion) { }
+    constructor(private data: ApiCenterApiVersion) { }
     getName(): string {
         return this.data.name;
     }
@@ -43,7 +43,7 @@ export class ApiCenterVersionDefinitionsManagement implements IDefinitionsBase {
 }
 
 export class ApiCenterVersionDefinitionsDataplane implements IDefinitionsBase {
-    constructor(public data: DataPlaneApiCenterApiVersion) { }
+    constructor(private data: DataPlaneApiCenterApiVersion) { }
     getName(): string {
         return this.data.name;
     }
@@ -71,7 +71,7 @@ export type IDefinitionBase = {
 };
 
 export class ApiCenterVersionDefinitionManagement implements IDefinitionBase {
-    constructor(public data: ApiCenterApiVersionDefinition) { }
+    constructor(private data: ApiCenterApiVersionDefinition) { }
     async getDefinitions(context: ISubscriptionContext, apiServiceName: string, apiName: string, apiVersionName: string): Promise<ApiCenterApiVersionDefinitionExport> {
         const resourceGroupName = getResourceGroupFromId(this.data.id);
         const apiCenterService = new ApiCenterService(
@@ -100,7 +100,7 @@ export class ApiCenterVersionDefinitionManagement implements IDefinitionBase {
 };
 
 export class ApiCenterVersionDefinitionDataPlane implements IDefinitionBase {
-    constructor(public data: DataPlaneApiCenterApiVersionDefinition) { }
+    constructor(private data: DataPlaneApiCenterApiVersionDefinition) { }
     async getDefinitions(context: ISubscriptionContext, apiServiceName: string, apiName: string, apiVersionName: string): Promise<ApiCenterApiVersionDefinitionExport> {
         let server = new ApiCenterDataPlaneService(context);
         let results = await server.exportSpecification(apiName,

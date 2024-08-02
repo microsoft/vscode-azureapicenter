@@ -1,9 +1,5 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
-export enum IApiCenterType {
-    management = "management",
-    dataplane = "dataplane"
-}
 export type GeneralApiCenter = ApiCenter | DataPlaneApiCenter;
 
 export type ApiCenter = {

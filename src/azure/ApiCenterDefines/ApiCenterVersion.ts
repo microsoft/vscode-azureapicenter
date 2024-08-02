@@ -21,7 +21,7 @@ export type IVersionsBase = {
 };
 
 export class ApiCenterVersionsManagement implements IVersionsBase {
-    constructor(public data: ApiCenterApi) { }
+    constructor(private data: ApiCenterApi) { }
     _nextLink: string | undefined;
     getNextLink(): string | undefined {
         return this._nextLink;
@@ -42,7 +42,7 @@ export class ApiCenterVersionsManagement implements IVersionsBase {
 }
 
 export class ApiCneterVersionsDataplane implements IVersionsBase {
-    constructor(public data: DataPlaneApiCenterApi) { }
+    constructor(private data: DataPlaneApiCenterApi) { }
     getName(): string {
         return this.data.name;
     }
@@ -69,7 +69,7 @@ export type IVersionBase = {
 };
 
 export class ApiCenterVersionManagement implements IVersionBase {
-    constructor(public data: ApiCenterApiVersion) { }
+    constructor(private data: ApiCenterApiVersion) { }
     getName(): string {
         return this.data.name;
     }
@@ -85,7 +85,7 @@ export class ApiCenterVersionManagement implements IVersionBase {
 };
 
 export class ApiCenterVersionDataplane implements IVersionBase {
-    constructor(public data: DataPlaneApiCenterApiVersion) { }
+    constructor(private data: DataPlaneApiCenterApiVersion) { }
     getName(): string {
         return this.data.name;
     }
