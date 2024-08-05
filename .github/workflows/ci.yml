@@ -1,6 +1,6 @@
 name: "CI"
 on:
-  pull_request:
+  pull_request_target:
     branches:
       - main
       - dev
@@ -13,7 +13,11 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
       - uses: actions/setup-node@v3
         with:
           node-version: lts/*
@@ -27,7 +31,7 @@ jobs:
 
   semver-title:
     runs-on: ubuntu-latest
-    if: (github.event_name == 'pull_request')
+    if: (github.event_name == 'pull_request_target')
     permissions:
       pull-requests: write
     steps:
@@ -40,7 +44,21 @@ jobs:
     permissions:
       pull-requests: write
     steps:
-      - uses: actions/checkout@v2
+      - name: checkout PR
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          ref: ${{ github.head_ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+      - name: Merge Branches
+        if: ${{ github.event_name == 'pull_request_target' }}
+        run: |
+          git config --global user.email "bot@user.noreply.github.com"
+          git config --global user.name "bot"
+
+          git remote add ${{ github.event.pull_request.base.repo.owner.login }} ${{ github.event.pull_request.base.repo.clone_url }}
+          git fetch ${{ github.event.pull_request.base.repo.owner.login }}
+          git merge ${{ github.event.pull_request.base.repo.owner.login }}/${{ github.event.pull_request.base.ref }}
       - uses: actions/setup-node@v3
         with:
           node-version: lts/*

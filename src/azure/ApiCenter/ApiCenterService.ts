@@ -1,16 +1,17 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
-import { RequestPrepareOptions, ServiceClient } from "@azure/ms-rest-js";
+import { HttpOperationResponse, RequestPrepareOptions, ServiceClient } from "@azure/ms-rest-js";
 import { ISubscriptionContext } from "@microsoft/vscode-azext-utils";
 import { getCredentialForToken } from "../../utils/credentialUtil";
 import { APICenterRestAPIs } from "./ApiCenterRestAPIs";
-import { ApiCenter, ApiCenterApi, ApiCenterApiDeployment, ApiCenterApiVersion, ApiCenterApiVersionDefinition, ApiCenterApiVersionDefinitionExport, ApiCenterApiVersionDefinitionImport, ApiCenterEnvironment } from "./contracts";
+import { ApiCenter, ApiCenterApi, ApiCenterApiDeployment, ApiCenterApiVersion, ApiCenterApiVersionDefinition, ApiCenterApiVersionDefinitionExport, ApiCenterApiVersionDefinitionImport, ApiCenterEnvironment, ApiCenterRulesetConfig, ApiCenterRulesetExport, ApiCenterRulesetImport } from "./contracts";
 
 export class ApiCenterService {
   private susbcriptionContext: ISubscriptionContext;
   private resourceGroupName: string;
   private apiCenterName: string;
   private apiVersion: string = "2023-07-01-preview";
+  private apiVersionPreview: string = "2024-03-15-preview";
   constructor(susbcriptionContext: ISubscriptionContext, resourceGroupName: string, apiCenterName: string) {
     this.susbcriptionContext = susbcriptionContext;
     this.apiCenterName = apiCenterName;
@@ -87,6 +88,26 @@ export class ApiCenterService {
     return response.parsedBody;
   }
 
+  public async getApiCenterRulesetConfig(): Promise<HttpOperationResponse> {
+    const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
+    const client = new ServiceClient(creds);
+    const options: RequestPrepareOptions = {
+      method: "GET",
+      url: APICenterRestAPIs.GetRulesetConfig(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, this.apiVersionPreview)
+    };
+    const response = await client.sendRequest(options);
+    return response;
+  }
+
+  public async isApiCenterRulesetEnabled(): Promise<boolean> {
+    try {
+      const response = await this.getApiCenterRulesetConfig();
+      return response.status === 200;
+    } catch (error) {
+      return false;
+    }
+  }
+
   public async createOrUpdateApi(apiCenterApi: ApiCenterApi): Promise<ApiCenterApi> {
     const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
     const client = new ServiceClient(creds);
@@ -144,6 +165,20 @@ export class ApiCenterService {
     return response.parsedBody;
   }
 
+  public async createOrUpdateApiCenterRulesetConfig(apiCenterRulesetConfig: ApiCenterRulesetConfig): Promise<HttpOperationResponse> {
+    const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
+    const client = new ServiceClient(creds);
+    const options: RequestPrepareOptions = {
+      method: "PUT",
+      url: APICenterRestAPIs.CreateRulesetConfig(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, this.apiVersionPreview),
+      body: {
+        properties: apiCenterRulesetConfig.properties
+      }
+    };
+    const response = await client.sendRequest(options);
+    return response;
+  }
+
   public async importSpecification(
     apiName: string,
     apiVersionName: string,
@@ -186,6 +221,29 @@ export class ApiCenterService {
     const options: RequestPrepareOptions = {
       method: "POST",
       url: APICenterRestAPIs.ExportApiSpecification(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, apiName, apiVersionName, apiCenterApiVersionDefinitionName, this.apiVersion),
+    };
+    const response = await client.sendRequest(options);
+    return response.parsedBody;
+  }
+
+  public async importRuleset(importPayload: ApiCenterRulesetImport): Promise<HttpOperationResponse> {
+    const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
+    const client = new ServiceClient(creds);
+    const options: RequestPrepareOptions = {
+      method: "POST",
+      url: APICenterRestAPIs.ImportRuleset(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, this.apiVersionPreview),
+      body: importPayload
+    };
+    const response = await client.sendRequest(options);
+    return response;
+  }
+
+  public async exportRuleset(): Promise<ApiCenterRulesetExport> {
+    const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
+    const client = new ServiceClient(creds);
+    const options: RequestPrepareOptions = {
+      method: "POST",
+      url: APICenterRestAPIs.ExportRuleset(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, this.apiVersionPreview)
     };
     const response = await client.sendRequest(options);
     return response.parsedBody;

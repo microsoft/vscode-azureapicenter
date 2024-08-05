@@ -2,14 +2,18 @@ name: "ui-test"
 on:
   push:
     branches: ["dev", "main"]
-  pull_request:
+  pull_request_target:
     branches: ["dev", "main"]
 
 jobs:
   e2e-test:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
       - uses: actions/setup-node@v2
         with:
           node-version: lts/*
@@ -17,8 +21,14 @@ jobs:
         run: |
           npm install
           npm run package
+      - name: setup account
+        uses: jsdaniell/create-json@v1
+        with:
+          name: "config.json"
+          json: ${{ secrets.ACCOUNT_CONFIG }}
+          dir: "./src/test/e2e"
       - run: |
-          npx playwright test
+          xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" npx playwright test
         working-directory: ./src/test/e2e
       - if: ${{ always() }}
         uses: actions/upload-artifact@v2
