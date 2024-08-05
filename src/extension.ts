@@ -36,6 +36,7 @@ import { setApiRuleset } from './commands/setApiRuleset';
 import { testInPostman } from './commands/testInPostman';
 import { ErrorProperties, TelemetryProperties } from './common/telemetryEvent';
 import { doubleClickDebounceDelay, selectedNodeKey } from './constants';
+import { getPluginsCommand } from './copilot/agentIntegration';
 import { ext } from './extensionVariables';
 import { ApiVersionDefinitionTreeItem } from './tree/ApiVersionDefinitionTreeItem';
 import { createAzureAccountTreeItem } from "./tree/AzureAccountTreeItem";
@@ -139,6 +140,8 @@ export async function activate(context: vscode.ExtensionContext) {
     registerCommandWithTelemetry('azure-api-center.openUrl', async (context: IActionContext, node?: AzExtTreeItem) => {
         await openUrlFromTreeNode(context, node);
     });
+
+    registerCommandWithTelemetry('azure-api-center.agent.getPluginsCommand', getPluginsCommand);
 }
 
 async function registerCommandWithTelemetry(commandId: string, callback: CommandCallback, debounce?: number): Promise<void> {
