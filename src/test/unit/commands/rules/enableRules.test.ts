@@ -7,7 +7,7 @@ import * as path from 'path';
 import * as sinon from "sinon";
 import * as vscode from "vscode";
 import { ApiCenterService } from "../../../../azure/ApiCenter/ApiCenterService";
-import { ApiCenter } from "../../../../azure/ApiCenter/contracts";
+import { ApiCenter, ApiCenterRulesetImportResult } from "../../../../azure/ApiCenter/contracts";
 import { enableRules } from "../../../../commands/rules/enableRules";
 import { RulesTreeItem } from "../../../../tree/rules/RulesTreeItem";
 
@@ -34,7 +34,7 @@ describe("enableRules", () => {
         sandbox.stub(path, 'join').returns(__dirname);
         const showInformationMessage = sandbox.spy(vscode.window, "showInformationMessage");
         sandbox.stub(ApiCenterService.prototype, "createOrUpdateApiCenterRulesetConfig").resolves({ status: 200 } as HttpOperationResponse);
-        sandbox.stub(ApiCenterService.prototype, "importRuleset").resolves({ status: 200 } as HttpOperationResponse);
+        sandbox.stub(ApiCenterService.prototype, "importRuleset").resolves({ isSuccessful: true } as ApiCenterRulesetImportResult);
         await enableRules({} as IActionContext, node);
         sandbox.assert.calledTwice(showInformationMessage);
         assert.ok(node.isEnabled);
