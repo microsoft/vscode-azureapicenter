@@ -2,11 +2,12 @@
 // Licensed under the MIT license.
 import { AzExtParentTreeItem, AzExtTreeItem, IActionContext } from "@microsoft/vscode-azext-utils";
 import * as sinon from "sinon";
-import { ApiCenterService } from "../../../azure/ApiCenter/ApiCenterService";
 import { ApiCenterApiVersionDefinition } from "../../../azure/ApiCenter/contracts";
+import { ApiCenterVersionDefinitionManagement } from "../../../azure/ApiCenterDefines/ApiCenterDefinition";
 import { ExportAPI } from "../../../commands/exportApi";
 import { TelemetryClient } from "../../../common/telemetryClient";
 import { ApiVersionDefinitionTreeItem } from "../../../tree/ApiVersionDefinitionTreeItem";
+import { GeneralUtils } from "../../../utils/generalUtils";
 abstract class ParentTreeItemBase extends AzExtParentTreeItem {
     private _childIndex: number = 0;
     public async loadMoreChildrenImpl(clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
@@ -19,12 +20,27 @@ abstract class ParentTreeItemBase extends AzExtParentTreeItem {
     protected abstract createChildTreeItem(index: number): AzExtTreeItem;
 }
 
+const data: ApiCenterApiVersionDefinition = {
+    id: "fakeId",
+    location: "fakeLocation",
+    name: "fakeName",
+    properties: {
+        title: "fakeTitle",
+        specification: {
+            name: "fakeName",
+            version: "fakeVersion",
+        }
+    },
+    // tslint:disable-next-line:no-reserved-keywords
+    type: "fakeType",
+};
+
 class RootTreeItem extends ParentTreeItemBase {
     public label: string = 'root';
     public contextValue: string = 'root';
 
     protected createChildTreeItem(index: number): AzExtTreeItem {
-        return new ApiVersionDefinitionTreeItem(this, "fakeApiCenterName", "fakeApiCenterApiName", "fakeApiCenterApiVersionName", {} as ApiCenterApiVersionDefinition);
+        return new ApiVersionDefinitionTreeItem(this, "fakeApiCenterName", "fakeApiCenterApiName", "fakeApiCenterApiVersionName", new ApiCenterVersionDefinitionManagement(data));
     }
 }
 
@@ -42,13 +58,7 @@ describe("export API test cases", () => {
             "fakeApiCenterName",
             "fakeApiCenterApiName",
             "fakeApiCenterApiVersionName",
-            {
-                properties: {
-                    specification: {
-                        name: "fakeName"
-                    }
-                }
-            } as ApiCenterApiVersionDefinition
+            new ApiCenterVersionDefinitionManagement(data)
         );
         sandbox.stub(node, "subscription").value("fakeSub");
         sandbox.stub(node, "id").value("/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test/providers/Microsoft.ApiCenter/services/test/workspaces/default/apis/test/versions/v1/definitions/openapi");
@@ -57,14 +67,15 @@ describe("export API test cases", () => {
         sandbox.restore();
     });
     it('export API happy path with link type', async () => {
-        const spyShowTempFile = sandbox.spy(ExportAPI, "showTempFile");
-        sandbox.stub(ApiCenterService.prototype, "exportSpecification").resolves({ format: "link", value: "fakeValue" });
+        let stubShowTempFile = sandbox.stub(ExportAPI, "showTempFile").resolves();
+        sandbox.stub(node.apiCenterApiVersionDefinition, "getDefinitions").resolves({ format: "link", value: "fakeValue" });
+        sandbox.stub(GeneralUtils, "fetchDataFromLink").resolves();
         await ExportAPI.exportApi({} as IActionContext, node);
-        sandbox.assert.notCalled(spyShowTempFile);
+        sandbox.assert.calledOnce(stubShowTempFile);
     });
     it('export API happy path with inline type', async () => {
         let stubShowTempFile = sandbox.stub(ExportAPI, "showTempFile").resolves();
-        sandbox.stub(ApiCenterService.prototype, "exportSpecification").resolves({ format: "inline", value: "fakeValue" });
+        sandbox.stub(node.apiCenterApiVersionDefinition, "getDefinitions").resolves({ format: "inline", value: "fakeValue" });
         await ExportAPI.exportApi({} as IActionContext, node);
         sandbox.assert.calledOnce(stubShowTempFile);
     });

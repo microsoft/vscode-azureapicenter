@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
+import fetch from 'node-fetch';
 import * as os from "os";
 import * as path from "path";
-
 export namespace GeneralUtils {
     const apiCenterFolder = ".api-center";
 
@@ -53,5 +53,16 @@ export namespace GeneralUtils {
 
     export function getApiCenterWorkspacePath(): string {
         return path.join(os.homedir(), apiCenterFolder);
+    }
+
+    export async function fetchDataFromLink(link: string): Promise<string> {
+        try {
+            const res = await fetch(link);
+            const rawData = await res.json();
+            return JSON.stringify(rawData);
+        }
+        catch (err) {
+            throw err;
+        }
     }
 }
