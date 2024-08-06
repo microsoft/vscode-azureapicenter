@@ -96,6 +96,11 @@ export type ApiCenterRulesetImport = {
     value: string;
 };
 
+export type ApiCenterRulesetImportResult = {
+    isSuccessful: boolean;
+    message?: string | null;
+};
+
 export type ApiCenterRulesetExport = {
     format: string;
     value: string;

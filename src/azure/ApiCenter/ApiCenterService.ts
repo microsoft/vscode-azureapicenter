@@ -4,7 +4,7 @@ import { HttpOperationResponse, RequestPrepareOptions, ServiceClient } from "@az
 import { ISubscriptionContext } from "@microsoft/vscode-azext-utils";
 import { getCredentialForToken } from "../../utils/credentialUtil";
 import { APICenterRestAPIs } from "./ApiCenterRestAPIs";
-import { ApiCenter, ApiCenterApi, ApiCenterApiDeployment, ApiCenterApiVersion, ApiCenterApiVersionDefinition, ApiCenterApiVersionDefinitionExport, ApiCenterApiVersionDefinitionImport, ApiCenterEnvironment, ApiCenterRulesetConfig, ApiCenterRulesetExport, ApiCenterRulesetImport } from "./contracts";
+import { ApiCenter, ApiCenterApi, ApiCenterApiDeployment, ApiCenterApiVersion, ApiCenterApiVersionDefinition, ApiCenterApiVersionDefinitionExport, ApiCenterApiVersionDefinitionImport, ApiCenterEnvironment, ApiCenterRulesetConfig, ApiCenterRulesetExport, ApiCenterRulesetImport, ApiCenterRulesetImportResult } from "./contracts";
 
 export class ApiCenterService {
   private susbcriptionContext: ISubscriptionContext;
@@ -226,16 +226,40 @@ export class ApiCenterService {
     return response.parsedBody;
   }
 
-  public async importRuleset(importPayload: ApiCenterRulesetImport): Promise<HttpOperationResponse> {
+  public async importRuleset(importPayload: ApiCenterRulesetImport): Promise<ApiCenterRulesetImportResult> {
     const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
     const client = new ServiceClient(creds);
-    const options: RequestPrepareOptions = {
+    let options: RequestPrepareOptions = {
       method: "POST",
       url: APICenterRestAPIs.ImportRuleset(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, this.apiVersionPreview),
       body: importPayload
     };
-    const response = await client.sendRequest(options);
-    return response;
+    let response = await client.sendRequest(options);
+
+    if (response.status === 202) {
+      const location = response.headers.get("Location");
+
+      if (!location) {
+        return { isSuccessful: false };
+      }
+
+      options = {
+        method: "GET",
+        url: location,
+      };
+
+      const timeout = 30000; // 30 seconds in milliseconds
+      let startTime = Date.now();
+      do {
+        response = await client.sendRequest(options);
+        if (response.parsedBody?.status === "Succeeded") {
+          return { isSuccessful: true };
+        }
+      } while (Date.now() - startTime < timeout);
+      return { isSuccessful: false };
+    } else {
+      return { isSuccessful: false, message: response.bodyAsText };
+    }
   }
 
   public async exportRuleset(): Promise<ApiCenterRulesetExport> {

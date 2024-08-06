@@ -29,9 +29,9 @@ export async function deployRules(context: IActionContext, node: RulesTreeItem) 
     };
     const response = await apiCenterService.importRuleset(importPayload);
 
-    if (response.status === 200) {
+    if (response.isSuccessful) {
         vscode.window.showInformationMessage(vscode.l10n.t(UiStrings.RulesDeployed, node.apiCenter.name));
     } else {
-        vscode.window.showErrorMessage(vscode.l10n.t(UiStrings.FailedToDeployRules, response.bodyAsText ?? `status code ${response.status}`));
+        vscode.window.showErrorMessage(vscode.l10n.t(UiStrings.FailedToDeployRules, response.message ?? `Error: ${response.message}`));
     }
 }

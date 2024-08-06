@@ -23,7 +23,7 @@ export async function enableRules(context: IActionContext, node: RulesTreeItem) 
     const resourceGroupName = getResourceGroupFromId(node.apiCenter.id);
     const apiCenterService = new ApiCenterService(node.parent?.subscription!, resourceGroupName, node.apiCenter.name);
 
-    let response = await apiCenterService.createOrUpdateApiCenterRulesetConfig(apiCenterRulesetConfig);
+    const response = await apiCenterService.createOrUpdateApiCenterRulesetConfig(apiCenterRulesetConfig);
 
     if (response.status === 200) {
         vscode.window.showInformationMessage((vscode.l10n.t(UiStrings.RulesEnabled, node.apiCenter.name)));
@@ -42,13 +42,13 @@ export async function enableRules(context: IActionContext, node: RulesTreeItem) 
         value: content,
         format: "InlineZip",
     };
-    response = await apiCenterService.importRuleset(importPayload);
+    const importRulesetResponse = await apiCenterService.importRuleset(importPayload);
 
-    if (response.status === 200) {
+    if (importRulesetResponse.isSuccessful) {
         vscode.window.showInformationMessage(vscode.l10n.t(UiStrings.RulesDeployed, node.apiCenter.name));
         node.updateStatusToEnable();
         await node.refresh(context);
     } else {
-        vscode.window.showErrorMessage(vscode.l10n.t(UiStrings.FailedToDeployRules, response.bodyAsText ?? `status code ${response.status}`));
+        vscode.window.showErrorMessage(vscode.l10n.t(UiStrings.FailedToDeployRules, importRulesetResponse.message ?? `Error: ${importRulesetResponse.message}`));
     }
 }

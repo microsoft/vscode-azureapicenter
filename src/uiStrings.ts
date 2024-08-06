@@ -107,7 +107,7 @@ export class UiStrings {
     static readonly FileAlreadyExists = vscode.l10n.t("The file '{0}' already exists. Please input a different name.");
     static readonly NoRulesFolder = vscode.l10n.t("Rules folder '{0}' is empty. No files to deploy.");
     static readonly RulesDeployed = vscode.l10n.t("Rules deployed to '{0}'.");
-    static readonly FailedToDeployRules = vscode.l10n.t("Failed to deploy rules. Error: {0}");
+    static readonly FailedToDeployRules = vscode.l10n.t("Failed to deploy rules. {0}");
     static readonly RulesEnabled = vscode.l10n.t("API Analysis enabled for '{0}'.");
     static readonly FailedToEnableRules = vscode.l10n.t("Failed to enable API Analysis. Error: {0}");
     static readonly RulesFolderNotEmpty = vscode.l10n.t("The rules folder '{0}' is not empty. Do you want to overwrite the existing files?");
