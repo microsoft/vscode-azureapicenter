@@ -32,6 +32,6 @@ export async function deployRules(context: IActionContext, node: RulesTreeItem) 
     if (response.isSuccessful) {
         vscode.window.showInformationMessage(vscode.l10n.t(UiStrings.RulesDeployed, node.apiCenter.name));
     } else {
-        vscode.window.showErrorMessage(vscode.l10n.t(UiStrings.FailedToDeployRules, response.message ?? `Error: ${response.message}`));
+        throw new Error(vscode.l10n.t(UiStrings.FailedToDeployRules, response.message ?? `Error: ${response.message}`));
     }
 }

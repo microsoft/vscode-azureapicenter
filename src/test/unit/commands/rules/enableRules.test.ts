@@ -40,10 +40,16 @@ describe("enableRules", () => {
         assert.ok(node.isEnabled);
     });
     it('enable rules with no status code 200', async () => {
-        const showErrorMessage = sandbox.spy(vscode.window, "showErrorMessage");
         sandbox.stub(ApiCenterService.prototype, "createOrUpdateApiCenterRulesetConfig").resolves({ status: 400 } as HttpOperationResponse);
-        await enableRules({} as IActionContext, node);
-        sandbox.assert.calledOnce(showErrorMessage);
+
+        await assert.rejects(
+            async () => {
+                await enableRules({} as IActionContext, node);
+            },
+            {
+                message: "Failed to enable API Analysis. Error: status code 400",
+            }
+        );
         assert.ok(!node.isEnabled);
     });
 });

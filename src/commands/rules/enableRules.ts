@@ -28,8 +28,7 @@ export async function enableRules(context: IActionContext, node: RulesTreeItem) 
     if (response.status === 200) {
         vscode.window.showInformationMessage((vscode.l10n.t(UiStrings.RulesEnabled, node.apiCenter.name)));
     } else {
-        vscode.window.showErrorMessage(vscode.l10n.t(UiStrings.FailedToEnableRules, response.bodyAsText ?? `status code ${response.status}`));
-        return;
+        throw new Error(vscode.l10n.t(UiStrings.FailedToEnableRules, response.bodyAsText ?? `status code ${response.status}`));
     }
 
     // Temporary workaround to deploy default rules after enabling rules
@@ -49,6 +48,6 @@ export async function enableRules(context: IActionContext, node: RulesTreeItem) 
         node.updateStatusToEnable();
         await node.refresh(context);
     } else {
-        vscode.window.showErrorMessage(vscode.l10n.t(UiStrings.FailedToDeployRules, importRulesetResponse.message ?? `Error: ${importRulesetResponse.message}`));
+        throw new Error(vscode.l10n.t(UiStrings.FailedToDeployRules, importRulesetResponse.message ?? `Error: ${importRulesetResponse.message}`));
     }
 }
