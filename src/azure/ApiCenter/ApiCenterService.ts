@@ -4,7 +4,7 @@ import { HttpOperationResponse, RequestPrepareOptions, ServiceClient } from "@az
 import { ISubscriptionContext } from "@microsoft/vscode-azext-utils";
 import { getCredentialForToken } from "../../utils/credentialUtil";
 import { APICenterRestAPIs } from "./ApiCenterRestAPIs";
-import { ApiCenter, ApiCenterApi, ApiCenterApiDeployment, ApiCenterApiVersion, ApiCenterApiVersionDefinition, ApiCenterApiVersionDefinitionExport, ApiCenterApiVersionDefinitionImport, ApiCenterEnvironment, ApiCenterRulesetConfig, ApiCenterRulesetExport, ApiCenterRulesetImport, ApiCenterRulesetImportResult } from "./contracts";
+import { ApiCenter, ApiCenterApi, ApiCenterApiDeployment, ApiCenterApiVersion, ApiCenterApiVersionDefinition, ApiCenterApiVersionDefinitionExport, ApiCenterApiVersionDefinitionImport, ApiCenterEnvironment, ApiCenterRulesetConfig, ApiCenterRulesetExport, ApiCenterRulesetImport, ApiCenterRulesetImportResult, ApiCenterRulesetImportStatus, ArmAsyncOperationStatus } from "./contracts";
 
 export class ApiCenterService {
   private susbcriptionContext: ISubscriptionContext;
@@ -252,8 +252,12 @@ export class ApiCenterService {
       let startTime = Date.now();
       do {
         response = await client.sendRequest(options);
-        if (response.parsedBody?.status === "Succeeded") {
+        const responseBody: ApiCenterRulesetImportStatus = response.parsedBody;
+        if (responseBody?.status === ArmAsyncOperationStatus.Succeeded) {
           return { isSuccessful: true };
+        }
+        if (responseBody?.status === ArmAsyncOperationStatus.Failed) {
+          return { isSuccessful: false, message: responseBody.properties?.comment };
         }
       } while (Date.now() - startTime < timeout);
       return { isSuccessful: false };
