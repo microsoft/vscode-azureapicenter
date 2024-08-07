@@ -18,20 +18,25 @@ export async function deployRules(context: IActionContext, node: RulesTreeItem) 
         return;
     }
 
-    const content = (await zipFolderToBuffer(rulesFolderPath)).toString('base64');
+    await vscode.window.withProgress({
+        location: vscode.ProgressLocation.Notification,
+        title: UiStrings.DeployRules
+    }, async (progress, token) => {
+        const content = (await zipFolderToBuffer(rulesFolderPath)).toString('base64');
 
-    const resourceGroupName = getResourceGroupFromId(node.apiCenter.id);
-    const apiCenterService = new ApiCenterService(node.parent?.subscription!, resourceGroupName, node.apiCenter.name);
+        const resourceGroupName = getResourceGroupFromId(node.apiCenter.id);
+        const apiCenterService = new ApiCenterService(node.parent?.subscription!, resourceGroupName, node.apiCenter.name);
 
-    const importPayload: ApiCenterRulesetImport = {
-        value: content,
-        format: "InlineZip",
-    };
-    const response = await apiCenterService.importRuleset(importPayload);
+        const importPayload: ApiCenterRulesetImport = {
+            value: content,
+            format: "InlineZip",
+        };
+        const response = await apiCenterService.importRuleset(importPayload);
 
-    if (response.isSuccessful) {
-        vscode.window.showInformationMessage(vscode.l10n.t(UiStrings.RulesDeployed, node.apiCenter.name));
-    } else {
-        throw new Error(vscode.l10n.t(UiStrings.FailedToDeployRules, response.message ?? `Error: ${response.message}`));
-    }
+        if (response.isSuccessful) {
+            vscode.window.showInformationMessage(vscode.l10n.t(UiStrings.RulesDeployed, node.apiCenter.name));
+        } else {
+            throw new Error(vscode.l10n.t(UiStrings.FailedToDeployRules, response.message ? `Error: ${response.message}` : ""));
+        }
+    });
 }

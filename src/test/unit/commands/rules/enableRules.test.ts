@@ -36,7 +36,7 @@ describe("enableRules", () => {
         sandbox.stub(ApiCenterService.prototype, "createOrUpdateApiCenterRulesetConfig").resolves({ status: 200 } as HttpOperationResponse);
         sandbox.stub(ApiCenterService.prototype, "importRuleset").resolves({ isSuccessful: true } as ApiCenterRulesetImportResult);
         await enableRules({} as IActionContext, node);
-        sandbox.assert.calledTwice(showInformationMessage);
+        sandbox.assert.calledOnce(showInformationMessage);
         assert.ok(node.isEnabled);
     });
     it('enable rules with no status code 200', async () => {
@@ -47,7 +47,7 @@ describe("enableRules", () => {
                 await enableRules({} as IActionContext, node);
             },
             {
-                message: "Failed to enable API Analysis. Error: status code 400",
+                message: "Failed to enable API Analysis. Status Code: 400",
             }
         );
         assert.ok(!node.isEnabled);
