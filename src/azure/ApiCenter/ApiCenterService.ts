@@ -248,7 +248,7 @@ export class ApiCenterService {
         url: location,
       };
 
-      const timeout = 30000; // 30 seconds in milliseconds
+      const timeout = 60000; // 1 minute in milliseconds
       let startTime = Date.now();
       do {
         response = await client.sendRequest(options);
