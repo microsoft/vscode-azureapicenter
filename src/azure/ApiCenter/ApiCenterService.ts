@@ -11,7 +11,7 @@ export class ApiCenterService {
   private resourceGroupName: string;
   private apiCenterName: string;
   private apiVersion: string = "2023-07-01-preview";
-  private apiVersionPreview: string = "2024-03-15-preview";
+  private apiVersionNew: string = "2024-03-01";
   constructor(susbcriptionContext: ISubscriptionContext, resourceGroupName: string, apiCenterName: string) {
     this.susbcriptionContext = susbcriptionContext;
     this.apiCenterName = apiCenterName;
@@ -93,7 +93,7 @@ export class ApiCenterService {
     const client = new ServiceClient(creds);
     const options: RequestPrepareOptions = {
       method: "GET",
-      url: APICenterRestAPIs.GetRulesetConfig(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, this.apiVersionPreview)
+      url: APICenterRestAPIs.GetRulesetConfig(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, this.apiVersionNew)
     };
     const response = await client.sendRequest(options);
     return response;
@@ -170,7 +170,7 @@ export class ApiCenterService {
     const client = new ServiceClient(creds);
     const options: RequestPrepareOptions = {
       method: "PUT",
-      url: APICenterRestAPIs.CreateRulesetConfig(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, this.apiVersionPreview),
+      url: APICenterRestAPIs.CreateRulesetConfig(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, this.apiVersionNew),
       body: {
         properties: apiCenterRulesetConfig.properties
       }
@@ -231,7 +231,7 @@ export class ApiCenterService {
     const client = new ServiceClient(creds);
     let options: RequestPrepareOptions = {
       method: "POST",
-      url: APICenterRestAPIs.ImportRuleset(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, this.apiVersionPreview),
+      url: APICenterRestAPIs.ImportRuleset(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, this.apiVersionNew),
       body: importPayload
     };
     let response = await client.sendRequest(options);
@@ -267,7 +267,7 @@ export class ApiCenterService {
     const client = new ServiceClient(creds);
     const options: RequestPrepareOptions = {
       method: "POST",
-      url: APICenterRestAPIs.ExportRuleset(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, this.apiVersionPreview)
+      url: APICenterRestAPIs.ExportRuleset(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, this.apiVersionNew)
     };
     const response = await client.sendRequest(options);
     return response.parsedBody;
