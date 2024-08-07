@@ -30,7 +30,7 @@ describe("enableRules", () => {
     afterEach(() => {
         sandbox.restore();
     });
-    it('enable rules with status code 200', async () => {
+    it('enabling rules succeeded', async () => {
         sandbox.stub(path, 'join').returns(__dirname);
         const showInformationMessage = sandbox.spy(vscode.window, "showInformationMessage");
         sandbox.stub(ApiCenterService.prototype, "createOrUpdateApiCenterRulesetConfig").resolves({ status: 200 } as HttpOperationResponse);
@@ -39,15 +39,30 @@ describe("enableRules", () => {
         sandbox.assert.calledOnce(showInformationMessage);
         assert.ok(node.isEnabled);
     });
-    it('enable rules with no status code 200', async () => {
-        sandbox.stub(ApiCenterService.prototype, "createOrUpdateApiCenterRulesetConfig").resolves({ status: 400 } as HttpOperationResponse);
+    it('enabling rules failed when creating ruleset config', async () => {
+        sandbox.stub(ApiCenterService.prototype, "createOrUpdateApiCenterRulesetConfig").resolves({ status: 400, bodyAsText: 'error' } as HttpOperationResponse);
 
         await assert.rejects(
             async () => {
                 await enableRules({} as IActionContext, node);
             },
             {
-                message: "Failed to enable API Analysis. Status Code: 400",
+                message: "Failed to enable API Analysis. Error: error",
+            }
+        );
+        assert.ok(!node.isEnabled);
+    });
+    it('enabling rules failed when importing ruleset', async () => {
+        sandbox.stub(path, 'join').returns(__dirname);
+        sandbox.stub(ApiCenterService.prototype, "createOrUpdateApiCenterRulesetConfig").resolves({ status: 200 } as HttpOperationResponse);
+        sandbox.stub(ApiCenterService.prototype, "importRuleset").resolves({ isSuccessful: false, message: 'error' } as ApiCenterRulesetImportResult);
+
+        await assert.rejects(
+            async () => {
+                await enableRules({} as IActionContext, node);
+            },
+            {
+                message: "Failed to enable API Analysis. Error: error",
             }
         );
         assert.ok(!node.isEnabled);
