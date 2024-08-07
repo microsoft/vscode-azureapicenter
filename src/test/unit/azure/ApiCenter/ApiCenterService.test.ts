@@ -44,8 +44,40 @@ describe("ApiCenterService", () => {
 
         assert.strictEqual(response.isSuccessful, true);
     });
-    it("importRuleset failed", async () => {
+    it("importRuleset failed on first call", async () => {
         sandbox.stub(ServiceClient.prototype, "sendRequest").resolves({ status: 500, bodyAsText: "error" } as HttpOperationResponse);
+
+        const apiCenterService = new ApiCenterService(subscriptionContext, "fakeResourceGroup", "fakeServiceName");
+        const importPayload: ApiCenterRulesetImport = {
+            value: "fakeValue",
+            format: "InlineZip",
+        };
+
+        const response = await apiCenterService.importRuleset(importPayload);
+
+        assert.strictEqual(response.isSuccessful, false);
+        assert.strictEqual(response.message, "error");
+    });
+    it("importRuleset failed on status check", async () => {
+        const mockResponse1 = { status: 202 } as HttpOperationResponse;
+        mockResponse1.headers = new HttpHeaders({ Location: "fakeLocation" });
+        const mockResponse2 = {
+            status: 202,
+            parsedBody: { status: "InProgress" },
+        } as HttpOperationResponse;
+        const mockResponse3 = {
+            status: 400,
+            parsedBody: {
+                status: "Failed",
+                properties: {
+                    comment: "error"
+                }
+            },
+        } as HttpOperationResponse;
+        const sendRequestStub = sandbox.stub(ServiceClient.prototype, "sendRequest");
+        sendRequestStub.onFirstCall().resolves(mockResponse1);
+        sendRequestStub.onSecondCall().resolves(mockResponse2);
+        sendRequestStub.onThirdCall().resolves(mockResponse3);
 
         const apiCenterService = new ApiCenterService(subscriptionContext, "fakeResourceGroup", "fakeServiceName");
         const importPayload: ApiCenterRulesetImport = {
