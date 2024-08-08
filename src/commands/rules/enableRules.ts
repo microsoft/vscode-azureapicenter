@@ -5,7 +5,7 @@ import { IActionContext } from "@microsoft/vscode-azext-utils";
 import * as path from 'path';
 import * as vscode from 'vscode';
 import { ApiCenterService } from "../../azure/ApiCenter/ApiCenterService";
-import { ApiCenterRulesetConfig, ApiCenterRulesetImport } from "../../azure/ApiCenter/contracts";
+import { ApiCenterRulesetConfig, ApiCenterRulesetImport, ApiCenterRulesetImportFormat } from "../../azure/ApiCenter/contracts";
 import { ext } from "../../extensionVariables";
 import { RulesTreeItem } from "../../tree/rules/RulesTreeItem";
 import { UiStrings } from "../../uiStrings";
@@ -13,9 +13,7 @@ import { zipFolderToBuffer } from "../../utils/zipUtils";
 
 const apiCenterRulesetConfig: ApiCenterRulesetConfig = {
     properties: {
-        analyzerVersion: "1.0.0",
-        apiType: "rest",
-        lifecycleStage: "testing",
+        analyzerType: "spectral"
     }
 };
 
@@ -41,7 +39,7 @@ export async function enableRules(context: IActionContext, node: RulesTreeItem) 
 
         const importPayload: ApiCenterRulesetImport = {
             value: content,
-            format: "InlineZip",
+            format: ApiCenterRulesetImportFormat.InlineZip,
         };
         const importRulesetResponse = await apiCenterService.importRuleset(importPayload);
 

@@ -5,7 +5,7 @@ import { ISubscriptionContext } from "@microsoft/vscode-azext-utils";
 import * as assert from "assert";
 import * as sinon from "sinon";
 import { ApiCenterService } from "../../../../azure/ApiCenter/ApiCenterService";
-import { ApiCenterRulesetImport } from "../../../../azure/ApiCenter/contracts";
+import { ApiCenterRulesetImport, ApiCenterRulesetImportFormat } from "../../../../azure/ApiCenter/contracts";
 
 describe("ApiCenterService", () => {
     let sandbox: sinon.SinonSandbox;
@@ -37,7 +37,7 @@ describe("ApiCenterService", () => {
         const apiCenterService = new ApiCenterService(subscriptionContext, "fakeResourceGroup", "fakeServiceName");
         const importPayload: ApiCenterRulesetImport = {
             value: "fakeValue",
-            format: "InlineZip",
+            format: ApiCenterRulesetImportFormat.InlineZip,
         };
 
         const response = await apiCenterService.importRuleset(importPayload);
@@ -50,7 +50,7 @@ describe("ApiCenterService", () => {
         const apiCenterService = new ApiCenterService(subscriptionContext, "fakeResourceGroup", "fakeServiceName");
         const importPayload: ApiCenterRulesetImport = {
             value: "fakeValue",
-            format: "InlineZip",
+            format: ApiCenterRulesetImportFormat.InlineZip,
         };
 
         const response = await apiCenterService.importRuleset(importPayload);
@@ -82,7 +82,7 @@ describe("ApiCenterService", () => {
         const apiCenterService = new ApiCenterService(subscriptionContext, "fakeResourceGroup", "fakeServiceName");
         const importPayload: ApiCenterRulesetImport = {
             value: "fakeValue",
-            format: "InlineZip",
+            format: ApiCenterRulesetImportFormat.InlineZip,
         };
 
         const response = await apiCenterService.importRuleset(importPayload);

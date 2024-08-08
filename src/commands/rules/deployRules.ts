@@ -4,7 +4,7 @@ import { getResourceGroupFromId } from "@microsoft/vscode-azext-azureutils";
 import { IActionContext } from "@microsoft/vscode-azext-utils";
 import * as vscode from 'vscode';
 import { ApiCenterService } from "../../azure/ApiCenter/ApiCenterService";
-import { ApiCenterRulesetImport } from "../../azure/ApiCenter/contracts";
+import { ApiCenterRulesetImport, ApiCenterRulesetImportFormat } from "../../azure/ApiCenter/contracts";
 import { RulesTreeItem } from "../../tree/rules/RulesTreeItem";
 import { UiStrings } from "../../uiStrings";
 import { hasFiles } from "../../utils/fsUtil";
@@ -29,7 +29,7 @@ export async function deployRules(context: IActionContext, node: RulesTreeItem) 
 
         const importPayload: ApiCenterRulesetImport = {
             value: content,
-            format: "InlineZip",
+            format: ApiCenterRulesetImportFormat.InlineZip,
         };
         const response = await apiCenterService.importRuleset(importPayload);
 

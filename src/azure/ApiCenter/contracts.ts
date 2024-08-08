@@ -157,3 +157,7 @@ export enum ArmAsyncOperationStatus {
     Failed = 'Failed',
     Canceled = 'Canceled',
 }
+
+export enum ApiCenterRulesetImportFormat {
+    InlineZip = 'inline-zip',
+};
