@@ -11,7 +11,8 @@ export enum TelemetryProperties {
     duration = "duration",
     slashCommand = 'slashCommand',
     option = 'option',
-    treeItemFullId = 'treeItemFullId',
+    subscriptionId = 'subscriptionId',
+    resourceName = 'resourceName',
 };
 
 export enum ErrorProperties {
