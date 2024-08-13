@@ -39,14 +39,13 @@ import { searchApi } from './commands/searchApi';
 import { setApiRuleset } from './commands/setApiRuleset';
 import { SignInToDataPlane } from "./commands/signInToDataPlane";
 import { testInPostman } from './commands/testInPostman';
+import { ErrorProperties, TelemetryProperties } from './common/telemetryEvent';
 import { doubleClickDebounceDelay, selectedNodeKey } from './constants';
 import { ext } from './extensionVariables';
 import { ApiVersionDefinitionTreeItem } from './tree/ApiVersionDefinitionTreeItem';
 import { createAzureAccountTreeItem } from "./tree/AzureAccountTreeItem";
 import { createAzureDataAccountTreeItem } from './tree/DataPlaneAccount';
 import { OpenApiEditor } from './tree/Editors/openApi/OpenApiEditor';
-// Copilot Chat
-import { ErrorProperties, TelemetryProperties } from './common/telemetryEvent';
 export async function activate(context: vscode.ExtensionContext) {
     console.log('Congratulations, your extension "azure-api-center" is now active!');
 
@@ -60,39 +59,8 @@ export async function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(ext.outputChannel);
     registerAzureUtilsExtensionVariables(ext);
 
-    AzureSessionProviderHelper.activateAzureSessionProvider(context);
-    const sessionProvider = AzureSessionProviderHelper.getSessionProvider();
-
-    const azureAccountTreeItem = createAzureAccountTreeItem(sessionProvider);
-    context.subscriptions.push(azureAccountTreeItem);
-    ext.treeItem = azureAccountTreeItem;
-    // var a = ext.treeItem.subscription;
-    ext.dataPlaneAccounts = [];
-    const treeDataProvider = new AzExtTreeDataProvider(azureAccountTreeItem, "appService.loadMore");
-
-    ext.treeItem = azureAccountTreeItem;
-
-    ext.treeDataProvider = treeDataProvider;
-
-    const treeView = vscode.window.createTreeView("apiCenterTreeView", { treeDataProvider });
-    context.subscriptions.push(treeView);
-
-    AzureDataSessionProviderHelper.activateAzureSessionProvider(context);
-    const dataPlaneSessionProvider = AzureDataSessionProviderHelper.getSessionProvider();
-    const dataPlanAccountManagerTreeItem = createAzureDataAccountTreeItem(dataPlaneSessionProvider);
-    context.subscriptions.push(dataPlanAccountManagerTreeItem);
-    ext.workspaceItem = dataPlanAccountManagerTreeItem;
-
-    const workspaceTreeDataProvider = new AzExtTreeDataProvider(dataPlanAccountManagerTreeItem, "appService.loadMore");
-    ext.workspaceProvider = workspaceTreeDataProvider;
-
-    vscode.window.registerTreeDataProvider('apiCenterWorkspace', workspaceTreeDataProvider);
-
-    treeView.onDidChangeSelection((e: vscode.TreeViewSelectionChangeEvent<AzExtTreeItem>) => {
-        const selectedNode = e.selection[0];
-        ext.outputChannel.appendLine(selectedNode.id!);
-        ext.context.globalState.update(selectedNodeKey, selectedNode.id);
-    });
+    setupControlView(context);
+    setupDataTreeView(context);
 
     // Register API Center extension commands
 
@@ -201,6 +169,36 @@ async function registerCommandWithTelemetry(commandId: string, callback: Command
             }
         }
     }, debounce);
+}
+
+function setupControlView(context: vscode.ExtensionContext) {
+    AzureSessionProviderHelper.activateAzureSessionProvider(context);
+    const sessionProvider = AzureSessionProviderHelper.getSessionProvider();
+    const azureAccountTreeItem = createAzureAccountTreeItem(sessionProvider);
+    context.subscriptions.push(azureAccountTreeItem);
+    ext.treeItem = azureAccountTreeItem;
+    const treeDataProvider = new AzExtTreeDataProvider(azureAccountTreeItem, "appService.loadMore");
+    ext.treeItem = azureAccountTreeItem;
+    ext.treeDataProvider = treeDataProvider;
+    const treeView = vscode.window.createTreeView("apiCenterTreeView", { treeDataProvider });
+    context.subscriptions.push(treeView);
+    treeView.onDidChangeSelection((e: vscode.TreeViewSelectionChangeEvent<AzExtTreeItem>) => {
+        const selectedNode = e.selection[0];
+        ext.outputChannel.appendLine(selectedNode.id!);
+        ext.context.globalState.update(selectedNodeKey, selectedNode.id);
+    });
+}
+
+function setupDataTreeView(context: vscode.ExtensionContext) {
+    ext.dataPlaneAccounts = [];
+    AzureDataSessionProviderHelper.activateAzureSessionProvider(context);
+    const dataPlaneSessionProvider = AzureDataSessionProviderHelper.getSessionProvider();
+    const dataPlanAccountManagerTreeItem = createAzureDataAccountTreeItem(dataPlaneSessionProvider);
+    context.subscriptions.push(dataPlanAccountManagerTreeItem);
+    ext.workspaceItem = dataPlanAccountManagerTreeItem;
+    const workspaceTreeDataProvider = new AzExtTreeDataProvider(dataPlanAccountManagerTreeItem, "appService.loadMore");
+    ext.workspaceProvider = workspaceTreeDataProvider;
+    vscode.window.registerTreeDataProvider('apiCenterWorkspace', workspaceTreeDataProvider);
 }
 
 export function deactivate() { }

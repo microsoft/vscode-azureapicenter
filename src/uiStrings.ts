@@ -124,4 +124,5 @@ export class UiStrings {
     static readonly AddDataPlaneTenantId = vscode.l10n.t("Input Entra App Tenant ID");
     static readonly RequestFailedWithStatusCode = vscode.l10n.t("Request failed with status code: {0}");
     static readonly DownloadDefinitionFileWithErrorMsg = vscode.l10n.t("Download API Center Definition File error: {0}");
+    static readonly DatplaneAlreadyAdded = vscode.l10n.t("This Data Plane Runtime URL already added to Data View.");
 }

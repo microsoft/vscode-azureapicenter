@@ -18,7 +18,7 @@ export async function getDataPlaneApis(context: IActionContext): Promise<any | v
     if (!tenantid) {
         return;
     }
-    // return await getSessionToken(clientid, tenantid);
+
     setAccountToExt(endpointUrl, clientid, tenantid);
     ext.workspaceItem.refresh(context);
 }
@@ -26,6 +26,8 @@ export function setAccountToExt(domain: string, clientId: string, tenantId: stri
     function pushIfNotExist(array: DataPlaneAccount[], element: DataPlaneAccount) {
         if (!array.some(item => item.domain === element.domain)) {
             array.push(element);
+        } else {
+            vscode.window.showInformationMessage(UiStrings.DatplaneAlreadyAdded);
         }
     }
     pushIfNotExist(ext.dataPlaneAccounts, { domain: domain, tenantId: tenantId, clientId: clientId });
