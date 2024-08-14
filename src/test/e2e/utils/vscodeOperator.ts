@@ -43,7 +43,17 @@ export default class VscodeOperator {
 
     static async clickTreeItem(page: Page, treeItemName: string) {
         await page.getByRole(VSCode.TREE_ITEM, { name: treeItemName }).locator(VSCode.LINK).click();
-        await page.waitForTimeout(Timeout.CLICK_WAIT);
+        await page.waitForTimeout(Timeout.CLICK_LONG_WAIT);
+    }
+
+    static async clickTreeItemChildLinkByText(page: Page, treeItemName: string, linkName: string) {
+        await page.getByRole(VSCode.TREE_ITEM, { name: treeItemName }).locator(VSCode.LINK).filter({ hasText: linkName }).click();
+        await page.waitForTimeout(Timeout.CLICK_LONG_WAIT);
+    }
+
+    static async clickTreeItemChildByLabel(page: Page, treeItemName: string, labelName: string) {
+        await page.getByRole(VSCode.TREE_ITEM, { name: treeItemName }).getByLabel(labelName).click();
+        await page.waitForTimeout(Timeout.CLICK_LONG_WAIT);
     }
 
     static async getCheckallCheckbox(page: Page) {
@@ -54,6 +64,11 @@ export default class VscodeOperator {
         await (await VscodeOperator.getCheckallCheckbox(page)).check();
         await page.waitForTimeout(Timeout.CLICK_WAIT);
         await (await VscodeOperator.getCMDPalette(page)).press(VSCode.ENTER);
+        await page.waitForTimeout(Timeout.CLICK_WAIT);
+    }
+
+    static async clickToolbarItem(page: Page, option: string) {
+        await page.getByRole(VSCode.Toolbar, { name: option }).locator(VSCode.LINK).click();
         await page.waitForTimeout(Timeout.CLICK_WAIT);
     }
 }
