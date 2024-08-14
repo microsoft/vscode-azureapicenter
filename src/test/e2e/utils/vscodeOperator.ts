@@ -71,4 +71,9 @@ export default class VscodeOperator {
         await page.getByRole(VSCode.Toolbar, { name: option }).locator(VSCode.LINK).click();
         await page.waitForTimeout(Timeout.CLICK_WAIT);
     }
+
+    static async clickListItemChildLinkByText(page: Page, listItemName: string, linkName: string) {
+        await page.getByRole(VSCode.CMD_PALETTE_LIST, { name: listItemName }).locator(VSCode.LINK).filter({ hasText: linkName }).click();
+        await page.waitForTimeout(Timeout.CLICK_WAIT);
+    }
 }
