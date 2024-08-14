@@ -20,7 +20,7 @@ export async function getDataPlaneApis(context: IActionContext): Promise<any | v
     }
 
     setAccountToExt(endpointUrl, clientid, tenantid);
-    ext.workspaceItem.refresh(context);
+    ext.dataPlaneTreeItem.refresh(context);
 }
 export function setAccountToExt(domain: string, clientId: string, tenantId: string) {
     function pushIfNotExist(array: DataPlaneAccount[], element: DataPlaneAccount) {

@@ -126,7 +126,7 @@ export async function activate(context: vscode.ExtensionContext) {
     registerCommandWithTelemetry('azure-api-center.selectSubscriptions', AzureAccount.selectSubscriptions);
     registerCommandWithTelemetry('azure-api-center.openUrl', openUrlFromTreeNode);
     registerCommandWithTelemetry('azure-api-center.apiCenterWorkspace.signInToDataPlane', SignInToDataPlane);
-    registerCommandWithTelemetry('azure-api-center.apiCenterWorkspace.refresh', async (context: IActionContext) => ext.workspaceItem.refresh(context));
+    registerCommandWithTelemetry('azure-api-center.apiCenterWorkspace.refresh', async (context: IActionContext) => ext.dataPlaneTreeItem.refresh(context));
     registerCommandWithTelemetry('azure-api-center.apiCenterWorkspace.addApis', getDataPlaneApis);
     registerCommandWithTelemetry('azure-api-center.apiCenterWorkspace.collapse', () => {
         vscode.commands.executeCommand('workbench.actions.treeView.apiCenterWorkspace.collapseAll');
@@ -195,9 +195,9 @@ function setupDataTreeView(context: vscode.ExtensionContext) {
     const dataPlaneSessionProvider = AzureDataSessionProviderHelper.getSessionProvider();
     const dataPlanAccountManagerTreeItem = createAzureDataAccountTreeItem(dataPlaneSessionProvider);
     context.subscriptions.push(dataPlanAccountManagerTreeItem);
-    ext.workspaceItem = dataPlanAccountManagerTreeItem;
+    ext.dataPlaneTreeItem = dataPlanAccountManagerTreeItem;
     const workspaceTreeDataProvider = new AzExtTreeDataProvider(dataPlanAccountManagerTreeItem, "appService.loadMore");
-    ext.workspaceProvider = workspaceTreeDataProvider;
+    ext.dataPlaneTreeDataProvier = workspaceTreeDataProvider;
     vscode.window.registerTreeDataProvider('apiCenterWorkspace', workspaceTreeDataProvider);
 }
 

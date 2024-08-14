@@ -1,6 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
-import fetch from 'node-fetch';
+import axios from 'axios';
 import * as os from "os";
 import * as path from "path";
 export namespace GeneralUtils {
@@ -57,9 +57,8 @@ export namespace GeneralUtils {
 
     export async function fetchDataFromLink(link: string): Promise<string> {
         try {
-            const res = await fetch(link);
-            const rawData = await res.json();
-            return JSON.stringify(rawData);
+            const res = await axios.get(link);
+            return JSON.stringify(res.data);
         }
         catch (err) {
             throw err;

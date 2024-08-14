@@ -6,7 +6,6 @@ import * as fse from 'fs-extra';
 import * as vscode from 'vscode';
 import { ApiCenterService } from "../../azure/ApiCenter/ApiCenterService";
 import { ApiCenterApi, ApiCenterApiVersion, ApiCenterApiVersionDefinition, ApiCenterApiVersionDefinitionImport, ApiKind, ApiVersionLifecycleStage, SpecificationName } from "../../azure/ApiCenter/contracts";
-import { ApiCenterVersionDefinitionDataPlane } from "../../azure/ApiCenterDefines/ApiCenterDefinition";
 import { ext } from "../../extensionVariables";
 import { ApiCenterTreeItem } from "../../tree/ApiCenterTreeItem";
 import { ApisTreeItem } from "../../tree/ApisTreeItem";
@@ -16,9 +15,6 @@ export async function registerStepByStep(context: IActionContext, node?: ApisTre
     if (!node) {
         const apiCenterNode = await ext.treeDataProvider.showTreeItemPicker<ApiCenterTreeItem>(ApiCenterTreeItem.contextValue, context);
         node = apiCenterNode.apisTreeItem;
-    }
-    if (node.apiCenter instanceof ApiCenterVersionDefinitionDataPlane) {
-        return;
     }
 
     const apiTitle = await vscode.window.showInputBox({ title: UiStrings.ApiTitle, ignoreFocusOut: true, validateInput: validateInputForTitle });

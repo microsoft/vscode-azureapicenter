@@ -20,6 +20,6 @@ export namespace ext {
     export let selectedApiVersionDefinitionTreeItem: ApiVersionDefinitionTreeItem;
 
     export let dataPlaneAccounts: DataPlaneAccount[];
-    export let workspaceProvider: AzExtTreeDataProvider;
-    export let workspaceItem: AzExtParentTreeItem & { dispose(): unknown; };
+    export let dataPlaneTreeDataProvier: AzExtTreeDataProvider;
+    export let dataPlaneTreeItem: AzExtParentTreeItem & { dispose(): unknown; };
 }
