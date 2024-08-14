@@ -6,6 +6,9 @@ import { Timeout, VSCode } from '../utils/constants';
 import VscodeOperator from '../utils/vscodeOperator';
 
 test('validate azure tree view', async ({ workbox }) => {
+    //set test timeout
+    test.setTimeout(120000);
+
     await workbox.waitForTimeout(Timeout.PREPARE_TEST);
     // wait API Center extension installed on VS Code.
     expect(await VscodeOperator.isSideTabItemExist(workbox, "API Center")).toBeTruthy();
@@ -35,6 +38,7 @@ test('validate azure tree view', async ({ workbox }) => {
 
     //select another Subscription
     await VscodeOperator.clickTreeItemChildLinkByText(workbox, "Teams Cloud - E2E Testing with TTL = 1 Days", "Teams Cloud - E2E Testing with TTL = 1 Days");
+    await workbox.waitForTimeout(Timeout.PREPARE_TEST);
     await VscodeOperator.clickTreeItemChildByLabel(workbox, "Teams Cloud - E2E Testing with TTL = 1 Days", "Select Subscriptions...");
     await workbox.waitForTimeout(Timeout.PREPARE_TEST);
     var cmdPalette = await VscodeOperator.getCMDPalette(workbox);
