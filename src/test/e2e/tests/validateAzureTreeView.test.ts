@@ -19,9 +19,12 @@ test('validate azure tree view', async ({ workbox }) => {
     expect(await VscodeOperator.isTreeItemExist(workbox, "apicentertest001")).toBeTruthy();
     await VscodeOperator.clickTreeItem(workbox, "apicentertest001");
     expect(await VscodeOperator.isTreeItemExist(workbox, "APIs")).toBeTruthy();
+    expect(await VscodeOperator.isTreeItemExist(workbox, "Environments")).toBeTruthy();
+    expect(await VscodeOperator.isTreeItemExist(workbox, "Rules")).toBeTruthy();
     await VscodeOperator.clickTreeItemChildLinkByText(workbox, "APIs", "APIs");
     expect(await VscodeOperator.isTreeItemExist(workbox, "callback-example")).toBeTruthy();
     await VscodeOperator.clickTreeItem(workbox, "callback-example");
+    expect(await VscodeOperator.isTreeItemExist(workbox, "Deployments")).toBeTruthy();
     expect(await VscodeOperator.isTreeItemExist(workbox, "Versions")).toBeTruthy();
     await VscodeOperator.clickTreeItem(workbox, "Versions");
     expect(await VscodeOperator.isTreeItemExist(workbox, "1-0-0")).toBeTruthy();
