@@ -56,12 +56,7 @@ export namespace GeneralUtils {
     }
 
     export async function fetchDataFromLink(link: string): Promise<string> {
-        try {
-            const res = await axios.get(link);
-            return JSON.stringify(res.data);
-        }
-        catch (err) {
-            throw err;
-        }
+        const res = await axios.get(link);
+        return JSON.stringify(res.data);
     }
 }
