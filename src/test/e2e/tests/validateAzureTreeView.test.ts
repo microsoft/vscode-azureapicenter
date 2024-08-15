@@ -14,7 +14,29 @@ test('validate azure tree view', async ({ workbox }) => {
     expect(await VscodeOperator.isSideTabItemExist(workbox, "API Center")).toBeTruthy();
     await VscodeOperator.activeSideTab(workbox, VSCode.TAB_API_CENTER, Timeout.PREPARE_EXT);
 
-    //select another Subscription: "Teams Cloud - Dev Test with TTL = 3 Days"
+    //expand and validate tree items
+    await VscodeOperator.clickTreeItemChildLinkByText(workbox, "Teams Cloud - E2E Testing with TTL = 1 Days", "Teams Cloud - E2E Testing with TTL = 1 Days");
+    expect(await VscodeOperator.isTreeItemExist(workbox, "apicentertest001")).toBeTruthy();
+    await VscodeOperator.clickTreeItem(workbox, "apicentertest001");
+    expect(await VscodeOperator.isTreeItemExist(workbox, "APIs")).toBeTruthy();
+    await VscodeOperator.clickTreeItemChildLinkByText(workbox, "APIs", "APIs");
+    expect(await VscodeOperator.isTreeItemExist(workbox, "callback-example")).toBeTruthy();
+    await VscodeOperator.clickTreeItem(workbox, "callback-example");
+    expect(await VscodeOperator.isTreeItemExist(workbox, "Versions")).toBeTruthy();
+    await VscodeOperator.clickTreeItem(workbox, "Versions");
+    expect(await VscodeOperator.isTreeItemExist(workbox, "1-0-0")).toBeTruthy();
+    await VscodeOperator.clickTreeItem(workbox, "1-0-0");
+    expect(await VscodeOperator.isTreeItemExist(workbox, "Definitions")).toBeTruthy();
+    await VscodeOperator.clickTreeItem(workbox, "Definitions");
+    expect(await VscodeOperator.isTreeItemExist(workbox, "openapi")).toBeTruthy();
+
+    //Refresh tree and verify
+    await VscodeOperator.clickToolbarItem(workbox, "API Center actions");
+    await workbox.waitForTimeout(Timeout.PREPARE_EXT);
+    expect(await VscodeOperator.isTreeItemExist(workbox, "Teams Cloud - E2E Testing with TTL = 1 Days")).toBeTruthy();
+    expect(await VscodeOperator.isTreeItemExist(workbox, "openapi")).toBeTruthy();
+
+    //select another Subscription: "AML Infra - Engineering System"
     //click "Select Subscriptions" link
     await VscodeOperator.clickTreeItemChildLinkByText(workbox, "Teams Cloud - E2E Testing with TTL = 1 Days", "Teams Cloud - E2E Testing with TTL = 1 Days");
     await workbox.waitForTimeout(Timeout.PREPARE_TEST);
@@ -27,32 +49,10 @@ test('validate azure tree view', async ({ workbox }) => {
     await VscodeOperator.clickListItemChildLinkByText(workbox, "Select Subscriptions", "Teams Cloud - E2E Testing with TTL = 1 Days");
     cmdPalette.clear();
     //select new subscription
-    cmdPalette.fill("Teams Cloud - Dev Test with TTL = 3 Days");
+    cmdPalette.fill("AML Infra - Engineering System");
     await workbox.waitForTimeout(Timeout.CLICK_WAIT);
-    await VscodeOperator.clickListItemChildLinkByText(workbox, "Select Subscriptions", "Teams Cloud - Dev Test with TTL = 3 Days");
+    await VscodeOperator.clickListItemChildLinkByText(workbox, "Select Subscriptions", "AML Infra - Engineering System");
     await cmdPalette.press(VSCode.ENTER);
     await workbox.waitForTimeout(Timeout.PREPARE_EXT);
-    expect(await VscodeOperator.isTreeItemExist(workbox, "Teams Cloud - Dev Test with TTL = 3 Days")).toBeTruthy();
-
-    //expand and validate tree items
-    await VscodeOperator.clickTreeItemChildLinkByText(workbox, "Teams Cloud - Dev Test with TTL = 3 Days", "Teams Cloud - Dev Test with TTL = 3 Days");
-    expect(await VscodeOperator.isTreeItemExist(workbox, "testcenter")).toBeTruthy();
-    await VscodeOperator.clickTreeItem(workbox, "testcenter");
-    expect(await VscodeOperator.isTreeItemExist(workbox, "APIs")).toBeTruthy();
-    await VscodeOperator.clickTreeItemChildLinkByText(workbox, "APIs", "APIs");
-    expect(await VscodeOperator.isTreeItemExist(workbox, "test-sample")).toBeTruthy();
-    await VscodeOperator.clickTreeItem(workbox, "test-sample");
-    expect(await VscodeOperator.isTreeItemExist(workbox, "Versions")).toBeTruthy();
-    await VscodeOperator.clickTreeItem(workbox, "Versions");
-    expect(await VscodeOperator.isTreeItemExist(workbox, "1-0-0")).toBeTruthy();
-    await VscodeOperator.clickTreeItem(workbox, "1-0-0");
-    expect(await VscodeOperator.isTreeItemExist(workbox, "Definitions")).toBeTruthy();
-    await VscodeOperator.clickTreeItem(workbox, "Definitions");
-    expect(await VscodeOperator.isTreeItemExist(workbox, "openapi")).toBeTruthy();
-
-    //Refresh tree and verify
-    await VscodeOperator.clickToolbarItem(workbox, "API Center actions");
-    await workbox.waitForTimeout(Timeout.PREPARE_EXT);
-    expect(await VscodeOperator.isTreeItemExist(workbox, "Teams Cloud - Dev Test with TTL = 3 Days")).toBeTruthy();
-    expect(await VscodeOperator.isTreeItemExist(workbox, "openapi")).toBeTruthy();
+    expect(await VscodeOperator.isTreeItemExist(workbox, "AML Infra - Engineering System")).toBeTruthy();
 });
