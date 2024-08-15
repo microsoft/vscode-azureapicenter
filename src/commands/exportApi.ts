@@ -59,7 +59,7 @@ export namespace ExportAPI {
     }
 
     async function getDefinitionTreeNode(context: IActionContext): Promise<ApiVersionDefinitionTreeItem | null> {
-        const controlViewItem = await ext.dataPlaneTreeDataProvier.getChildren(ext.treeItem)
+        const controlViewItem = await ext.dataPlaneTreeDataProvier.getChildren(ext.treeItem);
         const isControlPlaneExist = controlViewItem.some(item => item.contextValue === SubscriptionTreeItem.contextValue);
         const dataViewItem = await ext.treeDataProvider.getChildren(ext.dataPlaneTreeItem);
         const isDataPlaneExist = dataViewItem.some(item => item.contextValue === ApiServerItem.contextValue);

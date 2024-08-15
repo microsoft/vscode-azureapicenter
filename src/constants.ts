@@ -37,7 +37,7 @@ export const RegisterApiOptions = {
 export const TreeViewType = {
     controlPlaneView: "API Center Management View",
     dataPlaneView: "API Center Data Plane View",
-}
+};
 
 export const ApiRulesetOptions = {
     default: UiStrings.ApiRulesetOptionDefault,
