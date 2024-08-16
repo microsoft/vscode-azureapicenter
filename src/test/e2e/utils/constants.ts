@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 dotenv.config();
 export class Timeout {
     public static readonly CLICK_WAIT = 1000;
+    public static readonly CLICK_LONG_WAIT = 3000;
     public static readonly PREPARE_TEST = 5000;
     public static readonly PREPARE_EXT = 10000;
     public static readonly SHORT_WAIT = 5000;
@@ -25,8 +26,11 @@ export class VSCode {
     // elements
     public static readonly INPUT = "INPUT";
     public static readonly LINK = "a";
+    public static readonly BUTTON = "button";
     // keys
     public static readonly ENTER = "Enter";
+    //toolbar
+    public static readonly Toolbar = "toolbar";
 }
 
 export class APICenter {
