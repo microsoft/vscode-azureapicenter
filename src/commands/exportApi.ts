@@ -59,7 +59,7 @@ export namespace ExportAPI {
     }
 
     async function getDefinitionTreeNode(context: IActionContext): Promise<ApiVersionDefinitionTreeItem | null> {
-        const controlViewItem = await ext.dataPlaneTreeDataProvier.getChildren(ext.treeItem);
+        const controlViewItem = await ext.dataPlaneTreeDataProvider.getChildren(ext.treeItem);
         const isControlPlaneExist = controlViewItem.some(item => item.contextValue === SubscriptionTreeItem.contextValue);
         const dataViewItem = await ext.treeDataProvider.getChildren(ext.dataPlaneTreeItem);
         const isDataPlaneExist = dataViewItem.some(item => item.contextValue === ApiServerItem.contextValue);
@@ -71,7 +71,7 @@ export namespace ExportAPI {
             return await ext.treeDataProvider.showTreeItemPicker<ApiVersionDefinitionTreeItem>(new RegExp(`${ApiCenterVersionDefinitionManagement.contextValue}*`), context);
         }
         if (!isControlPlaneExist) {
-            return await ext.dataPlaneTreeDataProvier.showTreeItemPicker<ApiVersionDefinitionTreeItem>(new RegExp(`${ApiCenterVersionDefinitionDataPlane.contextValue}*`), context);
+            return await ext.dataPlaneTreeDataProvider.showTreeItemPicker<ApiVersionDefinitionTreeItem>(new RegExp(`${ApiCenterVersionDefinitionDataPlane.contextValue}*`), context);
         }
         const viewType = await vscode.window.showQuickPick(Object.values(TreeViewType), { title: UiStrings.SelectItemFromTreeView, ignoreFocusOut: true });
         if (!viewType) {
@@ -81,7 +81,7 @@ export namespace ExportAPI {
             case TreeViewType.controlPlaneView:
                 return await ext.treeDataProvider.showTreeItemPicker<ApiVersionDefinitionTreeItem>(new RegExp(`${ApiCenterVersionDefinitionManagement.contextValue}*`), context);
             case TreeViewType.dataPlaneView:
-                return await ext.dataPlaneTreeDataProvier.showTreeItemPicker<ApiVersionDefinitionTreeItem>(new RegExp(`${ApiCenterVersionDefinitionDataPlane.contextValue}*`), context);
+                return await ext.dataPlaneTreeDataProvider.showTreeItemPicker<ApiVersionDefinitionTreeItem>(new RegExp(`${ApiCenterVersionDefinitionDataPlane.contextValue}*`), context);
             default:
                 return null;
         }

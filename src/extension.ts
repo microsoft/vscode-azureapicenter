@@ -197,7 +197,7 @@ function setupDataTreeView(context: vscode.ExtensionContext) {
     context.subscriptions.push(dataPlanAccountManagerTreeItem);
     ext.dataPlaneTreeItem = dataPlanAccountManagerTreeItem;
     const workspaceTreeDataProvider = new AzExtTreeDataProvider(dataPlanAccountManagerTreeItem, "appService.loadMore");
-    ext.dataPlaneTreeDataProvier = workspaceTreeDataProvider;
+    ext.dataPlaneTreeDataProvider = workspaceTreeDataProvider;
     vscode.window.registerTreeDataProvider('apiCenterWorkspace', workspaceTreeDataProvider);
 }
 
