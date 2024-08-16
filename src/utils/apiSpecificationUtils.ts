@@ -3,10 +3,9 @@
 
 import { IActionContext } from "@microsoft/vscode-azext-utils";
 import * as vscode from 'vscode';
-import { ApiCenterVersionDefinitionManagement } from "../azure/ApiCenterDefines/ApiCenterDefinition";
-import { ApiSpecificationOptions, openapi } from "../constants";
-import { ext } from "../extensionVariables";
+import { ApiSpecificationOptions } from "../constants";
 import { ApiVersionDefinitionTreeItem } from "../tree/ApiVersionDefinitionTreeItem";
+import { treeUtils } from "../utils/treeUtils";
 
 export async function getApiSpecification(title: string, context: IActionContext): Promise<ApiVersionDefinitionTreeItem | vscode.Uri | undefined> {
     const apiSpecificationOption = await vscode.window.showQuickPick(Object.values(ApiSpecificationOptions), { title, ignoreFocusOut: true });
@@ -16,8 +15,8 @@ export async function getApiSpecification(title: string, context: IActionContext
 
     switch (apiSpecificationOption) {
         case ApiSpecificationOptions.apiCenter:
-            const node = await ext.treeDataProvider.showTreeItemPicker<ApiVersionDefinitionTreeItem>(`${ApiCenterVersionDefinitionManagement.contextValue}-${openapi}`, context);
-            return node;
+            const node = await treeUtils.getDefinitionTreeNode(context);
+            return node ? node : undefined;
         case ApiSpecificationOptions.localFile:
             const fileUri = await vscode.window.showOpenDialog();
             return fileUri?.[0];

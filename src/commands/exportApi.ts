@@ -6,21 +6,16 @@ import * as fs from "fs-extra";
 import * as path from "path";
 import * as vscode from "vscode";
 import { ApiSpecExportResultFormat } from "../azure/ApiCenter/contracts";
-import { ApiCenterVersionDefinitionDataPlane, ApiCenterVersionDefinitionManagement } from "../azure/ApiCenterDefines/ApiCenterDefinition";
-import { TreeViewType } from "../constants";
-import { ext } from "../extensionVariables";
 import { ApiVersionDefinitionTreeItem } from "../tree/ApiVersionDefinitionTreeItem";
-import { ApiServerItem } from "../tree/DataPlaneAccount";
-import { SubscriptionTreeItem } from "../tree/SubscriptionTreeItem";
-import { UiStrings } from "../uiStrings";
 import { createTemporaryFolder } from "../utils/fsUtil";
 import { GeneralUtils } from "../utils/generalUtils";
+import { treeUtils } from "../utils/treeUtils";
 export namespace ExportAPI {
     export async function exportApi(
         context: IActionContext,
         node?: ApiVersionDefinitionTreeItem): Promise<void> {
         if (!node) {
-            let res = await getDefinitionTreeNode(context);
+            let res = await treeUtils.getDefinitionTreeNode(context);
             if (!res) {
                 return;
             }
@@ -56,34 +51,5 @@ export namespace ExportAPI {
         const document: vscode.TextDocument = await vscode.workspace.openTextDocument(localFilePath);
         await vscode.workspace.fs.writeFile(vscode.Uri.file(localFilePath), Buffer.from(fileContent));
         await vscode.window.showTextDocument(document);
-    }
-
-    async function getDefinitionTreeNode(context: IActionContext): Promise<ApiVersionDefinitionTreeItem | null> {
-        const controlViewItem = await ext.dataPlaneTreeDataProvider.getChildren(ext.treeItem);
-        const isControlPlaneExist = controlViewItem.some(item => item.contextValue === SubscriptionTreeItem.contextValue);
-        const dataViewItem = await ext.treeDataProvider.getChildren(ext.dataPlaneTreeItem);
-        const isDataPlaneExist = dataViewItem.some(item => item.contextValue === ApiServerItem.contextValue);
-        if (!isControlPlaneExist && !isDataPlaneExist) {
-            vscode.window.showInformationMessage(UiStrings.GetTreeView);
-            return null;
-        }
-        if (!isDataPlaneExist) {
-            return await ext.treeDataProvider.showTreeItemPicker<ApiVersionDefinitionTreeItem>(new RegExp(`${ApiCenterVersionDefinitionManagement.contextValue}*`), context);
-        }
-        if (!isControlPlaneExist) {
-            return await ext.dataPlaneTreeDataProvider.showTreeItemPicker<ApiVersionDefinitionTreeItem>(new RegExp(`${ApiCenterVersionDefinitionDataPlane.contextValue}*`), context);
-        }
-        const viewType = await vscode.window.showQuickPick(Object.values(TreeViewType), { title: UiStrings.SelectItemFromTreeView, ignoreFocusOut: true });
-        if (!viewType) {
-            return null;
-        }
-        switch (viewType) {
-            case TreeViewType.controlPlaneView:
-                return await ext.treeDataProvider.showTreeItemPicker<ApiVersionDefinitionTreeItem>(new RegExp(`${ApiCenterVersionDefinitionManagement.contextValue}*`), context);
-            case TreeViewType.dataPlaneView:
-                return await ext.dataPlaneTreeDataProvider.showTreeItemPicker<ApiVersionDefinitionTreeItem>(new RegExp(`${ApiCenterVersionDefinitionDataPlane.contextValue}*`), context);
-            default:
-                return null;
-        }
     }
 }

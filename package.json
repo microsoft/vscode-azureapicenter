@@ -441,7 +441,7 @@
     ],
     "configuration": [
       {
-        "title": "Azure-Api-Center",
+        "title": "Azure Api Center",
         "properties": {
           "azure-api-center.selectedSubscriptions": {
             "type": "array",
