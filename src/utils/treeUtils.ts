@@ -26,14 +26,14 @@ export namespace treeUtils {
         return ext.context.asAbsolutePath('resources');
     }
 
-    export async function getDefinitionTreeNode(context: IActionContext): Promise<ApiVersionDefinitionTreeItem | null> {
+    export async function getDefinitionTreeNode(context: IActionContext): Promise<ApiVersionDefinitionTreeItem | undefined> {
         const controlViewItem = await ext.dataPlaneTreeDataProvider.getChildren(ext.treeItem);
         const isControlPlaneExist = controlViewItem.some(item => item.contextValue === SubscriptionTreeItem.contextValue);
         const dataViewItem = await ext.treeDataProvider.getChildren(ext.dataPlaneTreeItem);
         const isDataPlaneExist = dataViewItem.some(item => item.contextValue === ApiServerItem.contextValue);
         if (!isControlPlaneExist && !isDataPlaneExist) {
             window.showInformationMessage(UiStrings.GetTreeView);
-            return null;
+            return undefined;
         }
         if (!isDataPlaneExist) {
             return await ext.treeDataProvider.showTreeItemPicker<ApiVersionDefinitionTreeItem>(new RegExp(`${ApiCenterVersionDefinitionManagement.contextValue}*`), context);
@@ -43,7 +43,7 @@ export namespace treeUtils {
         }
         const viewType = await window.showQuickPick(Object.values(TreeViewType), { title: UiStrings.SelectItemFromTreeView, ignoreFocusOut: true });
         if (!viewType) {
-            return null;
+            return undefined;
         }
         switch (viewType) {
             case TreeViewType.controlPlaneView:
@@ -51,7 +51,7 @@ export namespace treeUtils {
             case TreeViewType.dataPlaneView:
                 return await ext.dataPlaneTreeDataProvider.showTreeItemPicker<ApiVersionDefinitionTreeItem>(new RegExp(`${ApiCenterVersionDefinitionDataPlane.contextValue}*`), context);
             default:
-                return null;
+                return undefined;
         }
     }
 }

@@ -15,13 +15,11 @@ export namespace ExportAPI {
         context: IActionContext,
         node?: ApiVersionDefinitionTreeItem): Promise<void> {
         if (!node) {
-            let res = await treeUtils.getDefinitionTreeNode(context);
-            if (!res) {
-                return;
-            }
-            node = res;
+            node = await treeUtils.getDefinitionTreeNode(context);
         }
-
+        if (!node) {
+            return;
+        }
         const exportedSpec = await node?.apiCenterApiVersionDefinition.getDefinitions(node?.subscription!, node?.apiCenterName!, node?.apiCenterApiName!, node?.apiCenterApiVersionName!);
         await writeToTempFile(node!, exportedSpec.format, exportedSpec.value);
     }

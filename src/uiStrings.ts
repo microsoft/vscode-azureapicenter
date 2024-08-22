@@ -129,6 +129,6 @@ export class UiStrings {
     static readonly DatplaneAlreadyAdded = vscode.l10n.t("This Data Plane Runtime URL already added to Data View.");
     static readonly SelectItemFromTreeView = vscode.l10n.t("Select from which tree view");
     static readonly GetTreeView = vscode.l10n.t("Please connect to Azure API Center Service first.");
-    static readonly APIControlPlaneView = vscode.l10n.t("API Center Management View");
-    static readonly APIDataPlaneView = vscode.l10n.t("API Center Data Plane View");
+    static readonly APIControlPlaneView = vscode.l10n.t("API Center Management");
+    static readonly APIDataPlaneView = vscode.l10n.t("API Center Data Plane");
 }

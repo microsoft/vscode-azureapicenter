@@ -34,7 +34,7 @@ test('validate azure tree view', async ({ workbox }) => {
     expect(await VscodeOperator.isTreeItemExist(workbox, "openapi")).toBeTruthy();
 
     //Refresh tree and verify
-    await VscodeOperator.clickToolbarItem(workbox, "API Center actions");
+    await VscodeOperator.clickToolbarItem(workbox, "Azure API Center actions");
     await workbox.waitForTimeout(Timeout.PREPARE_EXT);
     expect(await VscodeOperator.isTreeItemExist(workbox, "Teams Cloud - E2E Testing with TTL = 1 Days")).toBeTruthy();
     expect(await VscodeOperator.isTreeItemExist(workbox, "openapi")).toBeTruthy();
