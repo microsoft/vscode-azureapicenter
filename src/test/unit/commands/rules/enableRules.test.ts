@@ -7,7 +7,7 @@ import * as path from 'path';
 import * as sinon from "sinon";
 import * as vscode from "vscode";
 import { ApiCenterService } from "../../../../azure/ApiCenter/ApiCenterService";
-import { ApiCenter } from "../../../../azure/ApiCenter/contracts";
+import { ApiCenter, ApiCenterRulesetImportResult } from "../../../../azure/ApiCenter/contracts";
 import { enableRules } from "../../../../commands/rules/enableRules";
 import { RulesTreeItem } from "../../../../tree/rules/RulesTreeItem";
 
@@ -30,20 +30,41 @@ describe("enableRules", () => {
     afterEach(() => {
         sandbox.restore();
     });
-    it('enable rules with status code 200', async () => {
+    it('enabling rules succeeded', async () => {
         sandbox.stub(path, 'join').returns(__dirname);
         const showInformationMessage = sandbox.spy(vscode.window, "showInformationMessage");
         sandbox.stub(ApiCenterService.prototype, "createOrUpdateApiCenterRulesetConfig").resolves({ status: 200 } as HttpOperationResponse);
-        sandbox.stub(ApiCenterService.prototype, "importRuleset").resolves({ status: 200 } as HttpOperationResponse);
+        sandbox.stub(ApiCenterService.prototype, "importRuleset").resolves({ isSuccessful: true } as ApiCenterRulesetImportResult);
         await enableRules({} as IActionContext, node);
-        sandbox.assert.calledTwice(showInformationMessage);
+        sandbox.assert.calledOnce(showInformationMessage);
         assert.ok(node.isEnabled);
     });
-    it('enable rules with no status code 200', async () => {
-        const showErrorMessage = sandbox.spy(vscode.window, "showErrorMessage");
-        sandbox.stub(ApiCenterService.prototype, "createOrUpdateApiCenterRulesetConfig").resolves({ status: 400 } as HttpOperationResponse);
-        await enableRules({} as IActionContext, node);
-        sandbox.assert.calledOnce(showErrorMessage);
+    it('enabling rules failed when creating ruleset config', async () => {
+        sandbox.stub(ApiCenterService.prototype, "createOrUpdateApiCenterRulesetConfig").resolves({ status: 400, bodyAsText: 'error' } as HttpOperationResponse);
+
+        await assert.rejects(
+            async () => {
+                await enableRules({} as IActionContext, node);
+            },
+            {
+                message: "Failed to enable API Analysis. Error: error",
+            }
+        );
+        assert.ok(!node.isEnabled);
+    });
+    it('enabling rules failed when importing ruleset', async () => {
+        sandbox.stub(path, 'join').returns(__dirname);
+        sandbox.stub(ApiCenterService.prototype, "createOrUpdateApiCenterRulesetConfig").resolves({ status: 200 } as HttpOperationResponse);
+        sandbox.stub(ApiCenterService.prototype, "importRuleset").resolves({ isSuccessful: false, message: 'error' } as ApiCenterRulesetImportResult);
+
+        await assert.rejects(
+            async () => {
+                await enableRules({} as IActionContext, node);
+            },
+            {
+                message: "Failed to enable API Analysis. Error: error",
+            }
+        );
         assert.ok(!node.isEnabled);
     });
 });
