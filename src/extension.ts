@@ -46,6 +46,7 @@ import { ApiVersionDefinitionTreeItem } from './tree/ApiVersionDefinitionTreeIte
 import { createAzureAccountTreeItem } from "./tree/AzureAccountTreeItem";
 import { createAzureDataAccountTreeItem } from './tree/DataPlaneAccount';
 import { OpenApiEditor } from './tree/Editors/openApi/OpenApiEditor';
+import { TelemetryUtils } from './utils/telemetryUtils';
 export async function activate(context: vscode.ExtensionContext) {
     console.log('Congratulations, your extension "azure-api-center" is now active!');
 
@@ -157,9 +158,7 @@ async function registerCommandWithTelemetry(commandId: string, callback: Command
         } finally {
             const end: number = Date.now();
             properties[TelemetryProperties.duration] = ((end - start) / 1000).toString();
-            if (args[0] && args[0] instanceof AzExtTreeItem && args[0].fullId) {
-                properties[TelemetryProperties.treeItemFullId] = args[0].fullId;
-            }
+            TelemetryUtils.setAzureResourcesInfo(properties, args[0]);
             if (parsedError) {
                 properties[ErrorProperties.errorType] = parsedError.errorType;
                 properties[ErrorProperties.errorMessage] = parsedError.message;

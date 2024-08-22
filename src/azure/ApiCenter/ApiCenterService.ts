@@ -2,16 +2,17 @@
 // Licensed under the MIT license.
 import { HttpOperationResponse, RequestPrepareOptions, ServiceClient } from "@azure/ms-rest-js";
 import { ISubscriptionContext } from "@microsoft/vscode-azext-utils";
+import { clientOptions } from "../../common/clientOptions";
 import { getCredentialForToken } from "../../utils/credentialUtil";
 import { APICenterRestAPIs } from "./ApiCenterRestAPIs";
-import { ApiCenter, ApiCenterApi, ApiCenterApiDeployment, ApiCenterApiVersion, ApiCenterApiVersionDefinition, ApiCenterApiVersionDefinitionExport, ApiCenterApiVersionDefinitionImport, ApiCenterEnvironment, ApiCenterRulesetConfig, ApiCenterRulesetExport, ApiCenterRulesetImport } from "./contracts";
+import { ApiCenter, ApiCenterApi, ApiCenterApiDeployment, ApiCenterApiVersion, ApiCenterApiVersionDefinition, ApiCenterApiVersionDefinitionExport, ApiCenterApiVersionDefinitionImport, ApiCenterEnvironment, ApiCenterRulesetConfig, ApiCenterRulesetExport, ApiCenterRulesetImport, ApiCenterRulesetImportResult, ApiCenterRulesetImportStatus, ArmAsyncOperationStatus } from "./contracts";
 
 export class ApiCenterService {
   private susbcriptionContext: ISubscriptionContext;
   private resourceGroupName: string;
   private apiCenterName: string;
   private apiVersion: string = "2023-07-01-preview";
-  private apiVersionPreview: string = "2024-03-15-preview";
+  private apiVersionNew: string = "2024-03-01";
   constructor(susbcriptionContext: ISubscriptionContext, resourceGroupName: string, apiCenterName: string) {
     this.susbcriptionContext = susbcriptionContext;
     this.apiCenterName = apiCenterName;
@@ -20,7 +21,7 @@ export class ApiCenterService {
 
   public async getApiCenter(): Promise<ApiCenter> {
     const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
-    const client = new ServiceClient(creds);
+    const client = new ServiceClient(creds, clientOptions);
     const options: RequestPrepareOptions = {
       method: "GET",
       url: APICenterRestAPIs.GetAPIService(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, this.apiVersion)
@@ -31,7 +32,7 @@ export class ApiCenterService {
 
   public async getApiCenterApis(searchContent: string): Promise<{ value: ApiCenterApi[]; nextLink: string }> {
     const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
-    const client = new ServiceClient(creds);
+    const client = new ServiceClient(creds, clientOptions);
     let url = APICenterRestAPIs.ListAPIs(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, this.apiVersion);
     if (searchContent) {
       url += `&$search=${searchContent}`;
@@ -46,7 +47,7 @@ export class ApiCenterService {
 
   public async getApiCenterEnvironments(): Promise<{ value: ApiCenterEnvironment[]; nextLink: string }> {
     const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
-    const client = new ServiceClient(creds);
+    const client = new ServiceClient(creds, clientOptions);
     const options: RequestPrepareOptions = {
       method: "GET",
       url: APICenterRestAPIs.GetAPIEnvironments(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, this.apiVersion)
@@ -57,7 +58,7 @@ export class ApiCenterService {
 
   public async getApiCenterApiVersions(apiName: string): Promise<{ value: ApiCenterApiVersion[]; nextLink: string }> {
     const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
-    const client = new ServiceClient(creds);
+    const client = new ServiceClient(creds, clientOptions);
     const options: RequestPrepareOptions = {
       method: "GET",
       url: APICenterRestAPIs.GetAPIVersions(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, apiName, this.apiVersion)
@@ -68,7 +69,7 @@ export class ApiCenterService {
 
   public async getApiCenterApiDeployments(apiName: string): Promise<{ value: ApiCenterApiDeployment[]; nextLink: string }> {
     const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
-    const client = new ServiceClient(creds);
+    const client = new ServiceClient(creds, clientOptions);
     const options: RequestPrepareOptions = {
       method: "GET",
       url: APICenterRestAPIs.GetAPIDeployments(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, apiName, this.apiVersion)
@@ -79,7 +80,7 @@ export class ApiCenterService {
 
   public async getApiCenterApiVersionDefinitions(apiName: string, apiVersion: string): Promise<{ value: ApiCenterApiVersionDefinition[]; nextLink: string }> {
     const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
-    const client = new ServiceClient(creds);
+    const client = new ServiceClient(creds, clientOptions);
     const options: RequestPrepareOptions = {
       method: "GET",
       url: APICenterRestAPIs.GetAPIDefinition(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, apiName, apiVersion, this.apiVersion)
@@ -90,10 +91,10 @@ export class ApiCenterService {
 
   public async getApiCenterRulesetConfig(): Promise<HttpOperationResponse> {
     const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
-    const client = new ServiceClient(creds);
+    const client = new ServiceClient(creds, clientOptions);
     const options: RequestPrepareOptions = {
       method: "GET",
-      url: APICenterRestAPIs.GetRulesetConfig(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, this.apiVersionPreview)
+      url: APICenterRestAPIs.GetRulesetConfig(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, this.apiVersionNew)
     };
     const response = await client.sendRequest(options);
     return response;
@@ -110,7 +111,7 @@ export class ApiCenterService {
 
   public async createOrUpdateApi(apiCenterApi: ApiCenterApi): Promise<ApiCenterApi> {
     const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
-    const client = new ServiceClient(creds);
+    const client = new ServiceClient(creds, clientOptions);
     const options: RequestPrepareOptions = {
       method: "PUT",
       url: APICenterRestAPIs.CreateAPI(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, apiCenterApi.name, this.apiVersion),
@@ -124,7 +125,7 @@ export class ApiCenterService {
 
   public async createOrUpdateApiVersion(apiName: string, apiCenterApiVersion: ApiCenterApiVersion): Promise<ApiCenterApiVersion> {
     const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
-    const client = new ServiceClient(creds);
+    const client = new ServiceClient(creds, clientOptions);
     const options: RequestPrepareOptions = {
       method: "PUT",
       url: APICenterRestAPIs.CreateAPIVersion(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, apiName, apiCenterApiVersion.name, this.apiVersion),
@@ -139,7 +140,7 @@ export class ApiCenterService {
 
   public async createOrUpdateApiDeployment(apiName: string, apiCenterApiDeployment: ApiCenterApiDeployment): Promise<ApiCenterApiDeployment> {
     const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
-    const client = new ServiceClient(creds);
+    const client = new ServiceClient(creds, clientOptions);
     const options: RequestPrepareOptions = {
       method: "PUT",
       url: APICenterRestAPIs.CreateAPIDeployment(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, apiName, apiCenterApiDeployment.name, this.apiVersion),
@@ -152,7 +153,7 @@ export class ApiCenterService {
 
   public async createOrUpdateApiVersionDefinition(apiName: string, apiVersionName: string, apiCenterApiVersionDefinition: ApiCenterApiVersionDefinition): Promise<ApiCenterApiVersionDefinition> {
     const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
-    const client = new ServiceClient(creds);
+    const client = new ServiceClient(creds, clientOptions);
     const options: RequestPrepareOptions = {
       method: "PUT",
       url: APICenterRestAPIs.CreateAPIDefinition(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, apiName, apiVersionName, apiCenterApiVersionDefinition.name, this.apiVersion),
@@ -167,10 +168,10 @@ export class ApiCenterService {
 
   public async createOrUpdateApiCenterRulesetConfig(apiCenterRulesetConfig: ApiCenterRulesetConfig): Promise<HttpOperationResponse> {
     const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
-    const client = new ServiceClient(creds);
+    const client = new ServiceClient(creds, clientOptions);
     const options: RequestPrepareOptions = {
       method: "PUT",
-      url: APICenterRestAPIs.CreateRulesetConfig(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, this.apiVersionPreview),
+      url: APICenterRestAPIs.CreateRulesetConfig(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, this.apiVersionNew),
       body: {
         properties: apiCenterRulesetConfig.properties
       }
@@ -185,7 +186,7 @@ export class ApiCenterService {
     apiCenterApiVersionDefinitionName: string,
     importPayload: ApiCenterApiVersionDefinitionImport): Promise<boolean> {
     const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
-    const client = new ServiceClient(creds);
+    const client = new ServiceClient(creds, clientOptions);
 
     let options: RequestPrepareOptions = {
       method: "POST",
@@ -217,7 +218,7 @@ export class ApiCenterService {
     apiVersionName: string,
     apiCenterApiVersionDefinitionName: string): Promise<ApiCenterApiVersionDefinitionExport> {
     const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
-    const client = new ServiceClient(creds);
+    const client = new ServiceClient(creds, clientOptions);
     const options: RequestPrepareOptions = {
       method: "POST",
       url: APICenterRestAPIs.ExportApiSpecification(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, apiName, apiVersionName, apiCenterApiVersionDefinitionName, this.apiVersion),
@@ -226,24 +227,52 @@ export class ApiCenterService {
     return response.parsedBody;
   }
 
-  public async importRuleset(importPayload: ApiCenterRulesetImport): Promise<HttpOperationResponse> {
+  public async importRuleset(importPayload: ApiCenterRulesetImport): Promise<ApiCenterRulesetImportResult> {
     const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
-    const client = new ServiceClient(creds);
-    const options: RequestPrepareOptions = {
+    const client = new ServiceClient(creds, clientOptions);
+    let options: RequestPrepareOptions = {
       method: "POST",
-      url: APICenterRestAPIs.ImportRuleset(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, this.apiVersionPreview),
+      url: APICenterRestAPIs.ImportRuleset(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, this.apiVersionNew),
       body: importPayload
     };
-    const response = await client.sendRequest(options);
-    return response;
+    let response = await client.sendRequest(options);
+
+    if (response.status === 202) {
+      const location = response.headers.get("Location");
+
+      if (!location) {
+        return { isSuccessful: false };
+      }
+
+      options = {
+        method: "GET",
+        url: location,
+      };
+
+      const timeout = 60000; // 1 minute in milliseconds
+      let startTime = Date.now();
+      do {
+        response = await client.sendRequest(options);
+        const responseBody: ApiCenterRulesetImportStatus = response.parsedBody;
+        if (responseBody?.status === ArmAsyncOperationStatus.Succeeded) {
+          return { isSuccessful: true };
+        }
+        if (responseBody?.status === ArmAsyncOperationStatus.Failed) {
+          return { isSuccessful: false, message: responseBody.properties?.comment };
+        }
+      } while (Date.now() - startTime < timeout);
+      return { isSuccessful: false };
+    } else {
+      return { isSuccessful: false, message: response.bodyAsText };
+    }
   }
 
   public async exportRuleset(): Promise<ApiCenterRulesetExport> {
     const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
-    const client = new ServiceClient(creds);
+    const client = new ServiceClient(creds, clientOptions);
     const options: RequestPrepareOptions = {
       method: "POST",
-      url: APICenterRestAPIs.ExportRuleset(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, this.apiVersionPreview)
+      url: APICenterRestAPIs.ExportRuleset(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, this.apiVersionNew)
     };
     const response = await client.sendRequest(options);
     return response.parsedBody;

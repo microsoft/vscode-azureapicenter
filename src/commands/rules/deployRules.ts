@@ -4,7 +4,7 @@ import { getResourceGroupFromId } from "@microsoft/vscode-azext-azureutils";
 import { IActionContext } from "@microsoft/vscode-azext-utils";
 import * as vscode from 'vscode';
 import { ApiCenterService } from "../../azure/ApiCenter/ApiCenterService";
-import { ApiCenterRulesetImport } from "../../azure/ApiCenter/contracts";
+import { ApiCenterRulesetImport, ApiCenterRulesetImportFormat } from "../../azure/ApiCenter/contracts";
 import { RulesTreeItem } from "../../tree/rules/RulesTreeItem";
 import { UiStrings } from "../../uiStrings";
 import { hasFiles } from "../../utils/fsUtil";
@@ -18,20 +18,25 @@ export async function deployRules(context: IActionContext, node: RulesTreeItem) 
         return;
     }
 
-    const content = (await zipFolderToBuffer(rulesFolderPath)).toString('base64');
+    await vscode.window.withProgress({
+        location: vscode.ProgressLocation.Notification,
+        title: UiStrings.DeployRules
+    }, async (progress, token) => {
+        const content = (await zipFolderToBuffer(rulesFolderPath)).toString('base64');
 
-    const resourceGroupName = getResourceGroupFromId(node.apiCenter.id);
-    const apiCenterService = new ApiCenterService(node.parent?.subscription!, resourceGroupName, node.apiCenter.name);
+        const resourceGroupName = getResourceGroupFromId(node.apiCenter.id);
+        const apiCenterService = new ApiCenterService(node.parent?.subscription!, resourceGroupName, node.apiCenter.name);
 
-    const importPayload: ApiCenterRulesetImport = {
-        value: content,
-        format: "InlineZip",
-    };
-    const response = await apiCenterService.importRuleset(importPayload);
+        const importPayload: ApiCenterRulesetImport = {
+            value: content,
+            format: ApiCenterRulesetImportFormat.InlineZip,
+        };
+        const response = await apiCenterService.importRuleset(importPayload);
 
-    if (response.status === 200) {
-        vscode.window.showInformationMessage(vscode.l10n.t(UiStrings.RulesDeployed, node.apiCenter.name));
-    } else {
-        vscode.window.showErrorMessage(vscode.l10n.t(UiStrings.FailedToDeployRules, response.bodyAsText ?? `status code ${response.status}`));
-    }
+        if (response.isSuccessful) {
+            vscode.window.showInformationMessage(vscode.l10n.t(UiStrings.RulesDeployed, node.apiCenter.name));
+        } else {
+            throw new Error(vscode.l10n.t(UiStrings.FailedToDeployRules, response.message ? `Error: ${response.message}` : ""));
+        }
+    });
 }

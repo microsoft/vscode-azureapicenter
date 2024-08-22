@@ -501,6 +501,7 @@
     "copy-webpack-plugin": "^12.0.2",
     "copyfiles": "^2.4.1",
     "crypto-js": "^3.1.2",
+    "dotenv": "^16.4.5",
     "eslint": "^8.50.0",
     "eslint-plugin-header": "^3.1.1",
     "glob": "^10.3.3",

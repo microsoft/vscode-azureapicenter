@@ -129,6 +129,20 @@ export type ApiCenterRulesetImport = {
     value: string;
 };
 
+export type ApiCenterRulesetImportStatus = {
+    id: string;
+    name: string;
+    status: ArmAsyncOperationStatus;
+    properties: {
+        comment?: string;
+    };
+};
+
+export type ApiCenterRulesetImportResult = {
+    isSuccessful: boolean;
+    message?: string | null;
+};
+
 export type ApiCenterRulesetExport = {
     format: string;
     value: string;
@@ -167,4 +181,16 @@ export enum SpecificationName {
 export enum ApiSpecExportResultFormat {
     inline = 'inline',
     link = 'link',
+};
+
+export enum ArmAsyncOperationStatus {
+    NotStarted = 'NotStarted',
+    InProgress = 'InProgress',
+    Succeeded = 'Succeeded',
+    Failed = 'Failed',
+    Canceled = 'Canceled',
+}
+
+export enum ApiCenterRulesetImportFormat {
+    InlineZip = 'inline-zip',
 };

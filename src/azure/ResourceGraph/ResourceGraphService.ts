@@ -3,6 +3,7 @@
 
 import { ResourceGraphClient } from "@azure/arm-resourcegraph";
 import { ISubscriptionContext } from "@microsoft/vscode-azext-utils";
+import { clientOptions } from "../../common/clientOptions";
 import { getCredentialForToken } from "../../utils/credentialUtil";
 import { ApiCenter } from "../ApiCenter/contracts";
 
@@ -19,7 +20,7 @@ export class ResourceGraphService {
 
   public async runQuery(query: string): Promise<any> {
     const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
-    const client = new ResourceGraphClient(creds);
+    const client = new ResourceGraphClient(creds, clientOptions);
 
     const response = await client.resources(
       {

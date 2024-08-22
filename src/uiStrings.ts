@@ -106,10 +106,12 @@ export class UiStrings {
     static readonly DeleteCustomFunction = vscode.l10n.t("Are you sure you want to delete '{0}'?");
     static readonly FileAlreadyExists = vscode.l10n.t("The file '{0}' already exists. Please input a different name.");
     static readonly NoRulesFolder = vscode.l10n.t("Rules folder '{0}' is empty. No files to deploy.");
+    static readonly DeployRules = vscode.l10n.t("Deploying Rules...");
     static readonly RulesDeployed = vscode.l10n.t("Rules deployed to '{0}'.");
-    static readonly FailedToDeployRules = vscode.l10n.t("Failed to deploy rules. Error: {0}");
+    static readonly FailedToDeployRules = vscode.l10n.t("Failed to deploy rules. {0}");
+    static readonly EnableRules = vscode.l10n.t("Enabling API Analysis...");
     static readonly RulesEnabled = vscode.l10n.t("API Analysis enabled for '{0}'.");
-    static readonly FailedToEnableRules = vscode.l10n.t("Failed to enable API Analysis. Error: {0}");
+    static readonly FailedToEnableRules = vscode.l10n.t("Failed to enable API Analysis. {0}");
     static readonly RulesFolderNotEmpty = vscode.l10n.t("The rules folder '{0}' is not empty. Do you want to overwrite the existing files?");
     static readonly Yes = vscode.l10n.t("Yes");
     static readonly No = vscode.l10n.t("No");
