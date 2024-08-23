@@ -31,5 +31,5 @@
     "azure-api-center.views.api-center-treeview.controlplane.title": "Azure API Center",
     "azure-api-center.views.api-center-treeview.dataplane.title": "API Center Data View",
     "azure-api-center.commands.apiCenterWorkspace.addApis.title": "Connect to an API Center",
-    "azure-api-center.commands.apiCenterWorkspace.removeApis.title": "Remove API Center"
+    "azure-api-center.commands.apiCenterWorkspace.removeApis.title": "Disconnect from API Center"
 }
