@@ -3,13 +3,13 @@
 import { getResourceGroupFromId } from "@microsoft/vscode-azext-azureutils";
 import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import { ApiCenterService } from "../azure/ApiCenter/ApiCenterService";
-import { ApiCenter } from "../azure/ResourceGraph/contracts";
+import { ApiCenter } from "../azure/ApiCenter/contracts";
+import { ApiCenterApisManagement } from "../azure/ApiCenterDefines/ApiCenterApi";
 import { UiStrings } from "../uiStrings";
 import { treeUtils } from "../utils/treeUtils";
 import { ApisTreeItem } from "./ApisTreeItem";
 import { EnvironmentsTreeItem } from "./EnvironmentsTreeItem";
 import { RulesTreeItem } from "./rules/RulesTreeItem";
-
 export class ApiCenterTreeItem extends AzExtParentTreeItem {
   public readonly childTypeLabel: string = UiStrings.ApiCenterTreeItemTreeItemChildTypeLabel;
   public static contextValue: string = "azureApiCenter";
@@ -22,7 +22,7 @@ export class ApiCenterTreeItem extends AzExtParentTreeItem {
   constructor(parent: AzExtParentTreeItem, apicenter: ApiCenter) {
     super(parent);
     this._apicenter = apicenter;
-    this.apisTreeItem = new ApisTreeItem(this, apicenter);
+    this.apisTreeItem = new ApisTreeItem(this, new ApiCenterApisManagement(apicenter));
     this.environmentsTreeItem = new EnvironmentsTreeItem(this, apicenter);
   }
 
