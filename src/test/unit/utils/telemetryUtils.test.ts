@@ -36,4 +36,18 @@ describe("telemetryUtils", () => {
         assert.strictEqual(properties["subscriptionId"], "mockSubscriptionId");
         assert.strictEqual(properties["resourceName"], "mockLabel");
     });
+    it("set Azure Resource dataplane info", () => {
+        const mockSubscriptionContext = {
+            subscriptionId: "",
+            subscriptionPath: "fakePath",
+        };
+        const mockItem = new MockAzExtTreeItem(mockSubscriptionContext as ISubscriptionContext);
+
+        const properties: { [key: string]: string; } = {};
+
+        TelemetryUtils.setAzureResourcesInfo(properties, mockItem);
+
+        assert.strictEqual(properties["subscriptionPath"], "fakePath");
+        assert.strictEqual(properties["resourceName"], "mockLabel");
+    });
 });
