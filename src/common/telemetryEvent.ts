@@ -15,6 +15,7 @@ export enum TelemetryProperties {
     subscriptionId = 'subscriptionId',
     resourceName = 'resourceName',
     dataPlaneRuntimeUrl = 'dataPlaneRuntimeUrl',
+    dataPlaneTenant = "dataPlaneTenant"
 };
 
 export enum ErrorProperties {
