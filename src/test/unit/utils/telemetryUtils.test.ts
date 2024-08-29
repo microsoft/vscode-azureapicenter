@@ -38,7 +38,6 @@ describe("telemetryUtils", () => {
     });
     it("set Azure Resource dataplane info", () => {
         const mockSubscriptionContext = {
-            subscriptionId: "",
             subscriptionPath: "fakePath",
         };
         const mockItem = new MockAzExtTreeItem(mockSubscriptionContext as ISubscriptionContext);
@@ -47,7 +46,7 @@ describe("telemetryUtils", () => {
 
         TelemetryUtils.setAzureResourcesInfo(properties, mockItem);
 
-        assert.strictEqual(properties["subscriptionPath"], "fakePath");
+        assert.strictEqual(properties["dataPlaneRuntimeUrl"], "fakePath");
         assert.strictEqual(properties["resourceName"], "mockLabel");
     });
 });
