@@ -8,7 +8,7 @@ import { TelemetryEvent, TelemetryProperties } from "../common/telemetryEvent";
 import { ext } from "../extensionVariables";
 import { UiStrings } from "../uiStrings";
 export namespace ConnectDataPlaneApi {
-    const dataPlaneApiFromDeepLink = "dataPlaneApiFromInput";
+    const dataPlaneApiFromInput = "dataPlaneApiFromInput";
     export async function addDataPlaneApis(context: IActionContext): Promise<any | void> {
         const endpointUrl = await vscode.window.showInputBox({ title: UiStrings.AddDataPlaneRuntimeUrl, ignoreFocusOut: true });
         if (!endpointUrl) {
@@ -22,7 +22,7 @@ export namespace ConnectDataPlaneApi {
         if (!tenantid) {
             return;
         }
-        ConnectDataPlaneApi.sendDataPlaneApiTelemetry(endpointUrl, clientid, tenantid, dataPlaneApiFromDeepLink);
+        ConnectDataPlaneApi.sendDataPlaneApiTelemetry(endpointUrl, clientid, tenantid, dataPlaneApiFromInput);
         ConnectDataPlaneApi.setAccountToExt(endpointUrl, clientid, tenantid);
         ext.dataPlaneTreeItem.refresh(context);
     }
