@@ -8,7 +8,7 @@ import { TelemetryEvent, TelemetryProperties } from "../common/telemetryEvent";
 import { ext } from "../extensionVariables";
 import { UiStrings } from "../uiStrings";
 export namespace ConnectDataPlaneApi {
-    export async function getDataPlaneApis(context: IActionContext): Promise<any | void> {
+    export async function addDataPlaneApis(context: IActionContext): Promise<any | void> {
         const endpointUrl = await vscode.window.showInputBox({ title: UiStrings.AddDataPlaneRuntimeUrl, ignoreFocusOut: true });
         if (!endpointUrl) {
             return;

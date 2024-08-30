@@ -7,7 +7,7 @@ export async function handleUri(uri: vscode.Uri) {
     let tenantId = queryParams.get('tenantId') as string;
     let clientId = queryParams.get('clientId') as string;
     let runtimeUrl = queryParams.get('runtimeUrl') as string;
-    ConnectDataPlaneApi.sendDataPlaneApiTelemetry(runtimeUrl, clientId, tenantId)
+    ConnectDataPlaneApi.sendDataPlaneApiTelemetry(runtimeUrl, clientId, tenantId);
     ConnectDataPlaneApi.setAccountToExt(runtimeUrl, clientId, tenantId);
     vscode.commands.executeCommand('azure-api-center.apiCenterWorkspace.refresh');
 };

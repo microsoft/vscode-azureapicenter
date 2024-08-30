@@ -128,7 +128,7 @@ export async function activate(context: vscode.ExtensionContext) {
     registerCommandWithTelemetry('azure-api-center.openUrl', openUrlFromTreeNode);
     registerCommandWithTelemetry('azure-api-center.apiCenterWorkspace.signInToDataPlane', SignInToDataPlane);
     registerCommandWithTelemetry('azure-api-center.apiCenterWorkspace.refresh', async (context: IActionContext) => ext.dataPlaneTreeItem.refresh(context));
-    registerCommandWithTelemetry('azure-api-center.apiCenterWorkspace.addApis', ConnectDataPlaneApi.getDataPlaneApis);
+    registerCommandWithTelemetry('azure-api-center.apiCenterWorkspace.addApis', ConnectDataPlaneApi.addDataPlaneApis);
     registerCommandWithTelemetry('azure-api-center.apiCenterWorkspace.collapse', () => {
         vscode.commands.executeCommand('workbench.actions.treeView.apiCenterWorkspace.collapseAll');
     });
