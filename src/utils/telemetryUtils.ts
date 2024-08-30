@@ -11,9 +11,10 @@ export namespace TelemetryUtils {
                 properties[TelemetryProperties.subscriptionId] = arg.subscription.subscriptionId;
             }
             // data plane has no subscriptionId but subscriptionPath.
-            else if (arg.subscription.subscriptionPath && arg.subscription.tenantId) {
+            else if (arg.subscription.subscriptionPath && arg.subscription.tenantId && arg.subscription.userId) {
                 properties[TelemetryProperties.dataPlaneRuntimeUrl] = arg.subscription.subscriptionPath;
-                properties[TelemetryProperties.dataPlaneTenant] = arg.subscription.tenantId;
+                properties[TelemetryProperties.dataPlaneTenantId] = arg.subscription.tenantId;
+                properties[TelemetryProperties.dataPlaneClientId] = arg.subscription.userId;
             }
             if (arg.label) {
                 properties[TelemetryProperties.resourceName] = arg.label;

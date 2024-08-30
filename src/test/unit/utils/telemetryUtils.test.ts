@@ -40,6 +40,7 @@ describe("telemetryUtils", () => {
         const mockSubscriptionContext = {
             subscriptionPath: "fakePath",
             tenantId: "fakeTenantId",
+            userId: "fakeClientId",
         };
         const mockItem = new MockAzExtTreeItem(mockSubscriptionContext as ISubscriptionContext);
 
@@ -48,7 +49,8 @@ describe("telemetryUtils", () => {
         TelemetryUtils.setAzureResourcesInfo(properties, mockItem);
 
         assert.strictEqual(properties["dataPlaneRuntimeUrl"], "fakePath");
-        assert.strictEqual(properties["dataPlaneTenant"], "fakeTenantId");
+        assert.strictEqual(properties["dataPlaneTenantId"], "fakeTenantId");
+        assert.strictEqual(properties["dataPlaneClientId"], "fakeClientId");
         assert.strictEqual(properties["resourceName"], "mockLabel");
     });
 });

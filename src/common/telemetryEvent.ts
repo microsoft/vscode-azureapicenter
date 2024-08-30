@@ -6,6 +6,7 @@ export enum TelemetryEvent {
     registerApiSelectOption = "registerApi.selectOption",
     setApiRulesetSelectOption = "setApiRuleset.selectOption",
     treeviewListDataPlane = "treeview.listDataPlane",
+    openUrlFromDataPlane = "openUrl.dataPlaneApi",
 }
 
 export enum TelemetryProperties {
@@ -15,7 +16,8 @@ export enum TelemetryProperties {
     subscriptionId = 'subscriptionId',
     resourceName = 'resourceName',
     dataPlaneRuntimeUrl = 'dataPlaneRuntimeUrl',
-    dataPlaneTenant = "dataPlaneTenant"
+    dataPlaneTenantId = "dataPlaneTenantId",
+    dataPlaneClientId = "dataPlaneClientId",
 };
 
 export enum ErrorProperties {
