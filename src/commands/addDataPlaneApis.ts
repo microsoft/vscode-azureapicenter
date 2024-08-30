@@ -4,7 +4,7 @@ import { IActionContext } from "@microsoft/vscode-azext-utils";
 import * as vscode from 'vscode';
 import { DataPlaneAccount } from "../azure/ApiCenter/ApiCenterDataPlaneAPIs";
 import { TelemetryClient } from "../common/telemetryClient";
-import { TelemetryEvent, TelemetryProperties } from "../common/telemetryEvent";
+import { DataPlaneApiFromType, TelemetryEvent, TelemetryProperties } from "../common/telemetryEvent";
 import { ext } from "../extensionVariables";
 import { UiStrings } from "../uiStrings";
 export namespace ConnectDataPlaneApi {
@@ -22,11 +22,11 @@ export namespace ConnectDataPlaneApi {
         if (!tenantid) {
             return;
         }
-        ConnectDataPlaneApi.sendDataPlaneApiTelemetry(endpointUrl, clientid, tenantid, dataPlaneApiFromInput);
+        ConnectDataPlaneApi.sendDataPlaneApiTelemetry(endpointUrl, clientid, tenantid, DataPlaneApiFromType.dataPlaneApiAddFromInput);
         ConnectDataPlaneApi.setAccountToExt(endpointUrl, clientid, tenantid);
         ext.dataPlaneTreeItem.refresh(context);
     }
-    export function sendDataPlaneApiTelemetry(runtimeUrl: string, clientId: string, tenantId: string, fromType: string) {
+    export function sendDataPlaneApiTelemetry(runtimeUrl: string, clientId: string, tenantId: string, fromType: DataPlaneApiFromType) {
         const properties: { [key: string]: string; } = {};
         properties[TelemetryProperties.dataPlaneRuntimeUrl] = runtimeUrl;
         properties[TelemetryProperties.dataPlaneTenantId] = tenantId;

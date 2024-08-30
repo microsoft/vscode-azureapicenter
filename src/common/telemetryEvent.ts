@@ -25,3 +25,9 @@ export enum ErrorProperties {
     errorType = "errorType",
     errorMessage = "errorMessage",
 };
+
+
+export enum DataPlaneApiFromType {
+    dataPlaneApiAddFromInput = "dataPlaneApiAddFromInput",
+    dataPlaneApiAddFromDeepLink = "dataPlaneApiAddFromDeepLink",
+};
