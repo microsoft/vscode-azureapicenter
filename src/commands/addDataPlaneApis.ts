@@ -30,7 +30,7 @@ export namespace ConnectDataPlaneApi {
         properties[TelemetryProperties.dataPlaneRuntimeUrl] = runtimeUrl;
         properties[TelemetryProperties.dataPlaneTenantId] = tenantId;
         properties[TelemetryProperties.dataPlaneClientId] = clientId;
-        TelemetryClient.sendEvent(TelemetryEvent.openUrlFromDataPlane, properties);
+        TelemetryClient.sendEvent(TelemetryEvent.addDataPlaneApiFromUrl, properties);
     }
     export function setAccountToExt(domain: string, clientId: string, tenantId: string) {
         function pushIfNotExist(array: DataPlaneAccount[], element: DataPlaneAccount) {

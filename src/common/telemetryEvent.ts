@@ -6,7 +6,7 @@ export enum TelemetryEvent {
     registerApiSelectOption = "registerApi.selectOption",
     setApiRulesetSelectOption = "setApiRuleset.selectOption",
     treeviewListDataPlane = "treeview.listDataPlane",
-    openUrlFromDataPlane = "openUrl.dataPlaneApi",
+    addDataPlaneApiFromUrl = "openUrl.addDataPlaneApi",
 }
 
 export enum TelemetryProperties {

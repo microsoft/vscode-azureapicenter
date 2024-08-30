@@ -19,7 +19,7 @@ describe('getDataPlaneApis test happy path', () => {
         let sendEventStub = sandbox.stub(TelemetryClient, "sendEvent").returns();
         ConnectDataPlaneApi.sendDataPlaneApiTelemetry("fakeRuntimeUrl", "fakeClientId", "fakeTenantId");
         sandbox.assert.calledOnce(sendEventStub);
-        assert.equal(sendEventStub.getCall(0).args[0], "openUrl.dataPlaneApi");
+        assert.equal(sendEventStub.getCall(0).args[0], "openUrl.addDataPlaneApi");
         assert.equal(sendEventStub.getCall(0).args[1].dataPlaneRuntimeUrl, "fakeRuntimeUrl");
         assert.equal(sendEventStub.getCall(0).args[1].dataPlaneTenantId, "fakeTenantId");
         assert.equal(sendEventStub.getCall(0).args[1].dataPlaneClientId, "fakeClientId");
