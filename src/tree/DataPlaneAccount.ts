@@ -7,9 +7,12 @@ import { ApiCenterApisDataplane } from "../azure/ApiCenterDefines/ApiCenterApi";
 import { AzureDataSessionProvider } from "../azure/azureLogin/authTypes";
 import { AzureAuth } from "../azure/azureLogin/azureAuth";
 import { AzureDataSessionProviderHelper, generateScopes } from "../azure/azureLogin/dataSessionProvider";
+import { TelemetryClient } from "../common/telemetryClient";
+import { TelemetryEvent } from "../common/telemetryEvent";
 import { ext } from "../extensionVariables";
 import { UiStrings } from "../uiStrings";
 import { GeneralUtils } from "../utils/generalUtils";
+import { TelemetryUtils } from "../utils/telemetryUtils";
 import { treeUtils } from "../utils/treeUtils";
 import { ApisTreeItem } from "./ApisTreeItem";
 export function createAzureDataAccountTreeItem(
@@ -59,6 +62,9 @@ export class ApiServerItem extends AzExtParentTreeItem {
     public readonly apisTreeItem: ApisTreeItem;
     public async loadMoreChildrenImpl(clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
         let scopes = generateScopes(this.subscriptionContext.userId, this.subscriptionContext!.tenantId!);
+        const properties: { [key: string]: string; } = {};
+        TelemetryUtils.setAzureResourcesInfo(properties, this);
+        TelemetryClient.sendEvent(TelemetryEvent.treeviewListDataPlane, properties);
         const authSession = await AzureDataSessionProviderHelper.getSessionProvider().getAuthSession(scopes);
         if (GeneralUtils.failed(authSession)) {
             return [
