@@ -21,16 +21,16 @@ export namespace ConnectDataPlaneApi {
         if (!tenantid) {
             return;
         }
-        ConnectDataPlaneApi.sendDataPlaneApiTelemetry(endpointUrl, clientid, tenantid);
+        ConnectDataPlaneApi.sendDataPlaneApiTelemetry(endpointUrl, clientid, tenantid, TelemetryEvent.addDataPlaneApiFromInput);
         ConnectDataPlaneApi.setAccountToExt(endpointUrl, clientid, tenantid);
         ext.dataPlaneTreeItem.refresh(context);
     }
-    export function sendDataPlaneApiTelemetry(runtimeUrl: string, clientId: string, tenantId: string) {
+    export function sendDataPlaneApiTelemetry(runtimeUrl: string, clientId: string, tenantId: string, telemetryName: TelemetryEvent) {
         const properties: { [key: string]: string; } = {};
         properties[TelemetryProperties.dataPlaneRuntimeUrl] = runtimeUrl;
         properties[TelemetryProperties.dataPlaneTenantId] = tenantId;
         properties[TelemetryProperties.dataPlaneClientId] = clientId;
-        TelemetryClient.sendEvent(TelemetryEvent.addDataPlaneApiFromUrl, properties);
+        TelemetryClient.sendEvent(telemetryName, properties);
     }
     export function setAccountToExt(domain: string, clientId: string, tenantId: string) {
         function pushIfNotExist(array: DataPlaneAccount[], element: DataPlaneAccount) {

@@ -25,5 +25,6 @@ describe('handleUri test happy path', () => {
         assert.equal(stubSetAccountToExt.getCall(0).args[1], 'fakeClientId');
         assert.equal(stubSetAccountToExt.getCall(0).args[2], 'fakeTenantId');
         sandbox.assert.calledOnce(stubTelemetryEvent);
+        assert.equal(stubTelemetryEvent.getCall(0).args[3], 'openDeepLink.addDataPlaneApi');
     });
 });
