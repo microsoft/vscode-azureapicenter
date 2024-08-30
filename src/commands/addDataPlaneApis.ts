@@ -8,6 +8,7 @@ import { TelemetryEvent, TelemetryProperties } from "../common/telemetryEvent";
 import { ext } from "../extensionVariables";
 import { UiStrings } from "../uiStrings";
 export namespace ConnectDataPlaneApi {
+    const dataPlaneApiFromDeepLink = "dataPlaneApiFromInput";
     export async function addDataPlaneApis(context: IActionContext): Promise<any | void> {
         const endpointUrl = await vscode.window.showInputBox({ title: UiStrings.AddDataPlaneRuntimeUrl, ignoreFocusOut: true });
         if (!endpointUrl) {
@@ -21,16 +22,17 @@ export namespace ConnectDataPlaneApi {
         if (!tenantid) {
             return;
         }
-        ConnectDataPlaneApi.sendDataPlaneApiTelemetry(endpointUrl, clientid, tenantid, TelemetryEvent.addDataPlaneApiFromInput);
+        ConnectDataPlaneApi.sendDataPlaneApiTelemetry(endpointUrl, clientid, tenantid, dataPlaneApiFromDeepLink);
         ConnectDataPlaneApi.setAccountToExt(endpointUrl, clientid, tenantid);
         ext.dataPlaneTreeItem.refresh(context);
     }
-    export function sendDataPlaneApiTelemetry(runtimeUrl: string, clientId: string, tenantId: string, telemetryName: TelemetryEvent) {
+    export function sendDataPlaneApiTelemetry(runtimeUrl: string, clientId: string, tenantId: string, fromType: string) {
         const properties: { [key: string]: string; } = {};
         properties[TelemetryProperties.dataPlaneRuntimeUrl] = runtimeUrl;
         properties[TelemetryProperties.dataPlaneTenantId] = tenantId;
         properties[TelemetryProperties.dataPlaneClientId] = clientId;
-        TelemetryClient.sendEvent(telemetryName, properties);
+        properties[TelemetryProperties.dataPlaneAddApiSource] = fromType;
+        TelemetryClient.sendEvent(TelemetryEvent.addDataPlaneInstance, properties);
     }
     export function setAccountToExt(domain: string, clientId: string, tenantId: string) {
         function pushIfNotExist(array: DataPlaneAccount[], element: DataPlaneAccount) {
