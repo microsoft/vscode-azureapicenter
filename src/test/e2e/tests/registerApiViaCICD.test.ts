@@ -5,7 +5,8 @@ import { expect, test } from '../baseTest';
 import { APICenter, Timeout, VSCode } from '../utils/constants';
 import VscodeOperator from '../utils/vscodeOperator';
 
-test('trigger generateAPIviaCICD with Azure DevOps', async ({ workbox }) => {
+// Set tags[0] used as test plan case id
+test('trigger generateAPIviaCICD with Azure DevOps', { tag: ["@26627281"] }, async ({ workbox }) => {
     await workbox.waitForTimeout(Timeout.PREPARE_TEST);
     // wait API Center extension installed on VS Code.
     expect(await VscodeOperator.isSideTabItemExist(workbox, "API Center")).toBeTruthy();
@@ -21,7 +22,7 @@ test('trigger generateAPIviaCICD with Azure DevOps', async ({ workbox }) => {
     expect(await VscodeOperator.isSideTabItemExist(workbox, "register-api.yml")).toBeTruthy();
 });
 
-test('trigger generateAPIviaCICD with GitHub', async ({ workbox }) => {
+test('trigger generateAPIviaCICD with GitHub', { tag: ["@26625756"] }, async ({ workbox }) => {
     await workbox.waitForTimeout(Timeout.PREPARE_TEST);
     // wait API Center extension installed on VS Code.
     expect(await VscodeOperator.isSideTabItemExist(workbox, "API Center")).toBeTruthy();
