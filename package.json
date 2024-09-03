@@ -188,6 +188,11 @@
         "title": "%azure-api-center.commands.apiCenterWorkspace.removeApis.title%",
         "icon": "$(close)",
         "category": "Azure API Center"
+      },
+      {
+        "command": "azure-api-center.generateTestInsight",
+        "title": "Generate Tests and Insights",
+        "category": "Azure API Center"
       }
     ],
     "views": {
@@ -273,6 +278,10 @@
         },
         {
           "command": "azure-api-center.generateHttpFile",
+          "when": "view == apiCenterTreeView && viewItem == azureApiCenterApiVersionDefinitionTreeItem-openapi"
+        },
+        {
+          "command": "azure-api-center.generateTestInsight",
           "when": "view == apiCenterTreeView && viewItem == azureApiCenterApiVersionDefinitionTreeItem-openapi"
         },
         {
@@ -366,6 +375,10 @@
         },
         {
           "command": "azure-api-center.generateHttpFile",
+          "when": "never"
+        },
+        {
+          "command": "azure-api-center.generateTestInsight",
           "when": "never"
         },
         {

@@ -7,8 +7,9 @@ import * as path from "path";
 import * as vscode from "vscode";
 import { ApiSpecExportResultFormat } from "../azure/ApiCenter/contracts";
 import { ApiVersionDefinitionTreeItem } from "../tree/ApiVersionDefinitionTreeItem";
-import { createTemporaryFolder } from "../utils/fsUtil";
+import { UiStrings } from "../uiStrings";
 import { GeneralUtils } from "../utils/generalUtils";
+import { inferDefinitionFileType } from "../utils/inferDefinitionFileType";
 import { treeUtils } from "../utils/treeUtils";
 export namespace ExportAPI {
     export async function exportApi(
@@ -41,10 +42,14 @@ export namespace ExportAPI {
     }
 
     export async function showTempFile(node: ApiVersionDefinitionTreeItem, fileContent: string) {
-        const folderName = getFolderName(node);
-        const folderPath = await createTemporaryFolder(folderName);
+        const workspaceFolders = vscode.workspace.workspaceFolders;
+        if (!workspaceFolders) {
+            throw new Error(UiStrings.NoFolderOpened);
+        }
+        const folderPath: string = workspaceFolders[0].uri.fsPath;
         const fileName = getFilename(node);
-        const localFilePath: string = path.join(folderPath, fileName);
+        const fileType = inferDefinitionFileType(fileContent);
+        const localFilePath: string = path.join(folderPath, fileName + fileType);
         await fs.ensureFile(localFilePath);
         const document: vscode.TextDocument = await vscode.workspace.openTextDocument(localFilePath);
         await vscode.workspace.fs.writeFile(vscode.Uri.file(localFilePath), Buffer.from(fileContent));

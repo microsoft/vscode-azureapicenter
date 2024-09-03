@@ -21,6 +21,7 @@ import { GenerateApiFromCode } from './commands/generateApiFromCode';
 import { generateApiLibrary } from './commands/generateApiLibrary';
 import { GenerateHttpFile } from './commands/generateHttpFile';
 import { generateMarkdownDocument } from './commands/generateMarkdownDocument';
+import { generateTestInsight } from './commands/generateTestInsight';
 import { handleUri } from './commands/handleUri';
 import { importOpenApi } from './commands/importOpenApi';
 import { openAPiInSwagger } from './commands/openApiInSwagger';
@@ -134,6 +135,8 @@ export async function activate(context: vscode.ExtensionContext) {
     });
 
     registerCommandWithTelemetry('azure-api-center.apiCenterWorkspace.removeApi', removeDataplaneAPI);
+
+    registerCommandWithTelemetry('azure-api-center.generateTestInsight', generateTestInsight);
 
     context.subscriptions.push(
         vscode.window.registerUriHandler({
