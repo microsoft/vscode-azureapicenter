@@ -3,6 +3,15 @@
 
 > Note: This changelog only includes the changes for the pre-release versions of Azure API Center for Visual Studio Code. For the changelog of stable versions, please refer to the [Changelog of Azure API Center for Visual Studio Code](https://github.com/microsoft/vscode-azureapicenter/blob/main/CHANGELOG.md).
 
+### September 9, 2024
+* Add Data View to Azure API Center:
+    * Connect to An Existing API Center from UI, Command Palette or DeepLink
+    * View and List all the APIs, Versions, Definitions
+    * Export API, Generate API Client, Generate Markdown, Open API Document from API Definitions
+    * Login to Data View
+    * Disconnect to API Center Data Plane API
+    * Search APIs from Data View
+
 ### August 19, 2024
 
 * Manage API Analysis for Azure API Center:
