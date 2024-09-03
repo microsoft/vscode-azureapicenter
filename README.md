@@ -28,7 +28,7 @@ Ensure that new API versions don't break API consumers with breaking change dete
 
 [[Pre-Release]](#pre-release)
 API Center Data View
-![[data-view]](./media/data-view.gif)
+![[data-view]](./media/api-center-data-view.gif)
 
 ### Discover
 

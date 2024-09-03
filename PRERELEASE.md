@@ -8,7 +8,7 @@
     * Connect to An Existing API Center from UI, Command Palette or DeepLink
     * View and List all the APIs, Versions, Definitions
     * Export API, Generate API Client, Generate Markdown, Open API Document from API Definitions
-    * Login to Data View
+    * Sign In and Sign Out from Data View
     * Disconnect to API Center Data Plane API
     * Search APIs from Data View
 
