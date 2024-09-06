@@ -1,554 +1,556 @@
 {
-  "name": "azure-api-center",
-  "publisher": "apidev",
-  "displayName": "Azure API Center",
-  "description": "Build, discover, and consume APIs.",
-  "version": "1.0.0",
-  "icon": "media/api-center-icon.png",
-  "license": "MIT",
-  "engines": {
-    "vscode": "^1.91.0"
-  },
-  "aiKey": "20f6d4af-3678-4602-ae98-f6724f057cd5",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/microsoft/vscode-azureapicenter.git"
-  },
-  "bugs": {
-    "url": "https://github.com/microsoft/vscode-azureapicenter/issues"
-  },
-  "categories": [
-    "Azure",
-    "AI"
-  ],
-  "keywords": [
-    "OpenAPI",
-    "GraphQL",
-    "gRPC",
-    "AsyncAPI",
-    "RAML"
-  ],
-  "activationEvents": [],
-  "main": "./dist/extension.js",
-  "l10n": "l10n",
-  "contributes": {
-    "commands": [
-      {
-        "command": "azure-api-center.selectSubscriptions",
-        "title": "%azure-api-center.commands.selectSubscriptions.title%",
-        "icon": {
-          "light": "resources/light/filter.svg",
-          "dark": "resources/dark/filter.svg"
-        },
-        "category": "Azure API Center"
-      },
-      {
-        "command": "azure-api-center.apiCenterTreeView.refresh",
-        "title": "%azure-api-center.commands.apiCenterTreeView.refresh.title%",
-        "icon": "$(refresh)",
-        "category": "Azure API Center"
-      },
-      {
-        "command": "azure-api-center.open-api-docs",
-        "title": "%azure-api-center.commands.open-api-docs.title%",
-        "category": "Azure API Center"
-      },
-      {
-        "command": "azure-api-center.open-postman",
-        "title": "%azure-api-center.commands.open-postman.title%",
-        "category": "Azure API Center"
-      },
-      {
-        "command": "azure-api-center.generate-api-client",
-        "title": "%azure-api-center.commands.generate-api-client.title%",
-        "category": "Azure API Center"
-      },
-      {
-        "command": "azure-api-center.importOpenApiByFile",
-        "title": "%azure-api-center.commands.importOpenApiByFile.title%",
-        "category": "Azure API Center"
-      },
-      {
-        "command": "azure-api-center.importOpenApiByLink",
-        "title": "%azure-api-center.commands.importOpenApiByLink.title%",
-        "category": "Azure API Center"
-      },
-      {
-        "command": "azure-api-center.exportApi",
-        "title": "%azure-api-center.commands.exportApi.title%",
-        "category": "Azure API Center"
-      },
-      {
-        "command": "azure-api-center.showOpenApi",
-        "title": "%azure-api-center.commands.showOpenApi.title%",
-        "category": "Azure API Center"
-      },
-      {
-        "command": "azure-api-center.generateHttpFile",
-        "title": "%azure-api-center.commands.generateHttpFile.title%",
-        "category": "Azure API Center"
-      },
-      {
-        "command": "azure-api-center.registerApi",
-        "title": "%azure-api-center.commands.registerApi.title%",
-        "category": "Azure API Center"
-      },
-      {
-        "command": "azure-api-center.searchApi",
-        "title": "%azure-api-center.commands.searchApi.title%",
-        "category": "Azure API Center",
-        "icon": "$(search)"
-      },
-      {
-        "command": "azure-api-center.setApiRuleset",
-        "title": "%azure-api-center.commands.setApiRuleset.title%",
-        "category": "Azure API Center"
-      },
-      {
-        "command": "azure-api-center.detectBreakingChange",
-        "title": "%azure-api-center.commands.detectBreakingChange.title%",
-        "category": "Azure API Center"
-      },
-      {
-        "command": "azure-api-center.generateApiFromCode",
-        "title": "%azure-api-center.commands.generateApiFromCode.title%",
-        "category": "Azure API Center"
-      },
-      {
-        "command": "azure-api-center.cleanupSearchResult",
-        "title": "%azure-api-center.commands.cleanupSearchResult.title%",
-        "category": "Azure API Center",
-        "icon": "$(clear-all)"
-      },
-      {
-        "command": "azure-api-center.generateMarkdownDocument",
-        "title": "%azure-api-center.commands.generateMarkdownDocument.title%",
-        "category": "Azure API Center"
-      },
-      {
-        "command": "azure-api-center.enableRules",
-        "title": "%azure-api-center.commands.enableRules.title%",
-        "category": "Azure API Center"
-      },
-      {
-        "command": "azure-api-center.exportRules",
-        "title": "%azure-api-center.commands.exportRules.title%",
-        "category": "Azure API Center"
-      },
-      {
-        "command": "azure-api-center.deployRules",
-        "title": "%azure-api-center.commands.deployRules.title%",
-        "category": "Azure API Center"
-      },
-      {
-        "command": "azure-api-center.openRule",
-        "title": "%azure-api-center.commands.openRule.title%",
-        "category": "Azure API Center"
-      },
-      {
-        "command": "azure-api-center.addCustomFunction",
-        "title": "%azure-api-center.commands.addCustomFunction.title%",
-        "category": "Azure API Center"
-      },
-      {
-        "command": "azure-api-center.renameCustomFunction",
-        "title": "%azure-api-center.commands.renameCustomFunction.title%",
-        "category": "Azure API Center"
-      },
-      {
-        "command": "azure-api-center.deleteCustomFunction",
-        "title": "%azure-api-center.commands.deleteCustomFunction.title%",
-        "category": "Azure API Center"
-      },
-      {
-        "command": "azure-api-center.selectTenant",
-        "title": "%azure-api-center.commands.selectTenant.title%",
-        "category": "Azure API Center"
-      },
-      {
-        "command": "azure-api-center.apiCenterWorkspace.addApis",
-        "title": "%azure-api-center.commands.apiCenterWorkspace.addApis.title%",
-        "icon": "$(add)",
-        "category": "Azure API Center"
-      },
-      {
-        "command": "azure-api-center.apiCenterWorkspace.refresh",
-        "title": "%azure-api-center.commands.apiCenterTreeView.refresh.title%",
-        "icon": "$(refresh)",
-        "category": "Azure API Center"
-      },
-      {
-        "command": "azure-api-center.apiCenterWorkspace.collapse",
-        "title": "%azure-api-center.commands.apiCenterWorkspace.collapse.title%",
-        "icon": "$(collapse-all)",
-        "category": "Azure API Center"
-      },
-      {
-        "command": "azure-api-center.apiCenterWorkspace.removeApi",
-        "title": "%azure-api-center.commands.apiCenterWorkspace.removeApis.title%",
-        "icon": "$(close)",
-        "category": "Azure API Center"
-      }
-    ],
-    "views": {
-      "api-center-treeview": [
-        {
-          "id": "apiCenterTreeView",
-          "name": "%azure-api-center.views.api-center-treeview.controlplane.title%",
-          "icon": "media/api-center-icon.svg",
-          "contextualTitle": "Azure API Center"
-        },
-        {
-          "id": "apiCenterWorkspace",
-          "name": "%azure-api-center.views.api-center-treeview.dataplane.title%",
-          "visibility": "visible"
-        }
-      ]
-    },
-    "viewsContainers": {
-      "activitybar": [
-        {
-          "id": "api-center-treeview",
-          "title": "API Center",
-          "icon": "media/api-center-icon.svg"
-        }
-      ]
-    },
-    "menus": {
-      "view/title": [
-        {
-          "command": "azure-api-center.apiCenterTreeView.refresh",
-          "when": "view == apiCenterTreeView",
-          "group": "navigation"
-        },
-        {
-          "command": "azure-api-center.apiCenterWorkspace.addApis",
-          "when": "view == apiCenterWorkspace",
-          "group": "navigation@2"
-        },
-        {
-          "command": "azure-api-center.apiCenterWorkspace.refresh",
-          "when": "view == apiCenterWorkspace",
-          "group": "navigation@1"
-        },
-        {
-          "command": "azure-api-center.apiCenterWorkspace.collapse",
-          "when": "view == apiCenterWorkspace",
-          "group": "navigation@3"
-        }
-      ],
-      "view/item/context": [
-        {
-          "command": "azure-api-center.selectSubscriptions",
-          "when": "view == apiCenterTreeView && viewItem == azureApiCenterAzureSubscription",
-          "group": "inline"
-        },
-        {
-          "command": "azure-api-center.open-api-docs",
-          "when": "(view == apiCenterTreeView && viewItem == azureApiCenterApiVersionDefinitionTreeItem-openapi) || (view == apiCenterWorkspace && viewItem == azureApiCenterApiVersionDataPlaneDefinitionTreeItem-openapi)"
-        },
-        {
-          "command": "azure-api-center.open-postman",
-          "when": "view == apiCenterTreeView && viewItem =~ /never/"
-        },
-        {
-          "command": "azure-api-center.generate-api-client",
-          "when": "(view == apiCenterTreeView && viewItem == azureApiCenterApiVersionDefinitionTreeItem-openapi) || (view == apiCenterWorkspace && viewItem == azureApiCenterApiVersionDataPlaneDefinitionTreeItem-openapi)"
-        },
-        {
-          "command": "azure-api-center.importOpenApiByFile",
-          "when": "view == apiCenterTreeView && viewItem =~ /never/"
-        },
-        {
-          "command": "azure-api-center.importOpenApiByLink",
-          "when": "view == apiCenterTreeView && viewItem =~ /never/"
-        },
-        {
-          "command": "azure-api-center.exportApi",
-          "when": "(view == apiCenterTreeView && viewItem =~ /azureApiCenterApiVersionDefinitionTreeItem/) || (view == apiCenterWorkspace && viewItem =~ /azureApiCenterApiVersionDataPlaneDefinitionTreeItem/)"
-        },
-        {
-          "command": "azure-api-center.showOpenApi",
-          "when": "view == apiCenterTreeView && viewItem =~ /never/"
-        },
-        {
-          "command": "azure-api-center.generateHttpFile",
-          "when": "view == apiCenterTreeView && viewItem == azureApiCenterApiVersionDefinitionTreeItem-openapi"
-        },
-        {
-          "command": "azure-api-center.generateMarkdownDocument",
-          "when": "(view == apiCenterTreeView && viewItem == azureApiCenterApiVersionDefinitionTreeItem-openapi) || (view == apiCenterWorkspace && viewItem == azureApiCenterApiVersionDataPlaneDefinitionTreeItem-openapi)"
-        },
-        {
-          "command": "azure-api-center.registerApi",
-          "when": "view == apiCenterTreeView && viewItem =~ /^azureApiCenterApis/"
-        },
-        {
-          "command": "azure-api-center.searchApi",
-          "when": "(view == apiCenterTreeView || view == apiCenterWorkspace) && viewItem =~ /^azureApiCenterApis/ ",
-          "group": "inline@0"
-        },
-        {
-          "command": "azure-api-center.cleanupSearchResult",
-          "when": "(view == apiCenterTreeView || view == apiCenterWorkspace) && viewItem == azureApiCenterApis-search",
-          "group": "inline@1"
-        },
-        {
-          "command": "azure-api-center.enableRules",
-          "when": "view == apiCenterTreeView && viewItem == azureApiCenterRules",
-          "group": "rule@0"
-        },
-        {
-          "command": "azure-api-center.exportRules",
-          "when": "view == apiCenterTreeView && viewItem == azureApiCenterRules-enabled",
-          "group": "rule@1"
-        },
-        {
-          "command": "azure-api-center.deployRules",
-          "when": "view == apiCenterTreeView && viewItem == azureApiCenterRules-enabled",
-          "group": "rule@2"
-        },
-        {
-          "command": "azure-api-center.addCustomFunction",
-          "when": "view == apiCenterTreeView && viewItem == azureApiCenterFunctions"
-        },
-        {
-          "command": "azure-api-center.renameCustomFunction",
-          "when": "view == apiCenterTreeView && viewItem == azureApiCenterFunction",
-          "group": "function@0"
-        },
-        {
-          "command": "azure-api-center.deleteCustomFunction",
-          "when": "view == apiCenterTreeView && viewItem == azureApiCenterFunction",
-          "group": "function@1"
-        },
-        {
-          "command": "azure-api-center.apiCenterWorkspace.removeApi",
-          "when": "view == apiCenterWorkspace && viewItem == azureApiCenterDataPlane",
-          "group": "inline@0"
-        }
-      ],
-      "copilot": [
-        {
-          "command": "azure-api-center.generateApiFromCode",
-          "when": "github.copilot-chat.activated && resourceScheme == 'file'",
-          "group": "apiCenter"
-        }
-      ],
-      "commandPalette": [
-        {
-          "command": "azure-api-center.selectSubscriptions",
-          "when": "never"
-        },
-        {
-          "command": "azure-api-center.importOpenApiByFile",
-          "when": "never"
-        },
-        {
-          "command": "azure-api-center.importOpenApiByLink",
-          "when": "never"
-        },
-        {
-          "command": "azure-api-center.showOpenApi",
-          "when": "never"
-        },
-        {
-          "command": "azure-api-center.open-postman",
-          "when": "never"
-        },
-        {
-          "command": "azure-api-center.open-api-docs",
-          "when": "never"
-        },
-        {
-          "command": "azure-api-center.generate-api-client",
-          "when": "never"
-        },
-        {
-          "command": "azure-api-center.generateHttpFile",
-          "when": "never"
-        },
-        {
-          "command": "azure-api-center.searchApi",
-          "when": "never"
-        },
-        {
-          "command": "azure-api-center.cleanupSearchResult",
-          "when": "never"
-        },
-        {
-          "command": "azure-api-center.generateApiFromCode",
-          "when": "never"
-        },
-        {
-          "command": "azure-api-center.enableRules",
-          "when": "never"
-        },
-        {
-          "command": "azure-api-center.exportRules",
-          "when": "never"
-        },
-        {
-          "command": "azure-api-center.deployRules",
-          "when": "never"
-        },
-        {
-          "command": "azure-api-center.openRule",
-          "when": "never"
-        },
-        {
-          "command": "azure-api-center.addCustomFunction",
-          "when": "never"
-        },
-        {
-          "command": "azure-api-center.renameCustomFunction",
-          "when": "never"
-        },
-        {
-          "command": "azure-api-center.deleteCustomFunction",
-          "when": "never"
-        },
-        {
-          "command": "azure-api-center.apiCenterWorkspace.removeApi",
-          "when": "never"
-        },
-        {
-          "command": "azure-api-center.apiCenterWorkspace.collapse",
-          "when": "never"
-        }
-      ]
-    },
-    "problemMatchers": [
-      {
-        "name": "optic",
-        "owner": "api-center",
-        "fileLocation": [
-          "autoDetect",
-          "${workspaceFolder}"
-        ],
-        "pattern": [
-          {
-            "regexp": "x (.*breaking change.*)",
-            "message": 1
-          },
-          {
-            "regexp": "at (.*):(\\d+):(\\d+)",
-            "file": 1,
-            "line": 2
-          }
-        ]
-      }
-    ],
-    "configuration": [
-      {
-        "title": "Azure Api Center",
-        "properties": {
-          "azure-api-center.selectedSubscriptions": {
-            "type": "array",
-            "description": "Selected Azure subscriptions",
-            "items": {
-              "type": "string"
-            }
-          },
-          "azure-api-center.tenant": {
-            "type": "object",
-            "description": "A specific tenant to sign in to",
-            "properties": {
-              "name": {
-                "type": "string",
-                "description": "tenant name"
-              },
-              "id": {
-                "type": "string",
-                "description": "tenant id"
-              }
-            }
-          }
-        }
-      }
-    ]
-  },
-  "scripts": {
-    "vscode:prepublish": "npm run package",
-    "compile": "webpack",
-    "watch": "webpack --watch",
-    "package": "webpack --mode production --devtool hidden-source-map",
-    "compile-tests": "tsc -p . --outDir out && copyfiles -u 1 \"src/test/resources/**/*\" out/",
-    "watch-tests": "tsc -p . -w --outDir out",
-    "pretest": "npm run compile-tests && npm run compile && npm run lint",
-    "lint": "eslint src --ext ts",
-    "test": "vscode-test --coverage",
-    "prepare": "husky install",
-    "lint:staged": "lint-staged",
-    "precommit": "lint-staged"
-  },
-  "devDependencies": {
-    "@playwright/test": "^1.42.1",
-    "@types/archiver": "^6.0.2",
-    "@types/express": "^4.17.20",
-    "@types/fs-extra": "^11.0.2",
-    "@types/js-yaml": "^4.0.8",
-    "@types/mocha": "^10.0.2",
-    "@types/node": "18.x",
-    "@types/sinon": "^17.0.3",
-    "@types/swagger2openapi": "^7.0.4",
-    "@types/unzipper": "^0.10.9",
-    "@types/vscode": "^1.90.0",
-    "@typescript-eslint/eslint-plugin": "^6.7.3",
-    "@typescript-eslint/parser": "^6.7.3",
-    "@vscode/test-cli": "^0.0.6",
-    "@vscode/test-electron": "^2.3.9",
-    "copy-webpack-plugin": "^12.0.2",
-    "copyfiles": "^2.4.1",
-    "crypto-js": "^3.1.2",
-    "dotenv": "^16.4.5",
-    "eslint": "^8.50.0",
-    "eslint-plugin-header": "^3.1.1",
-    "glob": "^10.3.3",
-    "husky": "^8.0.0",
-    "lint-staged": "^15.2.0",
-    "mocha": "^10.2.0",
-    "semver": "^7.6.0",
-    "sinon": "^17.0.1",
-    "sqlite3": "^5.1.7",
-    "terser-webpack-plugin": "^5.3.9",
-    "ts-loader": "^9.4.4",
-    "typescript": "^5.2.2",
-    "webpack": "^5.88.2",
-    "webpack-cli": "^5.1.4"
-  },
-  "dependencies": {
-    "@apidevtools/swagger-parser": "^10.1.0",
-    "@azure/arm-apicenter": "^1.0.0-beta.1",
-    "@azure/arm-resourcegraph": "^4.2.1",
-    "@azure/arm-resources-subscriptions": "^2.1.0",
-    "@azure/arm-subscriptions": "^5.1.0",
-    "@azure/core-auth": "^1.7.2",
-    "@azure/core-paging": "^1.6.2",
-    "@azure/identity": "^3.4.2",
-    "@azure/ms-rest-azure-env": "^2.0.0",
-    "@azure/ms-rest-js": "^2.7.0",
-    "@azure/ms-rest-nodeauth": "^3.1.1",
-    "@microsoft/vscode-azext-azureauth": "^1.2.1",
-    "@microsoft/vscode-azext-azureutils": "^2.0.0",
-    "@microsoft/vscode-azext-utils": "^2.5.1",
-    "@vscode/extension-telemetry": "^0.6.2",
-    "ajv": "^8.12.0",
-    "archiver": "^7.0.1",
-    "axios": "^1.6.0",
-    "express": "^4.19.2",
-    "fs-extra": "^11.1.1",
-    "get-port": "^7.0.0",
-    "json-schema-faker": "^0.5.6",
-    "openapi-types": "^12.1.3",
-    "swagger2openapi": "^7.0.8",
-    "unzipper": "^0.12.1",
-    "vscode-nls": "^5.2.0",
-    "widdershins": "^4.0.1"
-  },
-  "lint-staged": {
-    "*.{js,jsx,css,ts,tsx}": [
-      "npx eslint --cache --fix --quiet"
-    ]
-  }
+    "name":  "azure-api-center",
+    "publisher":  "apidev",
+    "displayName":  "Azure API Center",
+    "description":  "Build, discover, and consume APIs.",
+    "version":  "1.0.2024090616",
+    "icon":  "media/api-center-icon.png",
+    "license":  "MIT",
+    "engines":  {
+                    "vscode":  "^1.91.0"
+                },
+    "aiKey":  "20f6d4af-3678-4602-ae98-f6724f057cd5",
+    "repository":  {
+                       "type":  "git",
+                       "url":  "https://github.com/microsoft/vscode-azureapicenter.git"
+                   },
+    "bugs":  {
+                 "url":  "https://github.com/microsoft/vscode-azureapicenter/issues"
+             },
+    "categories":  [
+                       "Azure",
+                       "AI"
+                   ],
+    "keywords":  [
+                     "OpenAPI",
+                     "GraphQL",
+                     "gRPC",
+                     "AsyncAPI",
+                     "RAML"
+                 ],
+    "activationEvents":  [
+
+                         ],
+    "main":  "./dist/extension.js",
+    "l10n":  "l10n",
+    "contributes":  {
+                        "commands":  [
+                                         {
+                                             "command":  "azure-api-center.selectSubscriptions",
+                                             "title":  "%azure-api-center.commands.selectSubscriptions.title%",
+                                             "icon":  {
+                                                          "light":  "resources/light/filter.svg",
+                                                          "dark":  "resources/dark/filter.svg"
+                                                      },
+                                             "category":  "Azure API Center"
+                                         },
+                                         {
+                                             "command":  "azure-api-center.apiCenterTreeView.refresh",
+                                             "title":  "%azure-api-center.commands.apiCenterTreeView.refresh.title%",
+                                             "icon":  "$(refresh)",
+                                             "category":  "Azure API Center"
+                                         },
+                                         {
+                                             "command":  "azure-api-center.open-api-docs",
+                                             "title":  "%azure-api-center.commands.open-api-docs.title%",
+                                             "category":  "Azure API Center"
+                                         },
+                                         {
+                                             "command":  "azure-api-center.open-postman",
+                                             "title":  "%azure-api-center.commands.open-postman.title%",
+                                             "category":  "Azure API Center"
+                                         },
+                                         {
+                                             "command":  "azure-api-center.generate-api-client",
+                                             "title":  "%azure-api-center.commands.generate-api-client.title%",
+                                             "category":  "Azure API Center"
+                                         },
+                                         {
+                                             "command":  "azure-api-center.importOpenApiByFile",
+                                             "title":  "%azure-api-center.commands.importOpenApiByFile.title%",
+                                             "category":  "Azure API Center"
+                                         },
+                                         {
+                                             "command":  "azure-api-center.importOpenApiByLink",
+                                             "title":  "%azure-api-center.commands.importOpenApiByLink.title%",
+                                             "category":  "Azure API Center"
+                                         },
+                                         {
+                                             "command":  "azure-api-center.exportApi",
+                                             "title":  "%azure-api-center.commands.exportApi.title%",
+                                             "category":  "Azure API Center"
+                                         },
+                                         {
+                                             "command":  "azure-api-center.showOpenApi",
+                                             "title":  "%azure-api-center.commands.showOpenApi.title%",
+                                             "category":  "Azure API Center"
+                                         },
+                                         {
+                                             "command":  "azure-api-center.generateHttpFile",
+                                             "title":  "%azure-api-center.commands.generateHttpFile.title%",
+                                             "category":  "Azure API Center"
+                                         },
+                                         {
+                                             "command":  "azure-api-center.registerApi",
+                                             "title":  "%azure-api-center.commands.registerApi.title%",
+                                             "category":  "Azure API Center"
+                                         },
+                                         {
+                                             "command":  "azure-api-center.searchApi",
+                                             "title":  "%azure-api-center.commands.searchApi.title%",
+                                             "category":  "Azure API Center",
+                                             "icon":  "$(search)"
+                                         },
+                                         {
+                                             "command":  "azure-api-center.setApiRuleset",
+                                             "title":  "%azure-api-center.commands.setApiRuleset.title%",
+                                             "category":  "Azure API Center"
+                                         },
+                                         {
+                                             "command":  "azure-api-center.detectBreakingChange",
+                                             "title":  "%azure-api-center.commands.detectBreakingChange.title%",
+                                             "category":  "Azure API Center"
+                                         },
+                                         {
+                                             "command":  "azure-api-center.generateApiFromCode",
+                                             "title":  "%azure-api-center.commands.generateApiFromCode.title%",
+                                             "category":  "Azure API Center"
+                                         },
+                                         {
+                                             "command":  "azure-api-center.cleanupSearchResult",
+                                             "title":  "%azure-api-center.commands.cleanupSearchResult.title%",
+                                             "category":  "Azure API Center",
+                                             "icon":  "$(clear-all)"
+                                         },
+                                         {
+                                             "command":  "azure-api-center.generateMarkdownDocument",
+                                             "title":  "%azure-api-center.commands.generateMarkdownDocument.title%",
+                                             "category":  "Azure API Center"
+                                         },
+                                         {
+                                             "command":  "azure-api-center.enableRules",
+                                             "title":  "%azure-api-center.commands.enableRules.title%",
+                                             "category":  "Azure API Center"
+                                         },
+                                         {
+                                             "command":  "azure-api-center.exportRules",
+                                             "title":  "%azure-api-center.commands.exportRules.title%",
+                                             "category":  "Azure API Center"
+                                         },
+                                         {
+                                             "command":  "azure-api-center.deployRules",
+                                             "title":  "%azure-api-center.commands.deployRules.title%",
+                                             "category":  "Azure API Center"
+                                         },
+                                         {
+                                             "command":  "azure-api-center.openRule",
+                                             "title":  "%azure-api-center.commands.openRule.title%",
+                                             "category":  "Azure API Center"
+                                         },
+                                         {
+                                             "command":  "azure-api-center.addCustomFunction",
+                                             "title":  "%azure-api-center.commands.addCustomFunction.title%",
+                                             "category":  "Azure API Center"
+                                         },
+                                         {
+                                             "command":  "azure-api-center.renameCustomFunction",
+                                             "title":  "%azure-api-center.commands.renameCustomFunction.title%",
+                                             "category":  "Azure API Center"
+                                         },
+                                         {
+                                             "command":  "azure-api-center.deleteCustomFunction",
+                                             "title":  "%azure-api-center.commands.deleteCustomFunction.title%",
+                                             "category":  "Azure API Center"
+                                         },
+                                         {
+                                             "command":  "azure-api-center.selectTenant",
+                                             "title":  "%azure-api-center.commands.selectTenant.title%",
+                                             "category":  "Azure API Center"
+                                         },
+                                         {
+                                             "command":  "azure-api-center.apiCenterWorkspace.addApis",
+                                             "title":  "%azure-api-center.commands.apiCenterWorkspace.addApis.title%",
+                                             "icon":  "$(add)",
+                                             "category":  "Azure API Center"
+                                         },
+                                         {
+                                             "command":  "azure-api-center.apiCenterWorkspace.refresh",
+                                             "title":  "%azure-api-center.commands.apiCenterTreeView.refresh.title%",
+                                             "icon":  "$(refresh)",
+                                             "category":  "Azure API Center"
+                                         },
+                                         {
+                                             "command":  "azure-api-center.apiCenterWorkspace.collapse",
+                                             "title":  "%azure-api-center.commands.apiCenterWorkspace.collapse.title%",
+                                             "icon":  "$(collapse-all)",
+                                             "category":  "Azure API Center"
+                                         },
+                                         {
+                                             "command":  "azure-api-center.apiCenterWorkspace.removeApi",
+                                             "title":  "%azure-api-center.commands.apiCenterWorkspace.removeApis.title%",
+                                             "icon":  "$(close)",
+                                             "category":  "Azure API Center"
+                                         }
+                                     ],
+                        "views":  {
+                                      "api-center-treeview":  [
+                                                                  {
+                                                                      "id":  "apiCenterTreeView",
+                                                                      "name":  "%azure-api-center.views.api-center-treeview.controlplane.title%",
+                                                                      "icon":  "media/api-center-icon.svg",
+                                                                      "contextualTitle":  "Azure API Center"
+                                                                  },
+                                                                  {
+                                                                      "id":  "apiCenterWorkspace",
+                                                                      "name":  "%azure-api-center.views.api-center-treeview.dataplane.title%",
+                                                                      "visibility":  "visible"
+                                                                  }
+                                                              ]
+                                  },
+                        "viewsContainers":  {
+                                                "activitybar":  [
+                                                                    {
+                                                                        "id":  "api-center-treeview",
+                                                                        "title":  "API Center",
+                                                                        "icon":  "media/api-center-icon.svg"
+                                                                    }
+                                                                ]
+                                            },
+                        "menus":  {
+                                      "view/title":  [
+                                                         {
+                                                             "command":  "azure-api-center.apiCenterTreeView.refresh",
+                                                             "when":  "view == apiCenterTreeView",
+                                                             "group":  "navigation"
+                                                         },
+                                                         {
+                                                             "command":  "azure-api-center.apiCenterWorkspace.addApis",
+                                                             "when":  "view == apiCenterWorkspace",
+                                                             "group":  "navigation@2"
+                                                         },
+                                                         {
+                                                             "command":  "azure-api-center.apiCenterWorkspace.refresh",
+                                                             "when":  "view == apiCenterWorkspace",
+                                                             "group":  "navigation@1"
+                                                         },
+                                                         {
+                                                             "command":  "azure-api-center.apiCenterWorkspace.collapse",
+                                                             "when":  "view == apiCenterWorkspace",
+                                                             "group":  "navigation@3"
+                                                         }
+                                                     ],
+                                      "view/item/context":  [
+                                                                {
+                                                                    "command":  "azure-api-center.selectSubscriptions",
+                                                                    "when":  "view == apiCenterTreeView \u0026\u0026 viewItem == azureApiCenterAzureSubscription",
+                                                                    "group":  "inline"
+                                                                },
+                                                                {
+                                                                    "command":  "azure-api-center.open-api-docs",
+                                                                    "when":  "(view == apiCenterTreeView \u0026\u0026 viewItem == azureApiCenterApiVersionDefinitionTreeItem-openapi) || (view == apiCenterWorkspace \u0026\u0026 viewItem == azureApiCenterApiVersionDataPlaneDefinitionTreeItem-openapi)"
+                                                                },
+                                                                {
+                                                                    "command":  "azure-api-center.open-postman",
+                                                                    "when":  "view == apiCenterTreeView \u0026\u0026 viewItem =~ /never/"
+                                                                },
+                                                                {
+                                                                    "command":  "azure-api-center.generate-api-client",
+                                                                    "when":  "(view == apiCenterTreeView \u0026\u0026 viewItem == azureApiCenterApiVersionDefinitionTreeItem-openapi) || (view == apiCenterWorkspace \u0026\u0026 viewItem == azureApiCenterApiVersionDataPlaneDefinitionTreeItem-openapi)"
+                                                                },
+                                                                {
+                                                                    "command":  "azure-api-center.importOpenApiByFile",
+                                                                    "when":  "view == apiCenterTreeView \u0026\u0026 viewItem =~ /never/"
+                                                                },
+                                                                {
+                                                                    "command":  "azure-api-center.importOpenApiByLink",
+                                                                    "when":  "view == apiCenterTreeView \u0026\u0026 viewItem =~ /never/"
+                                                                },
+                                                                {
+                                                                    "command":  "azure-api-center.exportApi",
+                                                                    "when":  "(view == apiCenterTreeView \u0026\u0026 viewItem =~ /azureApiCenterApiVersionDefinitionTreeItem/) || (view == apiCenterWorkspace \u0026\u0026 viewItem =~ /azureApiCenterApiVersionDataPlaneDefinitionTreeItem/)"
+                                                                },
+                                                                {
+                                                                    "command":  "azure-api-center.showOpenApi",
+                                                                    "when":  "view == apiCenterTreeView \u0026\u0026 viewItem =~ /never/"
+                                                                },
+                                                                {
+                                                                    "command":  "azure-api-center.generateHttpFile",
+                                                                    "when":  "view == apiCenterTreeView \u0026\u0026 viewItem == azureApiCenterApiVersionDefinitionTreeItem-openapi"
+                                                                },
+                                                                {
+                                                                    "command":  "azure-api-center.generateMarkdownDocument",
+                                                                    "when":  "(view == apiCenterTreeView \u0026\u0026 viewItem == azureApiCenterApiVersionDefinitionTreeItem-openapi) || (view == apiCenterWorkspace \u0026\u0026 viewItem == azureApiCenterApiVersionDataPlaneDefinitionTreeItem-openapi)"
+                                                                },
+                                                                {
+                                                                    "command":  "azure-api-center.registerApi",
+                                                                    "when":  "view == apiCenterTreeView \u0026\u0026 viewItem =~ /^azureApiCenterApis/"
+                                                                },
+                                                                {
+                                                                    "command":  "azure-api-center.searchApi",
+                                                                    "when":  "(view == apiCenterTreeView || view == apiCenterWorkspace) \u0026\u0026 viewItem =~ /^azureApiCenterApis/ ",
+                                                                    "group":  "inline@0"
+                                                                },
+                                                                {
+                                                                    "command":  "azure-api-center.cleanupSearchResult",
+                                                                    "when":  "(view == apiCenterTreeView || view == apiCenterWorkspace) \u0026\u0026 viewItem == azureApiCenterApis-search",
+                                                                    "group":  "inline@1"
+                                                                },
+                                                                {
+                                                                    "command":  "azure-api-center.enableRules",
+                                                                    "when":  "view == apiCenterTreeView \u0026\u0026 viewItem == azureApiCenterRules",
+                                                                    "group":  "rule@0"
+                                                                },
+                                                                {
+                                                                    "command":  "azure-api-center.exportRules",
+                                                                    "when":  "view == apiCenterTreeView \u0026\u0026 viewItem == azureApiCenterRules-enabled",
+                                                                    "group":  "rule@1"
+                                                                },
+                                                                {
+                                                                    "command":  "azure-api-center.deployRules",
+                                                                    "when":  "view == apiCenterTreeView \u0026\u0026 viewItem == azureApiCenterRules-enabled",
+                                                                    "group":  "rule@2"
+                                                                },
+                                                                {
+                                                                    "command":  "azure-api-center.addCustomFunction",
+                                                                    "when":  "view == apiCenterTreeView \u0026\u0026 viewItem == azureApiCenterFunctions"
+                                                                },
+                                                                {
+                                                                    "command":  "azure-api-center.renameCustomFunction",
+                                                                    "when":  "view == apiCenterTreeView \u0026\u0026 viewItem == azureApiCenterFunction",
+                                                                    "group":  "function@0"
+                                                                },
+                                                                {
+                                                                    "command":  "azure-api-center.deleteCustomFunction",
+                                                                    "when":  "view == apiCenterTreeView \u0026\u0026 viewItem == azureApiCenterFunction",
+                                                                    "group":  "function@1"
+                                                                },
+                                                                {
+                                                                    "command":  "azure-api-center.apiCenterWorkspace.removeApi",
+                                                                    "when":  "view == apiCenterWorkspace \u0026\u0026 viewItem == azureApiCenterDataPlane",
+                                                                    "group":  "inline@0"
+                                                                }
+                                                            ],
+                                      "copilot":  [
+                                                      {
+                                                          "command":  "azure-api-center.generateApiFromCode",
+                                                          "when":  "github.copilot-chat.activated \u0026\u0026 resourceScheme == \u0027file\u0027",
+                                                          "group":  "apiCenter"
+                                                      }
+                                                  ],
+                                      "commandPalette":  [
+                                                             {
+                                                                 "command":  "azure-api-center.selectSubscriptions",
+                                                                 "when":  "never"
+                                                             },
+                                                             {
+                                                                 "command":  "azure-api-center.importOpenApiByFile",
+                                                                 "when":  "never"
+                                                             },
+                                                             {
+                                                                 "command":  "azure-api-center.importOpenApiByLink",
+                                                                 "when":  "never"
+                                                             },
+                                                             {
+                                                                 "command":  "azure-api-center.showOpenApi",
+                                                                 "when":  "never"
+                                                             },
+                                                             {
+                                                                 "command":  "azure-api-center.open-postman",
+                                                                 "when":  "never"
+                                                             },
+                                                             {
+                                                                 "command":  "azure-api-center.open-api-docs",
+                                                                 "when":  "never"
+                                                             },
+                                                             {
+                                                                 "command":  "azure-api-center.generate-api-client",
+                                                                 "when":  "never"
+                                                             },
+                                                             {
+                                                                 "command":  "azure-api-center.generateHttpFile",
+                                                                 "when":  "never"
+                                                             },
+                                                             {
+                                                                 "command":  "azure-api-center.searchApi",
+                                                                 "when":  "never"
+                                                             },
+                                                             {
+                                                                 "command":  "azure-api-center.cleanupSearchResult",
+                                                                 "when":  "never"
+                                                             },
+                                                             {
+                                                                 "command":  "azure-api-center.generateApiFromCode",
+                                                                 "when":  "never"
+                                                             },
+                                                             {
+                                                                 "command":  "azure-api-center.enableRules",
+                                                                 "when":  "never"
+                                                             },
+                                                             {
+                                                                 "command":  "azure-api-center.exportRules",
+                                                                 "when":  "never"
+                                                             },
+                                                             {
+                                                                 "command":  "azure-api-center.deployRules",
+                                                                 "when":  "never"
+                                                             },
+                                                             {
+                                                                 "command":  "azure-api-center.openRule",
+                                                                 "when":  "never"
+                                                             },
+                                                             {
+                                                                 "command":  "azure-api-center.addCustomFunction",
+                                                                 "when":  "never"
+                                                             },
+                                                             {
+                                                                 "command":  "azure-api-center.renameCustomFunction",
+                                                                 "when":  "never"
+                                                             },
+                                                             {
+                                                                 "command":  "azure-api-center.deleteCustomFunction",
+                                                                 "when":  "never"
+                                                             },
+                                                             {
+                                                                 "command":  "azure-api-center.apiCenterWorkspace.removeApi",
+                                                                 "when":  "never"
+                                                             },
+                                                             {
+                                                                 "command":  "azure-api-center.apiCenterWorkspace.collapse",
+                                                                 "when":  "never"
+                                                             }
+                                                         ]
+                                  },
+                        "problemMatchers":  [
+                                                {
+                                                    "name":  "optic",
+                                                    "owner":  "api-center",
+                                                    "fileLocation":  [
+                                                                         "autoDetect",
+                                                                         "${workspaceFolder}"
+                                                                     ],
+                                                    "pattern":  [
+                                                                    {
+                                                                        "regexp":  "x (.*breaking change.*)",
+                                                                        "message":  1
+                                                                    },
+                                                                    {
+                                                                        "regexp":  "at (.*):(\\d+):(\\d+)",
+                                                                        "file":  1,
+                                                                        "line":  2
+                                                                    }
+                                                                ]
+                                                }
+                                            ],
+                        "configuration":  [
+                                              {
+                                                  "title":  "Azure Api Center",
+                                                  "properties":  {
+                                                                     "azure-api-center.selectedSubscriptions":  {
+                                                                                                                    "type":  "array",
+                                                                                                                    "description":  "Selected Azure subscriptions",
+                                                                                                                    "items":  {
+                                                                                                                                  "type":  "string"
+                                                                                                                              }
+                                                                                                                },
+                                                                     "azure-api-center.tenant":  {
+                                                                                                     "type":  "object",
+                                                                                                     "description":  "A specific tenant to sign in to",
+                                                                                                     "properties":  {
+                                                                                                                        "name":  {
+                                                                                                                                     "type":  "string",
+                                                                                                                                     "description":  "tenant name"
+                                                                                                                                 },
+                                                                                                                        "id":  {
+                                                                                                                                   "type":  "string",
+                                                                                                                                   "description":  "tenant id"
+                                                                                                                               }
+                                                                                                                    }
+                                                                                                 }
+                                                                 }
+                                              }
+                                          ]
+                    },
+    "scripts":  {
+                    "vscode:prepublish":  "npm run package",
+                    "compile":  "webpack",
+                    "watch":  "webpack --watch",
+                    "package":  "webpack --mode production --devtool hidden-source-map",
+                    "compile-tests":  "tsc -p . --outDir out \u0026\u0026 copyfiles -u 1 \"src/test/resources/**/*\" out/",
+                    "watch-tests":  "tsc -p . -w --outDir out",
+                    "pretest":  "npm run compile-tests \u0026\u0026 npm run compile \u0026\u0026 npm run lint",
+                    "lint":  "eslint src --ext ts",
+                    "test":  "vscode-test --coverage",
+                    "prepare":  "husky install",
+                    "lint:staged":  "lint-staged",
+                    "precommit":  "lint-staged"
+                },
+    "devDependencies":  {
+                            "@playwright/test":  "^1.42.1",
+                            "@types/archiver":  "^6.0.2",
+                            "@types/express":  "^4.17.20",
+                            "@types/fs-extra":  "^11.0.2",
+                            "@types/js-yaml":  "^4.0.8",
+                            "@types/mocha":  "^10.0.2",
+                            "@types/node":  "18.x",
+                            "@types/sinon":  "^17.0.3",
+                            "@types/swagger2openapi":  "^7.0.4",
+                            "@types/unzipper":  "^0.10.9",
+                            "@types/vscode":  "^1.90.0",
+                            "@typescript-eslint/eslint-plugin":  "^6.7.3",
+                            "@typescript-eslint/parser":  "^6.7.3",
+                            "@vscode/test-cli":  "^0.0.6",
+                            "@vscode/test-electron":  "^2.3.9",
+                            "copy-webpack-plugin":  "^12.0.2",
+                            "copyfiles":  "^2.4.1",
+                            "crypto-js":  "^3.1.2",
+                            "dotenv":  "^16.4.5",
+                            "eslint":  "^8.50.0",
+                            "eslint-plugin-header":  "^3.1.1",
+                            "glob":  "^10.3.3",
+                            "husky":  "^8.0.0",
+                            "lint-staged":  "^15.2.0",
+                            "mocha":  "^10.2.0",
+                            "semver":  "^7.6.0",
+                            "sinon":  "^17.0.1",
+                            "sqlite3":  "^5.1.7",
+                            "terser-webpack-plugin":  "^5.3.9",
+                            "ts-loader":  "^9.4.4",
+                            "typescript":  "^5.2.2",
+                            "webpack":  "^5.88.2",
+                            "webpack-cli":  "^5.1.4"
+                        },
+    "dependencies":  {
+                         "@apidevtools/swagger-parser":  "^10.1.0",
+                         "@azure/arm-apicenter":  "^1.0.0-beta.1",
+                         "@azure/arm-resourcegraph":  "^4.2.1",
+                         "@azure/arm-resources-subscriptions":  "^2.1.0",
+                         "@azure/arm-subscriptions":  "^5.1.0",
+                         "@azure/core-auth":  "^1.7.2",
+                         "@azure/core-paging":  "^1.6.2",
+                         "@azure/identity":  "^3.4.2",
+                         "@azure/ms-rest-azure-env":  "^2.0.0",
+                         "@azure/ms-rest-js":  "^2.7.0",
+                         "@azure/ms-rest-nodeauth":  "^3.1.1",
+                         "@microsoft/vscode-azext-azureauth":  "^1.2.1",
+                         "@microsoft/vscode-azext-azureutils":  "^2.0.0",
+                         "@microsoft/vscode-azext-utils":  "^2.5.1",
+                         "@vscode/extension-telemetry":  "^0.6.2",
+                         "ajv":  "^8.12.0",
+                         "archiver":  "^7.0.1",
+                         "axios":  "^1.6.0",
+                         "express":  "^4.19.2",
+                         "fs-extra":  "^11.1.1",
+                         "get-port":  "^7.0.0",
+                         "json-schema-faker":  "^0.5.6",
+                         "openapi-types":  "^12.1.3",
+                         "swagger2openapi":  "^7.0.8",
+                         "unzipper":  "^0.12.1",
+                         "vscode-nls":  "^5.2.0",
+                         "widdershins":  "^4.0.1"
+                     },
+    "lint-staged":  {
+                        "*.{js,jsx,css,ts,tsx}":  [
+                                                      "npx eslint --cache --fix --quiet"
+                                                  ]
+                    }
 }
