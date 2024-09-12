@@ -41,6 +41,11 @@ export default class VscodeOperator {
         return await page.getByRole(VSCode.TREE_ITEM, { name: treeItemName }).isVisible();
     }
 
+    static async isElementExist(page: Page, ele: string) {
+        // page content contains the element
+        return await page.locator(ele).isVisible();
+    }
+
     static async clickTreeItem(page: Page, treeItemName: string) {
         await page.getByRole(VSCode.TREE_ITEM, { name: treeItemName }).locator(VSCode.LINK).click();
         await page.waitForTimeout(Timeout.CLICK_LONG_WAIT);
@@ -88,4 +93,10 @@ export default class VscodeOperator {
         await page.getByRole(VSCode.CMD_PALETTE_LIST, { name: listItemName }).locator(VSCode.LINK).filter({ hasText: linkName }).click();
         await page.waitForTimeout(Timeout.CLICK_WAIT);
     }
+
+    static async getCurrentPageIframe(page: Page, iframeName: string) {
+        // title is the iframe name
+        return page.frameLocator("iframe[title='" + iframeName + "']");
+    }
+
 }

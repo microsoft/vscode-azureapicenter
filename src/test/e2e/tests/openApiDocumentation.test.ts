@@ -32,4 +32,10 @@ test('Open API Documentation test', { tag: ["@26611999"] }, async ({ workbox }) 
     // right click on openapi and select "Open API Documentation"
     await VscodeOperator.rightClickTreeItem(workbox, "openapi");
     await VscodeOperator.clickMenuItem(workbox, "Open API Documentation");
+
+    // validate the openapi documentation is opened
+    const pageIframe = await VscodeOperator.getCurrentPageIframe(workbox, "callback-example");
+    expect(pageIframe.getByText("Repair Service")).toBeTruthy();
+    expect(pageIframe.getByText("A simple service to manage repairs")).toBeTruthy();
+    expect(pageIframe.getByText("List all repairs")).toBeTruthy();
 });
