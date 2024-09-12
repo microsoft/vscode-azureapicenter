@@ -41,11 +41,6 @@ export default class VscodeOperator {
         return await page.getByRole(VSCode.TREE_ITEM, { name: treeItemName }).isVisible();
     }
 
-    static async isElementExist(page: Page, ele: string) {
-        // page content contains the element
-        return await page.locator(ele).isVisible();
-    }
-
     static async clickTreeItem(page: Page, treeItemName: string) {
         await page.getByRole(VSCode.TREE_ITEM, { name: treeItemName }).locator(VSCode.LINK).click();
         await page.waitForTimeout(Timeout.CLICK_LONG_WAIT);
