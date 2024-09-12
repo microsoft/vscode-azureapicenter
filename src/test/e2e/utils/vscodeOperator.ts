@@ -46,6 +46,18 @@ export default class VscodeOperator {
         await page.waitForTimeout(Timeout.CLICK_LONG_WAIT);
     }
 
+    static async rightClickTreeItem(page: Page, treeItemName: string) {
+        await page.getByRole(VSCode.TREE_ITEM, { name: treeItemName }).locator(VSCode.LINK).click({
+            button: 'right'
+        });
+        await page.waitForTimeout(Timeout.CLICK_WAIT);
+    }
+
+    static async clickMenuItem(page: Page, menuItemName: string) {
+        await page.getByRole(VSCode.MENU_ITEM, { name: menuItemName }).locator("span.action-label").click();
+        await page.waitForTimeout(Timeout.PREPARE_EXT);
+    }
+
     static async clickTreeItemChildLinkByText(page: Page, treeItemName: string, linkName: string) {
         await page.getByRole(VSCode.TREE_ITEM, { name: treeItemName }).locator(VSCode.LINK).filter({ hasText: linkName }).click();
         await page.waitForTimeout(Timeout.CLICK_LONG_WAIT);
