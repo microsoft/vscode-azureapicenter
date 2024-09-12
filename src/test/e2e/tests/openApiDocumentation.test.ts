@@ -14,6 +14,7 @@ test('Open API Documentation test', { tag: ["@26611999"] }, async ({ workbox }) 
     // wait API Center extension installed on VS Code.
     expect(await VscodeOperator.isSideTabItemExist(workbox, "API Center")).toBeTruthy();
     await VscodeOperator.activeSideTab(workbox, VSCode.TAB_API_CENTER, Timeout.PREPARE_EXT);
+    await workbox.waitForTimeout(Timeout.PREPARE_EXT);
 
    //expand and validate tree items
    await VscodeOperator.clickTreeItemChildLinkByText(workbox, "Teams Cloud - E2E Testing with TTL = 1 Days", "Teams Cloud - E2E Testing with TTL = 1 Days");
