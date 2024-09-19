@@ -26,10 +26,5 @@
     "azure-api-center.commands.deleteCustomFunction.title": "Delete",
     "azure-api-center.chatParticipants.apicenter.description": "Build, discover, and consume great APIs.",
     "azure-api-center.chatParticipants.apicenter.commands.list.description": "List available APIs.",
-    "azure-api-center.chatParticipants.apicenter.commands.find.description": "Find an API given a search query.",
-    "azure-api-center.commands.apiCenterWorkspace.collapse.title": "Collapse",
-    "azure-api-center.views.api-center-treeview.controlplane.title": "Azure API Center",
-    "azure-api-center.views.api-center-treeview.dataplane.title": "Platform API Catalog",
-    "azure-api-center.commands.apiCenterWorkspace.addApis.title": "Connect to an API Center",
-    "azure-api-center.commands.apiCenterWorkspace.removeApis.title": "Disconnect from API Center"
+    "azure-api-center.chatParticipants.apicenter.commands.find.description": "Find an API given a search query."
 }

@@ -34,11 +34,6 @@ export const RegisterApiOptions = {
     cicd: UiStrings.RegisterApiOptionCicd,
 };
 
-export const TreeViewType = {
-    controlPlaneView: UiStrings.APIControlPlaneView,
-    dataPlaneView: UiStrings.APIDataPlaneView,
-};
-
 export const ApiRulesetOptions = {
     default: UiStrings.ApiRulesetOptionDefault,
     azureApiGuideline: UiStrings.ApiRulesetOptionAzureApiGuideline,

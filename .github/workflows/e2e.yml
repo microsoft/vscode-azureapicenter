@@ -1,11 +1,5 @@
 name: "ui-test"
 on:
-  workflow_dispatch:
-    inputs:
-      target-testplan-name:
-        description: "For example: APIC240830. Sync test result to this test plan."
-        required: false
-        type: string
   push:
     branches: ["dev", "main"]
   pull_request_target:
@@ -14,8 +8,6 @@ on:
 jobs:
   e2e-test:
     runs-on: ubuntu-latest
-    env:
-      CI: true
     steps:
       - name: checkout
         uses: actions/checkout@v3
@@ -39,52 +31,8 @@ jobs:
           xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" npx playwright test
         working-directory: ./src/test/e2e
       - if: ${{ always() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v2
         with:
           name: test-results
           path: |
             test-results
-
-  test-plan-update:
-    needs: e2e-test
-    if: ${{ always() && github.event.inputs.target-testplan-name != '' }}
-    environment: engineering
-    permissions:
-      id-token: write
-      contents: read
-    runs-on: ubuntu-latest
-    env:
-      AUTO_TEST_PLAN_ID: 26611787
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-
-      - name: Setup project
-        run: |
-          npm install
-
-      - uses: azure/login@v2
-        with:
-          client-id: ${{secrets.DEVOPS_CLIENT_ID}}
-          tenant-id: ${{secrets.DEVOPS_TENANT_ID}}
-          subscription-id: ${{secrets.DEVOPS_SUB_ID}}
-          enable-AzPSSession: true
-
-      - name: Archive Test Plan
-        working-directory: ./src/test/e2e
-        run: |
-          testplanid=`npx ts-node scripts/testPlan.ts obtain vscode ${{ github.event.inputs.target-testplan-name }}`
-          echo "Testplan id is $testplanid"
-          npx ts-node scripts/testPlan.ts archive $testplanid
-
-      - name: Download TestPlan
-        uses: actions/download-artifact@v3
-        with:
-          path: ./test-results
-
-      - name: Sync to Azure DevOps Test Plan
-        working-directory: ./src/test/e2e
-        run: |
-          npx ts-node scripts/testPlan.ts report ./testplan.json ../../../test-results

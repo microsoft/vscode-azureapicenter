@@ -2,13 +2,12 @@
 // Licensed under the MIT license.
 import { IActionContext } from "@microsoft/vscode-azext-utils";
 import { commands } from "vscode";
-import { ApiCenterVersionDefinitionManagement } from "../azure/ApiCenterDefines/ApiCenterDefinition";
 import { ext } from "../extensionVariables";
 import { ApiVersionDefinitionTreeItem } from "../tree/ApiVersionDefinitionTreeItem";
 
 export async function showOpenApi(actionContext: IActionContext, node?: ApiVersionDefinitionTreeItem) {
     if (!node) {
-        node = await ext.treeDataProvider.showTreeItemPicker<ApiVersionDefinitionTreeItem>(ApiCenterVersionDefinitionManagement.contextValue, actionContext);
+        node = await ext.treeDataProvider.showTreeItemPicker<ApiVersionDefinitionTreeItem>(ApiVersionDefinitionTreeItem.contextValue, actionContext);
     }
     await ext.openApiEditor.showEditor(node);
     commands.executeCommand('setContext', 'isEditorEnabled', true);
