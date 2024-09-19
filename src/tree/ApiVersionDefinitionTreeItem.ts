@@ -2,17 +2,19 @@
 // Licensed under the MIT license.
 import { AzExtParentTreeItem, AzExtTreeItem, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import * as vscode from 'vscode';
-import { IDefinitionBase } from "../azure/ApiCenterDefines/ApiCenterDefinition";
+import { ApiCenterApiVersionDefinition } from "../azure/ApiCenter/contracts";
+
 export class ApiVersionDefinitionTreeItem extends AzExtTreeItem {
-  public readonly contextValue: string = "";
+  public static contextValue: string = "azureApiCenterApiVersionDefinitionTreeItem";
+  public readonly contextValue: string = ApiVersionDefinitionTreeItem.contextValue;
   constructor(
     parent: AzExtParentTreeItem,
     public apiCenterName: string,
     public apiCenterApiName: string,
     public apiCenterApiVersionName: string,
-    public apiCenterApiVersionDefinition: IDefinitionBase) {
+    public apiCenterApiVersionDefinition: ApiCenterApiVersionDefinition) {
     super(parent);
-    this.contextValue = apiCenterApiVersionDefinition.getContext();
+    this.contextValue += "-" + apiCenterApiVersionDefinition.properties.specification.name.toLowerCase();
   }
 
   public get iconPath(): TreeItemIconPath {
@@ -20,10 +22,10 @@ export class ApiVersionDefinitionTreeItem extends AzExtTreeItem {
   }
 
   public get id(): string {
-    return this.apiCenterApiVersionDefinition.getId();
+    return this.apiCenterApiVersionDefinition.id;
   }
 
   public get label(): string {
-    return this.apiCenterApiVersionDefinition.getLabel();
+    return this.apiCenterApiVersionDefinition.properties.title;
   }
 }

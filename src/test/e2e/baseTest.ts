@@ -7,7 +7,6 @@ import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path from 'path';
 import { Database } from 'sqlite3';
-import { TestENV } from "./utils/constants";
 export { expect } from '@playwright/test';
 
 export type TestOptions = {
@@ -51,7 +50,6 @@ export const test = base.extend<TestFixtures>({
         });
         const workbox = await electronApp.firstWindow();
         await insertToDB(args[1].split('=')[1]);
-        await setupTenantAndSub(args[1].split('=')[1]);
         await workbox.context().tracing.start({ screenshots: true, snapshots: true, title: test.info().title });
         await use(workbox);
         const tracePath = test.info().outputPath('trace.zip');
@@ -142,21 +140,4 @@ function getJsonFromBytes(base64String: string) {
     // Convert the Uint8Array to a regular array
     const byteArrayArray = Array.from(byteArray);
     return byteArrayArray;
-}
-
-async function setupTenantAndSub(path) {
-    const setJson = `${path}/User/settings.json`;
-    await fs.ensureFile(setJson);
-    let data = {
-        "azure-api-center.selectedSubscriptions": [
-            `${TestENV.AZURE_TENANT_ID}/${TestENV.AZURE_TENANT_ID_2}`
-        ],
-        "azure-api-center.tenant": {
-            "name": TestENV.AZURE_TENANT_NAME,
-            "id": TestENV.AZURE_TENANT_ID
-        }
-    };
-
-    let dataString = JSON.stringify(data);
-    await fs.writeFile(setJson, dataString, { encoding: 'utf8', flag: 'w' });
 }

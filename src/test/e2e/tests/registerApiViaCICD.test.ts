@@ -1,39 +1,37 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
-
 import { expect, test } from '../baseTest';
-import { APICenter, Timeout, VSCode } from '../utils/constants';
-import VscodeOperator from '../utils/vscodeOperator';
 
-// Set tags[0] used as test plan case id
-test('trigger generateAPIviaCICD with Azure DevOps', { tag: ["@26627281"] }, async ({ workbox }) => {
-    await workbox.waitForTimeout(Timeout.PREPARE_TEST);
+test('trigger generateAPIviaCICD with Azure DevOps', async ({ workbox }) => {
     // wait API Center extension installed on VS Code.
-    expect(await VscodeOperator.isSideTabItemExist(workbox, "API Center")).toBeTruthy();
-    await VscodeOperator.activeSideTab(workbox, VSCode.TAB_API_CENTER);
+    await workbox.getByRole("tab", { name: "API Center" }).isVisible();
+    await workbox.getByRole("tab", { name: "API Center" }).locator('a').click();
     // trigger command palette.
-    await VscodeOperator.execCommandInCommandPalette(workbox, APICenter.REGISTER_API);
+    await workbox.keyboard.press('Control+Shift+KeyP');
+    await workbox.getByRole("combobox", { name: "INPUT" }).fill('>Azure API Center: Register API');
+    await workbox.getByRole('listbox').first().press('Enter');
     // select the first option.
-    await VscodeOperator.selectOptionByName(workbox, APICenter.CI_CD);
+    await workbox.getByRole('option', { name: "CI/CD" }).locator('a').click();
     // select the next option.
-    await VscodeOperator.selectOptionByName(workbox, APICenter.AZURE_DEVOPS);
-    await VscodeOperator.activeSideTab(workbox, VSCode.TAB_EXPLORER);
+    await workbox.getByRole('option', { name: 'Azure DevOps' }).locator('a').click();
+    await workbox.getByRole("tab", { name: "Explorer" }).locator('a').click();
     // check result.
-    expect(await VscodeOperator.isSideTabItemExist(workbox, "register-api.yml")).toBeTruthy();
+    await expect(workbox.getByRole('treeitem', { name: 'register-api.yml' })).toHaveCount(1);
 });
 
-test('trigger generateAPIviaCICD with GitHub', { tag: ["@26625756"] }, async ({ workbox }) => {
-    await workbox.waitForTimeout(Timeout.PREPARE_TEST);
+test('trigger generateAPIviaCICD with GitHub', async ({ workbox }) => {
     // wait API Center extension installed on VS Code.
-    expect(await VscodeOperator.isSideTabItemExist(workbox, "API Center")).toBeTruthy();
-    await VscodeOperator.activeSideTab(workbox, VSCode.TAB_API_CENTER);
+    await workbox.getByRole("tab", { name: "API Center" }).isVisible();
+    await workbox.getByRole("tab", { name: "API Center" }).locator('a').click();
     // trigger command palette.
-    await VscodeOperator.execCommandInCommandPalette(workbox, APICenter.REGISTER_API);
+    await workbox.keyboard.press('Control+Shift+KeyP');
+    await workbox.getByRole("combobox", { name: "INPUT" }).fill('>Azure API Center: Register API');
+    await workbox.getByRole('listbox').first().press('Enter');
     // select the first option.
-    await VscodeOperator.selectOptionByName(workbox, APICenter.CI_CD);
+    await workbox.getByRole('option', { name: "CI/CD" }).locator('a').click();
     // select the next option.
-    await VscodeOperator.selectOptionByName(workbox, APICenter.GITHUB);
-    await VscodeOperator.activeSideTab(workbox, VSCode.TAB_EXPLORER);
+    await workbox.getByRole('option', { name: 'GitHub' }).locator('a').click();
+    await workbox.getByRole("tab", { name: "Explorer" }).locator('a').click();
     // check result.
-    expect(await VscodeOperator.isSideTabItemExist(workbox, "register-api.yml")).toBeTruthy();
+    await expect(workbox.getByRole('treeitem', { name: 'register-api.yml' })).toHaveCount(1);
 });

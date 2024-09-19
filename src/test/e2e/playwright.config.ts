@@ -4,7 +4,7 @@ import { defineConfig } from '@playwright/test';
 import { TestOptions } from './baseTest';
 
 export default defineConfig<void, TestOptions>({
-    reporter: process.env.CI ? [['json', { outputFile: '../../../test-results/results.json' }]] : 'list',
+    reporter: process.env.CI ? 'html' : 'list',
     timeout: 60_000,
     workers: 1,
     expect: {

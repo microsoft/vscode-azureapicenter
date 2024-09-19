@@ -59,7 +59,7 @@ jobs:
             npx @vscode/vsce package --no-dependencies --githubBranch ${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
           fi
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v3
         with:
           name: release
           path: |

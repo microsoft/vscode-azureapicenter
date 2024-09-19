@@ -60,8 +60,8 @@ export async function registerStepByStep(context: IActionContext, node?: ApisTre
         return;
     }
 
-    const resourceGroupName = getResourceGroupFromId(node.apiCenter.getId());
-    const apiCenterService = new ApiCenterService(node.parent?.subscription!, resourceGroupName, node.apiCenter.getName());
+    const resourceGroupName = getResourceGroupFromId(node.apiCenter.id);
+    const apiCenterService = new ApiCenterService(node.parent?.subscription!, resourceGroupName, node.apiCenter.name);
 
     await createApiResources(apiCenterService, apiTitle, apiKind, apiVersionTitle, apiVersionLifecycleStage,
         apiDefinitionTitle, specificationName, filePath);

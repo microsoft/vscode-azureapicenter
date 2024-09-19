@@ -1,17 +1,20 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
+import { getResourceGroupFromId } from "@microsoft/vscode-azext-azureutils";
 import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import * as vscode from 'vscode';
-import { IApiCenterApisBase } from "../azure/ApiCenterDefines/ApiCenterApi";
+import { ApiCenterService } from "../azure/ApiCenter/ApiCenterService";
+import { ApiCenter } from "../azure/ApiCenter/contracts";
 import { UiStrings } from "../uiStrings";
 import { ApiTreeItem } from "./ApiTreeItem";
+
 export class ApisTreeItem extends AzExtParentTreeItem {
   public readonly childTypeLabel: string = UiStrings.ApisTreeItemChildTypeLabel;
   public static contextValue: string = "azureApiCenterApis";
   public searchContent: string = "";
   public contextValue: string = ApisTreeItem.contextValue;
   private _nextLink: string | undefined;
-  constructor(parent: AzExtParentTreeItem, public apiCenter: IApiCenterApisBase) {
+  constructor(parent: AzExtParentTreeItem, public apiCenter: ApiCenter) {
     super(parent);
   }
 
@@ -37,11 +40,15 @@ export class ApisTreeItem extends AzExtParentTreeItem {
   }
 
   public async loadMoreChildrenImpl(clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
-    const apis = await this.apiCenter.getChild(this.parent?.subscription!, this.searchContent);
+    const resourceGroupName = getResourceGroupFromId(this.apiCenter.id);
+    const apiCenterService = new ApiCenterService(this.parent?.subscription!, resourceGroupName, this.apiCenter.name);
+    const apis = await apiCenterService.getApiCenterApis(this.searchContent);
+
+    this._nextLink = apis.nextLink;
     return await this.createTreeItemsWithErrorHandling(
-      apis,
+      apis.value,
       'invalidResource',
-      resource => new ApiTreeItem(this, this.apiCenter.getName(), this.apiCenter.generateChild(resource)),
+      resource => new ApiTreeItem(this, this.apiCenter.name, resource),
       resource => resource.name
     );
   }

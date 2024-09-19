@@ -1,22 +1,26 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
+import { getResourceGroupFromId } from "@microsoft/vscode-azext-azureutils";
 import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import * as vscode from 'vscode';
-import { IDefinitionsBase } from "../azure/ApiCenterDefines/ApiCenterDefinition";
+import { ApiCenterService } from "../azure/ApiCenter/ApiCenterService";
+import { ApiCenterApiVersion } from "../azure/ApiCenter/contracts";
 import { UiStrings } from "../uiStrings";
 import { ApiVersionDefinitionTreeItem } from "./ApiVersionDefinitionTreeItem";
+
 export class ApiVersionDefinitionsTreeItem extends AzExtParentTreeItem {
   public readonly childTypeLabel: string = UiStrings.ApiVersionDefinitionsTreeItemChildTypeLabel;
   public static contextValue: string = "azureApiCenterApiVersionDefinitions";
   public readonly contextValue: string = ApiVersionDefinitionsTreeItem.contextValue;
   private readonly _apiCenterName: string;
   private readonly _apiCenterApiName: string;
-  private readonly _apiCenterApiVersion: IDefinitionsBase;
+  private readonly _apiCenterApiVersion: ApiCenterApiVersion;
+  private _nextLink: string | undefined;
   constructor(
     parent: AzExtParentTreeItem,
     apiCenterName: string,
     apiCenterApiName: string,
-    apiCenterApiVersion: IDefinitionsBase) {
+    apiCenterApiVersion: ApiCenterApiVersion) {
     super(parent);
     this._apiCenterApiVersion = apiCenterApiVersion;
     this._apiCenterName = apiCenterName;
@@ -32,21 +36,26 @@ export class ApiVersionDefinitionsTreeItem extends AzExtParentTreeItem {
   }
 
   public async loadMoreChildrenImpl(clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
-    let definitions = await this._apiCenterApiVersion.getChild(this.parent?.subscription!, this._apiCenterName, this._apiCenterApiName);
+    const resourceGroupName = getResourceGroupFromId(this._apiCenterApiVersion.id);
+    const apiCenterService = new ApiCenterService(this.parent?.subscription!, resourceGroupName, this._apiCenterName);
+
+    const definitions = await apiCenterService.getApiCenterApiVersionDefinitions(this._apiCenterApiName, this._apiCenterApiVersion.name);
+
+    this._nextLink = definitions.nextLink;
     return await this.createTreeItemsWithErrorHandling(
-      definitions,
+      definitions.value,
       'invalidResource',
-      definition => new ApiVersionDefinitionTreeItem(
+      resource => new ApiVersionDefinitionTreeItem(
         this,
         this._apiCenterName,
         this._apiCenterApiName,
-        this._apiCenterApiVersion.getName(),
-        this._apiCenterApiVersion.generateChild(definition)),
-      definition => definition.name
+        this._apiCenterApiVersion.name,
+        resource),
+      resource => resource.name
     );
   }
 
   public hasMoreChildrenImpl(): boolean {
-    return this._apiCenterApiVersion.getNextLink() !== undefined;
+    return this._nextLink !== undefined;
   }
 }
