@@ -22,3 +22,13 @@ export const APICenterRestAPIs = {
     ImportRuleset: (subscriptionId: string, resourceGroupName: string, apiCenterName: string, restApiVersion: string) => `https://management.azure.com/subscriptions/${subscriptionId}/resourceGroups/${resourceGroupName}/providers/Microsoft.ApiCenter/services/${apiCenterName}/workspaces/default/analyzerConfigs/spectral-openapi/importRuleset?api-version=${restApiVersion}`,
     ExportRuleset: (subscriptionId: string, resourceGroupName: string, apiCenterName: string, restApiVersion: string) => `https://management.azure.com/subscriptions/${subscriptionId}/resourceGroups/${resourceGroupName}/providers/Microsoft.ApiCenter/services/${apiCenterName}/workspaces/default/analyzerConfigs/spectral-openapi/exportRuleset?api-version=${restApiVersion}`,
 };
+
+export const APICenterDataPlaneRestAPIs = {
+    GetApi: (domain: string, apiName: string) => `https://${domain}/workspaces/default/apis/${apiName}`,
+    ListApis: (domain: string) => `https://${domain}/workspaces/default/apis`,
+    ListAllApis: (domain: string) => `https://${domain}/apis`,
+    GetApiVersion: (domain: string, apiName: string, versionName: string) => `https://${domain}/workspaces/default/apis/${apiName}/versions/${versionName}`,
+    ListApiVersions: (domain: string, apiName: string) => `https://${domain}/workspaces/default/apis/${apiName}/versions`,
+    ListApiDefinitions: (domain: string, apiName: string, apiVersion: string) => `https://${domain}/workspaces/default/apis/${apiName}/versions/${apiVersion}/definitions`,
+    ExportApiDefinitions: (domain: string, apiName: string, apiVersion: string, definitionName: string) => `https://${domain}/workspaces/default/apis/${apiName}/versions/${apiVersion}/definitions/${definitionName}:exportSpecification`,
+};

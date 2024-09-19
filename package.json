@@ -164,15 +164,44 @@
         "command": "azure-api-center.selectTenant",
         "title": "%azure-api-center.commands.selectTenant.title%",
         "category": "Azure API Center"
+      },
+      {
+        "command": "azure-api-center.apiCenterWorkspace.addApis",
+        "title": "%azure-api-center.commands.apiCenterWorkspace.addApis.title%",
+        "icon": "$(add)",
+        "category": "Azure API Center"
+      },
+      {
+        "command": "azure-api-center.apiCenterWorkspace.refresh",
+        "title": "%azure-api-center.commands.apiCenterTreeView.refresh.title%",
+        "icon": "$(refresh)",
+        "category": "Azure API Center"
+      },
+      {
+        "command": "azure-api-center.apiCenterWorkspace.collapse",
+        "title": "%azure-api-center.commands.apiCenterWorkspace.collapse.title%",
+        "icon": "$(collapse-all)",
+        "category": "Azure API Center"
+      },
+      {
+        "command": "azure-api-center.apiCenterWorkspace.removeApi",
+        "title": "%azure-api-center.commands.apiCenterWorkspace.removeApis.title%",
+        "icon": "$(close)",
+        "category": "Azure API Center"
       }
     ],
     "views": {
       "api-center-treeview": [
         {
           "id": "apiCenterTreeView",
-          "name": "API Center",
+          "name": "%azure-api-center.views.api-center-treeview.controlplane.title%",
           "icon": "media/api-center-icon.svg",
           "contextualTitle": "Azure API Center"
+        },
+        {
+          "id": "apiCenterWorkspace",
+          "name": "%azure-api-center.views.api-center-treeview.dataplane.title%",
+          "visibility": "visible"
         }
       ]
     },
@@ -191,6 +220,21 @@
           "command": "azure-api-center.apiCenterTreeView.refresh",
           "when": "view == apiCenterTreeView",
           "group": "navigation"
+        },
+        {
+          "command": "azure-api-center.apiCenterWorkspace.addApis",
+          "when": "view == apiCenterWorkspace",
+          "group": "navigation@2"
+        },
+        {
+          "command": "azure-api-center.apiCenterWorkspace.refresh",
+          "when": "view == apiCenterWorkspace",
+          "group": "navigation@1"
+        },
+        {
+          "command": "azure-api-center.apiCenterWorkspace.collapse",
+          "when": "view == apiCenterWorkspace",
+          "group": "navigation@3"
         }
       ],
       "view/item/context": [
@@ -201,7 +245,7 @@
         },
         {
           "command": "azure-api-center.open-api-docs",
-          "when": "view == apiCenterTreeView && viewItem == azureApiCenterApiVersionDefinitionTreeItem-openapi"
+          "when": "(view == apiCenterTreeView && viewItem == azureApiCenterApiVersionDefinitionTreeItem-openapi) || (view == apiCenterWorkspace && viewItem == azureApiCenterApiVersionDataPlaneDefinitionTreeItem-openapi)"
         },
         {
           "command": "azure-api-center.open-postman",
@@ -209,7 +253,7 @@
         },
         {
           "command": "azure-api-center.generate-api-client",
-          "when": "view == apiCenterTreeView && viewItem == azureApiCenterApiVersionDefinitionTreeItem-openapi"
+          "when": "(view == apiCenterTreeView && viewItem == azureApiCenterApiVersionDefinitionTreeItem-openapi) || (view == apiCenterWorkspace && viewItem == azureApiCenterApiVersionDataPlaneDefinitionTreeItem-openapi)"
         },
         {
           "command": "azure-api-center.importOpenApiByFile",
@@ -221,7 +265,7 @@
         },
         {
           "command": "azure-api-center.exportApi",
-          "when": "view == apiCenterTreeView && viewItem =~ /azureApiCenterApiVersionDefinitionTreeItem/"
+          "when": "(view == apiCenterTreeView && viewItem =~ /azureApiCenterApiVersionDefinitionTreeItem/) || (view == apiCenterWorkspace && viewItem =~ /azureApiCenterApiVersionDataPlaneDefinitionTreeItem/)"
         },
         {
           "command": "azure-api-center.showOpenApi",
@@ -233,7 +277,7 @@
         },
         {
           "command": "azure-api-center.generateMarkdownDocument",
-          "when": "view == apiCenterTreeView && viewItem == azureApiCenterApiVersionDefinitionTreeItem-openapi"
+          "when": "(view == apiCenterTreeView && viewItem == azureApiCenterApiVersionDefinitionTreeItem-openapi) || (view == apiCenterWorkspace && viewItem == azureApiCenterApiVersionDataPlaneDefinitionTreeItem-openapi)"
         },
         {
           "command": "azure-api-center.registerApi",
@@ -241,12 +285,12 @@
         },
         {
           "command": "azure-api-center.searchApi",
-          "when": "view == apiCenterTreeView && viewItem =~ /^azureApiCenterApis/",
+          "when": "(view == apiCenterTreeView || view == apiCenterWorkspace) && viewItem =~ /^azureApiCenterApis/ ",
           "group": "inline@0"
         },
         {
           "command": "azure-api-center.cleanupSearchResult",
-          "when": "view == apiCenterTreeView && viewItem == azureApiCenterApis-search",
+          "when": "(view == apiCenterTreeView || view == apiCenterWorkspace) && viewItem == azureApiCenterApis-search",
           "group": "inline@1"
         },
         {
@@ -277,6 +321,11 @@
           "command": "azure-api-center.deleteCustomFunction",
           "when": "view == apiCenterTreeView && viewItem == azureApiCenterFunction",
           "group": "function@1"
+        },
+        {
+          "command": "azure-api-center.apiCenterWorkspace.removeApi",
+          "when": "view == apiCenterWorkspace && viewItem == azureApiCenterDataPlane",
+          "group": "inline@0"
         }
       ],
       "copilot": [
@@ -358,6 +407,14 @@
         {
           "command": "azure-api-center.deleteCustomFunction",
           "when": "never"
+        },
+        {
+          "command": "azure-api-center.apiCenterWorkspace.removeApi",
+          "when": "never"
+        },
+        {
+          "command": "azure-api-center.apiCenterWorkspace.collapse",
+          "when": "never"
         }
       ]
     },
@@ -384,6 +441,7 @@
     ],
     "configuration": [
       {
+        "title": "Azure Api Center",
         "properties": {
           "azure-api-center.selectedSubscriptions": {
             "type": "array",
@@ -443,6 +501,7 @@
     "copy-webpack-plugin": "^12.0.2",
     "copyfiles": "^2.4.1",
     "crypto-js": "^3.1.2",
+    "dotenv": "^16.4.5",
     "eslint": "^8.50.0",
     "eslint-plugin-header": "^3.1.1",
     "glob": "^10.3.3",
@@ -476,7 +535,7 @@
     "@vscode/extension-telemetry": "^0.6.2",
     "ajv": "^8.12.0",
     "archiver": "^7.0.1",
-    "axios": "^1.6.0",
+    "axios": "^1.7.4",
     "express": "^4.19.2",
     "fs-extra": "^11.1.1",
     "get-port": "^7.0.0",

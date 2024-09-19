@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
+import axios from 'axios';
 import * as os from "os";
 import * as path from "path";
-
 export namespace GeneralUtils {
     const apiCenterFolder = ".api-center";
 
@@ -53,5 +53,10 @@ export namespace GeneralUtils {
 
     export function getApiCenterWorkspacePath(): string {
         return path.join(os.homedir(), apiCenterFolder);
+    }
+
+    export async function fetchDataFromLink(link: string): Promise<string> {
+        const res = await axios.get(link);
+        return JSON.stringify(res.data);
     }
 }
