@@ -12,19 +12,19 @@ Make APIs you are building discoverable to others by registering them with API C
 
 Shift-left API design conformance checks into Visual Studio Code with integrated linting support, powered by Spectral.
 
-![linting](./media/integrated-lint.png)
+![linting](https://raw.githubusercontent.com/microsoft/vscode-azureapicenter/main/media/integrated-lint.png)
 
 [[Pre-Release]](#pre-release) Manage API Analysis for Azure API Center.
 
-![Manage API Analysis](./media/managed-lint.png)
+![Manage API Analysis](https://raw.githubusercontent.com/microsoft/vscode-azureapicenter/main/media/managed-lint.png)
 
 Ensure that new API versions don't break API consumers with breaking change detection support, powered by Optic.
 
-![Breaking Change Detection](./media/breaking-change.png)
+![Breaking Change Detection](https://raw.githubusercontent.com/microsoft/vscode-azureapicenter/main/media/breaking-change.png)
 
 [[Pre-Release]](#pre-release) Generate Open API specification file from API code.
 
-![Generate Open API specification](./media/generate-api-documentation.gif)
+![Generate Open API specification](https://raw.githubusercontent.com/microsoft/vscode-azureapicenter/main/media/generate-api-documentation.gif)
 
 ### [[Pre-Release]](#pre-release) Platform API Catalog
 ![[data-view]](https://raw.githubusercontent.com/microsoft/vscode-azureapicenter/main/media/add-data-api.gif)
@@ -33,38 +33,38 @@ Ensure that new API versions don't break API consumers with breaking change dete
 
 Find the right API, fast from your organization's hand-crafted API catalog with API Center.
 
-![tree-view](./media/tree-view.png)
+![tree-view](https://raw.githubusercontent.com/microsoft/vscode-azureapicenter/main/media/tree-view.png)
 
 
 ### Explore
 
 Explore APIs without leaving Visual Studio Code with inline API documentation and interactive 'try it' experience.
 
-![view-api-doc](./media/view-api-doc.png)
+![view-api-doc](https://raw.githubusercontent.com/microsoft/vscode-azureapicenter/main/media/view-api-doc.png)
 
 Explore API requests and responses with automated .http file generation powered by the [REST Client extension for Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=humao.rest-client).
 
-![generate-http-file](./media/generate-http-file.png)
+![generate-http-file](https://raw.githubusercontent.com/microsoft/vscode-azureapicenter/main/media/generate-http-file.png)
 
 [[Pre-Release]](#pre-release) Generate markdown documentation for an API definition.
 
-![Generate Markdown](./media/generate-markdown.png)
+![Generate Markdown](https://raw.githubusercontent.com/microsoft/vscode-azureapicenter/main/media/generate-markdown.png)
 
 ### Consume
 
 Generate API SDK clients for your favorite language including JavaScript, TypeScript, .NET, Python, Java, and more, powered by the same [Microsoft Kiota](https://learn.microsoft.com/en-us/openapi/kiota/overview) engine that generates SDKs for Microsoft Graph, GitHub, and more.
 
-![generate-api-client](./media/generate-api-client.png)
+![generate-api-client](https://raw.githubusercontent.com/microsoft/vscode-azureapicenter/main/media/generate-api-client.png)
 
 Export API specification document for a specific API either from the tree view or from the command palette
 
-![Export API specification](./media/export-api.gif)
+![Export API specification](https://raw.githubusercontent.com/microsoft/vscode-azureapicenter/main/media/export-api.gif)
 
 ## Pre-Release
 
 For the features with `[Pre-Release]` flag, you need to install pre-release version of the extension.
 
-![](/media/pre-release.png)
+![](https://raw.githubusercontent.com/microsoft/vscode-azureapicenter/main/media/pre-release.png)
 
 ## Contributing
 
