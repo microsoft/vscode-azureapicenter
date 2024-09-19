@@ -2,25 +2,23 @@
 // Licensed under the MIT license.
 import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import * as vscode from 'vscode';
-import { ApiCenterApiVersion } from "../azure/ApiCenter/contracts";
+import { IVersionBase } from "../azure/ApiCenterDefines/ApiCenterVersion";
 import { UiStrings } from "../uiStrings";
 import { ApiVersionDefinitionsTreeItem } from "./ApiVersionDefinitionsTreeItem";
-
 export class ApiVersionTreeItem extends AzExtParentTreeItem {
   public readonly childTypeLabel: string = UiStrings.ApiVersionChildTypeLabel;
   public static contextValue: string = "azureApiCenterApiVersion";
   public readonly contextValue: string = ApiVersionTreeItem.contextValue;
-  private readonly _apiCenterApiVersion: ApiCenterApiVersion;
+  private readonly _apiCenterApiVersion: IVersionBase;
   public readonly apiVersionDefinitionsTreeItem: ApiVersionDefinitionsTreeItem;
-  private _nextLink: string | undefined;
   constructor(
     parent: AzExtParentTreeItem,
     apiCenterName: string,
     apiCenterApiName: string,
-    apiCenterApiVersion: ApiCenterApiVersion) {
+    apiCenterApiVersion: IVersionBase) {
     super(parent);
     this._apiCenterApiVersion = apiCenterApiVersion;
-    this.apiVersionDefinitionsTreeItem = new ApiVersionDefinitionsTreeItem(this, apiCenterName, apiCenterApiName, apiCenterApiVersion);
+    this.apiVersionDefinitionsTreeItem = new ApiVersionDefinitionsTreeItem(this, apiCenterName, apiCenterApiName, apiCenterApiVersion.generateChild());
   }
 
   public get iconPath(): TreeItemIconPath {
@@ -28,15 +26,15 @@ export class ApiVersionTreeItem extends AzExtParentTreeItem {
   }
 
   public get id(): string {
-    return this._apiCenterApiVersion.id;
+    return this._apiCenterApiVersion.getId();
   }
 
   public get label(): string {
-    return this._apiCenterApiVersion.properties.title;
+    return this._apiCenterApiVersion.getLabel();
   }
 
   public hasMoreChildrenImpl(): boolean {
-    return this._nextLink !== undefined;
+    return false;
   }
 
   public async loadMoreChildrenImpl(clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {

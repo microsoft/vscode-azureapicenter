@@ -43,7 +43,7 @@ export async function importOpenApi(
                 return apiCenterService.importSpecification(
                     node?.apiCenterApiName!,
                     node?.apiCenterApiVersionName!,
-                    node?.apiCenterApiVersionDefinition.name!,
+                    node?.apiCenterApiVersionDefinition.getName()!,
                     importPayload);
             }
         ).then(async () => {
@@ -75,7 +75,7 @@ export async function importOpenApi(
                 return apiCenterService.importSpecification(
                     node?.apiCenterApiName!,
                     node?.apiCenterApiVersionName!,
-                    node?.apiCenterApiVersionDefinition.name!,
+                    node?.apiCenterApiVersionDefinition.getName()!,
                     importPayload);
             }
         ).then(async () => {
