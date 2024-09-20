@@ -27,7 +27,7 @@ Ensure that new API versions don't break API consumers with breaking change dete
 ![Generate Open API specification](./media/generate-api-documentation.gif)
 
 ### [[Pre-Release]](#pre-release) Platform API Catalog
-![[data-view]](./media/add-data-api.gif)
+![data-view](./media/add-data-api.gif)
 
 ### Discover
 
