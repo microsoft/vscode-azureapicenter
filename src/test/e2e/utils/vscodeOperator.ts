@@ -76,4 +76,21 @@ export default class VscodeOperator {
         await page.getByRole(VSCode.CMD_PALETTE_LIST, { name: listItemName }).locator(VSCode.LINK).filter({ hasText: linkName }).click();
         await page.waitForTimeout(Timeout.CLICK_WAIT);
     }
+
+    static async rightClickTreeItem(page: Page, treeItemName: string) {
+        await page.getByRole(VSCode.TREE_ITEM, { name: treeItemName }).locator(VSCode.LINK).click({
+            button: 'right'
+        });
+        await page.waitForTimeout(Timeout.CLICK_WAIT);
+    }
+
+    static async clickMenuItem(page: Page, menuItemName: string) {
+        await page.getByRole(VSCode.MENU_ITEM, { name: menuItemName }).locator("span.action-label").click();
+        await page.waitForTimeout(Timeout.PREPARE_EXT);
+    }
+
+    static async getCurrentPageIframe(page: Page, iframeName: string) {
+        // title is the iframe name
+        return page.frameLocator("iframe[title='" + iframeName + "']");
+    }
 }
