@@ -82,7 +82,7 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.workspace.onDidSaveTextDocument,
         async (actionContext: IActionContext, doc: vscode.TextDocument) => { await openApiEditor.onDidSaveTextDocument(actionContext, context.globalState, doc); });
 
-    registerCommandWithTelemetry('azure-api-center.showOpenApi', showOpenApi, doubleClickDebounceDelay);
+    registerCommandWithTelemetry('azure-api-center.showOpenApi', showOpenApi, true, doubleClickDebounceDelay);
 
     registerCommandWithTelemetry('azure-api-center.open-api-docs', openAPiInSwagger);
 
@@ -122,9 +122,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
     registerCommandWithTelemetry('azure-api-center.apiCenterTreeView.refresh', async (context: IActionContext) => refreshTree(context));
 
-    registerCommandWithTelemetry('azure-api-center.signInToAzure', AzureAccount.signInToAzure);
-    registerCommandWithTelemetry('azure-api-center.selectTenant', AzureAccount.selectTenant);
-    registerCommandWithTelemetry('azure-api-center.selectSubscriptions', AzureAccount.selectSubscriptions);
+    registerCommandWithTelemetry('azure-api-center.signInToAzure', AzureAccount.signInToAzure, false);
+    registerCommandWithTelemetry('azure-api-center.selectTenant', AzureAccount.selectTenant, false);
+    registerCommandWithTelemetry('azure-api-center.selectSubscriptions', AzureAccount.selectSubscriptions, false);
     registerCommandWithTelemetry('azure-api-center.openUrl', openUrlFromTreeNode);
     registerCommandWithTelemetry('azure-api-center.apiCenterWorkspace.signInToDataPlane', SignInToDataPlane);
     registerCommandWithTelemetry('azure-api-center.apiCenterWorkspace.refresh', async (context: IActionContext) => ext.dataPlaneTreeItem.refresh(context));
@@ -142,7 +142,7 @@ export async function activate(context: vscode.ExtensionContext) {
     );
 }
 
-async function registerCommandWithTelemetry(commandId: string, callback: CommandCallback, debounce?: number): Promise<void> {
+async function registerCommandWithTelemetry(commandId: string, callback: CommandCallback, sendSubData: boolean = true, debounce?: number): Promise<void> {
     registerCommand(commandId, async (context: IActionContext, ...args: any[]) => {
         const start: number = Date.now();
         const properties: { [key: string]: string; } = {};
@@ -158,7 +158,9 @@ async function registerCommandWithTelemetry(commandId: string, callback: Command
         } finally {
             const end: number = Date.now();
             properties[TelemetryProperties.duration] = ((end - start) / 1000).toString();
-            TelemetryUtils.setAzureResourcesInfo(properties, args[0]);
+            if (sendSubData) {
+                TelemetryUtils.setAzureResourcesInfo(properties, args[0]);
+            }
             if (parsedError) {
                 properties[ErrorProperties.errorType] = parsedError.errorType;
                 properties[ErrorProperties.errorMessage] = parsedError.message;
