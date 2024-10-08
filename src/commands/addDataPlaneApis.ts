@@ -1,6 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
-import { IActionContext } from "@microsoft/vscode-azext-utils";
+import { IActionContext, UserCancelledError } from "@microsoft/vscode-azext-utils";
 import * as vscode from 'vscode';
 import { DataPlaneAccount } from "../azure/ApiCenter/ApiCenterDataPlaneAPIs";
 import { TelemetryClient } from "../common/telemetryClient";
@@ -12,15 +12,15 @@ export namespace ConnectDataPlaneApi {
     export async function addDataPlaneApis(context: IActionContext): Promise<any | void> {
         const endpointUrl = await vscode.window.showInputBox({ title: UiStrings.AddDataPlaneRuntimeUrl, ignoreFocusOut: true });
         if (!endpointUrl) {
-            return;
+            throw new UserCancelledError();
         }
         const clientid = await vscode.window.showInputBox({ title: UiStrings.AddDataPlaneClientId, ignoreFocusOut: true });
         if (!clientid) {
-            return;
+            throw new UserCancelledError();
         }
         const tenantid = await vscode.window.showInputBox({ title: UiStrings.AddDataPlaneTenantId, ignoreFocusOut: true });
         if (!tenantid) {
-            return;
+            throw new UserCancelledError();
         }
         ConnectDataPlaneApi.sendDataPlaneApiTelemetry(endpointUrl, clientid, tenantid, DataPlaneApiFromType.dataPlaneApiAddFromInput);
         ConnectDataPlaneApi.setAccountToExt(endpointUrl, clientid, tenantid);

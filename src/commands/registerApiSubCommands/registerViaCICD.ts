@@ -1,6 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
-import { IActionContext } from "@microsoft/vscode-azext-utils";
+import { IActionContext, UserCancelledError } from "@microsoft/vscode-azext-utils";
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as vscode from 'vscode';
@@ -42,6 +42,8 @@ export namespace RegisterViaCICD {
             await fs.copyFile(srcFilePath, targetFilePath);
             const document = await vscode.workspace.openTextDocument(targetFilePath);
             await vscode.window.showTextDocument(document);
+        } else {
+            throw new UserCancelledError();
         }
     }
 }
