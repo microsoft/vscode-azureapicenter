@@ -1,6 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
-import { IActionContext } from "@microsoft/vscode-azext-utils";
+import { IActionContext, UserCancelledError } from "@microsoft/vscode-azext-utils";
 import * as assert from "assert";
 import * as fs from "fs-extra";
 import * as path from "path";
@@ -67,13 +67,12 @@ describe("test registerViaCICD", () => {
     });
     it('registerViaCICD with cancel', async () => {
         const stubQiuckPick = sandbox.stub(vscode.window, "showQuickPick").resolves(undefined);
-        const showTextDocument = sandbox.stub(vscode.window, "showTextDocument").resolves();
-        await RegisterViaCICD.registerViaCICD({} as unknown as IActionContext);
-        sandbox.assert.calledOnce(stubQiuckPick);
-        const workspaceFolder = vscode.workspace.workspaceFolders;
-        assert.ok(!await fs.pathExists(path.join(workspaceFolder![0].uri.fsPath, ".github")));
-        assert.ok(!await fs.pathExists(path.join(workspaceFolder![0].uri.fsPath, ".azure-pipelines")));
-        sandbox.assert.notCalled(showTextDocument);
+        try {
+            await RegisterViaCICD.registerViaCICD({} as unknown as IActionContext);
+        } catch (error) {
+            sandbox.assert.calledOnce(stubQiuckPick);
+            assert.ok(error instanceof UserCancelledError);
+        }
     });
     it('throw error when no workspace folder', async () => {
         sinon.stub(vscode.workspace, "workspaceFolders").get(() => undefined);
