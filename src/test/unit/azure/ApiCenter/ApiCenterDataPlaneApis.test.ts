@@ -42,4 +42,26 @@ describe("Api Center Data Plane Apis Server", () => {
         let response = await serverClient.getApiCenterApis();
         assert.equal(response, undefined);
     });
+    it("get apis center getAPiCenterApiVersions success", async () => {
+        sandbox.stub(ServiceClient.prototype, "sendRequest").resolves({ status: 200, parsedBody: { value: "fakeApiVersions", nextLink: "fakeNextLink" } } as HttpOperationResponse);
+        const serverClient = new ApiCenterDataPlaneService(subscriptionContext);
+
+        const response = await serverClient.getAPiCenterApiVersions("fakeApiName");
+        assert.strictEqual(response.value, 'fakeApiVersions');
+    });
+    it("get apis center getApiCenterApiDefinitions success", async () => {
+        sandbox.stub(ServiceClient.prototype, "sendRequest").resolves({ status: 200, parsedBody: { value: "fakeApiDefinitions", nextLink: "fakeNextLink" } } as HttpOperationResponse);
+        const serverClient = new ApiCenterDataPlaneService(subscriptionContext);
+
+        const response = await serverClient.getApiCenterApiDefinitions("fakeApiName", "fakeApiVersion");
+        assert.strictEqual(response.value, 'fakeApiDefinitions');
+    });
+    it("get apis center exportSpecification success", async () => {
+        sandbox.stub(ServiceClient.prototype, "sendRequest").resolves({ status: 200, parsedBody: { format: "inline", value: "fakeSpecification" } } as HttpOperationResponse);
+        const serverClient = new ApiCenterDataPlaneService(subscriptionContext);
+
+        const response = await serverClient.exportSpecification("fakeApiName", "fakeApiVersion", "fakeApiCenterApiVersionDefinitionName");
+        assert.strictEqual(response.format, 'inline');
+        assert.strictEqual(response.value, 'fakeSpecification');
+    });
 });
