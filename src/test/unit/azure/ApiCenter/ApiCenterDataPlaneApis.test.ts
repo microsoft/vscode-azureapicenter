@@ -26,8 +26,7 @@ describe("Api Center Data Plane Apis Server", () => {
             status: 200,
             parsedBody: { value: "fakeApis", nextLink: "fakeNextLink" },
         } as HttpOperationResponse;
-        const sendRequestStub = sandbox.stub(ServiceClient.prototype, "sendRequest");
-        sendRequestStub.onSecondCall().resolves(mockResponse);
+        sandbox.stub(ServiceClient.prototype, "sendRequest").resolves(mockResponse);
 
         const serverClient = new ApiCenterDataPlaneService(subscriptionContext);
 
@@ -40,8 +39,7 @@ describe("Api Center Data Plane Apis Server", () => {
 
         const serverClient = new ApiCenterDataPlaneService(subscriptionContext);
 
-        const response = await serverClient.getApiCenterApis();
-
-        assert.strictEqual(response.value, undefined);
+        let response = await serverClient.getApiCenterApis();
+        assert.equal(response, undefined);
     });
 });
