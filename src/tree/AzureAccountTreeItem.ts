@@ -27,6 +27,7 @@ export class AzureAccountTreeItem extends AzExtParentTreeItem {
   private subscriptionTreeItems: AzExtTreeItem[] | undefined;
   public static contextValue: string = "azureApiCenterAzureAccount";
   public readonly contextValue: string = AzureAccountTreeItem.contextValue;
+  public readonly childTypeLabel: string = UiStrings.AccountTreeItemChildTypeLabel;
   constructor(private readonly sessionProvider: AzureSessionProvider) {
     super(undefined);
     this.autoSelectInTreeItemPicker = true;
