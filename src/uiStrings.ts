@@ -57,6 +57,7 @@ export class UiStrings {
     static readonly TreeitemLabelDefinitions = vscode.l10n.t("Definitions");
     static readonly TreeitemLabelVersions = vscode.l10n.t("Versions");
     static readonly TreeitemLabelEnvironments = vscode.l10n.t("Environments");
+    static readonly AccountTreeItemChildTypeLabel = vscode.l10n.t("Subscription");
     static readonly SubscriptionTreeItemChildTypeLabel = vscode.l10n.t("API Center Service");
     static readonly ApiCenterTreeItemTreeItemChildTypeLabel = vscode.l10n.t("APIs or Environments");
     static readonly ApisTreeItemChildTypeLabel = vscode.l10n.t("API");
