@@ -151,7 +151,7 @@ async function registerCommandWithTelemetry(commandId: string, callback: Command
         let parsedError: IParsedError | undefined;
         try {
             TelemetryClient.sendEvent(`${commandId}.start`);
-            await callback(context, ...args);
+            return await callback(context, ...args);
         } catch (error) {
             parsedError = parseError(error);
             if (!isUserCancelledError(parsedError)) {
