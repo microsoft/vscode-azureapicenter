@@ -5,7 +5,7 @@ import * as vscode from 'vscode';
 import { LocalPluginManifest } from "../types/AiDriver";
 import { AgentRequest, GetPluginsCommandResult, ILocalPluginHandler, LocalPluginArgs, LocalPluginEntry, LocalPluginResult } from "../types/AzureAgent";
 
-const genOpenApiFunctionName = "genOpenApi";
+const genOpenApiFunctionName = "generate_openapi";
 
 const apicPluginManifest: LocalPluginManifest = {
     extensionId: "apidev.azure-api-center",
