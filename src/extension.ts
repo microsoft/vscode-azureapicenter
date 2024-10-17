@@ -40,7 +40,7 @@ import { setApiRuleset } from './commands/setApiRuleset';
 import { SignInToDataPlane } from "./commands/signInToDataPlane";
 import { testInPostman } from './commands/testInPostman';
 import { ErrorProperties, TelemetryProperties } from './common/telemetryEvent';
-import { doubleClickDebounceDelay, selectedNodeKey } from './constants';
+import { LearnMoreAboutAPICatalog, doubleClickDebounceDelay, selectedNodeKey } from './constants';
 import { ext } from './extensionVariables';
 import { ApiVersionDefinitionTreeItem } from './tree/ApiVersionDefinitionTreeItem';
 import { createAzureAccountTreeItem } from "./tree/AzureAccountTreeItem";
@@ -131,6 +131,10 @@ export async function activate(context: vscode.ExtensionContext) {
     registerCommandWithTelemetry('azure-api-center.apiCenterWorkspace.addApis', ConnectDataPlaneApi.addDataPlaneApis);
     registerCommandWithTelemetry('azure-api-center.apiCenterWorkspace.collapse', () => {
         vscode.commands.executeCommand('workbench.actions.treeView.apiCenterWorkspace.collapseAll');
+    });
+
+    registerCommandWithTelemetry('azure-api-center.apiCenterWorkspace.getStarted', () => {
+        vscode.env.openExternal(vscode.Uri.parse(LearnMoreAboutAPICatalog));
     });
 
     registerCommandWithTelemetry('azure-api-center.apiCenterWorkspace.removeApi', removeDataplaneAPI);
