@@ -133,9 +133,7 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.commands.executeCommand('workbench.actions.treeView.apiCenterWorkspace.collapseAll');
     });
 
-    registerCommandWithTelemetry('azure-api-center.apiCenterWorkspace.learnApiCatalog', () => {
-        vscode.env.openExternal(vscode.Uri.parse(LearnMoreAboutAPICatalog));
-    });
+    registerCommandWithTelemetry('azure-api-center.apiCenterWorkspace.learnApiCatalog', () => vscode.env.openExternal(vscode.Uri.parse(LearnMoreAboutAPICatalog)));
 
     registerCommandWithTelemetry('azure-api-center.apiCenterWorkspace.removeApi', removeDataplaneAPI);
 
