@@ -35,7 +35,7 @@ jobs:
           source .venv/bin/activate
           python -m pip install -U pip
           pip install azdev
-          azdev setup -r .
+          printf "n\nn\ny\n" | azdev setup
           azdev extension add apic-extension
 
       - name: Run tests
