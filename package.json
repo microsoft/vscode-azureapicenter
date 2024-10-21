@@ -498,7 +498,6 @@
     "@typescript-eslint/parser": "^6.7.3",
     "@vscode/test-cli": "^0.0.6",
     "@vscode/test-electron": "^2.3.9",
-    "copilot-for-azure-vscode-api": "^1.0.0-beta.18",
     "copy-webpack-plugin": "^12.0.2",
     "copyfiles": "^2.4.1",
     "crypto-js": "^3.1.2",
