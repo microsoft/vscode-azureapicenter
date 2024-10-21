@@ -12,7 +12,7 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    environment: production
+    environment: engineering
     steps:
       - name: Set up Python
         uses: actions/setup-python@v2
