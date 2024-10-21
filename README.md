@@ -14,13 +14,20 @@ Shift-left API design conformance checks into Visual Studio Code with integrated
 
 ![linting](./media/integrated-lint.png)
 
+[[Pre-Release]](#pre-release) Manage API Analysis for Azure API Center.
+
+![Manage API Analysis](./media/managed-lint.png)
+
 Ensure that new API versions don't break API consumers with breaking change detection support, powered by Optic.
 
 ![Breaking Change Detection](./media/breaking-change.png)
 
-[pre-release] Generate Open API specification file from API code.
+[[Pre-Release]](#pre-release) Generate Open API specification file from API code.
 
 ![Generate Open API specification](./media/generate-api-documentation.gif)
+
+### [[Pre-Release]](#pre-release) Platform API Catalog
+![data-view](./media/add-data-api.gif)
 
 ### Discover
 
@@ -39,7 +46,7 @@ Explore API requests and responses with automated .http file generation powered 
 
 ![generate-http-file](./media/generate-http-file.png)
 
-[pre-release] Generate markdown documentation for an API definition.
+[[Pre-Release]](#pre-release) Generate markdown documentation for an API definition.
 
 ![Generate Markdown](./media/generate-markdown.png)
 
@@ -53,7 +60,11 @@ Export API specification document for a specific API either from the tree view o
 
 ![Export API specification](./media/export-api.gif)
 
+## Pre-Release
 
+For the features with `[Pre-Release]` flag, you need to install pre-release version of the extension.
+
+![](/media/pre-release.png)
 
 ## Contributing
 

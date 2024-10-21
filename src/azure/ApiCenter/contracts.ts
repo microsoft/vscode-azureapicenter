@@ -1,5 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
+export type GeneralApiCenter = ApiCenter | DataPlaneApiCenter;
 
 export type ApiCenter = {
     id: string;
@@ -12,6 +13,11 @@ export type ApiCenter = {
     type: string;
 };
 
+export type DataPlaneApiCenter = {
+    name: string;
+};
+
+export type GeneralApiCenterApi = ApiCenterApi | DataPlaneApiCenterApi;
 
 export type ApiCenterApi = {
     id: string;
@@ -25,6 +31,16 @@ export type ApiCenterApi = {
     type: string;
 };
 
+export type DataPlaneApiCenterApi = {
+    name: string;
+    title: string;
+    kind: string;
+    lifecycleStage: string;
+    externalDocumentation: [];
+    contacts: [];
+    customProperties: {};
+};
+
 export type ApiCenterEnvironment = {
     id: string;
     location: string;
@@ -34,6 +50,8 @@ export type ApiCenterEnvironment = {
     // tslint:disable-next-line:no-reserved-keywords
     type: string;
 };
+
+export type GeneralApiCenterApiVersion = ApiCenterApiVersion | DataPlaneApiCenterApiVersion;
 
 export type ApiCenterApiVersion = {
     id: string;
@@ -47,6 +65,12 @@ export type ApiCenterApiVersion = {
     type: string;
 };
 
+export type DataPlaneApiCenterApiVersion = {
+    name: string;
+    title: string;
+    lifecycleStage: string;
+};
+
 export type ApiCenterApiDeployment = {
     id: string;
     location: string;
@@ -56,6 +80,8 @@ export type ApiCenterApiDeployment = {
     // tslint:disable-next-line:no-reserved-keywords
     type: string;
 };
+
+export type GeneralApiCenterApiVersionDefinition = ApiCenterApiVersionDefinition | DataPlaneApiCenterApiVersionDefinition;
 
 export type ApiCenterApiVersionDefinition = {
     id: string;
@@ -76,6 +102,13 @@ export type ApiCenterRulesetConfig = {
     properties: {
     };
 };
+export type DataPlaneApiCenterApiVersionDefinition = {
+    name: string;
+    title: string;
+    specification: {
+        name: string;
+    }
+};
 
 export type ApiCenterApiVersionDefinitionImport = {
     format: string;
@@ -94,6 +127,20 @@ export type ApiCenterApiVersionDefinitionExport = {
 export type ApiCenterRulesetImport = {
     format: string;
     value: string;
+};
+
+export type ApiCenterRulesetImportStatus = {
+    id: string;
+    name: string;
+    status: ArmAsyncOperationStatus;
+    properties: {
+        comment?: string;
+    };
+};
+
+export type ApiCenterRulesetImportResult = {
+    isSuccessful: boolean;
+    message?: string | null;
 };
 
 export type ApiCenterRulesetExport = {
@@ -134,4 +181,16 @@ export enum SpecificationName {
 export enum ApiSpecExportResultFormat {
     inline = 'inline',
     link = 'link',
+};
+
+export enum ArmAsyncOperationStatus {
+    NotStarted = 'NotStarted',
+    InProgress = 'InProgress',
+    Succeeded = 'Succeeded',
+    Failed = 'Failed',
+    Canceled = 'Canceled',
+}
+
+export enum ApiCenterRulesetImportFormat {
+    InlineZip = 'inline-zip',
 };

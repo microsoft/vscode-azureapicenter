@@ -3,7 +3,8 @@
 import { AzExtParentTreeItem, AzExtTreeItem, ISubscriptionContext } from "@microsoft/vscode-azext-utils";
 import { ResourceGraphService } from "../azure/ResourceGraph/ResourceGraphService";
 import { TelemetryClient } from "../common/telemetryClient";
-import { TelemetryEvent, TelemetryProperties } from "../common/telemetryEvent";
+import { TelemetryEvent } from "../common/telemetryEvent";
+import { TelemetryUtils } from "../utils/telemetryUtils";
 import { treeUtils } from "../utils/treeUtils";
 import { ApiCenterTreeItem } from "./ApiCenterTreeItem";
 
@@ -14,7 +15,7 @@ export function createSubscriptionTreeItem(
     return new SubscriptionTreeItem(parent, subscription);
 }
 
-class SubscriptionTreeItem extends AzExtParentTreeItem {
+export class SubscriptionTreeItem extends AzExtParentTreeItem {
     public readonly subscriptionContext: ISubscriptionContext;
     public readonly subscriptionId: string;
     public static contextValue: string = "azureApiCenterAzureSubscription";
@@ -49,7 +50,9 @@ class SubscriptionTreeItem extends AzExtParentTreeItem {
     }
 
     public async loadMoreChildrenImpl(): Promise<AzExtTreeItem[]> {
-        TelemetryClient.sendEvent(TelemetryEvent.treeviewListApiCenters, { [TelemetryProperties.treeItemFullId]: this.fullId });
+        const properties: { [key: string]: string; } = {};
+        TelemetryUtils.setAzureResourcesInfo(properties, this);
+        TelemetryClient.sendEvent(TelemetryEvent.treeviewListApiCenters, properties);
 
         const resourceGraphService = new ResourceGraphService(this.subscription);
 
