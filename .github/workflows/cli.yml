@@ -43,5 +43,6 @@ jobs:
 
       - name: Run tests
         run: |
+          cd azure-cli-extensions
           source .venv/bin/activate
           azdev test apic-extension --live
