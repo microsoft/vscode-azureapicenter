@@ -14,7 +14,9 @@ jobs:
     runs-on: ubuntu-latest
     environment: engineering
     steps:
-      - uses: actions/checkout@v2
+      - name: Clone azure-cli-extensions repository
+        run: |
+          git clone https://github.com/Azure/azure-cli-extensions.git
 
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -31,11 +33,12 @@ jobs:
 
       - name: Setup development environment
         run: |
+          cd azure-cli-extensions
           python -m venv .venv
           source .venv/bin/activate
           python -m pip install -U pip
           pip install azdev
-          printf "n\nn\ny\n" | azdev setup
+          azdev setup -r .
           azdev extension add apic-extension
 
       - name: Run tests
