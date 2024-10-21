@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 
+import { extensionDisplayName, extensionId } from "../constants";
 import { LocalPluginManifest } from "../types/AiDriver";
 import { GetPluginsCommandResult, ILocalPluginHandler, LocalPluginArgs, LocalPluginEntry } from "../types/AzureAgent";
 import { handleGenerateOpenApi } from "./generateOpenApi";
@@ -8,8 +9,8 @@ import { handleGenerateOpenApi } from "./generateOpenApi";
 const genOpenApiFunctionName = "generate_openapi";
 
 const apicPluginManifest: LocalPluginManifest = {
-    extensionId: "apidev.azure-api-center",
-    extensionDisplayName: "Azure API Center",
+    extensionId: extensionId,
+    extensionDisplayName: extensionDisplayName,
     name: "ApiCenterPlugin",
     version: "1.0.0",
     functions: [
