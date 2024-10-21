@@ -41,7 +41,7 @@ import { SignInToDataPlane } from "./commands/signInToDataPlane";
 import { testInPostman } from './commands/testInPostman';
 import { ErrorProperties, TelemetryProperties } from './common/telemetryEvent';
 import { doubleClickDebounceDelay, selectedNodeKey } from './constants';
-import { getPluginsCommand } from './copilot/agentIntegration';
+import { getPlugins } from './copilot/getPlugins';
 import { ext } from './extensionVariables';
 import { ApiVersionDefinitionTreeItem } from './tree/ApiVersionDefinitionTreeItem';
 import { createAzureAccountTreeItem } from "./tree/AzureAccountTreeItem";
@@ -121,6 +121,8 @@ export async function activate(context: vscode.ExtensionContext) {
 
     registerCommandWithTelemetry('azure-api-center.deleteCustomFunction', deleteCustomFunction);
 
+    registerCommandWithTelemetry('azure-api-center.agent.getPlugins', getPlugins);
+
     registerCommandWithTelemetry('azure-api-center.apiCenterTreeView.refresh', async (context: IActionContext) => refreshTree(context));
 
     registerCommandWithTelemetry('azure-api-center.signInToAzure', AzureAccount.signInToAzure);
@@ -134,7 +136,6 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.commands.executeCommand('workbench.actions.treeView.apiCenterWorkspace.collapseAll');
     });
 
-    registerCommandWithTelemetry('azure-api-center.agent.getPluginsCommand', getPluginsCommand);
     registerCommandWithTelemetry('azure-api-center.apiCenterWorkspace.removeApi', removeDataplaneAPI);
 
     context.subscriptions.push(
