@@ -1,6 +1,9 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 
+import { IParsedError, parseError } from "@microsoft/vscode-azext-utils";
+import { TelemetryClient } from "../common/telemetryClient";
+import { ErrorProperties } from "../common/telemetryEvent";
 import { extensionDisplayName, extensionId } from "../constants";
 import { LocalPluginManifest } from "../types/AiDriver";
 import { GetPluginsCommandResult, ILocalPluginHandler, LocalPluginArgs, LocalPluginEntry } from "../types/AzureAgent";
@@ -27,10 +30,29 @@ const apicPluginManifest: LocalPluginManifest = {
 const apicPluginHandler: ILocalPluginHandler = {
     execute: async (args: LocalPluginArgs<typeof genOpenApiFunctionName>) => {
         const pluginRequest = args.localPluginRequest;
-        if (pluginRequest.functionName === genOpenApiFunctionName) {
-            return await handleGenerateOpenApi(args.agentRequest);
-        } else {
-            return { result: "Error: Function not found." };
+        const eventName = `azure-api-center.agent.${pluginRequest.functionName}`;
+        let parsedError: IParsedError | undefined;
+
+        try {
+            TelemetryClient.sendEvent(`${eventName}.start`);
+            if (pluginRequest.functionName === genOpenApiFunctionName) {
+                return await handleGenerateOpenApi(args.agentRequest);
+            } else {
+                return { result: "Error: Function not found." };
+            }
+        } catch (error) {
+            parsedError = parseError(error);
+            throw error;
+        } finally {
+            if (parsedError) {
+                const properties = {
+                    [ErrorProperties.errorType]: parsedError.errorType,
+                    [ErrorProperties.errorMessage]: parsedError.message,
+                };
+                TelemetryClient.sendErrorEvent(`${eventName}.end`, properties);
+            } else {
+                TelemetryClient.sendEvent(`${eventName}.end`);
+            }
         }
     }
 };
