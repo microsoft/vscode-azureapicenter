@@ -132,5 +132,14 @@ export class UiStrings {
     static readonly GetTreeView = vscode.l10n.t("Please connect to Azure API Center Service first.");
     static readonly APIControlPlaneView = vscode.l10n.t("API Center Management Plane");
     static readonly APIDataPlaneView = vscode.l10n.t("API Center Data Plane");
-    static readonly APIDataPlaneWiki = vscode.l10n.t("API Catalog Guide")
+    static readonly APIDataPlaneWiki = vscode.l10n.t("API Catalog Guide");
+    static readonly GenerateOpenApiProgress = vscode.l10n.t("Invoking Azure API Center to generate OpenAPI specification documentation...");
+    static readonly GenerateOpenApiRegisterApiDesc = vscode.l10n.t("\n\nYou could register API in API Center:");
+    static readonly GenerateOpenApiRegisterApiButton = vscode.l10n.t("Register API");
+    static readonly GenerateOpenApiViewApiDesc = vscode.l10n.t("\n\nYou could view all of your APIs in API Center:");
+    static readonly GenerateOpenApiViewApiButton = vscode.l10n.t("Show API Center");
+    static readonly GenerateOpenApiSetRuleDesc = vscode.l10n.t("\n\nYou could set the active API Style Guide to lint your API:");
+    static readonly GenerateOpenApiSetRuleButton = vscode.l10n.t("Set active API Style Guide");
+    static readonly GenerateOpenApiRegenerateDesc = vscode.l10n.t("\n\nAfter API Style Guide is set, you could regenerate OpenAPI again:");
+    static readonly GenerateOpenApiRegenerateButton = vscode.l10n.t("Regenerate OpenAPI with active API Style Guide");
 }

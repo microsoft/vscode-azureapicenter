@@ -6,6 +6,7 @@ import { promises as fs } from 'fs';
 import * as yaml from 'js-yaml';
 import * as vscode from 'vscode';
 import { AgentRequest, LocalPluginResult } from "../types/AzureAgent";
+import { UiStrings } from '../uiStrings';
 
 export namespace GenerateOpenApi {
     type SpectralRule = {
@@ -57,7 +58,7 @@ Servers should not be defined in a webhook.
 Callbacks should not be defined in a webhook.`;
 
     export async function handleGenerateOpenApi(agentRequest: AgentRequest): Promise<LocalPluginResult> {
-        agentRequest.responseStream.progress("Invoking Azure API Center to generate OpenAPI specification documentation...");
+        agentRequest.responseStream.progress(UiStrings.GenerateOpenApiProgress);
 
         const rulesetFile = getRulesetFile();
 
@@ -71,31 +72,31 @@ ${await getRuleDescriptions(rulesetFile)}`,
 
         const chatResponseParts: vscode.ChatResponsePart[] = [];
 
-        chatResponseParts.push(new vscode.ChatResponseMarkdownPart("\n\nYou could register API in API Center:"));
+        chatResponseParts.push(new vscode.ChatResponseMarkdownPart(UiStrings.GenerateOpenApiRegisterApiDesc));
         chatResponseParts.push(new vscode.ChatResponseCommandButtonPart({
-            title: "$(run) Register API",
+            title: UiStrings.GenerateOpenApiRegisterApiButton,
             command: "azure-api-center.registerApi",
             arguments: []
         }));
 
         if (rulesetFile) {
-            chatResponseParts.push(new vscode.ChatResponseMarkdownPart("\n\nYou could view all of your APIs in API Center:"));
+            chatResponseParts.push(new vscode.ChatResponseMarkdownPart(UiStrings.GenerateOpenApiViewApiDesc));
             chatResponseParts.push(new vscode.ChatResponseCommandButtonPart({
-                title: "$(run) Show API Center",
+                title: UiStrings.GenerateOpenApiViewApiButton,
                 command: "workbench.view.extension.api-center-treeview",
                 arguments: []
             }));
         } else {
-            chatResponseParts.push(new vscode.ChatResponseMarkdownPart("\n\nYou could set the active API Style Guide to lint your API:"));
+            chatResponseParts.push(new vscode.ChatResponseMarkdownPart(UiStrings.GenerateOpenApiSetRuleDesc));
             chatResponseParts.push(new vscode.ChatResponseCommandButtonPart({
-                title: "$(run) Set active API Style Guide",
+                title: UiStrings.GenerateOpenApiSetRuleButton,
                 command: "azure-api-center.setApiRuleset",
                 arguments: []
             }));
 
-            chatResponseParts.push(new vscode.ChatResponseMarkdownPart("\n\nAfter API Style Guide is set, you could regenerate OpenAPI again:"));
+            chatResponseParts.push(new vscode.ChatResponseMarkdownPart(UiStrings.GenerateOpenApiRegenerateDesc));
             chatResponseParts.push(new vscode.ChatResponseCommandButtonPart({
-                title: "$(run) Regenerate OpenAPI with active API Style Guide",
+                title: UiStrings.GenerateOpenApiRegenerateButton,
                 command: "workbench.action.chat.open",
                 arguments: [{
                     query: `@azure ${agentRequest.userPrompt}`,
