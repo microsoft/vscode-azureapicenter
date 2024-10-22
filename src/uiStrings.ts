@@ -57,6 +57,7 @@ export class UiStrings {
     static readonly TreeitemLabelDefinitions = vscode.l10n.t("Definitions");
     static readonly TreeitemLabelVersions = vscode.l10n.t("Versions");
     static readonly TreeitemLabelEnvironments = vscode.l10n.t("Environments");
+    static readonly AccountTreeItemChildTypeLabel = vscode.l10n.t("Subscription");
     static readonly SubscriptionTreeItemChildTypeLabel = vscode.l10n.t("API Center Service");
     static readonly ApiCenterTreeItemTreeItemChildTypeLabel = vscode.l10n.t("APIs or Environments");
     static readonly ApisTreeItemChildTypeLabel = vscode.l10n.t("API");
@@ -131,4 +132,5 @@ export class UiStrings {
     static readonly GetTreeView = vscode.l10n.t("Please connect to Azure API Center Service first.");
     static readonly APIControlPlaneView = vscode.l10n.t("API Center Management Plane");
     static readonly APIDataPlaneView = vscode.l10n.t("API Center Data Plane");
+    static readonly APIDataPlaneWiki = vscode.l10n.t("API Catalog Guide")
 }
