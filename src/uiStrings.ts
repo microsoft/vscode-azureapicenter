@@ -132,4 +132,5 @@ export class UiStrings {
     static readonly GetTreeView = vscode.l10n.t("Please connect to Azure API Center Service first.");
     static readonly APIControlPlaneView = vscode.l10n.t("API Center Management Plane");
     static readonly APIDataPlaneView = vscode.l10n.t("API Center Data Plane");
+    static readonly APIDataPlaneWiki = vscode.l10n.t("API Catalog Guide")
 }

@@ -77,6 +77,15 @@ describe("ApiServerItem treeItem test case", () => {
     afterEach(() => {
         sandbox.restore();
     });
+    it("DataPlanAccountManagerTreeItem return catalog wiki", async () => {
+        ext.dataPlaneAccounts = [];
+        sandbox.stub(AzureDataSessionProviderHelper, "getSessionProvider").returns(sessionProvider);
+        const node: DataPlanAccountManagerTreeItem = new DataPlanAccountManagerTreeItem(sessionProvider);
+        const res = await node.loadMoreChildrenImpl(true, {} as IActionContext);
+        assert.equal(res.length, 1);
+        assert.equal(res[0].commandId, "azure-api-center.apiCenterWorkspace.learnApiCatalog");
+        assert.equal(res[0].id, "azureapicentercatalogwiki");
+    });
     it("ApiServerItem loadmorechild return login", async () => {
         sandbox.stub(AzureDataSessionProviderHelper, "getSessionProvider").returns(sessionProvider);
         const node: ApiServerItem = new ApiServerItem(new DataPlanAccountManagerTreeItem(sessionProvider), subContext);

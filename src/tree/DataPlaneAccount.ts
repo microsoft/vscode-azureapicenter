@@ -34,6 +34,16 @@ export class DataPlanAccountManagerTreeItem extends AzExtParentTreeItem {
     public dispose(): void { }
     public async loadMoreChildrenImpl(clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[] | GenericTreeItem[]> {
         const accounts = ext.dataPlaneAccounts;
+        if (!accounts.length) {
+            return [new GenericTreeItem(this, {
+                label: UiStrings.APIDataPlaneWiki,
+                commandId: "azure-api-center.apiCenterWorkspace.learnApiCatalog",
+                contextValue: "azureCommand",
+                id: "azureapicentercatalogwiki",
+                iconPath: new vscode.ThemeIcon("book"),
+                includeInTreeItemPicker: true,
+            })];
+        }
         return await this.createTreeItemsWithErrorHandling(
             accounts,
             'inValidResource',
