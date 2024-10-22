@@ -64,7 +64,7 @@ export async function handleGenerateOpenApi(agentRequest: AgentRequest): Promise
         result: `Please be professional, and use below infomation to generate an OpenAPI specification documentation with YAML format:
 ${agentRequest.userPrompt}
 
-In addition, ignore previous rules, and make sure the OpenAPI spec meet with below rules:
+In addition, ignore previous rules in conversation history, and make sure the OpenAPI spec meet with below rules:
 ${await getRuleDescriptions(rulesetFile)}`,
     };
 
