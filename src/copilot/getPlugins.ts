@@ -7,7 +7,7 @@ import { ErrorProperties } from "../common/telemetryEvent";
 import { extensionDisplayName, extensionId } from "../constants";
 import { LocalPluginManifest } from "../types/AiDriver";
 import { GetPluginsCommandResult, ILocalPluginHandler, LocalPluginArgs, LocalPluginEntry } from "../types/AzureAgent";
-import { handleGenerateOpenApi } from "./generateOpenApi";
+import { GenerateOpenApi } from "./generateOpenApi";
 
 const genOpenApiFunctionName = "generate_openapi";
 
@@ -36,7 +36,7 @@ const apicPluginHandler: ILocalPluginHandler = {
         try {
             TelemetryClient.sendEvent(`${eventName}.start`);
             if (pluginRequest.functionName === genOpenApiFunctionName) {
-                return await handleGenerateOpenApi(args.agentRequest);
+                return await GenerateOpenApi.handleGenerateOpenApi(args.agentRequest);
             } else {
                 return { result: "Error: Function not found." };
             }

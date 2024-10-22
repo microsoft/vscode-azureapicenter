@@ -4,7 +4,7 @@ import axios from 'axios';
 import * as fs from 'fs';
 import * as sinon from "sinon";
 import * as vscode from 'vscode';
-import { handleGenerateOpenApi } from '../../../copilot/generateOpenApi';
+import { GenerateOpenApi } from '../../../copilot/generateOpenApi';
 import { AgentRequest } from '../../../types/AzureAgent';
 import assert = require('assert');
 
@@ -34,7 +34,7 @@ describe('handleGenerateOpenApi', () => {
             get: sandbox.stub().returns(undefined)
         } as unknown as vscode.WorkspaceConfiguration);
 
-        const result: any = await handleGenerateOpenApi(agentRequest);
+        const result: any = await GenerateOpenApi.handleGenerateOpenApi(agentRequest);
 
         assert.ok((result.responseForLanguageModel.result as string).includes('Please be professional'));
         assert.ok((result.responseForLanguageModel.result as string).includes(spectralDefaultRuleDescription));
@@ -59,7 +59,7 @@ describe('handleGenerateOpenApi', () => {
         } as unknown as vscode.WorkspaceConfiguration);
         sandbox.stub(fs.promises, 'readFile').resolves(rulesetFileContent);
 
-        const result: any = await handleGenerateOpenApi(agentRequest);
+        const result: any = await GenerateOpenApi.handleGenerateOpenApi(agentRequest);
 
         assert.ok((result.responseForLanguageModel.result as string).includes(spectralDefaultRuleDescription));
         assert.ok((result.responseForLanguageModel.result as string).includes('Operation must have a description123'));
@@ -73,7 +73,7 @@ describe('handleGenerateOpenApi', () => {
         } as unknown as vscode.WorkspaceConfiguration);
         sandbox.stub(fs.promises, 'readFile').rejects(new Error('File not found'));
 
-        const result: any = await handleGenerateOpenApi(agentRequest);
+        const result: any = await GenerateOpenApi.handleGenerateOpenApi(agentRequest);
 
         assert.ok((result.responseForLanguageModel.result as string).endsWith(endPromptWithoutRules));
     });
@@ -93,7 +93,7 @@ describe('handleGenerateOpenApi', () => {
         } as unknown as vscode.WorkspaceConfiguration);
         sandbox.stub(axios, 'get').resolves({ data: rulesetFileContent });
 
-        const result: any = await handleGenerateOpenApi(agentRequest);
+        const result: any = await GenerateOpenApi.handleGenerateOpenApi(agentRequest);
 
         assert.ok((result.responseForLanguageModel.result as string).includes(spectralDefaultRuleDescription));
         assert.ok((result.responseForLanguageModel.result as string).includes('Operation must have a description123'));
@@ -105,7 +105,7 @@ describe('handleGenerateOpenApi', () => {
         } as unknown as vscode.WorkspaceConfiguration);
         sandbox.stub(fs.promises, 'readFile').resolves('invalid content');
 
-        const result: any = await handleGenerateOpenApi(agentRequest);
+        const result: any = await GenerateOpenApi.handleGenerateOpenApi(agentRequest);
 
         assert.ok((result.responseForLanguageModel.result as string).endsWith(endPromptWithoutRules));
     });

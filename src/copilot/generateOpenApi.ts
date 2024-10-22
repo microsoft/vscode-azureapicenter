@@ -7,13 +7,14 @@ import * as yaml from 'js-yaml';
 import * as vscode from 'vscode';
 import { AgentRequest, LocalPluginResult } from "../types/AzureAgent";
 
-type SpectralRule = {
-    extends?: unknown;
-    rules: Record<string, { description?: string, formats?: string[] }>;
-};
+export namespace GenerateOpenApi {
+    type SpectralRule = {
+        extends?: unknown;
+        rules: Record<string, { description?: string, formats?: string[] }>;
+    };
 
-const spectralDefaultRule = "spectral:oas";
-const spectralDefaultRuleDescriptions = `Operation must have at least one "2xx" or "3xx" response.
+    const spectralDefaultRule = "spectral:oas";
+    const spectralDefaultRuleDescriptions = `Operation must have at least one "2xx" or "3xx" response.
 Every operation must have unique "operationId".
 Operation parameters are unique and non-repeating.
 Operation tags must be defined in global tags.
@@ -55,134 +56,135 @@ Callbacks should not be defined within a callback
 Servers should not be defined in a webhook.
 Callbacks should not be defined in a webhook.`;
 
-export async function handleGenerateOpenApi(agentRequest: AgentRequest): Promise<LocalPluginResult> {
-    agentRequest.responseStream.progress("Invoking Azure API Center to generate OpenAPI specification documentation...");
+    export async function handleGenerateOpenApi(agentRequest: AgentRequest): Promise<LocalPluginResult> {
+        agentRequest.responseStream.progress("Invoking Azure API Center to generate OpenAPI specification documentation...");
 
-    const rulesetFile = getRulesetFile();
+        const rulesetFile = getRulesetFile();
 
-    const responseForLanguageModel = {
-        result: `Please be professional, and use below infomation to generate an OpenAPI specification documentation with YAML format:
+        const responseForLanguageModel = {
+            result: `Please be professional, and use below infomation to generate an OpenAPI specification documentation with YAML format:
 ${agentRequest.userPrompt}
 
 In addition, ignore previous rules in conversation history, and make sure the OpenAPI spec meet with below rules:
 ${await getRuleDescriptions(rulesetFile)}`,
-    };
+        };
 
-    const chatResponseParts: vscode.ChatResponsePart[] = [];
+        const chatResponseParts: vscode.ChatResponsePart[] = [];
 
-    chatResponseParts.push(new vscode.ChatResponseMarkdownPart("\n\nYou could register API in API Center:"));
-    chatResponseParts.push(new vscode.ChatResponseCommandButtonPart({
-        title: "$(run) Register API",
-        command: "azure-api-center.registerApi",
-        arguments: []
-    }));
-
-    if (rulesetFile) {
-        chatResponseParts.push(new vscode.ChatResponseMarkdownPart("\n\nYou could view all of your APIs in API Center:"));
+        chatResponseParts.push(new vscode.ChatResponseMarkdownPart("\n\nYou could register API in API Center:"));
         chatResponseParts.push(new vscode.ChatResponseCommandButtonPart({
-            title: "$(run) Show API Center",
-            command: "workbench.view.extension.api-center-treeview",
-            arguments: []
-        }));
-    } else {
-        chatResponseParts.push(new vscode.ChatResponseMarkdownPart("\n\nYou could set the active API Style Guide to lint your API:"));
-        chatResponseParts.push(new vscode.ChatResponseCommandButtonPart({
-            title: "$(run) Set active API Style Guide",
-            command: "azure-api-center.setApiRuleset",
+            title: "$(run) Register API",
+            command: "azure-api-center.registerApi",
             arguments: []
         }));
 
-        chatResponseParts.push(new vscode.ChatResponseMarkdownPart("\n\nAfter API Style Guide is set, you could regenerate OpenAPI again:"));
-        chatResponseParts.push(new vscode.ChatResponseCommandButtonPart({
-            title: "$(run) Regenerate OpenAPI with active API Style Guide",
-            command: "workbench.action.chat.open",
-            arguments: [{
-                query: `@azure ${agentRequest.userPrompt}`,
-            }]
-        }));
-    }
-
-    return {
-        responseForLanguageModel: responseForLanguageModel,
-        chatResponseParts: chatResponseParts
-    };
-}
-
-function getRulesetFile(): string | undefined {
-    const config = vscode.workspace.getConfiguration('spectral');
-    const rulesetFile = config.get<string>('rulesetFile');
-    return rulesetFile;
-}
-
-async function getRuleDescriptions(rulesetFile: string | undefined): Promise<string> {
-    if (rulesetFile) {
-        const rulesetFileContent = await getRulesetFileContent(rulesetFile);
-        if (!rulesetFileContent) {
-            return "";
-        }
-
-        const ruleDescriptions = getRuleDescriptionsFromRulesetFileContent(rulesetFileContent);
-        return ruleDescriptions;
-    } else {
-        return spectralDefaultRuleDescriptions;
-    }
-}
-
-async function getRulesetFileContent(rulesetFile: string): Promise<string | undefined> {
-    try {
-        let rulesetFileContent = "";
-        if (rulesetFile.startsWith('http://') || rulesetFile.startsWith('https://')) {
-            rulesetFileContent = await axios.get(rulesetFile).then(response => response.data);
+        if (rulesetFile) {
+            chatResponseParts.push(new vscode.ChatResponseMarkdownPart("\n\nYou could view all of your APIs in API Center:"));
+            chatResponseParts.push(new vscode.ChatResponseCommandButtonPart({
+                title: "$(run) Show API Center",
+                command: "workbench.view.extension.api-center-treeview",
+                arguments: []
+            }));
         } else {
-            rulesetFileContent = await fs.readFile(rulesetFile, 'utf8');
+            chatResponseParts.push(new vscode.ChatResponseMarkdownPart("\n\nYou could set the active API Style Guide to lint your API:"));
+            chatResponseParts.push(new vscode.ChatResponseCommandButtonPart({
+                title: "$(run) Set active API Style Guide",
+                command: "azure-api-center.setApiRuleset",
+                arguments: []
+            }));
+
+            chatResponseParts.push(new vscode.ChatResponseMarkdownPart("\n\nAfter API Style Guide is set, you could regenerate OpenAPI again:"));
+            chatResponseParts.push(new vscode.ChatResponseCommandButtonPart({
+                title: "$(run) Regenerate OpenAPI with active API Style Guide",
+                command: "workbench.action.chat.open",
+                arguments: [{
+                    query: `@azure ${agentRequest.userPrompt}`,
+                }]
+            }));
         }
-        return rulesetFileContent;
-    } catch (error) {
-        return undefined;
-    }
-}
 
-function getRuleDescriptionsFromRulesetFileContent(rulesetFileContent: string): string {
-    const rulesetObject = parseRulesetFileContentToObject(rulesetFileContent);
-
-    let extendedSpectralDefaultRuleDescriptions = "";
-    const extendsValue = rulesetObject.extends;
-    if (extendsValue === spectralDefaultRule || (Array.isArray(extendsValue) && extendsValue.includes(spectralDefaultRule))) {
-        extendedSpectralDefaultRuleDescriptions = spectralDefaultRuleDescriptions;
+        return {
+            responseForLanguageModel: responseForLanguageModel,
+            chatResponseParts: chatResponseParts
+        };
     }
 
-    let userRuleDescriptions = "";
-    const rules = rulesetObject.rules;
-    if (rules) {
-        userRuleDescriptions = Object.keys(rulesetObject.rules)
-            .filter(ruleName => {
-                const formats = rulesetObject.rules[ruleName].formats;
-                const isOas2OnlyFormat = formats && formats.length === 1 && formats[0] === 'oas2';
-                return !isOas2OnlyFormat; // Exclude rules that are oas2-only
-            })
-            .map(ruleName => rulesetObject.rules[ruleName].description)
-            .filter(description => description)
-            .join('\n');
+    function getRulesetFile(): string | undefined {
+        const config = vscode.workspace.getConfiguration('spectral');
+        const rulesetFile = config.get<string>('rulesetFile');
+        return rulesetFile;
     }
 
-    const ruleDescriptions = [extendedSpectralDefaultRuleDescriptions, userRuleDescriptions]
-        .filter(descriptions => descriptions)
-        .join('\n');
-    return ruleDescriptions;
-}
+    async function getRuleDescriptions(rulesetFile: string | undefined): Promise<string> {
+        if (rulesetFile) {
+            const rulesetFileContent = await getRulesetFileContent(rulesetFile);
+            if (!rulesetFileContent) {
+                return "";
+            }
 
-function parseRulesetFileContentToObject(rulesetFileContent: string): SpectralRule {
-    let result: SpectralRule = { rules: {} };
+            const ruleDescriptions = getRuleDescriptionsFromRulesetFileContent(rulesetFileContent);
+            return ruleDescriptions;
+        } else {
+            return spectralDefaultRuleDescriptions;
+        }
+    }
 
-    try {
-        // Attempt to parse as JSON
-        result = JSON.parse(rulesetFileContent) as SpectralRule;
-    } catch (jsonError) {
+    async function getRulesetFileContent(rulesetFile: string): Promise<string | undefined> {
         try {
-            // Attempt to parse as YAML
-            result = yaml.load(rulesetFileContent) as SpectralRule;
-        } catch (yamlError) { }
+            let rulesetFileContent = "";
+            if (rulesetFile.startsWith('http://') || rulesetFile.startsWith('https://')) {
+                rulesetFileContent = await axios.get(rulesetFile).then(response => response.data);
+            } else {
+                rulesetFileContent = await fs.readFile(rulesetFile, 'utf8');
+            }
+            return rulesetFileContent;
+        } catch (error) {
+            return undefined;
+        }
     }
 
-    return result;
+    function getRuleDescriptionsFromRulesetFileContent(rulesetFileContent: string): string {
+        const rulesetObject = parseRulesetFileContentToObject(rulesetFileContent);
+
+        let extendedSpectralDefaultRuleDescriptions = "";
+        const extendsValue = rulesetObject.extends;
+        if (extendsValue === spectralDefaultRule || (Array.isArray(extendsValue) && extendsValue.includes(spectralDefaultRule))) {
+            extendedSpectralDefaultRuleDescriptions = spectralDefaultRuleDescriptions;
+        }
+
+        let userRuleDescriptions = "";
+        const rules = rulesetObject.rules;
+        if (rules) {
+            userRuleDescriptions = Object.keys(rulesetObject.rules)
+                .filter(ruleName => {
+                    const formats = rulesetObject.rules[ruleName].formats;
+                    const isOas2OnlyFormat = formats && formats.length === 1 && formats[0] === 'oas2';
+                    return !isOas2OnlyFormat; // Exclude rules that are oas2-only
+                })
+                .map(ruleName => rulesetObject.rules[ruleName].description)
+                .filter(description => description)
+                .join('\n');
+        }
+
+        const ruleDescriptions = [extendedSpectralDefaultRuleDescriptions, userRuleDescriptions]
+            .filter(descriptions => descriptions)
+            .join('\n');
+        return ruleDescriptions;
+    }
+
+    function parseRulesetFileContentToObject(rulesetFileContent: string): SpectralRule {
+        let result: SpectralRule = { rules: {} };
+
+        try {
+            // Attempt to parse as JSON
+            result = JSON.parse(rulesetFileContent) as SpectralRule;
+        } catch (jsonError) {
+            try {
+                // Attempt to parse as YAML
+                result = yaml.load(rulesetFileContent) as SpectralRule;
+            } catch (yamlError) { }
+        }
+
+        return result;
+    }
 }
