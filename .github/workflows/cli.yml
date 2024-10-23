@@ -12,12 +12,8 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    environment: engineering
+    environment: engineering2
     steps:
-      - name: Clone azure-cli-extensions repository
-        run: |
-          git clone https://github.com/Azure/azure-cli-extensions.git
-
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
@@ -30,6 +26,12 @@ jobs:
           tenant-id: ${{secrets.AZURE_TENANT_ID}}
           subscription-id: ${{secrets.AZURE_SUBSCRIPTION_ID}}
           enable-AzPSSession: true
+
+      - name: Clone azure-cli-extensions repository
+        run: |
+          git clone https://github.com/blackchoey/azure-cli-extensions.git
+          cd azure-cli-extensions
+          git checkout frank/test-pipline
 
       - name: Setup development environment
         run: |
