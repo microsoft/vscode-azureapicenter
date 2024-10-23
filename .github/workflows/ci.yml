@@ -1,6 +1,6 @@
 name: "CI"
 on:
-  pull_request_target:
+  pull_request:
     branches:
       - main
       - dev
@@ -31,7 +31,7 @@ jobs:
 
   semver-title:
     runs-on: ubuntu-latest
-    if: (github.event_name == 'pull_request_target')
+    if: (github.event_name == 'pull_request')
     permissions:
       pull-requests: write
     steps:
@@ -51,7 +51,7 @@ jobs:
           ref: ${{ github.head_ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
       - name: Merge Branches
-        if: ${{ github.event_name == 'pull_request_target' }}
+        if: ${{ github.event_name == 'pull_request' }}
         run: |
           git config --global user.email "bot@user.noreply.github.com"
           git config --global user.name "bot"

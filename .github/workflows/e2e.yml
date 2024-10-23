@@ -8,7 +8,7 @@ on:
         type: string
   push:
     branches: ["dev", "main"]
-  pull_request_target:
+  pull_request:
     branches: ["dev", "main"]
 
 jobs:
@@ -80,7 +80,7 @@ jobs:
           npx ts-node scripts/testPlan.ts archive $testplanid
 
       - name: Download TestPlan
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.7
         with:
           path: ./test-results
 
