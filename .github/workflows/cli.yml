@@ -47,4 +47,5 @@ jobs:
         run: |
           cd azure-cli-extensions
           source .venv/bin/activate
-          azdev test azext_apic-extension test_import_from_apim --live
+          echo "USERASSIGNED_IDENTITY=${{ secrets.USERASSIGNED_IDENTITY }}" >> $GITHUB_ENV
+          azdev test apic-extension --live
