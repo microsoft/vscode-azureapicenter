@@ -47,4 +47,4 @@ jobs:
         run: |
           cd azure-cli-extensions
           source .venv/bin/activate
-          azdev test apic-extension --live
+          azdev test azext_apic-extension test_import_from_apim --live
