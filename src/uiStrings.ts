@@ -134,12 +134,12 @@ export class UiStrings {
     static readonly APIDataPlaneView = vscode.l10n.t("API Center Data Plane");
     static readonly APIDataPlaneWiki = vscode.l10n.t("API Catalog Guide");
     static readonly GenerateOpenApiProgress = vscode.l10n.t("Invoking Azure API Center to generate OpenAPI specification documentation...");
-    static readonly GenerateOpenApiRegisterApiDesc = vscode.l10n.t("\n\nYou could register API in API Center:");
-    static readonly GenerateOpenApiRegisterApiButton = vscode.l10n.t("Register API");
-    static readonly GenerateOpenApiViewApiDesc = vscode.l10n.t("\n\nYou could view all of your APIs in API Center:");
-    static readonly GenerateOpenApiViewApiButton = vscode.l10n.t("Show API Center");
-    static readonly GenerateOpenApiSetRuleDesc = vscode.l10n.t("\n\nYou could set the active API Style Guide to lint your API:");
-    static readonly GenerateOpenApiSetRuleButton = vscode.l10n.t("Set active API Style Guide");
-    static readonly GenerateOpenApiRegenerateDesc = vscode.l10n.t("\n\nAfter API Style Guide is set, you could regenerate OpenAPI again:");
-    static readonly GenerateOpenApiRegenerateButton = vscode.l10n.t("Regenerate OpenAPI with active API Style Guide");
+    static readonly GenerateOpenApiRegisterApiDesc = vscode.l10n.t("\n\nAzure API Center is a centralized hub for discovering, reusing, and governing all of your organization's APIs. Would you like to register your API in Azure API Center?");
+    static readonly GenerateOpenApiRegisterApiButton = vscode.l10n.t("Register your API in API Center");
+    static readonly GenerateOpenApiViewApiDesc = vscode.l10n.t("\n\nWould you like to see a list of all the APIs available in the Azure API Center?");
+    static readonly GenerateOpenApiViewApiButton = vscode.l10n.t("Show Azure API Center");
+    static readonly GenerateOpenApiSetRuleDesc = vscode.l10n.t("\n\nWould you like to ensure your API specification meets your organizational compliance guidelines?");
+    static readonly GenerateOpenApiSetRuleButton = vscode.l10n.t("Set active API style guide");
+    static readonly GenerateOpenApiRegenerateDesc = vscode.l10n.t("\n\nAfter API style guide is set, you could regenerate OpenAPI spec again.");
+    static readonly GenerateOpenApiRegenerateButton = vscode.l10n.t("Regenerate OpenAPI spec");
 }
