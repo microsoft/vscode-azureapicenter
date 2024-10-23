@@ -39,6 +39,9 @@ describe('handleGenerateOpenApi', () => {
         assert.ok((result.responseForLanguageModel.result as string).includes('Please be professional'));
         assert.ok((result.responseForLanguageModel.result as string).includes(spectralDefaultRuleDescription));
         assert.strictEqual(result.chatResponseParts.length, 6);
+        assert.strictEqual(result.chatResponseParts[1].value.title, 'Register your API in API Center');
+        assert.strictEqual(result.chatResponseParts[3].value.title, 'Set active API style guide');
+        assert.strictEqual(result.chatResponseParts[5].value.title, 'Regenerate OpenAPI spec');
     });
 
     it('should return response with custom rules if ruleset file is configured', async () => {
@@ -65,6 +68,8 @@ describe('handleGenerateOpenApi', () => {
         assert.ok((result.responseForLanguageModel.result as string).includes('Operation must have a description123'));
         assert.ok(!(result.responseForLanguageModel.result as string).includes('Operation must have a description456'));
         assert.strictEqual(result.chatResponseParts.length, 4);
+        assert.strictEqual(result.chatResponseParts[1].value.title, 'Register your API in API Center');
+        assert.strictEqual(result.chatResponseParts[3].value.title, 'Show Azure API Center');
     });
 
     it('should handle errors when reading ruleset file', async () => {
