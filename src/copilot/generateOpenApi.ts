@@ -134,7 +134,7 @@ ${await getRuleDescriptions(rulesetFile)}`,
         try {
             let rulesetFileContent = "";
             if (rulesetFile.startsWith('http://') || rulesetFile.startsWith('https://')) {
-                rulesetFileContent = await axios.get(rulesetFile).then(response => response.data);
+                rulesetFileContent = (await axios.get(rulesetFile)).data;
             } else {
                 rulesetFileContent = await fs.readFile(rulesetFile, 'utf8');
             }
