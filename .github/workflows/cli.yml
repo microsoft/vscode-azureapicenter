@@ -43,9 +43,14 @@ jobs:
           azdev setup -r .
           azdev extension add apic-extension
 
+      - name: Set environment variable
+        run: |
+          echo "USERASSIGNED_IDENTITY=${{ secrets.USERASSIGNED_IDENTITY }}" >> $GITHUB_ENV
+
       - name: Run tests
         run: |
           cd azure-cli-extensions
           source .venv/bin/activate
-          echo "USERASSIGNED_IDENTITY=${{ secrets.USERASSIGNED_IDENTITY }}" >> $GITHUB_ENV
           azdev test apic-extension --live
+        env:
+          USERASSIGNED_IDENTITY: ${{ secrets.USERASSIGNED_IDENTITY }}
