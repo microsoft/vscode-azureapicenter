@@ -41,7 +41,7 @@ describe('handleGenerateOpenApi', () => {
         assert.strictEqual(result.chatResponseParts.length, 6);
         assert.strictEqual(result.chatResponseParts[1].value.title, 'Register your API in API Center');
         assert.strictEqual(result.chatResponseParts[3].value.title, 'Set active API style guide');
-        assert.strictEqual(result.chatResponseParts[5].value.title, 'Regenerate OpenAPI spec');
+        assert.strictEqual(result.chatResponseParts[5].value.title, 'Regenerate API specification');
     });
 
     it('should return response with custom rules if ruleset file is configured', async () => {
