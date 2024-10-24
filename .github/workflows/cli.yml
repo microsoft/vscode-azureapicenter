@@ -31,7 +31,7 @@ jobs:
         run: |
           git clone https://github.com/blackchoey/azure-cli-extensions.git
           cd azure-cli-extensions
-          git checkout dev
+          git checkout frank/test-pipeline
 
       - name: Setup development environment
         run: |
