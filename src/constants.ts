@@ -3,7 +3,9 @@
 import * as vscode from 'vscode';
 import { UiStrings } from './uiStrings';
 
+export const extensionId = "apidev.azure-api-center";
 export const extensionName = "azure-api-center";
+export const extensionDisplayName = "Azure API Center";
 export const chatParticipantId = "azure-api-center.apicenter";
 export const sessionFolderKey = "currentSessionWorkingFolder";
 export const showSavePromptConfigKey = "azure-api-center.showSavePrompt";

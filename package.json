@@ -561,5 +561,9 @@
     "*.{js,jsx,css,ts,tsx}": [
       "npx eslint --cache --fix --quiet"
     ]
+  },
+  "agentMetadata": {
+    "version": "2.0",
+    "getPluginsCommand": "azure-api-center.agent.getPlugins"
   }
 }
