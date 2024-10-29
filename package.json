@@ -188,6 +188,12 @@
         "title": "%azure-api-center.commands.apiCenterWorkspace.removeApis.title%",
         "icon": "$(close)",
         "category": "Azure API Center"
+      },
+      {
+        "command": "azure-api-center.apiCenterWorkspace.learnApiCatalog",
+        "title": "%azure-api-center.commands.apiCenterWorkspace.learnApiCatalog.title%",
+        "icon": "$(info)",
+        "category": "Azure API Center"
       }
     ],
     "views": {
@@ -219,6 +225,11 @@
         {
           "command": "azure-api-center.apiCenterTreeView.refresh",
           "when": "view == apiCenterTreeView",
+          "group": "navigation"
+        },
+        {
+          "command": "azure-api-center.apiCenterWorkspace.learnApiCatalog",
+          "when": "view == apiCenterWorkspace",
           "group": "navigation"
         },
         {
@@ -536,7 +547,7 @@
     "ajv": "^8.12.0",
     "archiver": "^7.0.1",
     "axios": "^1.7.4",
-    "express": "^4.19.2",
+    "express": "^4.21.1",
     "fs-extra": "^11.1.1",
     "get-port": "^7.0.0",
     "json-schema-faker": "^0.5.6",
@@ -550,5 +561,9 @@
     "*.{js,jsx,css,ts,tsx}": [
       "npx eslint --cache --fix --quiet"
     ]
+  },
+  "agentMetadata": {
+    "version": "2.0",
+    "getPluginsCommand": "azure-api-center.agent.getPlugins"
   }
 }

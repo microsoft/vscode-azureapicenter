@@ -4,6 +4,7 @@ import { AzExtParentTreeItem, AzExtTreeItem, ISubscriptionContext } from "@micro
 import { ResourceGraphService } from "../azure/ResourceGraph/ResourceGraphService";
 import { TelemetryClient } from "../common/telemetryClient";
 import { TelemetryEvent } from "../common/telemetryEvent";
+import { UiStrings } from "../uiStrings";
 import { TelemetryUtils } from "../utils/telemetryUtils";
 import { treeUtils } from "../utils/treeUtils";
 import { ApiCenterTreeItem } from "./ApiCenterTreeItem";
@@ -21,6 +22,7 @@ export class SubscriptionTreeItem extends AzExtParentTreeItem {
     public static contextValue: string = "azureApiCenterAzureSubscription";
     public readonly contextValue: string = SubscriptionTreeItem.contextValue;
     public readonly label: string;
+    public readonly childTypeLabel: string = UiStrings.SubscriptionTreeItemChildTypeLabel;
 
     public constructor(
         parent: AzExtParentTreeItem,

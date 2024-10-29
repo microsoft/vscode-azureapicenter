@@ -40,7 +40,8 @@ import { setApiRuleset } from './commands/setApiRuleset';
 import { SignInToDataPlane } from "./commands/signInToDataPlane";
 import { testInPostman } from './commands/testInPostman';
 import { ErrorProperties, TelemetryProperties } from './common/telemetryEvent';
-import { doubleClickDebounceDelay, selectedNodeKey } from './constants';
+import { LearnMoreAboutAPICatalog, doubleClickDebounceDelay, selectedNodeKey } from './constants';
+import { getPlugins } from './copilot/getPlugins';
 import { ext } from './extensionVariables';
 import { ApiVersionDefinitionTreeItem } from './tree/ApiVersionDefinitionTreeItem';
 import { createAzureAccountTreeItem } from "./tree/AzureAccountTreeItem";
@@ -120,6 +121,8 @@ export async function activate(context: vscode.ExtensionContext) {
 
     registerCommandWithTelemetry('azure-api-center.deleteCustomFunction', deleteCustomFunction);
 
+    registerCommandWithTelemetry('azure-api-center.agent.getPlugins', getPlugins);
+
     registerCommandWithTelemetry('azure-api-center.apiCenterTreeView.refresh', async (context: IActionContext) => refreshTree(context));
 
     registerCommandWithTelemetry('azure-api-center.signInToAzure', AzureAccount.signInToAzure);
@@ -132,6 +135,8 @@ export async function activate(context: vscode.ExtensionContext) {
     registerCommandWithTelemetry('azure-api-center.apiCenterWorkspace.collapse', () => {
         vscode.commands.executeCommand('workbench.actions.treeView.apiCenterWorkspace.collapseAll');
     });
+
+    registerCommandWithTelemetry('azure-api-center.apiCenterWorkspace.learnApiCatalog', () => vscode.env.openExternal(vscode.Uri.parse(LearnMoreAboutAPICatalog)));
 
     registerCommandWithTelemetry('azure-api-center.apiCenterWorkspace.removeApi', removeDataplaneAPI);
 
@@ -149,7 +154,7 @@ async function registerCommandWithTelemetry(commandId: string, callback: Command
         let parsedError: IParsedError | undefined;
         try {
             TelemetryClient.sendEvent(`${commandId}.start`);
-            await callback(context, ...args);
+            return await callback(context, ...args);
         } catch (error) {
             parsedError = parseError(error);
             if (!isUserCancelledError(parsedError)) {

@@ -3,7 +3,9 @@
 import * as vscode from 'vscode';
 import { UiStrings } from './uiStrings';
 
+export const extensionId = "apidev.azure-api-center";
 export const extensionName = "azure-api-center";
+export const extensionDisplayName = "Azure API Center";
 export const chatParticipantId = "azure-api-center.apicenter";
 export const sessionFolderKey = "currentSessionWorkingFolder";
 export const showSavePromptConfigKey = "azure-api-center.showSavePrompt";
@@ -14,6 +16,7 @@ export const makrdownDocuments = "markdown-documents";
 export const defaultRulesetFile = "https://raw.githubusercontent.com/Azure/APICenter-Analyzer/preview/resources/rulesets/oas.yaml";
 export const azureApiGuidelineRulesetFile = "https://raw.githubusercontent.com/azure/azure-api-style-guide/main/spectral.yaml";
 export const spectralOwaspRulesetFile = "https://unpkg.com/@stoplight/spectral-owasp-ruleset/dist/ruleset.mjs";
+export const LearnMoreAboutAPICatalog = "https://aka.ms/LearnAboutAPICatalog";
 export const MODEL_SELECTOR: vscode.LanguageModelChatSelector = { vendor: 'copilot', family: 'gpt-4o' };
 export const ExceedTokenLimit = "Message exceeds token limit";
 export const SpectralExtensionId = "stoplight.spectral";
