@@ -22,7 +22,7 @@ Ensure that new API versions don't break API consumers with breaking change dete
 
 ![Breaking Change Detection](./media/breaking-change.png)
 
-[[Pre-Release]](#pre-release) Use natural language to generate OpenAPI specification compliant with Spectral rulesets.
+[[Pre-Release]](#pre-release) Use GitHub Copilot for Azure to design API specifications that comply with API Center governance, ensuring your APIs adhere to best practices and standards through AI assistance.
 
 ![Github Copilot - Generate OpenAPI specification](./media/github-copilot-generate-openapi.png)
 

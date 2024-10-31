@@ -4,9 +4,10 @@
 > Note: This changelog only includes the changes for the pre-release versions of Azure API Center for Visual Studio Code. For the changelog of stable versions, please refer to the [Changelog of Azure API Center for Visual Studio Code](https://github.com/microsoft/vscode-azureapicenter/blob/main/CHANGELOG.md).
 
 ### November 4, 2024
-* Add integration with GitHub Copilot for Azure (@azure extension) to provide a chat experience to let API developers use natural language to quickly generate OpenAPI specification compliant with Spectral rulesets:
-    * Generate OpenAPI specification compliant with active API style guide.
-    * Generate OpenAPI specification compliant with default 'spectral:oas' ruleset, if no active API style guide is set.
+* Add integration with GitHub Copilot for Azure (@Azure extension) to provide a chat experience for developers to leverage its capabilities for a variety of API Center-related tasks:
+    * Generate OpenAPI specification compliant with the active API style guide.
+    * If no active API style guide is set, generate OpenAPI specifications compliant with the default ‘spectral:oas’ ruleset.
+    * Easily register your generated APIs in API Center.
 * Add wiki guide for Platform API Catalog.
 
 ### September 26, 2024
