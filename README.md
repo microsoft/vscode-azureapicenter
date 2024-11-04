@@ -22,9 +22,13 @@ Ensure that new API versions don't break API consumers with breaking change dete
 
 ![Breaking Change Detection](./media/breaking-change.png)
 
-[[Pre-Release]](#pre-release) Generate Open API specification file from API code.
+[[Pre-Release]](#pre-release) Use GitHub Copilot for Azure to design API specifications that comply with API Center governance, ensuring your APIs adhere to best practices and standards through AI assistance.
 
-![Generate Open API specification](./media/generate-api-documentation.gif)
+![Github Copilot - Generate OpenAPI specification](./media/github-copilot-generate-openapi.png)
+
+[[Pre-Release]](#pre-release) Generate OpenAPI specification file from API code.
+
+![Generate OpenAPI specification](./media/generate-api-documentation.gif)
 
 ### [[Pre-Release]](#pre-release) Platform API Catalog
 ![data-view](./media/add-data-api.gif)
