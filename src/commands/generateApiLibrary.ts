@@ -8,12 +8,12 @@ import * as vscode from 'vscode';
 import { ext } from '../extensionVariables';
 import { ApiVersionDefinitionTreeItem } from '../tree/ApiVersionDefinitionTreeItem';
 import { UiStrings } from '../uiStrings';
-import { ensureExtension } from '../utils/ensureExtension';
+import { EnsureExtension } from '../utils/ensureExtension';
 
 const KiotaExtensionId = 'ms-graph.kiota';
 
 export async function generateApiLibrary(context: IActionContext, node: ApiVersionDefinitionTreeItem) {
-    ensureExtension(context, {
+    EnsureExtension.ensureExtension(context, {
         extensionId: KiotaExtensionId,
         noExtensionErrorMessage: UiStrings.NoKiotaExtension,
     });

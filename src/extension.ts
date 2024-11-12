@@ -36,7 +36,7 @@ import { exportRules } from './commands/rules/exportRules';
 import { openRule } from './commands/rules/openRule';
 import { renameCustomFunction } from './commands/rules/renameCustomFunction';
 import { searchApi } from './commands/searchApi';
-import { setApiRuleset } from './commands/setApiRuleset';
+import { SetApiRuleset } from './commands/setApiRuleset';
 import { SignInToDataPlane } from "./commands/signInToDataPlane";
 import { testInPostman } from './commands/testInPostman';
 import { ErrorProperties, TelemetryProperties } from './common/telemetryEvent';
@@ -99,7 +99,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
     registerCommandWithTelemetry('azure-api-center.cleanupSearchResult', cleanupSearchResult);
 
-    registerCommandWithTelemetry('azure-api-center.setApiRuleset', setApiRuleset);
+    registerCommandWithTelemetry('azure-api-center.setApiRuleset', SetApiRuleset.setApiRuleset);
 
     registerCommandWithTelemetry('azure-api-center.generateApiFromCode', GenerateApiFromCode.generateApiFromCode);
 
