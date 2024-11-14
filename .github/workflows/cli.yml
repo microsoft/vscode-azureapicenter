@@ -60,7 +60,7 @@ jobs:
       - name: Generate Email Content
         id: generate-email-content
         run: |
-          echo "to=frankqian@microsoft.com,chyuan@microsoft.com,shenwe@microsoft.com" >> $GITHUB_ENV
+          echo "to=${{secrets.AUTHOR_MAIL_ADDRESSES}}" >> $GITHUB_ENV
           echo "body=Workflow URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> $GITHUB_ENV
           echo "subject=[APICENTER] Weekly APIC Extension Live Test Failed" >> $GITHUB_ENV
 
