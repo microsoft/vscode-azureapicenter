@@ -34,6 +34,7 @@ export class UiStrings {
     static readonly ValidUrlStart = vscode.l10n.t('Please enter a valid URL.');
     static readonly ValidUrlType = vscode.l10n.t('Please enter a valid URL to a JSON, YAML, or JavaScript file.');
     static readonly RulesetFileSet = vscode.l10n.t("API Style Guide is set to '{0}'.");
+    static readonly RulesetFileSetAsNone = vscode.l10n.t("API Style Guide is set as none.");
     static readonly CopilotNoCmd = vscode.l10n.t("Hi! What can I help you with? Please use `/list` or `/find` to chat with me!");
     static readonly CopilotQueryData = vscode.l10n.t("Querying data from Azure API Center...");
     static readonly CopilotNoMoreApiSpec = vscode.l10n.t("⚠️ There are no more API specification documents.");
@@ -48,6 +49,7 @@ export class UiStrings {
     static readonly ApiRulesetOptionActiveFile = vscode.l10n.t("Active File");
     static readonly ApiRulesetOptionSelectFile = vscode.l10n.t("Select Local File...");
     static readonly ApiRulesetOptionInputUrl = vscode.l10n.t("Input Remote URL...");
+    static readonly ApiRulesetOptionNone = vscode.l10n.t("None");
     static readonly CICDTypeGitHub = vscode.l10n.t("GitHub");
     static readonly CICDTypeAzure = vscode.l10n.t("Azure DevOps");
     static readonly ApiSpecificationOptionApiCenter = vscode.l10n.t("Azure API Center");
