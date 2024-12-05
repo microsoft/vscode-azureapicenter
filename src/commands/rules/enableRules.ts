@@ -41,7 +41,7 @@ export async function enableRules(context: IActionContext, node: RulesTreeItem) 
             value: content,
             format: ApiCenterRulesetImportFormat.InlineZip,
         };
-        const importRulesetResponse = await apiCenterService.importRuleset(importPayload);
+        const importRulesetResponse = await apiCenterService.importRuleset(importPayload, node.configName);
 
         if (importRulesetResponse.isSuccessful) {
             vscode.window.showInformationMessage(vscode.l10n.t(UiStrings.RulesEnabled, node.apiCenter.name));

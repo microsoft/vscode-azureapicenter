@@ -21,7 +21,7 @@ export class RulesTreeItem extends AzExtParentTreeItem {
     public static contextValue: string = "azureApiCenterRules";
     public contextValue: string = RulesTreeItem.contextValue;
     public rulesFolderPath: string = "";
-    constructor(parent: AzExtParentTreeItem, public apiCenter: ApiCenter, public isEnabled: boolean) {
+    constructor(parent: AzExtParentTreeItem, public apiCenter: ApiCenter, public configName: string, public isEnabled: boolean) {
         super(parent);
         if (isEnabled) {
             this.contextValue = RulesTreeItem.contextValue + "-enabled";
@@ -29,7 +29,7 @@ export class RulesTreeItem extends AzExtParentTreeItem {
     }
 
     public get label(): string {
-        return UiStrings.TreeitemLabelRules;
+        return this.configName;
     }
 
     public get iconPath(): TreeItemIconPath {
@@ -83,7 +83,7 @@ export class RulesTreeItem extends AzExtParentTreeItem {
         const resourceGroupName = getResourceGroupFromId(this.apiCenter.id);
         const apiCenterService = new ApiCenterService(this.parent?.subscription!, resourceGroupName, this.apiCenter.name);
 
-        const { value } = await apiCenterService.exportRuleset();
+        const { value } = await apiCenterService.exportRuleset(this.configName);
         const zipFileContent = Buffer.from(value, 'base64');
 
         await upzip(zipFileContent, rulesFolderPath);
@@ -92,6 +92,6 @@ export class RulesTreeItem extends AzExtParentTreeItem {
     public getRulesFolderPath(): string {
         const workspaceFolders = vscode.workspace.workspaceFolders;
         const workspacePath = workspaceFolders ? workspaceFolders[0].uri.fsPath : GeneralUtils.getApiCenterWorkspacePath();
-        return path.join(workspacePath, rulesDir, this.apiCenter.name);
+        return path.join(workspacePath, rulesDir, this.apiCenter.name, this.configName);
     }
 }
