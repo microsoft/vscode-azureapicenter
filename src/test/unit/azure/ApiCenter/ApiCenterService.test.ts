@@ -40,7 +40,7 @@ describe("ApiCenterService", () => {
             format: ApiCenterRulesetImportFormat.InlineZip,
         };
 
-        const response = await apiCenterService.importRuleset(importPayload);
+        const response = await apiCenterService.importRuleset(importPayload, "fakeConfigName");
 
         assert.strictEqual(response.isSuccessful, true);
     });
@@ -53,7 +53,7 @@ describe("ApiCenterService", () => {
             format: ApiCenterRulesetImportFormat.InlineZip,
         };
 
-        const response = await apiCenterService.importRuleset(importPayload);
+        const response = await apiCenterService.importRuleset(importPayload, "fakeConfigName");
 
         assert.strictEqual(response.isSuccessful, false);
         assert.strictEqual(response.message, "error");
@@ -85,7 +85,7 @@ describe("ApiCenterService", () => {
             format: ApiCenterRulesetImportFormat.InlineZip,
         };
 
-        const response = await apiCenterService.importRuleset(importPayload);
+        const response = await apiCenterService.importRuleset(importPayload, "fakeConfigName");
 
         assert.strictEqual(response.isSuccessful, false);
         assert.strictEqual(response.message, "error");

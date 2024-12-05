@@ -126,11 +126,6 @@
         "category": "Azure API Center"
       },
       {
-        "command": "azure-api-center.enableRules",
-        "title": "%azure-api-center.commands.enableRules.title%",
-        "category": "Azure API Center"
-      },
-      {
         "command": "azure-api-center.exportRules",
         "title": "%azure-api-center.commands.exportRules.title%",
         "category": "Azure API Center"
@@ -305,18 +300,13 @@
           "group": "inline@1"
         },
         {
-          "command": "azure-api-center.enableRules",
-          "when": "view == apiCenterTreeView && viewItem == azureApiCenterRules",
-          "group": "rule@0"
-        },
-        {
           "command": "azure-api-center.exportRules",
-          "when": "view == apiCenterTreeView && viewItem == azureApiCenterRules-enabled",
+          "when": "view == apiCenterTreeView && viewItem == azureApiCenterRules",
           "group": "rule@1"
         },
         {
           "command": "azure-api-center.deployRules",
-          "when": "view == apiCenterTreeView && viewItem == azureApiCenterRules-enabled",
+          "when": "view == apiCenterTreeView && viewItem == azureApiCenterRules",
           "group": "rule@2"
         },
         {
@@ -389,10 +379,6 @@
         },
         {
           "command": "azure-api-center.generateApiFromCode",
-          "when": "never"
-        },
-        {
-          "command": "azure-api-center.enableRules",
           "when": "never"
         },
         {
