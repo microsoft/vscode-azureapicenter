@@ -33,7 +33,7 @@ export class ProfilesTreeItem extends AzExtParentTreeItem {
         return await this.createTreeItemsWithErrorHandling(
             analyzerConfigs,
             'invalidResource',
-            analyzerConfig => new RulesTreeItem(this, this.apiCenter, analyzerConfig.name, true),
+            analyzerConfig => new RulesTreeItem(this, this.apiCenter, analyzerConfig.name),
             analyzerConfig => analyzerConfig.name
         );
     }

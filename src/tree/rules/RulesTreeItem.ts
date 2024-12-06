@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 import { getResourceGroupFromId } from "@microsoft/vscode-azext-azureutils";
-import { AzExtParentTreeItem, AzExtTreeItem, GenericTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
+import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import * as path from 'path';
 import * as vscode from 'vscode';
 import { ApiCenterService } from "../../azure/ApiCenter/ApiCenterService";
@@ -21,11 +21,8 @@ export class RulesTreeItem extends AzExtParentTreeItem {
     public static contextValue: string = "azureApiCenterRules";
     public contextValue: string = RulesTreeItem.contextValue;
     public rulesFolderPath: string = "";
-    constructor(parent: AzExtParentTreeItem, public apiCenter: ApiCenter, public configName: string, public isEnabled: boolean) {
+    constructor(parent: AzExtParentTreeItem, public apiCenter: ApiCenter, public configName: string) {
         super(parent);
-        if (isEnabled) {
-            this.contextValue = RulesTreeItem.contextValue + "-enabled";
-        }
     }
 
     public get label(): string {
@@ -36,23 +33,7 @@ export class RulesTreeItem extends AzExtParentTreeItem {
         return new vscode.ThemeIcon("symbol-ruler");
     }
 
-    public updateStatusToEnable(): void {
-        this.contextValue = RulesTreeItem.contextValue + "-enabled";
-        this.isEnabled = true;
-    }
-
     public async loadMoreChildrenImpl(clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
-        if (!this.isEnabled) {
-            const infoNode = new GenericTreeItem(this, {
-                label: UiStrings.RulesNotEnabled,
-                commandId: "azure-api-center.enableRules",
-                contextValue: "enableRules",
-                iconPath: new vscode.ThemeIcon("info"),
-            });
-            infoNode.commandArgs = [this];
-            return [infoNode];
-        }
-
         this.rulesFolderPath = this.getRulesFolderPath();
 
         if (!await hasFiles(this.rulesFolderPath)) {

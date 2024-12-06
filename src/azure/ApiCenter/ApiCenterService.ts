@@ -1,11 +1,11 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
-import { HttpOperationResponse, RequestPrepareOptions, ServiceClient } from "@azure/ms-rest-js";
+import { RequestPrepareOptions, ServiceClient } from "@azure/ms-rest-js";
 import { ISubscriptionContext } from "@microsoft/vscode-azext-utils";
 import { clientOptions } from "../../common/clientOptions";
 import { getCredentialForToken } from "../../utils/credentialUtil";
 import { APICenterRestAPIs } from "./ApiCenterRestAPIs";
-import { ApiCenter, ApiCenterAnalyzerConfigs, ApiCenterApi, ApiCenterApiDeployment, ApiCenterApiVersion, ApiCenterApiVersionDefinition, ApiCenterApiVersionDefinitionExport, ApiCenterApiVersionDefinitionImport, ApiCenterEnvironment, ApiCenterRulesetConfig, ApiCenterRulesetExport, ApiCenterRulesetImport, ApiCenterRulesetImportResult, ApiCenterRulesetImportStatus, ArmAsyncOperationStatus } from "./contracts";
+import { ApiCenter, ApiCenterAnalyzerConfigs, ApiCenterApi, ApiCenterApiDeployment, ApiCenterApiVersion, ApiCenterApiVersionDefinition, ApiCenterApiVersionDefinitionExport, ApiCenterApiVersionDefinitionImport, ApiCenterEnvironment, ApiCenterRulesetExport, ApiCenterRulesetImport, ApiCenterRulesetImportResult, ApiCenterRulesetImportStatus, ArmAsyncOperationStatus } from "./contracts";
 
 export class ApiCenterService {
   private susbcriptionContext: ISubscriptionContext;
@@ -100,26 +100,6 @@ export class ApiCenterService {
     return response.parsedBody;
   }
 
-  public async getApiCenterRulesetConfig(): Promise<HttpOperationResponse> {
-    const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
-    const client = new ServiceClient(creds, clientOptions);
-    const options: RequestPrepareOptions = {
-      method: "GET",
-      url: APICenterRestAPIs.GetRulesetConfig(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, this.apiVersionNew)
-    };
-    const response = await client.sendRequest(options);
-    return response;
-  }
-
-  public async isApiCenterRulesetEnabled(): Promise<boolean> {
-    try {
-      const response = await this.getApiCenterRulesetConfig();
-      return response.status === 200;
-    } catch (error) {
-      return false;
-    }
-  }
-
   public async createOrUpdateApi(apiCenterApi: ApiCenterApi): Promise<ApiCenterApi> {
     const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
     const client = new ServiceClient(creds, clientOptions);
@@ -175,20 +155,6 @@ export class ApiCenterService {
     const response = await client.sendRequest(options);
 
     return response.parsedBody;
-  }
-
-  public async createOrUpdateApiCenterRulesetConfig(apiCenterRulesetConfig: ApiCenterRulesetConfig): Promise<HttpOperationResponse> {
-    const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
-    const client = new ServiceClient(creds, clientOptions);
-    const options: RequestPrepareOptions = {
-      method: "PUT",
-      url: APICenterRestAPIs.CreateRulesetConfig(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, this.apiVersionNew),
-      body: {
-        properties: apiCenterRulesetConfig.properties
-      }
-    };
-    const response = await client.sendRequest(options);
-    return response;
   }
 
   public async importSpecification(

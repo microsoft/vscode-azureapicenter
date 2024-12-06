@@ -98,11 +98,6 @@ export type ApiCenterApiVersionDefinition = {
     type: string;
 };
 
-export type ApiCenterRulesetConfig = {
-    properties: {
-    };
-};
-
 export type ApiCenterAnalyzerConfig = {
     id: string;
     type: string;
