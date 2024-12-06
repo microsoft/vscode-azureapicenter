@@ -31,7 +31,7 @@ describe("rulesTreeItem", () => {
                 id: "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test/providers/Microsoft.ApiCenter/services/test",
                 name: "testRulesTreeItem2",
             } as ApiCenter,
-            true,
+            "fakeConfigName",
         );
         sandbox.stub(ApiCenterService.prototype, "exportRuleset").resolves({ value: zipFileBase64_multiFiles } as ApiCenterRulesetExport);
 
@@ -52,7 +52,7 @@ describe("rulesTreeItem", () => {
                 id: "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test/providers/Microsoft.ApiCenter/services/test",
                 name: "testRulesTreeItem3",
             } as ApiCenter,
-            true,
+            "fakeConfigName",
         );
         sandbox.stub(ApiCenterService.prototype, "exportRuleset").resolves({ value: zipFileBase64_noValidRuleFile } as ApiCenterRulesetExport);
 
