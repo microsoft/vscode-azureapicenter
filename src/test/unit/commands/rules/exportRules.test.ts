@@ -25,7 +25,7 @@ describe("exportRules", () => {
                 id: "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test/providers/Microsoft.ApiCenter/services/test",
                 name: "testExportRules",
             } as ApiCenter,
-            true,
+            "fakeConfigName",
         );
         sandbox.stub(node, "refresh").resolves();
     });

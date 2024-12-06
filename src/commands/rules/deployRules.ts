@@ -31,7 +31,7 @@ export async function deployRules(context: IActionContext, node: RulesTreeItem) 
             value: content,
             format: ApiCenterRulesetImportFormat.InlineZip,
         };
-        const response = await apiCenterService.importRuleset(importPayload);
+        const response = await apiCenterService.importRuleset(importPayload, node.configName);
 
         if (response.isSuccessful) {
             vscode.window.showInformationMessage(vscode.l10n.t(UiStrings.RulesDeployed, node.apiCenter.name));
