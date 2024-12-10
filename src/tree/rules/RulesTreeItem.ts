@@ -7,7 +7,7 @@ import * as vscode from 'vscode';
 import { ApiCenterService } from "../../azure/ApiCenter/ApiCenterService";
 import { ApiCenter } from "../../azure/ApiCenter/contracts";
 import { UiStrings } from "../../uiStrings";
-import { getFilenamesInFolder, hasFiles } from "../../utils/fsUtil";
+import { getFilenamesInFolder, hasFiles, pathExists } from "../../utils/fsUtil";
 import { GeneralUtils } from "../../utils/generalUtils";
 import { upzip } from "../../utils/zipUtils";
 import { FunctionsTreeItem } from "./FunctionsTreeItem";
@@ -48,7 +48,11 @@ export class RulesTreeItem extends AzExtParentTreeItem {
         }
 
         const ruleFullFilePath = path.join(this.rulesFolderPath, ruleFilename);
-        const functionsFilenames = await getFilenamesInFolder(path.join(this.rulesFolderPath, functionsDir));
+        const functionsFolderPath = path.join(this.rulesFolderPath, functionsDir);
+        let functionsFilenames: string[] = [];
+        if (await pathExists(functionsFolderPath)) {
+            functionsFilenames = await getFilenamesInFolder(functionsFolderPath);
+        }
 
         return [
             new RuleTreeItem(this, this.rulesFolderPath, ruleFullFilePath, ruleFilename),
