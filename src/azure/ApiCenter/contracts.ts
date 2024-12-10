@@ -98,10 +98,18 @@ export type ApiCenterApiVersionDefinition = {
     type: string;
 };
 
-export type ApiCenterRulesetConfig = {
+export type ApiCenterAnalyzerConfig = {
+    id: string;
+    type: string;
+    name: string;
     properties: {
     };
 };
+
+export type ApiCenterAnalyzerConfigs = {
+    value: ApiCenterAnalyzerConfig[];
+};
+
 export type DataPlaneApiCenterApiVersionDefinition = {
     name: string;
     title: string;
