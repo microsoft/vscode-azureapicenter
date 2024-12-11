@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       release:
-        description: "run for release?"
+        description: "replace AI key for release"
         required: true
         type: boolean
         default: false
@@ -13,12 +13,21 @@ on:
         required: true
         type: boolean
         default: false
+      tag:
+        description: "want to push tag to origin?"
+        required: false
+        type: boolean
+        default: false
 
   schedule:
     - cron: "0 16 * * *"
 
 jobs:
   CD:
+    permissions:
+      actions: read
+      contents: write
+      id-token: write
     runs-on: "ubuntu-latest"
     steps:
       - uses: actions/checkout@v2
@@ -65,3 +74,14 @@ jobs:
           path: |
             *.vsix
             package.json
+
+      - name: get package version
+        id: package-version
+        run: |
+          echo "version=$(jq -r '"v"+.version' package.json)" >> $GITHUB_OUTPUT
+
+      - uses: piszmog/create-tag@v1
+        with:
+          version: ${{ steps.package-version.outputs.version }}
+          message: "release ${{ steps.package-version.outputs.version }}"
+          token: ${{ secrets.GITHUB_TOKEN }}
