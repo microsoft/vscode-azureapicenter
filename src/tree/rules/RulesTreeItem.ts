@@ -37,7 +37,11 @@ export class RulesTreeItem extends AzExtParentTreeItem {
         this.rulesFolderPath = this.getRulesFolderPath();
 
         if (!await hasFiles(this.rulesFolderPath)) {
-            await this.exportRulesToLocalFolder(this.rulesFolderPath);
+            const base64ZipContent = await this.exportRuleset();
+            if (!base64ZipContent) {
+                return [];
+            }
+            await this.unzipRulesetToLocalFolder(this.rulesFolderPath, base64ZipContent);
         }
 
         const filenames = await getFilenamesInFolder(this.rulesFolderPath);
@@ -64,13 +68,17 @@ export class RulesTreeItem extends AzExtParentTreeItem {
         return false;
     }
 
-    public async exportRulesToLocalFolder(rulesFolderPath: string): Promise<void> {
+    public async exportRuleset(): Promise<string> {
         const resourceGroupName = getResourceGroupFromId(this.apiCenter.id);
         const apiCenterService = new ApiCenterService(this.parent?.subscription!, resourceGroupName, this.apiCenter.name);
 
         const { value } = await apiCenterService.exportRuleset(this.configName);
-        const zipFileContent = Buffer.from(value, 'base64');
 
+        return value;
+    }
+
+    public async unzipRulesetToLocalFolder(rulesFolderPath: string, base64ZipContent: string): Promise<void> {
+        const zipFileContent = Buffer.from(base64ZipContent, 'base64');
         await upzip(zipFileContent, rulesFolderPath);
     }
 

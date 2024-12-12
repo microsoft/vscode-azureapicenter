@@ -115,6 +115,7 @@ export class UiStrings {
     static readonly RulesFolderNotEmpty = vscode.l10n.t("The rules folder '{0}' is not empty. Do you want to overwrite the existing files?");
     static readonly Yes = vscode.l10n.t("Yes");
     static readonly No = vscode.l10n.t("No");
+    static readonly NoRulesExported = vscode.l10n.t("No Rules to export.");
     static readonly RulesExported = vscode.l10n.t("Rules exported to '{0}'.");
     static readonly TreeitemLabelFunctions = vscode.l10n.t("Functions");
     static readonly TreeitemLabelProfiles = vscode.l10n.t("Profiles");
