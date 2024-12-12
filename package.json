@@ -3,7 +3,7 @@
   "publisher": "apidev",
   "displayName": "Azure API Center",
   "description": "Build, discover, and consume APIs.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "icon": "media/api-center-icon.png",
   "license": "MIT",
   "engines": {
@@ -123,41 +123,6 @@
       {
         "command": "azure-api-center.generateMarkdownDocument",
         "title": "%azure-api-center.commands.generateMarkdownDocument.title%",
-        "category": "Azure API Center"
-      },
-      {
-        "command": "azure-api-center.enableRules",
-        "title": "%azure-api-center.commands.enableRules.title%",
-        "category": "Azure API Center"
-      },
-      {
-        "command": "azure-api-center.exportRules",
-        "title": "%azure-api-center.commands.exportRules.title%",
-        "category": "Azure API Center"
-      },
-      {
-        "command": "azure-api-center.deployRules",
-        "title": "%azure-api-center.commands.deployRules.title%",
-        "category": "Azure API Center"
-      },
-      {
-        "command": "azure-api-center.openRule",
-        "title": "%azure-api-center.commands.openRule.title%",
-        "category": "Azure API Center"
-      },
-      {
-        "command": "azure-api-center.addCustomFunction",
-        "title": "%azure-api-center.commands.addCustomFunction.title%",
-        "category": "Azure API Center"
-      },
-      {
-        "command": "azure-api-center.renameCustomFunction",
-        "title": "%azure-api-center.commands.renameCustomFunction.title%",
-        "category": "Azure API Center"
-      },
-      {
-        "command": "azure-api-center.deleteCustomFunction",
-        "title": "%azure-api-center.commands.deleteCustomFunction.title%",
         "category": "Azure API Center"
       },
       {
@@ -305,35 +270,6 @@
           "group": "inline@1"
         },
         {
-          "command": "azure-api-center.enableRules",
-          "when": "view == apiCenterTreeView && viewItem == azureApiCenterRules",
-          "group": "rule@0"
-        },
-        {
-          "command": "azure-api-center.exportRules",
-          "when": "view == apiCenterTreeView && viewItem == azureApiCenterRules-enabled",
-          "group": "rule@1"
-        },
-        {
-          "command": "azure-api-center.deployRules",
-          "when": "view == apiCenterTreeView && viewItem == azureApiCenterRules-enabled",
-          "group": "rule@2"
-        },
-        {
-          "command": "azure-api-center.addCustomFunction",
-          "when": "view == apiCenterTreeView && viewItem == azureApiCenterFunctions"
-        },
-        {
-          "command": "azure-api-center.renameCustomFunction",
-          "when": "view == apiCenterTreeView && viewItem == azureApiCenterFunction",
-          "group": "function@0"
-        },
-        {
-          "command": "azure-api-center.deleteCustomFunction",
-          "when": "view == apiCenterTreeView && viewItem == azureApiCenterFunction",
-          "group": "function@1"
-        },
-        {
           "command": "azure-api-center.apiCenterWorkspace.removeApi",
           "when": "view == apiCenterWorkspace && viewItem == azureApiCenterDataPlane",
           "group": "inline@0"
@@ -389,34 +325,6 @@
         },
         {
           "command": "azure-api-center.generateApiFromCode",
-          "when": "never"
-        },
-        {
-          "command": "azure-api-center.enableRules",
-          "when": "never"
-        },
-        {
-          "command": "azure-api-center.exportRules",
-          "when": "never"
-        },
-        {
-          "command": "azure-api-center.deployRules",
-          "when": "never"
-        },
-        {
-          "command": "azure-api-center.openRule",
-          "when": "never"
-        },
-        {
-          "command": "azure-api-center.addCustomFunction",
-          "when": "never"
-        },
-        {
-          "command": "azure-api-center.renameCustomFunction",
-          "when": "never"
-        },
-        {
-          "command": "azure-api-center.deleteCustomFunction",
           "when": "never"
         },
         {

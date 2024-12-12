@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
-import { getResourceGroupFromId } from "@microsoft/vscode-azext-azureutils";
 import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
-import { ApiCenterService } from "../azure/ApiCenter/ApiCenterService";
 import { ApiCenter } from "../azure/ApiCenter/contracts";
 import { ApiCenterApisManagement } from "../azure/ApiCenterDefines/ApiCenterApi";
 import { UiStrings } from "../uiStrings";
@@ -43,13 +41,14 @@ export class ApiCenterTreeItem extends AzExtParentTreeItem {
   }
 
   public async loadMoreChildrenImpl(clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
-    const resourceGroupName = getResourceGroupFromId(this._apicenter.id);
-    const apiCenterService = new ApiCenterService(this.parent?.subscription!, resourceGroupName, this._apicenter.name);
+    return [this.apisTreeItem, this.environmentsTreeItem];
+    // const resourceGroupName = getResourceGroupFromId(this._apicenter.id);
+    // const apiCenterService = new ApiCenterService(this.parent?.subscription!, resourceGroupName, this._apicenter.name);
 
-    const isApiCenterRulesetEnabled = await apiCenterService.isApiCenterRulesetEnabled();
+    // const isApiCenterRulesetEnabled = await apiCenterService.isApiCenterRulesetEnabled();
 
-    this.rulesTreeItem = new RulesTreeItem(this, this._apicenter, isApiCenterRulesetEnabled);
+    // this.rulesTreeItem = new RulesTreeItem(this, this._apicenter, isApiCenterRulesetEnabled);
 
-    return [this.apisTreeItem, this.environmentsTreeItem, this.rulesTreeItem];
+    // return [this.apisTreeItem, this.environmentsTreeItem];
   }
 }
