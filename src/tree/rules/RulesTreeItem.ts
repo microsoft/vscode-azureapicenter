@@ -1,13 +1,13 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 import { getResourceGroupFromId } from "@microsoft/vscode-azext-azureutils";
-import { AzExtParentTreeItem, AzExtTreeItem, GenericTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
+import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import * as path from 'path';
 import * as vscode from 'vscode';
 import { ApiCenterService } from "../../azure/ApiCenter/ApiCenterService";
 import { ApiCenter } from "../../azure/ApiCenter/contracts";
 import { UiStrings } from "../../uiStrings";
-import { getFilenamesInFolder, hasFiles } from "../../utils/fsUtil";
+import { getFilenamesInFolder, hasFiles, pathExists } from "../../utils/fsUtil";
 import { GeneralUtils } from "../../utils/generalUtils";
 import { upzip } from "../../utils/zipUtils";
 import { FunctionsTreeItem } from "./FunctionsTreeItem";
@@ -21,42 +21,27 @@ export class RulesTreeItem extends AzExtParentTreeItem {
     public static contextValue: string = "azureApiCenterRules";
     public contextValue: string = RulesTreeItem.contextValue;
     public rulesFolderPath: string = "";
-    constructor(parent: AzExtParentTreeItem, public apiCenter: ApiCenter, public isEnabled: boolean) {
+    constructor(parent: AzExtParentTreeItem, public apiCenter: ApiCenter, public configName: string) {
         super(parent);
-        if (isEnabled) {
-            this.contextValue = RulesTreeItem.contextValue + "-enabled";
-        }
     }
 
     public get label(): string {
-        return UiStrings.TreeitemLabelRules;
+        return this.configName;
     }
 
     public get iconPath(): TreeItemIconPath {
         return new vscode.ThemeIcon("symbol-ruler");
     }
 
-    public updateStatusToEnable(): void {
-        this.contextValue = RulesTreeItem.contextValue + "-enabled";
-        this.isEnabled = true;
-    }
-
     public async loadMoreChildrenImpl(clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
-        if (!this.isEnabled) {
-            const infoNode = new GenericTreeItem(this, {
-                label: UiStrings.RulesNotEnabled,
-                commandId: "azure-api-center.enableRules",
-                contextValue: "enableRules",
-                iconPath: new vscode.ThemeIcon("info"),
-            });
-            infoNode.commandArgs = [this];
-            return [infoNode];
-        }
-
         this.rulesFolderPath = this.getRulesFolderPath();
 
         if (!await hasFiles(this.rulesFolderPath)) {
-            await this.exportRulesToLocalFolder(this.rulesFolderPath);
+            const base64ZipContent = await this.exportRuleset();
+            if (!base64ZipContent) {
+                return [];
+            }
+            await this.unzipRulesetToLocalFolder(this.rulesFolderPath, base64ZipContent);
         }
 
         const filenames = await getFilenamesInFolder(this.rulesFolderPath);
@@ -67,7 +52,11 @@ export class RulesTreeItem extends AzExtParentTreeItem {
         }
 
         const ruleFullFilePath = path.join(this.rulesFolderPath, ruleFilename);
-        const functionsFilenames = await getFilenamesInFolder(path.join(this.rulesFolderPath, functionsDir));
+        const functionsFolderPath = path.join(this.rulesFolderPath, functionsDir);
+        let functionsFilenames: string[] = [];
+        if (await pathExists(functionsFolderPath)) {
+            functionsFilenames = await getFilenamesInFolder(functionsFolderPath);
+        }
 
         return [
             new RuleTreeItem(this, this.rulesFolderPath, ruleFullFilePath, ruleFilename),
@@ -79,19 +68,23 @@ export class RulesTreeItem extends AzExtParentTreeItem {
         return false;
     }
 
-    public async exportRulesToLocalFolder(rulesFolderPath: string): Promise<void> {
+    public async exportRuleset(): Promise<string> {
         const resourceGroupName = getResourceGroupFromId(this.apiCenter.id);
         const apiCenterService = new ApiCenterService(this.parent?.subscription!, resourceGroupName, this.apiCenter.name);
 
-        const { value } = await apiCenterService.exportRuleset();
-        const zipFileContent = Buffer.from(value, 'base64');
+        const { value } = await apiCenterService.exportRuleset(this.configName);
 
+        return value;
+    }
+
+    public async unzipRulesetToLocalFolder(rulesFolderPath: string, base64ZipContent: string): Promise<void> {
+        const zipFileContent = Buffer.from(base64ZipContent, 'base64');
         await upzip(zipFileContent, rulesFolderPath);
     }
 
     public getRulesFolderPath(): string {
         const workspaceFolders = vscode.workspace.workspaceFolders;
         const workspacePath = workspaceFolders ? workspaceFolders[0].uri.fsPath : GeneralUtils.getApiCenterWorkspacePath();
-        return path.join(workspacePath, rulesDir, this.apiCenter.name);
+        return path.join(workspacePath, rulesDir, this.apiCenter.name, this.configName);
     }
 }
