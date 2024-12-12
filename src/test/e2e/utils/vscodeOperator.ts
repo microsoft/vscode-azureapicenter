@@ -76,4 +76,27 @@ export default class VscodeOperator {
         await page.getByRole(VSCode.CMD_PALETTE_LIST, { name: listItemName }).locator(VSCode.LINK).filter({ hasText: linkName }).click();
         await page.waitForTimeout(Timeout.CLICK_WAIT);
     }
+
+
+    static async rightClickTreeItem(page: Page, treeItemName: string) {
+        await page.getByRole(VSCode.TREE_ITEM, { name: treeItemName }).locator(VSCode.LINK).click({
+            button: 'right'
+        });
+        await page.waitForTimeout(Timeout.CLICK_WAIT);
+    }
+
+    static async isMenuItemExist(page: Page, menuItemName: string) {
+        return await page.getByRole(VSCode.MENU_ITEM, { name: menuItemName }).isVisible();
+    }
+
+    static async clickMenuItem(page: Page, menuItemName: string) {
+        await page.getByRole(VSCode.MENU_ITEM, { name: menuItemName }).locator("span.action-label").click();
+        await page.waitForTimeout(Timeout.PREPARE_EXT);
+    }
+
+    static async getHttpRequestFrame(page: Page) {
+        const webviewFrame = page.frameLocator(`.webview`);
+        return webviewFrame.frameLocator(`iframe[id="active-frame"]`);
+    }
+
 }
