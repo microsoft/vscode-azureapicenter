@@ -81,6 +81,7 @@ jobs:
           echo "version=$(jq -r '"v"+.version' package.json)" >> $GITHUB_OUTPUT
 
       - uses: piszmog/create-tag@v1
+        if: ${{ github.event.inputs.tag == 'true'}}
         with:
           version: ${{ steps.package-version.outputs.version }}
           message: "release ${{ steps.package-version.outputs.version }}"
