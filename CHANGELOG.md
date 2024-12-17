@@ -19,7 +19,7 @@
 * Set active API Style Guide: support to select active file.
 * Generating Markdown documentation for an API: We have added a new command in the tree view of API definition called "Generate Markdown" to allow developers to easily generate markdown documentation.
 * Generating OpenAPI specification from an API code:
-    * Developers now can right click on any API code and invoke the "Generate API Documentation" menu (under "Copilot" menu) to generate OpenAPI specification document.
+    * Developers now can right click on any API code and invoke the "Generate API Documentation" menu (under "Copilot" menu) to generate OpenAPI specification document based on current file.
     * Use `gpt-4o` model to increase performance.
 
 ## 1.0.0
