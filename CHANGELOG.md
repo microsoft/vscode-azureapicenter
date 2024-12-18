@@ -2,6 +2,26 @@
 
 > Note: This changelog only includes the changes for the stable versions of Azure API Center for Visual Studio Code. For the changelog of pre-released versions, please refer to the [Pre-release Changelog of Azure API Center for Visual Studio Code](https://github.com/microsoft/vscode-azureapicenter/blob/main/PRERELEASE.md).
 
+## 1.0.1
+* Deprecation of Azure account extension
+* Add integration with GitHub Copilot for Azure (@Azure extension) to provide a chat experience for developers to leverage its capabilities for a variety of API Center-related tasks:
+    * Generate OpenAPI specification compliant with the active API style guide.
+    * If no active API style guide is set, generate OpenAPI specifications compliant with the default ‘spectral:oas’ ruleset.
+    * Easily register your generated APIs in API Center.
+* Add Platform API Catalog to Azure API Center:
+    * Connect to An Existing API Center from UI, Command Palette or DeepLink
+    * View and List all the APIs, Versions, Definitions
+    * Export API, Generate API Client, Generate Markdown, OpenAPI Document from API Definitions
+    * Sign In and Sign Out from Platform API Catalog
+    * Disconnect to Platform API Catalog
+    * Search APIs from Platform API Catalog
+    * Wiki guide for Platform API Catalog.
+* Set active API Style Guide: support to select active file.
+* Generating Markdown documentation for an API: We have added a new command in the tree view of API definition called "Generate Markdown" to allow developers to easily generate markdown documentation.
+* Generating OpenAPI specification from an API code:
+    * Developers now can right click on any API code and invoke the "Generate API Documentation" menu (under "Copilot" menu) to generate OpenAPI specification document based on current file.
+    * Use `gpt-4o` model to increase performance.
+
 ## 1.0.0
 
 The 1.0.0 general availability (GA) release of the Azure API Center extension for Visual Studio Code provides new capabilities such as the ability to export API specification, defining default rules for API linting and displaying new strings in tree view
