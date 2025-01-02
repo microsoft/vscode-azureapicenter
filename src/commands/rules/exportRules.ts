@@ -20,7 +20,11 @@ export async function exportRules(context: IActionContext, node: RulesTreeItem) 
         }
     }
 
-    await node.exportRulesToLocalFolder(rulesFolderPath);
+    const base64ZipContent = await node.exportRuleset();
+    if (!base64ZipContent) {
+        throw new Error(UiStrings.NoRulesExported);
+    }
+    await node.unzipRulesetToLocalFolder(rulesFolderPath, base64ZipContent);
     await node.refresh(context);
 
     vscode.window.showInformationMessage(vscode.l10n.t(UiStrings.RulesExported, rulesFolderPath));

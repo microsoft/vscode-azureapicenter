@@ -49,6 +49,7 @@ export const ApiRulesetOptions = {
     activeFile: UiStrings.ApiRulesetOptionActiveFile,
     selectFile: UiStrings.ApiRulesetOptionSelectFile,
     inputUrl: UiStrings.ApiRulesetOptionInputUrl,
+    none: UiStrings.ApiRulesetOptionNone,
 };
 
 export const CICDType = {

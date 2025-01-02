@@ -34,6 +34,7 @@ export class UiStrings {
     static readonly ValidUrlStart = vscode.l10n.t('Please enter a valid URL.');
     static readonly ValidUrlType = vscode.l10n.t('Please enter a valid URL to a JSON, YAML, or JavaScript file.');
     static readonly RulesetFileSet = vscode.l10n.t("API Style Guide is set to '{0}'.");
+    static readonly RulesetFileSetAsNone = vscode.l10n.t("API Style Guide is set as none.");
     static readonly CopilotNoCmd = vscode.l10n.t("Hi! What can I help you with? Please use `/list` or `/find` to chat with me!");
     static readonly CopilotQueryData = vscode.l10n.t("Querying data from Azure API Center...");
     static readonly CopilotNoMoreApiSpec = vscode.l10n.t("⚠️ There are no more API specification documents.");
@@ -48,6 +49,7 @@ export class UiStrings {
     static readonly ApiRulesetOptionActiveFile = vscode.l10n.t("Active File");
     static readonly ApiRulesetOptionSelectFile = vscode.l10n.t("Select Local File...");
     static readonly ApiRulesetOptionInputUrl = vscode.l10n.t("Input Remote URL...");
+    static readonly ApiRulesetOptionNone = vscode.l10n.t("None");
     static readonly CICDTypeGitHub = vscode.l10n.t("GitHub");
     static readonly CICDTypeAzure = vscode.l10n.t("Azure DevOps");
     static readonly ApiSpecificationOptionApiCenter = vscode.l10n.t("Azure API Center");
@@ -110,16 +112,13 @@ export class UiStrings {
     static readonly DeployRules = vscode.l10n.t("Deploying Rules...");
     static readonly RulesDeployed = vscode.l10n.t("Rules deployed to '{0}'.");
     static readonly FailedToDeployRules = vscode.l10n.t("Failed to deploy rules. {0}");
-    static readonly EnableRules = vscode.l10n.t("Enabling API Analysis...");
-    static readonly RulesEnabled = vscode.l10n.t("API Analysis enabled for '{0}'.");
-    static readonly FailedToEnableRules = vscode.l10n.t("Failed to enable API Analysis. {0}");
     static readonly RulesFolderNotEmpty = vscode.l10n.t("The rules folder '{0}' is not empty. Do you want to overwrite the existing files?");
     static readonly Yes = vscode.l10n.t("Yes");
     static readonly No = vscode.l10n.t("No");
+    static readonly NoRulesExported = vscode.l10n.t("No Rules to export.");
     static readonly RulesExported = vscode.l10n.t("Rules exported to '{0}'.");
     static readonly TreeitemLabelFunctions = vscode.l10n.t("Functions");
-    static readonly TreeitemLabelRules = vscode.l10n.t("Rules");
-    static readonly RulesNotEnabled = vscode.l10n.t("API Analysis is not enabled. Click here to enable it.");
+    static readonly TreeitemLabelProfiles = vscode.l10n.t("Profiles");
     static readonly OpenApiCenterFolder = vscode.l10n.t("Rules folder is required to be opened to enable live API linting. Click 'Yes' to open the rules folder in current window.");
     static readonly NoRuleFileFound = vscode.l10n.t("No rule file ('{0}') found in the rules folder '{1}'. Please add a rule file to enable API Analysis.");
     static readonly AddDataPlaneRuntimeUrl = vscode.l10n.t("Input Runtime URL");

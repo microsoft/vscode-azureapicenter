@@ -7,7 +7,7 @@ import * as vscode from 'vscode';
 import { ext } from "../extensionVariables";
 import { ApiVersionDefinitionTreeItem } from "../tree/ApiVersionDefinitionTreeItem";
 import { UiStrings } from "../uiStrings";
-import { ensureExtension } from "../utils/ensureExtension";
+import { EnsureExtension } from "../utils/ensureExtension";
 import { writeToTemporaryFile } from "../utils/fsUtil";
 import { OpenApiUtils } from "../utils/openApiUtils";
 
@@ -18,7 +18,7 @@ export namespace GenerateHttpFile {
         const httpFileContent = pasreSwaggerObjectToHttpFileContent(api);
         await writeToHttpFile(node!, httpFileContent);
 
-        ensureExtension(context, {
+        EnsureExtension.ensureExtension(context, {
             extensionId: 'humao.rest-client',
             noExtensionErrorMessage: UiStrings.NoRestClientExtension,
         });
