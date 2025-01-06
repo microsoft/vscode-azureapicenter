@@ -1,0 +1,26 @@
+# yaml-language-server: $schema=https://promptfoo.dev/config-schema.json
+prompts:
+  - "Generate one very interesting fact about {{topic}}"
+
+providers:
+  - id: azure:chat:gpt-4o
+    config:
+      apiHost: "evaluationapic.openai.azure.com"
+
+defaultTest:
+  assert:
+    - type: latency
+      threshold: 3000
+
+tests:
+  - vars:
+      topic: monkeys
+  - vars:
+      topic: bananas
+    assert:
+      - type: similar
+        value: Bananas are naturally radioactive.
+        provider:
+          id: azure:embeddings:text-embedding-ada-002
+          config:
+            apiHost: "evaluationapic.openai.azure.com"
