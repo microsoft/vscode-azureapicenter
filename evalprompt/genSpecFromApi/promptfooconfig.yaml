@@ -1,0 +1,21 @@
+# yaml-language-server: $schema=https://promptfoo.dev/config-schema.json
+prompts:
+  - file://prompts.txt
+
+providers:
+  - echo
+  - id: file://customProvider.ts
+    label: "genSpecFromApi provider"
+
+tests:
+  - vars:
+      languageId: javascript
+      contexts: file://./src/pet.js
+
+  # - vars:
+  #     languageId: python
+  #     contexts: file://./src/pytest.py
+
+  # - vars:
+  #     languageId: csharp
+  #     contexts: file://./src/cstest.cs

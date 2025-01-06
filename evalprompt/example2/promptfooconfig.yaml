@@ -4,17 +4,19 @@ prompts:
 
 providers:
   - id: file://customProvider.ts
-    label: 'My custom provider'
+    label: "My custom provider"
 
-tests: file://vars.csv
-# To compare two of the same provider, you can do the following:
-#
-# providers:
-#   - id: customProvider.js
-#     label: custom-provider-hightemp
-#     config:
-#       temperature: 1.0
-#   - id: customProvider.js
-#     label: custom-provider-lowtemp
-#     config:
-#       temperature: 0
+tests:
+  - vars:
+      language: French
+      input: Hello world
+    assert:
+      - type: javascript
+        value: output.toLowerCase().includes('bonjour')
+  - vars:
+      language: German
+      input: How's it going?
+    assert:
+      - type: similar
+        value: was geht
+        threshold: 0.6 # cosine similarity
