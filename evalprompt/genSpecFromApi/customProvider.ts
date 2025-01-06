@@ -29,7 +29,6 @@ export default class CustomApiProvider implements ApiProvider {
         const deployment = "gpt-4o";
         const apiVersion = "2024-05-01-preview";
         const client = new AzureOpenAI({ azureADTokenProvider, deployment, apiVersion });
-        console.log('==== 0:', prompt);
         const result = await client.chat.completions.create({
             messages: [
                 { role: "user", content: prompt }
@@ -37,7 +36,6 @@ export default class CustomApiProvider implements ApiProvider {
             model: "",
             max_tokens: 128
         });
-        console.log('==== 1:', result.choices[0].message.content);
 
         // spectral ruleset with the response
         // const spectralResult = await this.spectralValidation(result.choices[0].message.content);

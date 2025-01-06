@@ -1,16 +1,20 @@
 # yaml-language-server: $schema=https://promptfoo.dev/config-schema.json
 prompts:
-  - file://prompts.txt
+  - file://prompts.js
 
 providers:
-  - echo
   - id: file://customProvider.ts
-    label: "genSpecFromApi provider"
+    label: "AzureOpenAI"
 
 tests:
   - vars:
       languageId: javascript
-      contexts: file://./src/pet.js
+      file: pet.js
+    assert:
+      - type: javascript
+        value: file://spectral.mjs
+        config:
+          foo: bar
 
   # - vars:
   #     languageId: python
