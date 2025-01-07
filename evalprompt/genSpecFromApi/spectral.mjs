@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 const { Spectral } = require("@stoplight/spectral-core")
 import { bundleAndLoadRuleset } from "@stoplight/spectral-ruleset-bundler/with-loader";
 import { fetch } from "@stoplight/spectral-runtime";

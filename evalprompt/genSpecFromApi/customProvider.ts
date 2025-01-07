@@ -2,8 +2,6 @@
 // Licensed under the MIT license.
 import { DefaultAzureCredential, getBearerTokenProvider } from "@azure/identity";
 import "@azure/openai/types";
-// import { Spectral } from "@stoplight/spectral-core";
-// import { truthy } from "@stoplight/spectral-functions"; // this has to be installed as well
 import "dotenv/config";
 import { AzureOpenAI } from "openai";
 import type { ApiProvider, ProviderOptions, ProviderResponse } from 'promptfoo';
@@ -37,30 +35,9 @@ export default class CustomApiProvider implements ApiProvider {
             max_tokens: 128
         });
 
-        // spectral ruleset with the response
-        // const spectralResult = await this.spectralValidation(result.choices[0].message.content);
-        // console.log('==== 2:', spectralResult);
         const ret: ProviderResponse = {
             output: result.choices[0].message.content
         };
         return ret;
     }
-
-    // async spectralValidation(spec: string | null): Promise<string> {
-    //     const spectral = new Spectral();
-    //     spectral.setRuleset({
-    //         // this will be our ruleset
-    //         rules: {
-    //             "no-empty-description": {
-    //                 given: "$..description",
-    //                 message: "Description must not be empty",
-    //                 then: {
-    //                     function: truthy,
-    //                 },
-    //             },
-    //         },
-    //     });
-    //     const res = await spectral.run(spec!);
-    //     return JSON.stringify(res);
-    // }
 }
