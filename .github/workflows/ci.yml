@@ -110,4 +110,5 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           config: 'evalprompt/genSpecFromApi/promptfooconfig.yaml'
           cache-path: ~/.cache/promptfoo
+          prompts: 'evalprompt/genSpecFromApi/prompts.js'
 
