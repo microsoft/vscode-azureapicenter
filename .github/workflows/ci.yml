@@ -72,3 +72,39 @@ jobs:
           token: ${{ secrets.CODE_COV }}
           fail_ci_if_error: true
           verbose: true
+
+  prompt-evaluation:
+    runs-on: ubuntu-latest
+    environment: engineering
+    permissions:
+      contents: read # Required for actions/checkout
+      pull-requests: write # Ability to post comments on Pull Requests
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: lts/*
+      - name: Setup project
+        run: |
+          npm install
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.EVALUATION_TEST_CLIENT_ID }}
+          tenant-id: ${{ secrets.EVALUATION_TEST_TENANT_ID }}
+          subscription-id: ${{ secrets.EVALUATION_TEST_SUB_ID }}
+          enable-AzPSSession: true
+      - name: Set up promptfoo cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/promptfoo
+          key: ${{ runner.os }}-promptfoo-v1
+          restore-keys: |
+            ${{ runner.os }}-promptfoo-
+      - name: Run prompt evaluation
+        uses: promptfoo/promptfoo-action@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          config: 'evalprompt/genSpecFromApi/promptfooconfig.yaml'
+          cache-path: ~/.cache/promptfoo
+
