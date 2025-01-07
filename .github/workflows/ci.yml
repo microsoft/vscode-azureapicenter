@@ -79,6 +79,8 @@ jobs:
     permissions:
       contents: read # Required for actions/checkout
       pull-requests: write # Ability to post comments on Pull Requests
+    env:
+      AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
