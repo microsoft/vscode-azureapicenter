@@ -104,11 +104,19 @@ jobs:
           key: ${{ runner.os }}-promptfoo-v1
           restore-keys: |
             ${{ runner.os }}-promptfoo-
-      - name: Run prompt evaluation
+      - name: Run prompt evaluation 1
         uses: promptfoo/promptfoo-action@v1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          config: 'evalprompt/*/promptfooconfig.yaml'
+          config: 'evalprompt/genSpecFromApi/promptfooconfig.yaml'
           cache-path: ~/.cache/promptfoo
-          prompts: 'evalprompt/*/prompts.*'
+          prompts: 'evalprompt/genSpecFromApi/prompts.js'
+
+      - name: Run prompt evaluation 2
+        uses: promptfoo/promptfoo-action@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          config: 'evalprompt/genSpecFromPrompt/promptfooconfig.yaml'
+          cache-path: ~/.cache/promptfoo
+          prompts: 'evalprompt/genSpecFromPrompt/prompts.txt'
 
