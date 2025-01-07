@@ -16,7 +16,8 @@ export default async function (output, context) {
             },
         },
     });
-    const res = spectral.run(text);
+    const res = await spectral.run(text);
+    console.log('------', res);
     return {
         pass: true,
         score: 0.5,

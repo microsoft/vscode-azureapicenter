@@ -1,15 +1,22 @@
 # yaml-language-server: $schema=https://promptfoo.dev/config-schema.json
 prompts:
   - file://prompts.txt
+
 providers:
   - id: file://customProvider.ts
     label: "My custom provider"
-nunjucksFilters:
-  allcaps: ./allcaps.js
+
 tests:
   - vars:
       language: French
-      body: Hello world
+      input: Hello world
+    assert:
+      - type: javascript
+        value: output.toLowerCase().includes('bonjour')
   - vars:
-      language: French
-      body: I'm hungry
+      language: German
+      input: How's it going?
+    assert:
+      - type: similar
+        value: was geht
+        threshold: 0.6 # cosine similarity
