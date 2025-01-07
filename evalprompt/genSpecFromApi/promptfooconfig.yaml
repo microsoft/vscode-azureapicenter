@@ -6,20 +6,20 @@ providers:
   - id: file://customProvider.ts
     label: "AzureOpenAI"
 
+defaultTest:
+  assert:
+    - type: javascript
+      value: file://spectral.mjs
+
 tests:
   - vars:
       languageId: javascript
       file: pet.js
-    assert:
-      - type: javascript
-        value: file://spectral.mjs
-        config:
-          foo: bar
 
-  # - vars:
-  #     languageId: python
-  #     contexts: file://./src/pytest.py
+  - vars:
+      languageId: python
+      file: pytest.py
 
-  # - vars:
-  #     languageId: csharp
-  #     contexts: file://./src/cstest.cs
+  - vars:
+      languageId: csharp
+      file: cstest.cs
