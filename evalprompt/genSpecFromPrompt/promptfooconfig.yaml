@@ -1,0 +1,15 @@
+# yaml-language-server: $schema=https://promptfoo.dev/config-schema.json
+prompts:
+  - file://prompts.txt
+
+providers:
+  - id: file://customProvider.ts
+    label: "AzureOpenAI"
+
+defaultTest:
+  assert:
+    - type: javascript
+      value: file://spectral.mjs
+
+tests:
+  - file://vars.csv
