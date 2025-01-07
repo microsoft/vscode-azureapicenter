@@ -108,7 +108,7 @@ jobs:
         uses: promptfoo/promptfoo-action@v1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          config: 'evalprompt/genSpecFromApi/promptfooconfig.yaml'
+          config: 'evalprompt/*/promptfooconfig.yaml'
           cache-path: ~/.cache/promptfoo
-          prompts: 'evalprompt/genSpecFromApi/prompts.js'
+          prompts: 'evalprompt/*/prompts.*'
 
