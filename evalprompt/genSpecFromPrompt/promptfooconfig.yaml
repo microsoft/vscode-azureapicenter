@@ -3,8 +3,9 @@ prompts:
   - file://prompts.txt
 
 providers:
-  - id: file://customProvider.ts
-    label: "AzureOpenAI"
+  - id: azure:chat:gpt-4o
+    config:
+      apiHost: "apicevaluationtestai.openai.azure.com"
 
 defaultTest:
   assert:
