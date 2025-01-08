@@ -14,13 +14,13 @@ for (const dir of directories) {
         continue;
     console.log(outputFile);
     const output = JSON.parse(fs.readFileSync(outputFile, 'utf8'));
-    let body = `⚠️ LLM prompt was modified in these files: ${dir}
+    let body = `⚠️ LLM prompt result for ${modifiedFiles}
 
-    | Success | Failure |
-    |---------|---------|
-    | ${output.results.stats.successes}      | ${output.results.stats.failures}       |
+| Success | Failure |
+|---------|---------|
+| ${output.results.stats.successes}      | ${output.results.stats.failures}       |
 
-    `;
+`;
     if (output.shareableUrl) {
         body = body.concat(`**» [View eval results](${output.shareableUrl}) «**`);
     } else {

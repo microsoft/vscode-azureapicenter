@@ -105,31 +105,34 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-promptfoo-
 
-      - name: Prompt Evaluation 1
-        working-directory: evalprompt/genSpecFromApi
+      - name: Prompt Evaluation
         continue-on-error: true
         env:
           PROMPTFOO_CACHE_PATH: ~/.cache/promptfoo
         run: |
-          npx promptfoo eval -o output.json --share
-
-      - name: prompt Evaluation 2
-        working-directory: evalprompt/genSpecFromPrompt
-        continue-on-error: true
-        env:
-          PROMPTFOO_CACHE_PATH: ~/.cache/promptfoo
-        run: |
-          npx promptfoo eval -o output.json --share
+          for dir in evalprompt/*/; do
+            if [ -d "$dir" ] && [ "$(basename "$dir")" != "example" ]; then
+              cd "$dir" || continue
+              npx promptfoo eval -o output.json --share || true
+              cd - > /dev/null || exit
+            fi
+          done
 
       - name: generate comments doc
         run: |
           node .github/workflows/scripts/collectPromptRes.js
-          ls -l
+          cat ./commentContent.txt
 
-      - name: show results to the PR
-        uses: Libra-foundation/Pull-Request-Comments@V1.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/github-script@v7
         with:
-          filename: commentContent.txt
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            const fs = require('fs');
+            const content = fs.readFileSync('./commentContent.txt', 'utf8');
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: content
+            })
 
