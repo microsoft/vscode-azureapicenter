@@ -339,6 +339,11 @@
           "command": "azure-api-center.generateApiFromCode",
           "when": "github.copilot-chat.activated && resourceScheme == 'file'",
           "group": "apiCenter"
+        },
+        {
+          "command": "azure-api-center.generateApiFromCodeProject",
+          "when": "github.copilot-chat.activated",
+          "group": "apiCenter"
         }
       ],
       "commandPalette": [
