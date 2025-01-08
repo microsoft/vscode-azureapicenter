@@ -124,6 +124,7 @@ jobs:
       - name: generate comments doc
         run: |
           node .github/workflows/scripts/collectPromptRes.js
+          ls -l
 
       - name: show results to the PR
         uses: Libra-foundation/Pull-Request-Comments@V1.0

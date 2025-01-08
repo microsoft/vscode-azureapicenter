@@ -7,10 +7,12 @@ let commentContent = '';
 const directories = fs.readdirSync(evalPromptDir, { withFileTypes: true })
     .filter(dirent => dirent.isDirectory())
     .map(dirent => dirent.name);
+console.log(directories);
 for (const dir of directories) {
     const outputFile = path.join(path.join(evalPromptDir, dir), 'output.json');
     if (outputFile == null || !fs.existsSync(outputFile))
         continue;
+    console.log(outputFile);
     const output = JSON.parse(fs.readFileSync(outputFile, 'utf8'));
     let body = `⚠️ LLM prompt was modified in these files: ${dir}
 
