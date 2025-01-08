@@ -1,7 +1,7 @@
 const path = require('path');
 const fs = require('fs');
-
-const evalPromptDir = path.join(__dirname, "..", "..", "..", "evalprompt");
+const rootPath = path.join(__dirname, "..", "..", "..");
+const evalPromptDir = path.join(rootPath, "evalprompt");
 // collect results
 let commentContent = '';
 const directories = fs.readdirSync(evalPromptDir, { withFileTypes: true })
@@ -27,4 +27,4 @@ for (const dir of directories) {
     commentContent += body + "\n\n";
 }
 
-fs.writeFileSync(path.join(process.cwd(), 'commentContent.txt'), commentContent);
+fs.writeFileSync(path.join(rootPath, 'commentContent.txt'), commentContent, 'utf-8');
