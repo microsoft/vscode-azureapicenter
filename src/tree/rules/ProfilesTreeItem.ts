@@ -28,7 +28,8 @@ export class ProfilesTreeItem extends AzExtParentTreeItem {
         const resourceGroupName = getResourceGroupFromId(this.apiCenter.id);
         const apiCenterService = new ApiCenterService(this.parent?.subscription!, resourceGroupName, this.apiCenter.name);
 
-        const analyzerConfigs = (await apiCenterService.getApiCenterAnalyzerConfigs()).value;
+        // Fetch analyzer configurations, default to an empty array if none are found
+        const analyzerConfigs = (await apiCenterService.getApiCenterAnalyzerConfigs())?.value || [];
 
         return await this.createTreeItemsWithErrorHandling(
             analyzerConfigs,
