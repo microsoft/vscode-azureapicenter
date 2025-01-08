@@ -14,7 +14,7 @@ for (const dir of directories) {
         continue;
     console.log(outputFile);
     const output = JSON.parse(fs.readFileSync(outputFile, 'utf8'));
-    let body = `⚠️ LLM prompt result for ${modifiedFiles}
+    let body = `⚠️ LLM prompt result for ${dir}
 
 | Success | Failure |
 |---------|---------|
