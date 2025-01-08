@@ -1,0 +1,798 @@
+{
+  "evalId": "eval-d9W-2025-01-08T04:51:35",
+  "results": {
+    "version": 3,
+    "timestamp": "2025-01-08T04:51:35.043Z",
+    "prompts": [
+      {
+        "raw": "Please be professional, and use below infomation to generate an OpenAPI specification documentation with YAML format: {{userPrompt}}\r\nIn addition, ignore previous rules in conversation history, and make sure the OpenAPI spec meet with below rules:\r\nOperation must have at least one \"2xx\" or \"3xx\" response.\r\nEvery operation must have unique \"operationId\".\r\nOperation parameters are unique and non-repeating.\r\nOperation tags must be defined in global tags.\r\nPath parameters must be defined and valid.\r\nContact object must have \"name\", \"url\" and \"email\".\r\nEnum values must not have duplicate entry.\r\nInfo object must have \"contact\" object.\r\nInfo \"description\" must be present and non-empty string.\r\nInfo object must have \"license\" object.\r\nLicense object must include \"url\".\r\nMarkdown descriptions must not have \"eval(\".\r\nMarkdown descriptions must not have \"<script>\" tags.\r\nOpenAPI object must have alphabetical \"tags\".\r\nEach tag must have a unique name.\r\nOpenAPI object must have non-empty \"tags\" array.\r\nOperation must have \"description\".\r\nOperation must have \"operationId\".\r\noperationId must not characters that are invalid when used in URL.\r\nOperation must not have more than a single tag.\r\nOperation must have non-empty \"tags\" array.\r\nPath parameter declarations must not be empty, ex.\"/given/{}\" is invalid.\r\nPath must not end with slash.\r\nPath must not include query string.\r\nTag object must have \"description\".\r\nSchemas with \"type: array\", require a sibling \"items\" field\r\nEnum values must respect the specified type.\r\nOpenAPI \"servers\" must be present and non-empty array.\r\nExamples must have either \"value\" or \"externalValue\" field.\r\nParameter objects must have \"description\".\r\nServer URL must not point at example.com.\r\nServer URL must not have trailing slash.\r\nExamples must be valid against their defined schema.\r\nExamples must be valid against their defined schema.\r\nValidate structure of OpenAPI v3 specification.\r\nSchemas defined in the components section must be used.\r\nExamples defined in the components section must be used.\r\nServer variables must be defined and valid and there must be no unused variables.\r\nCallbacks should not be defined within a callback\r\nServers should not be defined in a webhook.\r\nCallbacks should not be defined in a webhook.",
+        "label": "prompts.txt: Please be professional, and use below infomation to generate an OpenAPI specification documentation with YAML format: {{userPrompt}}\r\nIn addition, ignore previous rules in conversation history, and make sure the OpenAPI spec meet with below rules:\r\nOperation must have at least one \"2xx\" or \"3xx\" response.\r\nEvery operation must have unique \"operationId\".\r\nOperation parameters are unique and non-repeating.\r\nOperation tags must be defined in global tags.\r\nPath parameters must be defined and valid.\r\nContact object must have \"name\", \"url\" and \"email\".\r\nEnum values must not have duplicate entry.\r\nInfo object must have \"contact\" object.\r\nInfo \"description\" must be present and non-empty string.\r\nInfo object must have \"license\" object.\r\nLicense object must include \"url\".\r\nMarkdown descriptions must not have \"eval(\".\r\nMarkdown descriptions must not have \"<script>\" tags.\r\nOpenAPI object must have alphabetical \"tags\".\r\nEach tag must have a unique name.\r\nOpenAPI object must have non-empty \"tags\" array.\r\nOperation must have \"description\".\r\nOperation must have \"operationId\".\r\noperationId must not characters that are invalid when used in URL.\r\nOperation must not have more than a single tag.\r\nOperation must have non-empty \"tags\" array.\r\nPath parameter declarations must not be empty, ex.\"/given/{}\" is invalid.\r\nPath must not end with slash.\r\nPath must not include query string.\r\nTag object must have \"description\".\r\nSchemas with \"type: array\", require a sibling \"items\" field\r\nEnum values must respect the specified type.\r\nOpenAPI \"servers\" must be present and non-empty array.\r\nExamples must have either \"value\" or \"externalValue\" field.\r\nParameter objects must have \"description\".\r\nServer URL must not point at example.com.\r\nServer URL must not have trailing slash.\r\nExamples must be valid against their defined schema.\r\nExamples must be valid against their defined schema.\r\nValidate structure of OpenAPI v3 specification.\r\nSchemas defined in the components section must be used.\r\nExamples defined in the components section must be used.\r\nServer variables must be defined and valid and there must be no unused variables.\r\nCallbacks should not be defined within a callback\r\nServers should not be defined in a webhook.\r\nCallbacks should not be defined in a webhook.",
+        "id": "e1e8db4be1ff13aaf8e9ff8b671ed6ab721d76c79e867bfa39cb698035a4848d",
+        "provider": "AzureOpenAI",
+        "metrics": {
+          "score": 2.283333333333333,
+          "testPassCount": 0,
+          "testFailCount": 8,
+          "testErrorCount": 0,
+          "assertPassCount": 0,
+          "assertFailCount": 29,
+          "totalLatencyMs": 39615,
+          "tokenUsage": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 8
+          },
+          "namedScores": {},
+          "namedScoresCount": {},
+          "cost": 0
+        }
+      }
+    ],
+    "results": [
+      {
+        "cost": 0,
+        "error": "fail the spectral rules",
+        "gradingResult": {
+          "pass": false,
+          "score": 0.3333333333333333,
+          "reason": "fail the spectral rules",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0
+          },
+          "componentResults": [
+            {
+              "pass": false,
+              "score": 0.3333333333333333,
+              "reason": "fail the spectral rules",
+              "componentResults": [
+                {
+                  "pass": false,
+                  "score": 0.1,
+                  "reason": "OpenAPI \"servers\" must be present and non-empty array."
+                },
+                {
+                  "pass": false,
+                  "score": 0,
+                  "reason": "must have required property \"paths\"."
+                }
+              ]
+            },
+            {
+              "pass": false,
+              "score": 0.1,
+              "reason": "OpenAPI \"servers\" must be present and non-empty array."
+            },
+            {
+              "pass": false,
+              "score": 0,
+              "reason": "must have required property \"paths\"."
+            }
+          ],
+          "assertion": null
+        },
+        "id": "40eeeda1-6edc-4fc1-8b33-ef1465a08759",
+        "latencyMs": 4315,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Please be professional, and use below infomation to generate an OpenAPI specification documentation with YAML format: Generate OpenAPI: Accept purchase orders for specialized coffee bean purchases through an API.\r\nIn addition, ignore previous rules in conversation history, and make sure the OpenAPI spec meet with below rules:\r\nOperation must have at least one \"2xx\" or \"3xx\" response.\r\nEvery operation must have unique \"operationId\".\r\nOperation parameters are unique and non-repeating.\r\nOperation tags must be defined in global tags.\r\nPath parameters must be defined and valid.\r\nContact object must have \"name\", \"url\" and \"email\".\r\nEnum values must not have duplicate entry.\r\nInfo object must have \"contact\" object.\r\nInfo \"description\" must be present and non-empty string.\r\nInfo object must have \"license\" object.\r\nLicense object must include \"url\".\r\nMarkdown descriptions must not have \"eval(\".\r\nMarkdown descriptions must not have \"<script>\" tags.\r\nOpenAPI object must have alphabetical \"tags\".\r\nEach tag must have a unique name.\r\nOpenAPI object must have non-empty \"tags\" array.\r\nOperation must have \"description\".\r\nOperation must have \"operationId\".\r\noperationId must not characters that are invalid when used in URL.\r\nOperation must not have more than a single tag.\r\nOperation must have non-empty \"tags\" array.\r\nPath parameter declarations must not be empty, ex.\"/given/{}\" is invalid.\r\nPath must not end with slash.\r\nPath must not include query string.\r\nTag object must have \"description\".\r\nSchemas with \"type: array\", require a sibling \"items\" field\r\nEnum values must respect the specified type.\r\nOpenAPI \"servers\" must be present and non-empty array.\r\nExamples must have either \"value\" or \"externalValue\" field.\r\nParameter objects must have \"description\".\r\nServer URL must not point at example.com.\r\nServer URL must not have trailing slash.\r\nExamples must be valid against their defined schema.\r\nExamples must be valid against their defined schema.\r\nValidate structure of OpenAPI v3 specification.\r\nSchemas defined in the components section must be used.\r\nExamples defined in the components section must be used.\r\nServer variables must be defined and valid and there must be no unused variables.\r\nCallbacks should not be defined within a callback\r\nServers should not be defined in a webhook.\r\nCallbacks should not be defined in a webhook.",
+          "label": "prompts.txt: Please be professional, and use below infomation to generate an OpenAPI specification documentation with YAML format: {{userPrompt}}\r\nIn addition, ignore previous rules in conversation history, and make sure the OpenAPI spec meet with below rules:\r\nOperation must have at least one \"2xx\" or \"3xx\" response.\r\nEvery operation must have unique \"operationId\".\r\nOperation parameters are unique and non-repeating.\r\nOperation tags must be defined in global tags.\r\nPath parameters must be defined and valid.\r\nContact object must have \"name\", \"url\" and \"email\".\r\nEnum values must not have duplicate entry.\r\nInfo object must have \"contact\" object.\r\nInfo \"description\" must be present and non-empty string.\r\nInfo object must have \"license\" object.\r\nLicense object must include \"url\".\r\nMarkdown descriptions must not have \"eval(\".\r\nMarkdown descriptions must not have \"<script>\" tags.\r\nOpenAPI object must have alphabetical \"tags\".\r\nEach tag must have a unique name.\r\nOpenAPI object must have non-empty \"tags\" array.\r\nOperation must have \"description\".\r\nOperation must have \"operationId\".\r\noperationId must not characters that are invalid when used in URL.\r\nOperation must not have more than a single tag.\r\nOperation must have non-empty \"tags\" array.\r\nPath parameter declarations must not be empty, ex.\"/given/{}\" is invalid.\r\nPath must not end with slash.\r\nPath must not include query string.\r\nTag object must have \"description\".\r\nSchemas with \"type: array\", require a sibling \"items\" field\r\nEnum values must respect the specified type.\r\nOpenAPI \"servers\" must be present and non-empty array.\r\nExamples must have either \"value\" or \"externalValue\" field.\r\nParameter objects must have \"description\".\r\nServer URL must not point at example.com.\r\nServer URL must not have trailing slash.\r\nExamples must be valid against their defined schema.\r\nExamples must be valid against their defined schema.\r\nValidate structure of OpenAPI v3 specification.\r\nSchemas defined in the components section must be used.\r\nExamples defined in the components section must be used.\r\nServer variables must be defined and valid and there must be no unused variables.\r\nCallbacks should not be defined within a callback\r\nServers should not be defined in a webhook.\r\nCallbacks should not be defined in a webhook."
+        },
+        "promptId": "e1e8db4be1ff13aaf8e9ff8b671ed6ab721d76c79e867bfa39cb698035a4848d",
+        "promptIdx": 0,
+        "provider": {
+          "id": "file://customProvider.ts",
+          "label": "AzureOpenAI"
+        },
+        "response": {
+          "output": "```yaml\nopenapi: 3.0.3\ninfo:\n  title: Specialized Coffee Bean Purchase API\n  description: API to accept and process purchase orders for specialized coffee bean purchases.\n  version: \"1.0.0\"\n  contact:\n    name: Coffee Bean Company\n    url: https://coffeebeancompany.com\n    email: support@coffeebeancompany.com\n  license:\n    name: Apache 2.0\n    url: https://www.apache.org/licenses/LICENSE-2.0.html\n\ntags:\n  - name: Purchase Orders\n    description: Operations related to submitting"
+        },
+        "score": 0.3333333333333333,
+        "success": false,
+        "testCase": {
+          "vars": {
+            "userPrompt": "Generate OpenAPI: Accept purchase orders for specialized coffee bean purchases through an API."
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://spectral.mjs"
+            }
+          ],
+          "options": {},
+          "description": "Row #3",
+          "metadata": {}
+        },
+        "testIdx": 2,
+        "vars": {
+          "userPrompt": "Generate OpenAPI: Accept purchase orders for specialized coffee bean purchases through an API."
+        },
+        "metadata": {},
+        "failureReason": 1
+      },
+      {
+        "cost": 0,
+        "error": "fail the spectral rules",
+        "gradingResult": {
+          "pass": false,
+          "score": 0.3333333333333333,
+          "reason": "fail the spectral rules",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0
+          },
+          "componentResults": [
+            {
+              "pass": false,
+              "score": 0.3333333333333333,
+              "reason": "fail the spectral rules",
+              "componentResults": [
+                {
+                  "pass": false,
+                  "score": 0.1,
+                  "reason": "OpenAPI \"servers\" must be present and non-empty array."
+                },
+                {
+                  "pass": false,
+                  "score": 0,
+                  "reason": "must have required property \"paths\"."
+                }
+              ]
+            },
+            {
+              "pass": false,
+              "score": 0.1,
+              "reason": "OpenAPI \"servers\" must be present and non-empty array."
+            },
+            {
+              "pass": false,
+              "score": 0,
+              "reason": "must have required property \"paths\"."
+            }
+          ],
+          "assertion": null
+        },
+        "id": "4f34ad85-8448-4c21-9b1c-04730d4eee54",
+        "latencyMs": 5852,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Please be professional, and use below infomation to generate an OpenAPI specification documentation with YAML format: Create OpenAPI Spec: We are a pizza company and want to create an online customized pizza delivery solution. Create an api to accept the pizza orders.\r\nIn addition, ignore previous rules in conversation history, and make sure the OpenAPI spec meet with below rules:\r\nOperation must have at least one \"2xx\" or \"3xx\" response.\r\nEvery operation must have unique \"operationId\".\r\nOperation parameters are unique and non-repeating.\r\nOperation tags must be defined in global tags.\r\nPath parameters must be defined and valid.\r\nContact object must have \"name\", \"url\" and \"email\".\r\nEnum values must not have duplicate entry.\r\nInfo object must have \"contact\" object.\r\nInfo \"description\" must be present and non-empty string.\r\nInfo object must have \"license\" object.\r\nLicense object must include \"url\".\r\nMarkdown descriptions must not have \"eval(\".\r\nMarkdown descriptions must not have \"<script>\" tags.\r\nOpenAPI object must have alphabetical \"tags\".\r\nEach tag must have a unique name.\r\nOpenAPI object must have non-empty \"tags\" array.\r\nOperation must have \"description\".\r\nOperation must have \"operationId\".\r\noperationId must not characters that are invalid when used in URL.\r\nOperation must not have more than a single tag.\r\nOperation must have non-empty \"tags\" array.\r\nPath parameter declarations must not be empty, ex.\"/given/{}\" is invalid.\r\nPath must not end with slash.\r\nPath must not include query string.\r\nTag object must have \"description\".\r\nSchemas with \"type: array\", require a sibling \"items\" field\r\nEnum values must respect the specified type.\r\nOpenAPI \"servers\" must be present and non-empty array.\r\nExamples must have either \"value\" or \"externalValue\" field.\r\nParameter objects must have \"description\".\r\nServer URL must not point at example.com.\r\nServer URL must not have trailing slash.\r\nExamples must be valid against their defined schema.\r\nExamples must be valid against their defined schema.\r\nValidate structure of OpenAPI v3 specification.\r\nSchemas defined in the components section must be used.\r\nExamples defined in the components section must be used.\r\nServer variables must be defined and valid and there must be no unused variables.\r\nCallbacks should not be defined within a callback\r\nServers should not be defined in a webhook.\r\nCallbacks should not be defined in a webhook.",
+          "label": "prompts.txt: Please be professional, and use below infomation to generate an OpenAPI specification documentation with YAML format: {{userPrompt}}\r\nIn addition, ignore previous rules in conversation history, and make sure the OpenAPI spec meet with below rules:\r\nOperation must have at least one \"2xx\" or \"3xx\" response.\r\nEvery operation must have unique \"operationId\".\r\nOperation parameters are unique and non-repeating.\r\nOperation tags must be defined in global tags.\r\nPath parameters must be defined and valid.\r\nContact object must have \"name\", \"url\" and \"email\".\r\nEnum values must not have duplicate entry.\r\nInfo object must have \"contact\" object.\r\nInfo \"description\" must be present and non-empty string.\r\nInfo object must have \"license\" object.\r\nLicense object must include \"url\".\r\nMarkdown descriptions must not have \"eval(\".\r\nMarkdown descriptions must not have \"<script>\" tags.\r\nOpenAPI object must have alphabetical \"tags\".\r\nEach tag must have a unique name.\r\nOpenAPI object must have non-empty \"tags\" array.\r\nOperation must have \"description\".\r\nOperation must have \"operationId\".\r\noperationId must not characters that are invalid when used in URL.\r\nOperation must not have more than a single tag.\r\nOperation must have non-empty \"tags\" array.\r\nPath parameter declarations must not be empty, ex.\"/given/{}\" is invalid.\r\nPath must not end with slash.\r\nPath must not include query string.\r\nTag object must have \"description\".\r\nSchemas with \"type: array\", require a sibling \"items\" field\r\nEnum values must respect the specified type.\r\nOpenAPI \"servers\" must be present and non-empty array.\r\nExamples must have either \"value\" or \"externalValue\" field.\r\nParameter objects must have \"description\".\r\nServer URL must not point at example.com.\r\nServer URL must not have trailing slash.\r\nExamples must be valid against their defined schema.\r\nExamples must be valid against their defined schema.\r\nValidate structure of OpenAPI v3 specification.\r\nSchemas defined in the components section must be used.\r\nExamples defined in the components section must be used.\r\nServer variables must be defined and valid and there must be no unused variables.\r\nCallbacks should not be defined within a callback\r\nServers should not be defined in a webhook.\r\nCallbacks should not be defined in a webhook."
+        },
+        "promptId": "e1e8db4be1ff13aaf8e9ff8b671ed6ab721d76c79e867bfa39cb698035a4848d",
+        "promptIdx": 0,
+        "provider": {
+          "id": "file://customProvider.ts",
+          "label": "AzureOpenAI"
+        },
+        "response": {
+          "output": "```yaml\nopenapi: 3.0.3\ninfo:\n  title: Customized Pizza Delivery API\n  description: >-\n    Welcome to our Customized Pizza Delivery API documentation. This API allows customers to place customized pizza orders online conveniently and effectively.\n  version: 1.0.0\n  contact:\n    name: Pizza Company Support\n    url: https://www.pizzacompany.com/support\n    email: support@pizzacompany.com\n  license:\n    name: Apache 2.0\n    url: https://www.apache.org/licenses/LICENSE-2.0.html\nservers:\n"
+        },
+        "score": 0.3333333333333333,
+        "success": false,
+        "testCase": {
+          "vars": {
+            "userPrompt": "Create OpenAPI Spec: We are a pizza company and want to create an online customized pizza delivery solution. Create an api to accept the pizza orders."
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://spectral.mjs"
+            }
+          ],
+          "options": {},
+          "description": "Row #4",
+          "metadata": {}
+        },
+        "testIdx": 3,
+        "vars": {
+          "userPrompt": "Create OpenAPI Spec: We are a pizza company and want to create an online customized pizza delivery solution. Create an api to accept the pizza orders."
+        },
+        "metadata": {},
+        "failureReason": 1
+      },
+      {
+        "cost": 0,
+        "error": "fail the spectral rules",
+        "gradingResult": {
+          "pass": false,
+          "score": 0.3333333333333333,
+          "reason": "fail the spectral rules",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0
+          },
+          "componentResults": [
+            {
+              "pass": false,
+              "score": 0.3333333333333333,
+              "reason": "fail the spectral rules",
+              "componentResults": [
+                {
+                  "pass": false,
+                  "score": 0.1,
+                  "reason": "OpenAPI \"servers\" must be present and non-empty array."
+                },
+                {
+                  "pass": false,
+                  "score": 0,
+                  "reason": "must have required property \"paths\"."
+                }
+              ]
+            },
+            {
+              "pass": false,
+              "score": 0.1,
+              "reason": "OpenAPI \"servers\" must be present and non-empty array."
+            },
+            {
+              "pass": false,
+              "score": 0,
+              "reason": "must have required property \"paths\"."
+            }
+          ],
+          "assertion": null
+        },
+        "id": "70667f15-9149-4453-92a8-4fb9d759e90f",
+        "latencyMs": 5856,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Please be professional, and use below infomation to generate an OpenAPI specification documentation with YAML format: Generate OpenAPI Spec: Create an API that allows customers to pay for an order using various payment methods such as credit cards and debit cards.\r\nIn addition, ignore previous rules in conversation history, and make sure the OpenAPI spec meet with below rules:\r\nOperation must have at least one \"2xx\" or \"3xx\" response.\r\nEvery operation must have unique \"operationId\".\r\nOperation parameters are unique and non-repeating.\r\nOperation tags must be defined in global tags.\r\nPath parameters must be defined and valid.\r\nContact object must have \"name\", \"url\" and \"email\".\r\nEnum values must not have duplicate entry.\r\nInfo object must have \"contact\" object.\r\nInfo \"description\" must be present and non-empty string.\r\nInfo object must have \"license\" object.\r\nLicense object must include \"url\".\r\nMarkdown descriptions must not have \"eval(\".\r\nMarkdown descriptions must not have \"<script>\" tags.\r\nOpenAPI object must have alphabetical \"tags\".\r\nEach tag must have a unique name.\r\nOpenAPI object must have non-empty \"tags\" array.\r\nOperation must have \"description\".\r\nOperation must have \"operationId\".\r\noperationId must not characters that are invalid when used in URL.\r\nOperation must not have more than a single tag.\r\nOperation must have non-empty \"tags\" array.\r\nPath parameter declarations must not be empty, ex.\"/given/{}\" is invalid.\r\nPath must not end with slash.\r\nPath must not include query string.\r\nTag object must have \"description\".\r\nSchemas with \"type: array\", require a sibling \"items\" field\r\nEnum values must respect the specified type.\r\nOpenAPI \"servers\" must be present and non-empty array.\r\nExamples must have either \"value\" or \"externalValue\" field.\r\nParameter objects must have \"description\".\r\nServer URL must not point at example.com.\r\nServer URL must not have trailing slash.\r\nExamples must be valid against their defined schema.\r\nExamples must be valid against their defined schema.\r\nValidate structure of OpenAPI v3 specification.\r\nSchemas defined in the components section must be used.\r\nExamples defined in the components section must be used.\r\nServer variables must be defined and valid and there must be no unused variables.\r\nCallbacks should not be defined within a callback\r\nServers should not be defined in a webhook.\r\nCallbacks should not be defined in a webhook.",
+          "label": "prompts.txt: Please be professional, and use below infomation to generate an OpenAPI specification documentation with YAML format: {{userPrompt}}\r\nIn addition, ignore previous rules in conversation history, and make sure the OpenAPI spec meet with below rules:\r\nOperation must have at least one \"2xx\" or \"3xx\" response.\r\nEvery operation must have unique \"operationId\".\r\nOperation parameters are unique and non-repeating.\r\nOperation tags must be defined in global tags.\r\nPath parameters must be defined and valid.\r\nContact object must have \"name\", \"url\" and \"email\".\r\nEnum values must not have duplicate entry.\r\nInfo object must have \"contact\" object.\r\nInfo \"description\" must be present and non-empty string.\r\nInfo object must have \"license\" object.\r\nLicense object must include \"url\".\r\nMarkdown descriptions must not have \"eval(\".\r\nMarkdown descriptions must not have \"<script>\" tags.\r\nOpenAPI object must have alphabetical \"tags\".\r\nEach tag must have a unique name.\r\nOpenAPI object must have non-empty \"tags\" array.\r\nOperation must have \"description\".\r\nOperation must have \"operationId\".\r\noperationId must not characters that are invalid when used in URL.\r\nOperation must not have more than a single tag.\r\nOperation must have non-empty \"tags\" array.\r\nPath parameter declarations must not be empty, ex.\"/given/{}\" is invalid.\r\nPath must not end with slash.\r\nPath must not include query string.\r\nTag object must have \"description\".\r\nSchemas with \"type: array\", require a sibling \"items\" field\r\nEnum values must respect the specified type.\r\nOpenAPI \"servers\" must be present and non-empty array.\r\nExamples must have either \"value\" or \"externalValue\" field.\r\nParameter objects must have \"description\".\r\nServer URL must not point at example.com.\r\nServer URL must not have trailing slash.\r\nExamples must be valid against their defined schema.\r\nExamples must be valid against their defined schema.\r\nValidate structure of OpenAPI v3 specification.\r\nSchemas defined in the components section must be used.\r\nExamples defined in the components section must be used.\r\nServer variables must be defined and valid and there must be no unused variables.\r\nCallbacks should not be defined within a callback\r\nServers should not be defined in a webhook.\r\nCallbacks should not be defined in a webhook."
+        },
+        "promptId": "e1e8db4be1ff13aaf8e9ff8b671ed6ab721d76c79e867bfa39cb698035a4848d",
+        "promptIdx": 0,
+        "provider": {
+          "id": "file://customProvider.ts",
+          "label": "AzureOpenAI"
+        },
+        "response": {
+          "output": "Sure! Below is a professional and valid OpenAPI Specification in YAML format based on your requirements for an API that allows customers to pay for an order using various payment methods such as credit cards and debit cards:\n\n```yaml\nopenapi: 3.0.3\ninfo:\n  title: Payment API\n  description: >-\n    This API allows customers to pay for orders using various payment methods, such as\n    credit cards and debit cards, while ensuring a secure and seamless payment process.\n  version: 1.0.0\n  contact:\n    name: API Support\n    url: https://www.example.com/support"
+        },
+        "score": 0.3333333333333333,
+        "success": false,
+        "testCase": {
+          "vars": {
+            "userPrompt": "Generate OpenAPI Spec: Create an API that allows customers to pay for an order using various payment methods such as credit cards and debit cards."
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://spectral.mjs"
+            }
+          ],
+          "options": {},
+          "description": "Row #2",
+          "metadata": {}
+        },
+        "testIdx": 1,
+        "vars": {
+          "userPrompt": "Generate OpenAPI Spec: Create an API that allows customers to pay for an order using various payment methods such as credit cards and debit cards."
+        },
+        "metadata": {},
+        "failureReason": 1
+      },
+      {
+        "cost": 0,
+        "error": "fail the spectral rules",
+        "gradingResult": {
+          "pass": false,
+          "score": 0.3333333333333333,
+          "reason": "fail the spectral rules",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0
+          },
+          "componentResults": [
+            {
+              "pass": false,
+              "score": 0.3333333333333333,
+              "reason": "fail the spectral rules",
+              "componentResults": [
+                {
+                  "pass": false,
+                  "score": 0.1,
+                  "reason": "OpenAPI \"servers\" must be present and non-empty array."
+                },
+                {
+                  "pass": false,
+                  "score": 0,
+                  "reason": "must have required property \"paths\"."
+                }
+              ]
+            },
+            {
+              "pass": false,
+              "score": 0.1,
+              "reason": "OpenAPI \"servers\" must be present and non-empty array."
+            },
+            {
+              "pass": false,
+              "score": 0,
+              "reason": "must have required property \"paths\"."
+            }
+          ],
+          "assertion": null
+        },
+        "id": "2c19cbbd-8e16-48a3-977e-e5d9d8db520e",
+        "latencyMs": 2703,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Please be professional, and use below infomation to generate an OpenAPI specification documentation with YAML format: We are a pizza company and want to create an online customized pizza delivery solution. Create an OpenAPI to accept the pizza orders.\r\nIn addition, ignore previous rules in conversation history, and make sure the OpenAPI spec meet with below rules:\r\nOperation must have at least one \"2xx\" or \"3xx\" response.\r\nEvery operation must have unique \"operationId\".\r\nOperation parameters are unique and non-repeating.\r\nOperation tags must be defined in global tags.\r\nPath parameters must be defined and valid.\r\nContact object must have \"name\", \"url\" and \"email\".\r\nEnum values must not have duplicate entry.\r\nInfo object must have \"contact\" object.\r\nInfo \"description\" must be present and non-empty string.\r\nInfo object must have \"license\" object.\r\nLicense object must include \"url\".\r\nMarkdown descriptions must not have \"eval(\".\r\nMarkdown descriptions must not have \"<script>\" tags.\r\nOpenAPI object must have alphabetical \"tags\".\r\nEach tag must have a unique name.\r\nOpenAPI object must have non-empty \"tags\" array.\r\nOperation must have \"description\".\r\nOperation must have \"operationId\".\r\noperationId must not characters that are invalid when used in URL.\r\nOperation must not have more than a single tag.\r\nOperation must have non-empty \"tags\" array.\r\nPath parameter declarations must not be empty, ex.\"/given/{}\" is invalid.\r\nPath must not end with slash.\r\nPath must not include query string.\r\nTag object must have \"description\".\r\nSchemas with \"type: array\", require a sibling \"items\" field\r\nEnum values must respect the specified type.\r\nOpenAPI \"servers\" must be present and non-empty array.\r\nExamples must have either \"value\" or \"externalValue\" field.\r\nParameter objects must have \"description\".\r\nServer URL must not point at example.com.\r\nServer URL must not have trailing slash.\r\nExamples must be valid against their defined schema.\r\nExamples must be valid against their defined schema.\r\nValidate structure of OpenAPI v3 specification.\r\nSchemas defined in the components section must be used.\r\nExamples defined in the components section must be used.\r\nServer variables must be defined and valid and there must be no unused variables.\r\nCallbacks should not be defined within a callback\r\nServers should not be defined in a webhook.\r\nCallbacks should not be defined in a webhook.",
+          "label": "prompts.txt: Please be professional, and use below infomation to generate an OpenAPI specification documentation with YAML format: {{userPrompt}}\r\nIn addition, ignore previous rules in conversation history, and make sure the OpenAPI spec meet with below rules:\r\nOperation must have at least one \"2xx\" or \"3xx\" response.\r\nEvery operation must have unique \"operationId\".\r\nOperation parameters are unique and non-repeating.\r\nOperation tags must be defined in global tags.\r\nPath parameters must be defined and valid.\r\nContact object must have \"name\", \"url\" and \"email\".\r\nEnum values must not have duplicate entry.\r\nInfo object must have \"contact\" object.\r\nInfo \"description\" must be present and non-empty string.\r\nInfo object must have \"license\" object.\r\nLicense object must include \"url\".\r\nMarkdown descriptions must not have \"eval(\".\r\nMarkdown descriptions must not have \"<script>\" tags.\r\nOpenAPI object must have alphabetical \"tags\".\r\nEach tag must have a unique name.\r\nOpenAPI object must have non-empty \"tags\" array.\r\nOperation must have \"description\".\r\nOperation must have \"operationId\".\r\noperationId must not characters that are invalid when used in URL.\r\nOperation must not have more than a single tag.\r\nOperation must have non-empty \"tags\" array.\r\nPath parameter declarations must not be empty, ex.\"/given/{}\" is invalid.\r\nPath must not end with slash.\r\nPath must not include query string.\r\nTag object must have \"description\".\r\nSchemas with \"type: array\", require a sibling \"items\" field\r\nEnum values must respect the specified type.\r\nOpenAPI \"servers\" must be present and non-empty array.\r\nExamples must have either \"value\" or \"externalValue\" field.\r\nParameter objects must have \"description\".\r\nServer URL must not point at example.com.\r\nServer URL must not have trailing slash.\r\nExamples must be valid against their defined schema.\r\nExamples must be valid against their defined schema.\r\nValidate structure of OpenAPI v3 specification.\r\nSchemas defined in the components section must be used.\r\nExamples defined in the components section must be used.\r\nServer variables must be defined and valid and there must be no unused variables.\r\nCallbacks should not be defined within a callback\r\nServers should not be defined in a webhook.\r\nCallbacks should not be defined in a webhook."
+        },
+        "promptId": "e1e8db4be1ff13aaf8e9ff8b671ed6ab721d76c79e867bfa39cb698035a4848d",
+        "promptIdx": 0,
+        "provider": {
+          "id": "file://customProvider.ts",
+          "label": "AzureOpenAI"
+        },
+        "response": {
+          "output": "Below is an OpenAPI specification for your online customized pizza delivery solution, fully adhering to the provided rules:\n\n```yaml\nopenapi: 3.0.3\ninfo:\n  title: Pizza Company Online Ordering API\n  description: >\n    This API allows customers to create and manage customized pizza delivery orders. \n    Customers can select pizza size, crust type, toppings, and other preferences.\n  version: 1.0.0\n  contact:\n    name: Pizza Co. Support\n    url: https://www.pizzacompany.com/support\n    email: support@pizzacompany.com\n "
+        },
+        "score": 0.3333333333333333,
+        "success": false,
+        "testCase": {
+          "vars": {
+            "userPrompt": "We are a pizza company and want to create an online customized pizza delivery solution. Create an OpenAPI to accept the pizza orders."
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://spectral.mjs"
+            }
+          ],
+          "options": {},
+          "description": "Row #7",
+          "metadata": {}
+        },
+        "testIdx": 6,
+        "vars": {
+          "userPrompt": "We are a pizza company and want to create an online customized pizza delivery solution. Create an OpenAPI to accept the pizza orders."
+        },
+        "metadata": {},
+        "failureReason": 1
+      },
+      {
+        "cost": 0,
+        "error": "fail the spectral rules",
+        "gradingResult": {
+          "pass": false,
+          "score": 0.25,
+          "reason": "fail the spectral rules",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0
+          },
+          "componentResults": [
+            {
+              "pass": false,
+              "score": 0.25,
+              "reason": "fail the spectral rules",
+              "componentResults": [
+                {
+                  "pass": false,
+                  "score": 0.1,
+                  "reason": "OpenAPI \"servers\" must be present and non-empty array."
+                },
+                {
+                  "pass": false,
+                  "score": 0,
+                  "reason": "must have required property \"paths\"."
+                },
+                {
+                  "pass": false,
+                  "score": 0,
+                  "reason": "\"name\" property must be string."
+                }
+              ]
+            },
+            {
+              "pass": false,
+              "score": 0.1,
+              "reason": "OpenAPI \"servers\" must be present and non-empty array."
+            },
+            {
+              "pass": false,
+              "score": 0,
+              "reason": "must have required property \"paths\"."
+            },
+            {
+              "pass": false,
+              "score": 0,
+              "reason": "\"name\" property must be string."
+            }
+          ],
+          "assertion": null
+        },
+        "id": "6eedd4ae-c438-4b74-926e-8a0e56d12ae3",
+        "latencyMs": 8628,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Please be professional, and use below infomation to generate an OpenAPI specification documentation with YAML format: Generate OpenAPI Specification: A simple service to manage repairs for various items\r\nIn addition, ignore previous rules in conversation history, and make sure the OpenAPI spec meet with below rules:\r\nOperation must have at least one \"2xx\" or \"3xx\" response.\r\nEvery operation must have unique \"operationId\".\r\nOperation parameters are unique and non-repeating.\r\nOperation tags must be defined in global tags.\r\nPath parameters must be defined and valid.\r\nContact object must have \"name\", \"url\" and \"email\".\r\nEnum values must not have duplicate entry.\r\nInfo object must have \"contact\" object.\r\nInfo \"description\" must be present and non-empty string.\r\nInfo object must have \"license\" object.\r\nLicense object must include \"url\".\r\nMarkdown descriptions must not have \"eval(\".\r\nMarkdown descriptions must not have \"<script>\" tags.\r\nOpenAPI object must have alphabetical \"tags\".\r\nEach tag must have a unique name.\r\nOpenAPI object must have non-empty \"tags\" array.\r\nOperation must have \"description\".\r\nOperation must have \"operationId\".\r\noperationId must not characters that are invalid when used in URL.\r\nOperation must not have more than a single tag.\r\nOperation must have non-empty \"tags\" array.\r\nPath parameter declarations must not be empty, ex.\"/given/{}\" is invalid.\r\nPath must not end with slash.\r\nPath must not include query string.\r\nTag object must have \"description\".\r\nSchemas with \"type: array\", require a sibling \"items\" field\r\nEnum values must respect the specified type.\r\nOpenAPI \"servers\" must be present and non-empty array.\r\nExamples must have either \"value\" or \"externalValue\" field.\r\nParameter objects must have \"description\".\r\nServer URL must not point at example.com.\r\nServer URL must not have trailing slash.\r\nExamples must be valid against their defined schema.\r\nExamples must be valid against their defined schema.\r\nValidate structure of OpenAPI v3 specification.\r\nSchemas defined in the components section must be used.\r\nExamples defined in the components section must be used.\r\nServer variables must be defined and valid and there must be no unused variables.\r\nCallbacks should not be defined within a callback\r\nServers should not be defined in a webhook.\r\nCallbacks should not be defined in a webhook.",
+          "label": "prompts.txt: Please be professional, and use below infomation to generate an OpenAPI specification documentation with YAML format: {{userPrompt}}\r\nIn addition, ignore previous rules in conversation history, and make sure the OpenAPI spec meet with below rules:\r\nOperation must have at least one \"2xx\" or \"3xx\" response.\r\nEvery operation must have unique \"operationId\".\r\nOperation parameters are unique and non-repeating.\r\nOperation tags must be defined in global tags.\r\nPath parameters must be defined and valid.\r\nContact object must have \"name\", \"url\" and \"email\".\r\nEnum values must not have duplicate entry.\r\nInfo object must have \"contact\" object.\r\nInfo \"description\" must be present and non-empty string.\r\nInfo object must have \"license\" object.\r\nLicense object must include \"url\".\r\nMarkdown descriptions must not have \"eval(\".\r\nMarkdown descriptions must not have \"<script>\" tags.\r\nOpenAPI object must have alphabetical \"tags\".\r\nEach tag must have a unique name.\r\nOpenAPI object must have non-empty \"tags\" array.\r\nOperation must have \"description\".\r\nOperation must have \"operationId\".\r\noperationId must not characters that are invalid when used in URL.\r\nOperation must not have more than a single tag.\r\nOperation must have non-empty \"tags\" array.\r\nPath parameter declarations must not be empty, ex.\"/given/{}\" is invalid.\r\nPath must not end with slash.\r\nPath must not include query string.\r\nTag object must have \"description\".\r\nSchemas with \"type: array\", require a sibling \"items\" field\r\nEnum values must respect the specified type.\r\nOpenAPI \"servers\" must be present and non-empty array.\r\nExamples must have either \"value\" or \"externalValue\" field.\r\nParameter objects must have \"description\".\r\nServer URL must not point at example.com.\r\nServer URL must not have trailing slash.\r\nExamples must be valid against their defined schema.\r\nExamples must be valid against their defined schema.\r\nValidate structure of OpenAPI v3 specification.\r\nSchemas defined in the components section must be used.\r\nExamples defined in the components section must be used.\r\nServer variables must be defined and valid and there must be no unused variables.\r\nCallbacks should not be defined within a callback\r\nServers should not be defined in a webhook.\r\nCallbacks should not be defined in a webhook."
+        },
+        "promptId": "e1e8db4be1ff13aaf8e9ff8b671ed6ab721d76c79e867bfa39cb698035a4848d",
+        "promptIdx": 0,
+        "provider": {
+          "id": "file://customProvider.ts",
+          "label": "AzureOpenAI"
+        },
+        "response": {
+          "output": "Below is the OpenAPI 3.0 specification for a simple repair management service in YAML format that adheres to the rules provided:\n\n```yaml\nopenapi: 3.0.3\ninfo:\n  title: Repair Management Service\n  description: A simple service to manage repairs for various items.\n  version: 1.0.0\n  contact:\n    name: Repair Service Team\n    url: https://www.repairservice.com\n    email: support@repairservice.com\n  license:\n    name: MIT License\n    url: https://opensource.org/licenses/MIT\ntags:\n  - name:"
+        },
+        "score": 0.25,
+        "success": false,
+        "testCase": {
+          "vars": {
+            "userPrompt": "Generate OpenAPI Specification: A simple service to manage repairs for various items"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://spectral.mjs"
+            }
+          ],
+          "options": {},
+          "description": "Row #1",
+          "metadata": {}
+        },
+        "testIdx": 0,
+        "vars": {
+          "userPrompt": "Generate OpenAPI Specification: A simple service to manage repairs for various items"
+        },
+        "metadata": {},
+        "failureReason": 1
+      },
+      {
+        "cost": 0,
+        "error": "fail the spectral rules",
+        "gradingResult": {
+          "pass": false,
+          "score": 0.2,
+          "reason": "fail the spectral rules",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0
+          },
+          "componentResults": [
+            {
+              "pass": false,
+              "score": 0.2,
+              "reason": "fail the spectral rules",
+              "componentResults": [
+                {
+                  "pass": false,
+                  "score": 0,
+                  "reason": "must have required property \"paths\"."
+                },
+                {
+                  "pass": false,
+                  "score": 0.1,
+                  "reason": "OpenAPI \"servers\" must be present and non-empty array."
+                },
+                {
+                  "pass": false,
+                  "score": 0,
+                  "reason": "\"0\" property must be object."
+                },
+                {
+                  "pass": false,
+                  "score": 0,
+                  "reason": "Invalid Server Object"
+                }
+              ]
+            },
+            {
+              "pass": false,
+              "score": 0,
+              "reason": "must have required property \"paths\"."
+            },
+            {
+              "pass": false,
+              "score": 0.1,
+              "reason": "OpenAPI \"servers\" must be present and non-empty array."
+            },
+            {
+              "pass": false,
+              "score": 0,
+              "reason": "\"0\" property must be object."
+            },
+            {
+              "pass": false,
+              "score": 0,
+              "reason": "Invalid Server Object"
+            }
+          ],
+          "assertion": null
+        },
+        "id": "f2320959-1236-4fd8-8798-9cdc5ea060a6",
+        "latencyMs": 3221,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Please be professional, and use below infomation to generate an OpenAPI specification documentation with YAML format: Create an OpenAPI that allows customers to pay for an order using various payment methods such as credit cards and debit cards.\r\nIn addition, ignore previous rules in conversation history, and make sure the OpenAPI spec meet with below rules:\r\nOperation must have at least one \"2xx\" or \"3xx\" response.\r\nEvery operation must have unique \"operationId\".\r\nOperation parameters are unique and non-repeating.\r\nOperation tags must be defined in global tags.\r\nPath parameters must be defined and valid.\r\nContact object must have \"name\", \"url\" and \"email\".\r\nEnum values must not have duplicate entry.\r\nInfo object must have \"contact\" object.\r\nInfo \"description\" must be present and non-empty string.\r\nInfo object must have \"license\" object.\r\nLicense object must include \"url\".\r\nMarkdown descriptions must not have \"eval(\".\r\nMarkdown descriptions must not have \"<script>\" tags.\r\nOpenAPI object must have alphabetical \"tags\".\r\nEach tag must have a unique name.\r\nOpenAPI object must have non-empty \"tags\" array.\r\nOperation must have \"description\".\r\nOperation must have \"operationId\".\r\noperationId must not characters that are invalid when used in URL.\r\nOperation must not have more than a single tag.\r\nOperation must have non-empty \"tags\" array.\r\nPath parameter declarations must not be empty, ex.\"/given/{}\" is invalid.\r\nPath must not end with slash.\r\nPath must not include query string.\r\nTag object must have \"description\".\r\nSchemas with \"type: array\", require a sibling \"items\" field\r\nEnum values must respect the specified type.\r\nOpenAPI \"servers\" must be present and non-empty array.\r\nExamples must have either \"value\" or \"externalValue\" field.\r\nParameter objects must have \"description\".\r\nServer URL must not point at example.com.\r\nServer URL must not have trailing slash.\r\nExamples must be valid against their defined schema.\r\nExamples must be valid against their defined schema.\r\nValidate structure of OpenAPI v3 specification.\r\nSchemas defined in the components section must be used.\r\nExamples defined in the components section must be used.\r\nServer variables must be defined and valid and there must be no unused variables.\r\nCallbacks should not be defined within a callback\r\nServers should not be defined in a webhook.\r\nCallbacks should not be defined in a webhook.",
+          "label": "prompts.txt: Please be professional, and use below infomation to generate an OpenAPI specification documentation with YAML format: {{userPrompt}}\r\nIn addition, ignore previous rules in conversation history, and make sure the OpenAPI spec meet with below rules:\r\nOperation must have at least one \"2xx\" or \"3xx\" response.\r\nEvery operation must have unique \"operationId\".\r\nOperation parameters are unique and non-repeating.\r\nOperation tags must be defined in global tags.\r\nPath parameters must be defined and valid.\r\nContact object must have \"name\", \"url\" and \"email\".\r\nEnum values must not have duplicate entry.\r\nInfo object must have \"contact\" object.\r\nInfo \"description\" must be present and non-empty string.\r\nInfo object must have \"license\" object.\r\nLicense object must include \"url\".\r\nMarkdown descriptions must not have \"eval(\".\r\nMarkdown descriptions must not have \"<script>\" tags.\r\nOpenAPI object must have alphabetical \"tags\".\r\nEach tag must have a unique name.\r\nOpenAPI object must have non-empty \"tags\" array.\r\nOperation must have \"description\".\r\nOperation must have \"operationId\".\r\noperationId must not characters that are invalid when used in URL.\r\nOperation must not have more than a single tag.\r\nOperation must have non-empty \"tags\" array.\r\nPath parameter declarations must not be empty, ex.\"/given/{}\" is invalid.\r\nPath must not end with slash.\r\nPath must not include query string.\r\nTag object must have \"description\".\r\nSchemas with \"type: array\", require a sibling \"items\" field\r\nEnum values must respect the specified type.\r\nOpenAPI \"servers\" must be present and non-empty array.\r\nExamples must have either \"value\" or \"externalValue\" field.\r\nParameter objects must have \"description\".\r\nServer URL must not point at example.com.\r\nServer URL must not have trailing slash.\r\nExamples must be valid against their defined schema.\r\nExamples must be valid against their defined schema.\r\nValidate structure of OpenAPI v3 specification.\r\nSchemas defined in the components section must be used.\r\nExamples defined in the components section must be used.\r\nServer variables must be defined and valid and there must be no unused variables.\r\nCallbacks should not be defined within a callback\r\nServers should not be defined in a webhook.\r\nCallbacks should not be defined in a webhook."
+        },
+        "promptId": "e1e8db4be1ff13aaf8e9ff8b671ed6ab721d76c79e867bfa39cb698035a4848d",
+        "promptIdx": 0,
+        "provider": {
+          "id": "file://customProvider.ts",
+          "label": "AzureOpenAI"
+        },
+        "response": {
+          "output": "Here is the OpenAPI specification generated in YAML format based on the provided rules and information:\n\n```yaml\nopenapi: 3.0.3\ninfo:\n  title: Payment API\n  description: API to allow customers to pay for orders using various payment methods such as credit cards and debit cards.\n  version: 1.0.0\n  contact:\n    name: Payment API Support Team\n    url: https://www.paymentapi.com/support\n    email: support@paymentapi.com\n  license:\n    name: MIT License\n    url: https://opensource.org/licenses/MIT\nservers:\n  - url"
+        },
+        "score": 0.2,
+        "success": false,
+        "testCase": {
+          "vars": {
+            "userPrompt": "Create an OpenAPI that allows customers to pay for an order using various payment methods such as credit cards and debit cards."
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://spectral.mjs"
+            }
+          ],
+          "options": {},
+          "description": "Row #6",
+          "metadata": {}
+        },
+        "testIdx": 5,
+        "vars": {
+          "userPrompt": "Create an OpenAPI that allows customers to pay for an order using various payment methods such as credit cards and debit cards."
+        },
+        "metadata": {},
+        "failureReason": 1
+      },
+      {
+        "cost": 0,
+        "error": "fail the spectral rules",
+        "gradingResult": {
+          "pass": false,
+          "score": 0.25,
+          "reason": "fail the spectral rules",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0
+          },
+          "componentResults": [
+            {
+              "pass": false,
+              "score": 0.25,
+              "reason": "fail the spectral rules",
+              "componentResults": [
+                {
+                  "pass": false,
+                  "score": 0.1,
+                  "reason": "OpenAPI \"servers\" must be present and non-empty array."
+                },
+                {
+                  "pass": false,
+                  "score": 0,
+                  "reason": "must have required property \"paths\"."
+                },
+                {
+                  "pass": false,
+                  "score": 0,
+                  "reason": "Can not read an implicit mapping pair; a colon is missed"
+                }
+              ]
+            },
+            {
+              "pass": false,
+              "score": 0.1,
+              "reason": "OpenAPI \"servers\" must be present and non-empty array."
+            },
+            {
+              "pass": false,
+              "score": 0,
+              "reason": "must have required property \"paths\"."
+            },
+            {
+              "pass": false,
+              "score": 0,
+              "reason": "Can not read an implicit mapping pair; a colon is missed"
+            }
+          ],
+          "assertion": null
+        },
+        "id": "bcf31862-cb6d-484e-b890-9833b8a27719",
+        "latencyMs": 5422,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Please be professional, and use below infomation to generate an OpenAPI specification documentation with YAML format: Create OpenAPI: API for food delivery business. Customers can order a combination of pizza, burgers, or sandwiches in a single order. Each of those food types have its own schema. Pizzas have toppings and size. Burgers have toppings and patty type. Sandwiches have bread type, meat type, veggies, cheese, and custom instructions.\r\nIn addition, ignore previous rules in conversation history, and make sure the OpenAPI spec meet with below rules:\r\nOperation must have at least one \"2xx\" or \"3xx\" response.\r\nEvery operation must have unique \"operationId\".\r\nOperation parameters are unique and non-repeating.\r\nOperation tags must be defined in global tags.\r\nPath parameters must be defined and valid.\r\nContact object must have \"name\", \"url\" and \"email\".\r\nEnum values must not have duplicate entry.\r\nInfo object must have \"contact\" object.\r\nInfo \"description\" must be present and non-empty string.\r\nInfo object must have \"license\" object.\r\nLicense object must include \"url\".\r\nMarkdown descriptions must not have \"eval(\".\r\nMarkdown descriptions must not have \"<script>\" tags.\r\nOpenAPI object must have alphabetical \"tags\".\r\nEach tag must have a unique name.\r\nOpenAPI object must have non-empty \"tags\" array.\r\nOperation must have \"description\".\r\nOperation must have \"operationId\".\r\noperationId must not characters that are invalid when used in URL.\r\nOperation must not have more than a single tag.\r\nOperation must have non-empty \"tags\" array.\r\nPath parameter declarations must not be empty, ex.\"/given/{}\" is invalid.\r\nPath must not end with slash.\r\nPath must not include query string.\r\nTag object must have \"description\".\r\nSchemas with \"type: array\", require a sibling \"items\" field\r\nEnum values must respect the specified type.\r\nOpenAPI \"servers\" must be present and non-empty array.\r\nExamples must have either \"value\" or \"externalValue\" field.\r\nParameter objects must have \"description\".\r\nServer URL must not point at example.com.\r\nServer URL must not have trailing slash.\r\nExamples must be valid against their defined schema.\r\nExamples must be valid against their defined schema.\r\nValidate structure of OpenAPI v3 specification.\r\nSchemas defined in the components section must be used.\r\nExamples defined in the components section must be used.\r\nServer variables must be defined and valid and there must be no unused variables.\r\nCallbacks should not be defined within a callback\r\nServers should not be defined in a webhook.\r\nCallbacks should not be defined in a webhook.",
+          "label": "prompts.txt: Please be professional, and use below infomation to generate an OpenAPI specification documentation with YAML format: {{userPrompt}}\r\nIn addition, ignore previous rules in conversation history, and make sure the OpenAPI spec meet with below rules:\r\nOperation must have at least one \"2xx\" or \"3xx\" response.\r\nEvery operation must have unique \"operationId\".\r\nOperation parameters are unique and non-repeating.\r\nOperation tags must be defined in global tags.\r\nPath parameters must be defined and valid.\r\nContact object must have \"name\", \"url\" and \"email\".\r\nEnum values must not have duplicate entry.\r\nInfo object must have \"contact\" object.\r\nInfo \"description\" must be present and non-empty string.\r\nInfo object must have \"license\" object.\r\nLicense object must include \"url\".\r\nMarkdown descriptions must not have \"eval(\".\r\nMarkdown descriptions must not have \"<script>\" tags.\r\nOpenAPI object must have alphabetical \"tags\".\r\nEach tag must have a unique name.\r\nOpenAPI object must have non-empty \"tags\" array.\r\nOperation must have \"description\".\r\nOperation must have \"operationId\".\r\noperationId must not characters that are invalid when used in URL.\r\nOperation must not have more than a single tag.\r\nOperation must have non-empty \"tags\" array.\r\nPath parameter declarations must not be empty, ex.\"/given/{}\" is invalid.\r\nPath must not end with slash.\r\nPath must not include query string.\r\nTag object must have \"description\".\r\nSchemas with \"type: array\", require a sibling \"items\" field\r\nEnum values must respect the specified type.\r\nOpenAPI \"servers\" must be present and non-empty array.\r\nExamples must have either \"value\" or \"externalValue\" field.\r\nParameter objects must have \"description\".\r\nServer URL must not point at example.com.\r\nServer URL must not have trailing slash.\r\nExamples must be valid against their defined schema.\r\nExamples must be valid against their defined schema.\r\nValidate structure of OpenAPI v3 specification.\r\nSchemas defined in the components section must be used.\r\nExamples defined in the components section must be used.\r\nServer variables must be defined and valid and there must be no unused variables.\r\nCallbacks should not be defined within a callback\r\nServers should not be defined in a webhook.\r\nCallbacks should not be defined in a webhook."
+        },
+        "promptId": "e1e8db4be1ff13aaf8e9ff8b671ed6ab721d76c79e867bfa39cb698035a4848d",
+        "promptIdx": 0,
+        "provider": {
+          "id": "file://customProvider.ts",
+          "label": "AzureOpenAI"
+        },
+        "response": {
+          "output": "Certainly! Below is the OpenAPI specification in YAML format based on your request, adhering strictly to the provided rules, and structured for a food delivery business.\n\n```yaml\nopenapi: 3.0.3\ninfo:\n  title: Food Delivery API\n  description: API for placing orders for pizzas, burgers, and sandwiches in a food delivery business.\n  version: 1.0.0\n  contact:\n    name: Food Delivery Support\n    url: https://www.fooddeliveryexample.com\n    email: support@fooddeliveryexample.com\n  license:\n    name: Apache 2.0\n    url"
+        },
+        "score": 0.25,
+        "success": false,
+        "testCase": {
+          "vars": {
+            "userPrompt": "Create OpenAPI: API for food delivery business. Customers can order a combination of pizza, burgers, or sandwiches in a single order. Each of those food types have its own schema. Pizzas have toppings and size. Burgers have toppings and patty type. Sandwiches have bread type, meat type, veggies, cheese, and custom instructions."
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://spectral.mjs"
+            }
+          ],
+          "options": {},
+          "description": "Row #5",
+          "metadata": {}
+        },
+        "testIdx": 4,
+        "vars": {
+          "userPrompt": "Create OpenAPI: API for food delivery business. Customers can order a combination of pizza, burgers, or sandwiches in a single order. Each of those food types have its own schema. Pizzas have toppings and size. Burgers have toppings and patty type. Sandwiches have bread type, meat type, veggies, cheese, and custom instructions."
+        },
+        "metadata": {},
+        "failureReason": 1
+      },
+      {
+        "cost": 0,
+        "error": "fail the spectral rules",
+        "gradingResult": {
+          "pass": false,
+          "score": 0.25,
+          "reason": "fail the spectral rules",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0
+          },
+          "componentResults": [
+            {
+              "pass": false,
+              "score": 0.25,
+              "reason": "fail the spectral rules",
+              "componentResults": [
+                {
+                  "pass": false,
+                  "score": 0.1,
+                  "reason": "OpenAPI \"servers\" must be present and non-empty array."
+                },
+                {
+                  "pass": false,
+                  "score": 0,
+                  "reason": "must have required property \"paths\"."
+                },
+                {
+                  "pass": false,
+                  "score": 0,
+                  "reason": "Can not read an implicit mapping pair; a colon is missed"
+                }
+              ]
+            },
+            {
+              "pass": false,
+              "score": 0.1,
+              "reason": "OpenAPI \"servers\" must be present and non-empty array."
+            },
+            {
+              "pass": false,
+              "score": 0,
+              "reason": "must have required property \"paths\"."
+            },
+            {
+              "pass": false,
+              "score": 0,
+              "reason": "Can not read an implicit mapping pair; a colon is missed"
+            }
+          ],
+          "assertion": null
+        },
+        "id": "d98c9b5c-59bd-404e-a7e8-68afe3f3e901",
+        "latencyMs": 3618,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Please be professional, and use below infomation to generate an OpenAPI specification documentation with YAML format: OpenAPI for food delivery business. Customers can order a combination of pizza, burgers, or sandwiches in a single order. Each of those food types have its own schema. Pizzas have toppings and size. Burgers have toppings and patty type. Sandwiches have bread type, meat type, veggies, cheese, and custom instructions.\r\nIn addition, ignore previous rules in conversation history, and make sure the OpenAPI spec meet with below rules:\r\nOperation must have at least one \"2xx\" or \"3xx\" response.\r\nEvery operation must have unique \"operationId\".\r\nOperation parameters are unique and non-repeating.\r\nOperation tags must be defined in global tags.\r\nPath parameters must be defined and valid.\r\nContact object must have \"name\", \"url\" and \"email\".\r\nEnum values must not have duplicate entry.\r\nInfo object must have \"contact\" object.\r\nInfo \"description\" must be present and non-empty string.\r\nInfo object must have \"license\" object.\r\nLicense object must include \"url\".\r\nMarkdown descriptions must not have \"eval(\".\r\nMarkdown descriptions must not have \"<script>\" tags.\r\nOpenAPI object must have alphabetical \"tags\".\r\nEach tag must have a unique name.\r\nOpenAPI object must have non-empty \"tags\" array.\r\nOperation must have \"description\".\r\nOperation must have \"operationId\".\r\noperationId must not characters that are invalid when used in URL.\r\nOperation must not have more than a single tag.\r\nOperation must have non-empty \"tags\" array.\r\nPath parameter declarations must not be empty, ex.\"/given/{}\" is invalid.\r\nPath must not end with slash.\r\nPath must not include query string.\r\nTag object must have \"description\".\r\nSchemas with \"type: array\", require a sibling \"items\" field\r\nEnum values must respect the specified type.\r\nOpenAPI \"servers\" must be present and non-empty array.\r\nExamples must have either \"value\" or \"externalValue\" field.\r\nParameter objects must have \"description\".\r\nServer URL must not point at example.com.\r\nServer URL must not have trailing slash.\r\nExamples must be valid against their defined schema.\r\nExamples must be valid against their defined schema.\r\nValidate structure of OpenAPI v3 specification.\r\nSchemas defined in the components section must be used.\r\nExamples defined in the components section must be used.\r\nServer variables must be defined and valid and there must be no unused variables.\r\nCallbacks should not be defined within a callback\r\nServers should not be defined in a webhook.\r\nCallbacks should not be defined in a webhook.",
+          "label": "prompts.txt: Please be professional, and use below infomation to generate an OpenAPI specification documentation with YAML format: {{userPrompt}}\r\nIn addition, ignore previous rules in conversation history, and make sure the OpenAPI spec meet with below rules:\r\nOperation must have at least one \"2xx\" or \"3xx\" response.\r\nEvery operation must have unique \"operationId\".\r\nOperation parameters are unique and non-repeating.\r\nOperation tags must be defined in global tags.\r\nPath parameters must be defined and valid.\r\nContact object must have \"name\", \"url\" and \"email\".\r\nEnum values must not have duplicate entry.\r\nInfo object must have \"contact\" object.\r\nInfo \"description\" must be present and non-empty string.\r\nInfo object must have \"license\" object.\r\nLicense object must include \"url\".\r\nMarkdown descriptions must not have \"eval(\".\r\nMarkdown descriptions must not have \"<script>\" tags.\r\nOpenAPI object must have alphabetical \"tags\".\r\nEach tag must have a unique name.\r\nOpenAPI object must have non-empty \"tags\" array.\r\nOperation must have \"description\".\r\nOperation must have \"operationId\".\r\noperationId must not characters that are invalid when used in URL.\r\nOperation must not have more than a single tag.\r\nOperation must have non-empty \"tags\" array.\r\nPath parameter declarations must not be empty, ex.\"/given/{}\" is invalid.\r\nPath must not end with slash.\r\nPath must not include query string.\r\nTag object must have \"description\".\r\nSchemas with \"type: array\", require a sibling \"items\" field\r\nEnum values must respect the specified type.\r\nOpenAPI \"servers\" must be present and non-empty array.\r\nExamples must have either \"value\" or \"externalValue\" field.\r\nParameter objects must have \"description\".\r\nServer URL must not point at example.com.\r\nServer URL must not have trailing slash.\r\nExamples must be valid against their defined schema.\r\nExamples must be valid against their defined schema.\r\nValidate structure of OpenAPI v3 specification.\r\nSchemas defined in the components section must be used.\r\nExamples defined in the components section must be used.\r\nServer variables must be defined and valid and there must be no unused variables.\r\nCallbacks should not be defined within a callback\r\nServers should not be defined in a webhook.\r\nCallbacks should not be defined in a webhook."
+        },
+        "promptId": "e1e8db4be1ff13aaf8e9ff8b671ed6ab721d76c79e867bfa39cb698035a4848d",
+        "promptIdx": 0,
+        "provider": {
+          "id": "file://customProvider.ts",
+          "label": "AzureOpenAI"
+        },
+        "response": {
+          "output": "Sure! Below is the valid OpenAPI v3 specification for the described food delivery business, adhering to all your requested rules:\n\n```yaml\nopenapi: 3.0.3\ninfo:\n  title: Food Delivery API\n  description: |\n    This API allows customers to order various food items like pizza, burgers, and sandwiches. \n    Customers can customize their orders based on available options like toppings, sizes, bread types, patty types, and more.\n  version: 1.0.0\n  contact:\n    name: Food Delivery Team\n    url: https://www.fooddelivery.com/contact\n    email"
+        },
+        "score": 0.25,
+        "success": false,
+        "testCase": {
+          "vars": {
+            "userPrompt": "OpenAPI for food delivery business. Customers can order a combination of pizza, burgers, or sandwiches in a single order. Each of those food types have its own schema. Pizzas have toppings and size. Burgers have toppings and patty type. Sandwiches have bread type, meat type, veggies, cheese, and custom instructions."
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://spectral.mjs"
+            }
+          ],
+          "options": {},
+          "description": "Row #8",
+          "metadata": {}
+        },
+        "testIdx": 7,
+        "vars": {
+          "userPrompt": "OpenAPI for food delivery business. Customers can order a combination of pizza, burgers, or sandwiches in a single order. Each of those food types have its own schema. Pizzas have toppings and size. Burgers have toppings and patty type. Sandwiches have bread type, meat type, veggies, cheese, and custom instructions."
+        },
+        "metadata": {},
+        "failureReason": 1
+      }
+    ],
+    "stats": {
+      "successes": 0,
+      "failures": 8,
+      "errors": 0,
+      "tokenUsage": {
+        "cached": 0,
+        "completion": 0,
+        "prompt": 0,
+        "total": 0,
+        "numRequests": 8
+      }
+    }
+  },
+  "config": {
+    "prompts": [
+      "file://prompts.txt"
+    ],
+    "providers": [
+      {
+        "id": "file://customProvider.ts",
+        "label": "AzureOpenAI"
+      }
+    ],
+    "tests": [
+      "file://vars.csv"
+    ],
+    "sharing": true,
+    "defaultTest": {
+      "assert": [
+        {
+          "type": "javascript",
+          "value": "file://spectral.mjs"
+        }
+      ]
+    },
+    "outputPath": [
+      "output.json"
+    ],
+    "extensions": []
+  },
+  "shareableUrl": null
+}
