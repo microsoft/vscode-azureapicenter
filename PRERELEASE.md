@@ -3,6 +3,10 @@
 
 > Note: This changelog only includes the changes for the pre-release versions of Azure API Center for Visual Studio Code. For the changelog of stable versions, please refer to the [Changelog of Azure API Center for Visual Studio Code](https://github.com/microsoft/vscode-azureapicenter/blob/main/CHANGELOG.md).
 
+### January 15, 2024
+* Add support for API Analysis Profiles
+* Add 'None' option to unselect active style guide
+
 ### November 4, 2024
 * Add integration with GitHub Copilot for Azure (@Azure extension) to provide a chat experience for developers to leverage its capabilities for a variety of API Center-related tasks:
     * Generate OpenAPI specification compliant with the active API style guide.
