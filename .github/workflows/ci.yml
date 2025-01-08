@@ -111,7 +111,7 @@ jobs:
           PROMPTFOO_CACHE_PATH: ~/.cache/promptfoo
         run: |
           for dir in evalprompt/*/; do
-            if [ -d "$dir" ]; then
+            if [ -d "$dir" ] && [ "$(basename "$dir")" != "example" ]; then
               npx promptfoo eval -o output.json --share
             fi
           done
