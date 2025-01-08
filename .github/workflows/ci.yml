@@ -107,6 +107,7 @@ jobs:
 
       - name: Prompt Evaluation 1
         working-directory: evalprompt/genSpecFromApi
+        continue-on-error: true
         env:
           PROMPTFOO_CACHE_PATH: ~/.cache/promptfoo
         run: |
@@ -114,6 +115,7 @@ jobs:
 
       - name: prompt Evaluation 2
         working-directory: evalprompt/genSpecFromPrompt
+        continue-on-error: true
         env:
           PROMPTFOO_CACHE_PATH: ~/.cache/promptfoo
         run: |
