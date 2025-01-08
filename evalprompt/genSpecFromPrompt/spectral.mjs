@@ -8,16 +8,13 @@ import * as path from "node:path";
 import { fileURLToPath } from "node:url";
 
 export default async function (output, context) {
-    console.log(output)
     text = output.replace(/[\s\S]*?```yaml/, '');
     text = text.replace(/\n```$/, '');
-    console.log(text)
     const spectral = new Spectral();
     const __dirname = path.dirname(fileURLToPath(import.meta.url));
     const rulesetFilepath = path.join(__dirname, "spectral.yml");
     spectral.setRuleset(await bundleAndLoadRuleset(rulesetFilepath, { fs, fetch }));
     res = await spectral.run(text);
-    console.log(res)
     if (res.length > 0) {
         let components = [];
         let score = 0;

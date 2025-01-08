@@ -104,19 +104,28 @@ jobs:
           key: ${{ runner.os }}-promptfoo-v1
           restore-keys: |
             ${{ runner.os }}-promptfoo-
-      - name: Run prompt evaluation 1
-        uses: promptfoo/promptfoo-action@v1
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          config: 'evalprompt/genSpecFromApi/promptfooconfig.yaml'
-          cache-path: ~/.cache/promptfoo
-          prompts: 'evalprompt/genSpecFromApi/prompts.js'
 
-      - name: Run prompt evaluation 2
-        uses: promptfoo/promptfoo-action@v1
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          config: 'evalprompt/genSpecFromPrompt/promptfooconfig.yaml'
-          cache-path: ~/.cache/promptfoo
-          prompts: 'evalprompt/genSpecFromPrompt/prompts.txt'
+      - name: Prompt Evaluation 1
+        working-directory: evalprompt/genSpecFromApi
+        env:
+          PROMPTFOO_CACHE_PATH: ~/.cache/promptfoo
+        run: |
+          npx promptfoo eval -o output.json --share
 
+      - name: prompt Evaluation 2
+        working-directory: evalprompt/genSpecFromPrompt
+        env:
+          PROMPTFOO_CACHE_PATH: ~/.cache/promptfoo
+        run: |
+          npx promptfoo eval -o output.json --share
+
+      - name: Build action
+        continue-on-error: true
+        run: |
+          npm install promptfoo --prefix ./.github/workflows/actions/promptfoo
+          npm run build --prefix ./.github/workflows/actions/promptfoo
+
+      - name: Commit promptfoo result to pull request
+        uses: ./github/workflows/actions/promptfoo
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
