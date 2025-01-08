@@ -112,19 +112,21 @@ jobs:
         run: |
           for dir in evalprompt/*/; do
             if [ -d "$dir" ] && [ "$(basename "$dir")" != "example" ]; then
-              npx promptfoo eval -o output.json --share
+              cd "$dir" || continue
+              npx promptfoo eval -o output.json --share || true
+              cd - > /dev/null || exit
             fi
           done
 
       - name: generate comments doc
         run: |
           node .github/workflows/scripts/collectPromptRes.js
-          ls -l
+          cat ./commentContent.txt
 
       - name: show results to the PR
         uses: Libra-foundation/Pull-Request-Comments@V1.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          filename: commentContent.txt
+          filename: ./commentContent.txt
 
