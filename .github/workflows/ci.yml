@@ -123,10 +123,16 @@ jobs:
           node .github/workflows/scripts/collectPromptRes.js
           cat ./commentContent.txt
 
-      - name: show results to the PR
-        uses: Libra-foundation/Pull-Request-Comments@V1.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/github-script@v7
         with:
-          filename: ./commentContent.txt
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            const fs = require('fs');
+            const content = fs.readFileSync('./commentContent.txt', 'utf8');
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: content
+            })
 
