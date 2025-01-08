@@ -60,4 +60,14 @@ describe('ProfilesTreeItem', () => {
     it('should indicate no more children', () => {
         assert.strictEqual(profilesTreeItem.hasMoreChildrenImpl(), false);
     });
+
+    it('should handle no analysis configs gracefully', async () => {
+        const apiCenterServiceStub = sandbox.stub(ApiCenterService.prototype, 'getApiCenterAnalyzerConfigs').resolves({ value: [] });
+        sandbox.stub(profilesTreeItem, 'createTreeItemsWithErrorHandling').resolves([]);
+
+        const children = await profilesTreeItem.loadMoreChildrenImpl(false, <IActionContext>{});
+
+        assert(apiCenterServiceStub.calledOnce);
+        assert.strictEqual(children.length, 0);
+    });
 });
