@@ -62,8 +62,7 @@ describe('ProfilesTreeItem', () => {
     });
 
     it('should handle no analysis configs gracefully', async () => {
-        const apiCenterServiceStub = sandbox.stub(ApiCenterService.prototype, 'getApiCenterAnalyzerConfigs').resolves({ value: [] });
-        sandbox.stub(profilesTreeItem, 'createTreeItemsWithErrorHandling').resolves([]);
+        const apiCenterServiceStub = sandbox.stub(ApiCenterService.prototype, 'getApiCenterAnalyzerConfigs').resolves(undefined);
 
         const children = await profilesTreeItem.loadMoreChildrenImpl(false, <IActionContext>{});
 
