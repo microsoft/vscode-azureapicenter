@@ -6,6 +6,7 @@ providers:
   - id: azure:chat:gpt-4o
     config:
       apiHost: "apicevaluationtestai.openai.azure.com"
+      maxtoken: 2048
 
 defaultTest:
   assert:

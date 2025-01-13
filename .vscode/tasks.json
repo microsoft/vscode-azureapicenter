@@ -35,6 +35,42 @@
 				"npm: watch-tests"
 			],
 			"problemMatcher": []
+		},
+		{
+			"label": "prompt evaluation",
+			"type": "shell",
+			"command": "npx",
+			"args": [
+				"promptfoo",
+				"eval"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}/evalprompt/${input:promptpath}"
+			}
+		},
+		{
+			"label": "prompt view evaluation result",
+			"type": "shell",
+			"command": "npx",
+			"args": [
+				"promptfoo",
+				"view",
+				"-y"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}/evalprompt/${input:promptpath}"
+			}
+		}
+	],
+	"inputs": [
+		{
+			"id": "promptpath",
+			"type": "pickString",
+			"description": "Select the project to evaluate prompt",
+			"options": [
+				"genSpecFromApi",
+				"genSpecFromPrompt"
+			]
 		}
 	]
 }
