@@ -1,0 +1,4 @@
+userprompt
+"Property names must be lower snake case ie 'snake_case', All operations should have operationId, All resources in a response should have an `id` `created_at` and `updated_at` property, POST requests should return a 201 or 202 status on success instead of 200. Properties should have an example"
+"POST requests should return a 201 or 202 status on success instead of 200. GET requests that have an ID at the end of their path (ie /teams/{teamID}) should define a 404. All operation URL path components MUST be nouns, not verbs. Properties should have an example. Properties that sounds like they are dates should use format: datetime or format: timestamp"
+"Don’t use the example field for individual response body fields. The example should represent the entire schema. Fields in response schemas with types: object, array, integer, boolean, or string. If any of these fields has an example defined return a warning,

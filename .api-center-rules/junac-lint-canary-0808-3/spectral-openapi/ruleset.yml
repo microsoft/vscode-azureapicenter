@@ -1,0 +1,9 @@
+extends: [[spectral:oas, all]]
+functions:
+  - greeting
+rules:
+  greetingRule:
+    message: "{{error}}"
+    given: "$.greeting.firstName66699990000"
+    then:
+      function: greeting
