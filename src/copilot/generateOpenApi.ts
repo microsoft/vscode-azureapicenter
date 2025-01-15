@@ -5,8 +5,9 @@ import axios from 'axios';
 import { promises as fs } from 'fs';
 import * as yaml from 'js-yaml';
 import * as vscode from 'vscode';
-import { AgentRequest, LocalPluginResult } from "../types/AzureAgent";
+import { AgentRequest, LocalPluginResult, PluginHelpers } from "../types/AzureAgent";
 import { UiStrings } from '../uiStrings';
+import { generateOpenApiFromProject } from './generateOpenApiFromProject';
 
 export namespace GenerateOpenApi {
     type SpectralRule = {
@@ -57,7 +58,11 @@ Callbacks should not be defined within a callback
 Servers should not be defined in a webhook.
 Callbacks should not be defined in a webhook.`;
 
-    export async function handleGenerateOpenApi(agentRequest: AgentRequest): Promise<LocalPluginResult> {
+    export async function handleGenerateOpenApi(agentRequest: AgentRequest, pluginHelpers: PluginHelpers): Promise<LocalPluginResult> {
+        if (agentRequest.userPrompt) {
+            return await generateOpenApiFromProject(agentRequest, pluginHelpers);
+        }
+
         agentRequest.responseStream.progress(UiStrings.GenerateOpenApiProgress);
 
         const rulesetFile = getRulesetFile();

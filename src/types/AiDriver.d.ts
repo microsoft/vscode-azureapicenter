@@ -180,8 +180,11 @@ export type DevTool = {
  * - `costManagement`: Applies when the user is asking about costs of their existing Azure resources. Plugins applicable
  * to this topic are likely going to be plugins that can collect information about the user's billing context
  * and use Cost Management APIs to provide costing information of the user's Azure resources.
+ * - `onlineExperimentation`: Applies when the user is asking about Azure online experimentation or A/B testing or split testing.
+ *  Plugins applicable to this topic are likely going to be plugins that can help user to answer questions about end-to-end online A/B experimentation,
+ * from designing, implementing, to analyzing A/B experiments, particularly within the Azure ecosystem.
  */
-export type TopicScope = "learn" | "resources" | "diagnostics" | "costManagement";
+export type TopicScope = "learn" | "resources" | "diagnostics" | "costManagement" | "onlineExperimentation";
 
 /**
  * Additional settings that can be provided to the AI Driver service to customize the persona
@@ -222,6 +225,20 @@ export type ChatRequestMessage = {
 export type PluginsMetadata = { [pluginName: string]: unknown };
 
 /**
+ * VS Code settings that can be customized by the user.
+ */
+export type UserSettings = {
+    /**
+     * The type of query to send to the Microsoft Learn service.
+     */
+    msLearnQueryType?: "vector" | "hybrid";
+    /**
+     * Setting to determine whether to enable AI Platform plugin or not.
+     */
+    deployModel?: boolean;
+};
+
+/**
  * A request to the AI Driver service to generate a response to a user message in the context
  * of a conversation.
  */
@@ -229,10 +246,14 @@ export type ChatRequest = {
     messages: ChatRequestMessage[];
     localPluginManifests: LocalPluginManifest[];
     personaSettings?: PersonaSettings;
-    msLearnQueryType?: "vector" | "hybrid";
     selectedSubscriptionIds?: string[];
     pluginsMetadata?: PluginsMetadata;
     logLevelToSendToClient?: LogLevel;
+    vsCodeTelemetryLevel?: string;
+    chatSessionId?: string;
+    requestId?: string;
+    giveSamplePrompts?: boolean;
+    userSettings?: UserSettings;
 };
 
 // #endregion

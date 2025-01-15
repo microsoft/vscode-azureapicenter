@@ -23,6 +23,7 @@ const apicPluginManifest: LocalPluginManifest = {
             returnParameter: {
                 type: "object"
             },
+            willHandleUserResponse: true,
         }
     ],
 };
@@ -36,7 +37,7 @@ const apicPluginHandler: ILocalPluginHandler = {
         try {
             TelemetryClient.sendEvent(`${eventName}.start`);
             if (pluginRequest.functionName === genOpenApiFunctionName) {
-                return await GenerateOpenApi.handleGenerateOpenApi(args.agentRequest);
+                return await GenerateOpenApi.handleGenerateOpenApi(args.agentRequest, args.pluginHelpers);
             } else {
                 return { result: "Error: Function not found." };
             }

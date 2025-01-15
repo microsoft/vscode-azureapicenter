@@ -145,6 +145,8 @@ export type AgentRequest = {
     context: vscode.ChatContext;
     requestId: string;
 
+    chatSessionId: string;
+
     /**
      * A token that indicates if the user has cancelled the request.
      *
@@ -153,6 +155,11 @@ export type AgentRequest = {
      * will still be sent to telemetry. There are no other guarantees about what will happen with other data in the result.
      */
     token: vscode.CancellationToken;
+
+    /**
+     * The token that should be used to invoke other language model tools.
+     */
+    toolInvocationToken: vscode.ChatParticipantToolToken;
 };
 
 export type LanguageModelInteractionOptions = {
@@ -336,7 +343,7 @@ export type PluginHelpers = {
  *
  * A handler of a command neither needs to nor should create the metadata keys that are defined in this type. Any attempts to do so will be overwritten.
  */
-export type AzureAgentChatResultMetadata = {
+export type AzureAgentChatResultMetadata = undefined | {
     /**
      * The chain of slash command handlers that were invoked to produce this result.
      */
@@ -356,6 +363,11 @@ export type AzureAgentChatResultMetadata = {
      * A unique identifier for the result.
      */
     resultId: string;
+
+    /**
+     * The chatSessionId for conversation.
+     */
+    chatSessionId: string;
 
     /**
      * The index of the result in the conversation. For example, if the user asks "Foo?" and the agent responds with "Bar.", then the index of the "Bar." result is 1.
