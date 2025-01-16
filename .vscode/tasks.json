@@ -37,7 +37,7 @@
 			"problemMatcher": []
 		},
 		{
-			"label": "prompt evaluation",
+			"label": "[hidden]promptfoo eval",
 			"type": "shell",
 			"command": "npx",
 			"hide": true,
@@ -63,7 +63,7 @@
 				"cwd": "${input:selectDir}"
 			},
 			"dependsOn": [
-				"prompt evaluation"
+				"[hidden]promptfoo eval"
 			],
 			"problemMatcher": []
 		}
