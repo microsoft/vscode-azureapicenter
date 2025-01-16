@@ -9,7 +9,7 @@ import { fileURLToPath } from "node:url";
 
 export default async function (output, context) {
     text = output.replace(/[\s\S]*?```yaml/, '');
-    text = text.replace(/\n```$/, '');
+    text = text.replace(/```.*$/, ' ');
     const spectral = new Spectral();
     const __dirname = path.dirname(fileURLToPath(import.meta.url));
     const rulesetFilepath = path.join(__dirname, "spectral.yml");
