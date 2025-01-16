@@ -1,9 +1,3 @@
 userPrompt
 "Generate OpenAPI Specification: A simple service to manage repairs for various items"
 "Generate OpenAPI Spec: Create an API that allows customers to pay for an order using various payment methods such as credit cards and debit cards."
-"Generate OpenAPI: Accept purchase orders for specialized coffee bean purchases through an API."
-"Create OpenAPI Spec: We are a pizza company and want to create an online customized pizza delivery solution. Create an api to accept the pizza orders."
-"Create OpenAPI: API for food delivery business. Customers can order a combination of pizza, burgers, or sandwiches in a single order. Each of those food types have its own schema. Pizzas have toppings and size. Burgers have toppings and patty type. Sandwiches have bread type, meat type, veggies, cheese, and custom instructions."
-"Create an OpenAPI that allows customers to pay for an order using various payment methods such as credit cards and debit cards."
-"We are a pizza company and want to create an online customized pizza delivery solution. Create an OpenAPI to accept the pizza orders."
-"OpenAPI for food delivery business. Customers can order a combination of pizza, burgers, or sandwiches in a single order. Each of those food types have its own schema. Pizzas have toppings and size. Burgers have toppings and patty type. Sandwiches have bread type, meat type, veggies, cheese, and custom instructions."
