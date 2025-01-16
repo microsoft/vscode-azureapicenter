@@ -40,16 +40,18 @@
 			"label": "prompt evaluation",
 			"type": "shell",
 			"command": "npx",
+			"hide": true,
 			"args": [
 				"promptfoo",
 				"eval"
 			],
 			"options": {
-				"cwd": "${workspaceFolder}/evalprompt/${input:promptpath}"
-			}
+				"cwd": "${input:selectDir}"
+			},
+			"problemMatcher": []
 		},
 		{
-			"label": "prompt view evaluation result",
+			"label": "evaluate prompt",
 			"type": "shell",
 			"command": "npx",
 			"args": [
@@ -58,19 +60,30 @@
 				"-y"
 			],
 			"options": {
-				"cwd": "${workspaceFolder}/evalprompt/${input:promptpath}"
-			}
+				"cwd": "${input:selectDir}"
+			},
+			"dependsOn": [
+				"prompt evaluation"
+			],
+			"problemMatcher": []
 		}
 	],
 	"inputs": [
 		{
-			"id": "promptpath",
-			"type": "pickString",
-			"description": "Select the project to evaluate prompt",
-			"options": [
-				"genSpecFromApi",
-				"genSpecFromPrompt"
-			]
+			"id": "selectDir",
+			"type": "command",
+			"command": "extension.commandvariable.file.pickFile",
+			"args": {
+				"description": "Select Project Folder to Evaluate Prompt",
+				"include": "evalprompt/*/promptfooconfig.yaml",
+				"showDirs": false,
+				"transform": {
+					"text": "${fileDirname}",
+					"find": "\\\\",
+					"replace": "/",
+					"flags": "g"
+				}
+			}
 		}
 	]
 }
