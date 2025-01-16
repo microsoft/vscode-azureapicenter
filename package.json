@@ -189,6 +189,11 @@
         "title": "%azure-api-center.commands.apiCenterWorkspace.learnApiCatalog.title%",
         "icon": "$(info)",
         "category": "Azure API Center"
+      },
+      {
+        "command": "azure-api-center.createDeclarativeAgent",
+        "title": "Create Declarative Agent",
+        "category": "Azure API Center"
       }
     ],
     "views": {
@@ -327,6 +332,10 @@
           "command": "azure-api-center.apiCenterWorkspace.removeApi",
           "when": "view == apiCenterWorkspace && viewItem == azureApiCenterDataPlane",
           "group": "inline@0"
+        },
+        {
+          "command": "azure-api-center.createDeclarativeAgent",
+          "when": "(view == apiCenterTreeView && viewItem == azureApiCenterApiVersionDefinitionTreeItem-openapi)"
         }
       ],
       "copilot": [
