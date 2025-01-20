@@ -1,9 +1,0 @@
-extends: [[spectral:oas, all]]
-functions:
-  - greeting
-rules:
-  greetingRule:
-    message: "{{error}}"
-    given: "$.greeting.firstName"
-    then:
-      function: greeting
