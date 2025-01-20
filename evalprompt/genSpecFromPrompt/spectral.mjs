@@ -16,6 +16,7 @@ export default async function (output, context) {
     res = await spectral.run(text);
     if (res.length > 0) {
         let components = [];
+        let score = 0;
         for (item of res) {
             let itemRes = {
                 pass: false,
