@@ -21,6 +21,7 @@ export const MODEL_SELECTOR: vscode.LanguageModelChatSelector = { vendor: 'copil
 export const ExceedTokenLimit = "Message exceeds token limit";
 export const SpectralExtensionId = "stoplight.spectral";
 export const tenantSetting: string = 'tenant';
+export const TeamsToolkitExtensionId = "TeamsDevApp.ms-teams-vscode-extension";
 
 export const AzureAccountType = {
     createAzureAccount: "azureapicenterCreateAzureAccount",
