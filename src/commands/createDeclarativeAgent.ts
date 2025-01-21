@@ -32,11 +32,11 @@ export namespace CreateDeclarativeAgent {
             await vscode.extensions.getExtension(TeamsToolkitExtensionId)?.activate();
 
             progress.report({ message: "Exporting API Definition" });
-            const exportedSpec = await node?.apiCenterApiVersionDefinition.getDefinitions(node?.subscription!, node?.apiCenterName!, node?.apiCenterApiName!, node?.apiCenterApiVersionName!);
+            const exportedSpec = await node!.apiCenterApiVersionDefinition.getDefinitions(node!.subscription, node!.apiCenterName, node!.apiCenterApiName, node!.apiCenterApiVersionName);
             const fileContent = (exportedSpec.format === ApiSpecExportResultFormat.link) ? await GeneralUtils.fetchDataFromLink(exportedSpec.value) : exportedSpec.value;
 
-            const folderName = getFolderName(node);
-            const fileName = getFilename(node);
+            const folderName = getFolderName(node!);
+            const fileName = getFilename(node!);
 
             return await writeToTemporaryFile(fileContent, folderName, fileName);
         });
