@@ -10,12 +10,12 @@ providers:
 
 tests:
   - vars:
-      userprompt: "Property names must be lower snake case ie 'camel_case'"
+      userprompt: "Property names must be lower snake case ie 'snake_case'"
     assert:
       - type: javascript
         value: file://testcase.mjs
         config:
-          keywords: ["snake case"]
+          keywords: ["snake_case"]
 
   - vars:
       userprompt: "All operations should have operationId"

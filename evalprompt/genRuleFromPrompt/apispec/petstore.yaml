@@ -10,7 +10,6 @@ paths:
   /pets:
     get:
       summary: List all pets
-      operationId: listPets
       tags:
         - pets
       parameters:
@@ -42,7 +41,6 @@ paths:
                 $ref: "#/components/schemas/Error"
     post:
       summary: Create a pet
-      operationId: createPets
       tags:
         - pets
       requestBody:
@@ -52,7 +50,7 @@ paths:
               $ref: "#/components/schemas/Pet"
         required: true
       responses:
-        "201":
+        "200":
           description: Null response
         default:
           description: unexpected error
@@ -94,14 +92,11 @@ components:
         - id
         - name
       properties:
-        id:
-          type: integer
-          format: int64
         name:
           type: string
         tag:
           type: string
-        updatedAt:
+        time:
           type: string
           format: date-time
           description: The date and time that the resource was updated
