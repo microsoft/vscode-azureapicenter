@@ -56,7 +56,7 @@ paths:
                   description: |
                     Your server should return this HTTP status code if no longer interested
                     in further updates
-  /stream/{id}":
+  /stream/{id}:
     get:
       description: |
         retrieves the data for a specific stream

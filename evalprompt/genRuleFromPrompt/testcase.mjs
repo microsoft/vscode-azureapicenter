@@ -33,47 +33,52 @@ export default async function (output, context) {
     }
     const spectral = new Spectral();
     spectral.setRuleset(rule);
-    keywords = context.config.keywords;
+    hits = context.config.hits;
     const componentsRes = [];
-    let isSuccess = false;
-    const files = fs.readdirSync(path.join(__dirname, "apispec"));
-    for (let file of files) {
+    let TotalCount = 0;
+    for (let hit in hits) {
+        const file = hit;
+        TotalCount += hits[hit].length;
         const myDocument = new Document(
             fs.readFileSync(path.join(__dirname, "apispec", file), "utf-8").trim(),
             Yaml,
             "openapi.yaml",
         );
         let res = await spectral.run(myDocument);
+        console.log('=============', file, '============\n');
+        let hitArr = hits[hit];
         for (let item of res) {
-            if (keywords.some(r => item.message.includes(r))) {
-                isSuccess = true;
+            console.dir(item, { depth: null });
+            let itemArr = item.path;
+            if (hitArr.some(r => JSON.stringify(r) === JSON.stringify(itemArr))) {
                 componentsRes.push({
                     pass: true,
                     score: 1,
-                    reason: `Hit the critical field ${keywords} in ${item.message} from file ${file}`,
+                    reason: `Hit the critical path ${itemArr} from file ${file}`,
                 });
             } else {
                 componentsRes.push({
                     pass: false,
                     score: 0,
-                    reason: `No critical field was hit with in ${item.message} from file ${file}`,
+                    reason: `Path ${itemArr} not expected from file ${file}`,
                 });
             }
         }
     }
+    console.log('=============', componentsRes, '============\n');
     const passCount = componentsRes.filter(item => item.pass).length;
-    if (isSuccess) {
+    if (componentsRes.length != TotalCount) {
         return {
-            pass: true,
+            pass: false,
             score: passCount / componentsRes.length,
-            reason: `Hit the critical field ${keywords}`,
+            reason: `Some paths are not expected from the files`,
             componentResults: componentsRes
         }
     }
     return {
-        pass: false,
-        score: 0,
-        reason: `No critical field was hit with ${keywords}`,
+        pass: true,
+        score: 1,
+        reason: `All rules meets requirements`,
         componentsRes: componentsRes
     }
 }
