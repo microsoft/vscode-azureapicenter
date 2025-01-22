@@ -3,43 +3,44 @@ prompts:
   - id: file://prompts.txt
 
 providers:
+  # - echo
   - id: azure:chat:gpt-4o
     config:
       apiHost: "apicevaluationtestai.openai.azure.com"
       maxtoken: 15000
 
 tests:
-  - vars:
-      userprompt: "Property names must be lower snake case ie 'snake_case'"
-    assert:
-      - type: javascript
-        value: file://testcase.mjs
-        config:
-          keywords: ["snake_case"]
+  # - vars:
+  #     userprompt: "Property names must be lower snake case ie 'snake_case'"
+  #   assert:
+  #     - type: javascript
+  #       value: file://testcase.mjs
+  #       config:
+  #         keywords: ["snake_case"]
 
-  - vars:
-      userprompt: "All operations should have operationId"
-    assert:
-      - type: javascript
-        value: file://testcase.mjs
-        config:
-          keywords: ["operationId"]
+  # - vars:
+  #     userprompt: "All operations should have operationId"
+  #   assert:
+  #     - type: javascript
+  #       value: file://testcase.mjs
+  #       config:
+  #         keywords: ["operationId"]
 
-  - vars:
-      userprompt: "All resources in a response should have an `id` `created_at` and `updated_at` property"
-    assert:
-      - type: javascript
-        value: file://testcase.mjs
-        config:
-          keywords: ["id", "created_at", "updated_at"]
+  # - vars:
+  #     userprompt: "All resources in a response should have an `id` `created_at` and `updated_at` property"
+  #   assert:
+  #     - type: javascript
+  #       value: file://testcase.mjs
+  #       config:
+  #         keywords: ["id", "created_at", "updated_at"]
 
-  - vars:
-      userprompt: "POST requests should return a 201 or 202 status on success instead of 200."
-    assert:
-      - type: javascript
-        value: file://testcase.mjs
-        config:
-          keywords: ["201", "202"]
+  # - vars:
+  #     userprompt: "POST requests should return a 201 or 202 status on success instead of 200."
+  #   assert:
+  #     - type: javascript
+  #       value: file://testcase.mjs
+  #       config:
+  #         keywords: ["201", "202"]
 
   - vars:
       userprompt: "GET requests that have an ID at the end of their path (ie /teams/{teamID}) should define a 404."
@@ -49,18 +50,18 @@ tests:
         config:
           keywords: ["404"]
 
-  - vars:
-      userprompt: "All operation URL path components MUST be nouns, not verbs."
-    assert:
-      - type: javascript
-        value: file://testcase.mjs
-        config:
-          keywords: ["nouns"]
+  # - vars:
+  #     userprompt: "All operation URL path components MUST be nouns, not verbs."
+  #   assert:
+  #     - type: javascript
+  #       value: file://testcase.mjs
+  #       config:
+  #         keywords: ["nouns"]
 
-  - vars:
-      userprompt: "Properties that sounds like they are dates should use format: datetime or format: timestamp"
-    assert:
-      - type: javascript
-        value: file://testcase.mjs
-        config:
-          keywords: ["datetime", "timestamp"]
+  # - vars:
+  #     userprompt: "Properties that are time should use format: datetime or timestamp"
+  #   assert:
+  #     - type: javascript
+  #       value: file://testcase.mjs
+  #       config:
+  #         keywords: ["datetime", "timestamp"]

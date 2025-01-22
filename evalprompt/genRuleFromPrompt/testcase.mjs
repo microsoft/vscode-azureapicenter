@@ -1,13 +1,10 @@
-// Copyright (c) Microsoft Corporation.
-// Licensed under the MIT license.
 const { Spectral, Document } = require("@stoplight/spectral-core")
 import { alphabetical, casing, defined, enumeration, falsy, length, pattern, schema, truthy, unreferencedReusableObject, xor } from "@stoplight/spectral-functions";
 import { Yaml } from "@stoplight/spectral-parsers";
-import yaml from "js-yaml";
+import yaml from 'js-yaml';
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
-
 export default async function (output, context) {
     const valueMap = {
         alphabetical: alphabetical,
@@ -23,10 +20,10 @@ export default async function (output, context) {
         xor: xor
     };
     const __dirname = path.dirname(fileURLToPath(import.meta.url));
-    const yamlContent = output.match(/```yaml([\s\S]*?)```/)?.[1]?.trim();
-    const ymlObjs = yaml.load(yamlContent);
-    for (let ymlObj in ymlObjs.rules) {
-        let obj = ymlObjs.rules[ymlObj];
+    const ruleYaml = output.match(/```yaml([\s\S]*?)```/)?.[1]?.trim();
+    const rule = yaml.load(ruleYaml);
+    for (let ymlObj in rule.rules) {
+        let obj = rule.rules[ymlObj];
         if (obj.then) {
             let thenObj = obj.then;
             if (thenObj.function && thenObj.function in valueMap) {
@@ -34,19 +31,19 @@ export default async function (output, context) {
             }
         }
     }
-
     const spectral = new Spectral();
-    spectral.setRuleset(ymlObjs);
+    spectral.setRuleset(rule);
     keywords = context.config.keywords;
     const componentsRes = [];
     let isSuccess = false;
     const files = fs.readdirSync(path.join(__dirname, "apispec"));
     for (let file of files) {
         const myDocument = new Document(
-            fs.readFileSync(path.join(__dirname, "apispec", file), "utf8"),
-            Yaml
+            fs.readFileSync(path.join(__dirname, "apispec", file), "utf-8").trim(),
+            Yaml,
+            "openapi.yaml",
         );
-        const res = await spectral.run(myDocument);
+        let res = await spectral.run(myDocument);
         for (let item of res) {
             if (keywords.some(r => item.message.includes(r))) {
                 isSuccess = true;
