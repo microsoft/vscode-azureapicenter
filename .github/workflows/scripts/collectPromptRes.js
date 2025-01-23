@@ -9,25 +9,23 @@ const directories = fs.readdirSync(evalPromptDir, { withFileTypes: true })
     .map(dirent => dirent.name);
 console.log(directories);
 for (const dir of directories) {
-    const outputFile = path.join(path.join(evalPromptDir, dir), 'output.json');
-    const baselineFile = path.join(path.join(evalPromptDir, dir), 'baseline.json');
+    const outputFile = path.join(evalPromptDir, dir, 'output.json');
+    const baselineFile = path.join(evalPromptDir, dir, 'baseline.json');
     if (outputFile == null || !fs.existsSync(outputFile))
         continue;
     console.log(outputFile);
-    const baseline = JSON.parse(fs.readFileSync(baselineFile, 'utf8'));
-
+    const output = JSON.parse(fs.readFileSync(outputFile, 'utf8'));
     let body = ` LLM prompt result for ${dir}
 
-| From | Success | Failure |
-|---------|---------|---------|
-| Output | ${output.results.stats.successes} | ${output.results.stats.failures} |
+| From | Success | Failure |  Score  |
+|---------|---------|---------|---------|
+| Output | ${output.results.stats.successes} | ${output.results.stats.failures} | ${output.results.prompts[0].metrics.score} |
 `;
-    if (baseline == null || !fs.existsSync(baselineFile)) {
-        const output = JSON.parse(fs.readFileSync(outputFile, 'utf8'));
-        let body = '';
-        body += `|Baseline| ${baseline.successes} | ${baseline.failures} |
+    if (baselineFile != null || !fs.existsSync(baselineFile)) {
+        const baseline = JSON.parse(fs.readFileSync(baselineFile, 'utf8'));
+        body += `|Baseline| ${baseline.success} | ${baseline.failure} | ${baseline.score} |
         `
-        if (baseline.successes < output.results.stats.successes || baseline.failures > output.results.stats.failures || baseline.score > outputFile.results.prompts.metrics.score) {
+        if (baseline.successes < output.results.stats.successes || baseline.failures > output.results.stats.failures || baseline.score > output.results.prompts[0].metrics.score) {
             body = `[Not PASS]🚨 ` + body;
         } else {
             body = `[PASS]✅ ` + body;
