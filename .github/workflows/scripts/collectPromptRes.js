@@ -21,7 +21,7 @@ for (const dir of directories) {
 |---------|---------|---------|---------|
 | Output | ${output.results.stats.successes} | ${output.results.stats.failures} | ${output.results.prompts[0].metrics.score} |
 `;
-    if (baselineFile != null || !fs.existsSync(baselineFile)) {
+    if (baselineFile && fs.existsSync(baselineFile)) {
         const baseline = JSON.parse(fs.readFileSync(baselineFile, 'utf8'));
         body += `|Baseline| ${baseline.success} | ${baseline.failure} | ${baseline.score} |
         `

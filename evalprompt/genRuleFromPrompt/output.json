@@ -1,0 +1,1175 @@
+{
+  "evalId": "eval-s9l-2025-01-23T07:29:52",
+  "results": {
+    "version": 3,
+    "timestamp": "2025-01-23T07:29:52.951Z",
+    "prompts": [
+      {
+        "raw": "You are an spectral spec rule designer, I hope you can accurately understand the constraints regarding the OpenAPI definition file in the next line, and consider the scope of application of this rule within the OpenAPI definition file, this scope is defined as `given` filed and is a valid regular expression match.\r\n{{userprompt}}\r\nThe following is a valid spectral rule example, ```yaml rules: \\n  paths-kebab-case: \\n    description: Paths should be kebab-case.\\n message: \"{{property}} should be kebab-case (lower-case and separated with hyphens)\"\\n severity: warn\\n given: $.paths[*]~ \\n then: \\nfunction: pattern \\n functionOptions: \\n   match: \"^(\\/|[a-z0-9-.]+|{[a-zA-Z0-9_]+})+$\"```\r\nthere are some basic spectral rules that you must follow:\r\n1. if function type is falsy, then there should not appear as \"functionOptions\".\r\n2. if function type is schema, the functionOptions should define the schema object with required and properties.\r\n3. description and message should be string with quota.\r\n4. given path should be a valid regex.",
+        "label": "prompts.txt: You are an spectral spec rule designer, I hope you can accurately understand the constraints regarding the OpenAPI definition file in the next line, and consider the scope of application of this rule within the OpenAPI definition file, this scope is defined as `given` filed and is a valid regular expression match.\r\n{{userprompt}}\r\nThe following is a valid spectral rule example, ```yaml rules: \\n  paths-kebab-case: \\n    description: Paths should be kebab-case.\\n message: \"{{property}} should be kebab-case (lower-case and separated with hyphens)\"\\n severity: warn\\n given: $.paths[*]~ \\n then: \\nfunction: pattern \\n functionOptions: \\n   match: \"^(\\/|[a-z0-9-.]+|{[a-zA-Z0-9_]+})+$\"```\r\nthere are some basic spectral rules that you must follow:\r\n1. if function type is falsy, then there should not appear as \"functionOptions\".\r\n2. if function type is schema, the functionOptions should define the schema object with required and properties.\r\n3. description and message should be string with quota.\r\n4. given path should be a valid regex.",
+        "id": "f2715200b513e66fd0c4d13f719f1c4731809ad4b9c4acec629e992c6e398222",
+        "provider": "azure:chat:gpt-4o",
+        "metrics": {
+          "score": 5.666666666666667,
+          "testPassCount": 5,
+          "testFailCount": 1,
+          "testErrorCount": 0,
+          "assertPassCount": 25,
+          "assertFailCount": 2,
+          "totalLatencyMs": 51771,
+          "tokenUsage": {
+            "total": 4875,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 4875,
+            "numRequests": 6
+          },
+          "namedScores": {},
+          "namedScoresCount": {},
+          "cost": 0.057015
+        }
+      }
+    ],
+    "results": [
+      {
+        "cost": 0.009550000000000001,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "All rules meets requirements",
+              "componentResults": [
+                {
+                  "pass": true,
+                  "score": 1,
+                  "reason": "Hit the critical path paths,/pets,get,parameters,0,description from file petstore.yaml"
+                }
+              ]
+            },
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Hit the critical path paths,/pets,get,parameters,0,description from file petstore.yaml"
+            }
+          ],
+          "assertion": null
+        },
+        "id": "005a9e11-3aaf-4fa1-96a7-c3da1bf66fdd",
+        "latencyMs": 1005,
+        "namedScores": {},
+        "prompt": {
+          "raw": "You are an spectral spec rule designer, I hope you can accurately understand the constraints regarding the OpenAPI definition file in the next line, and consider the scope of application of this rule within the OpenAPI definition file, this scope is defined as `given` filed and is a valid regular expression match.\r\nAll parameters should have a description.\r\nThe following is a valid spectral rule example, ```yaml rules: \\n  paths-kebab-case: \\n    description: Paths should be kebab-case.\\n message: \" should be kebab-case (lower-case and separated with hyphens)\"\\n severity: warn\\n given: $.paths[*]~ \\n then: \\nfunction: pattern \\n functionOptions: \\n   match: \"^(\\/|[a-z0-9-.]+|{[a-zA-Z0-9_]+})+$\"```\r\nthere are some basic spectral rules that you must follow:\r\n1. if function type is falsy, then there should not appear as \"functionOptions\".\r\n2. if function type is schema, the functionOptions should define the schema object with required and properties.\r\n3. description and message should be string with quota.\r\n4. given path should be a valid regex.",
+          "label": "prompts.txt: You are an spectral spec rule designer, I hope you can accurately understand the constraints regarding the OpenAPI definition file in the next line, and consider the scope of application of this rule within the OpenAPI definition file, this scope is defined as `given` filed and is a valid regular expression match.\r\n{{userprompt}}\r\nThe following is a valid spectral rule example, ```yaml rules: \\n  paths-kebab-case: \\n    description: Paths should be kebab-case.\\n message: \"{{property}} should be kebab-case (lower-case and separated with hyphens)\"\\n severity: warn\\n given: $.paths[*]~ \\n then: \\nfunction: pattern \\n functionOptions: \\n   match: \"^(\\/|[a-z0-9-.]+|{[a-zA-Z0-9_]+})+$\"```\r\nthere are some basic spectral rules that you must follow:\r\n1. if function type is falsy, then there should not appear as \"functionOptions\".\r\n2. if function type is schema, the functionOptions should define the schema object with required and properties.\r\n3. description and message should be string with quota.\r\n4. given path should be a valid regex."
+        },
+        "promptId": "f2715200b513e66fd0c4d13f719f1c4731809ad4b9c4acec629e992c6e398222",
+        "promptIdx": 0,
+        "provider": {
+          "id": "azure:chat:gpt-4o",
+          "label": ""
+        },
+        "response": {
+          "output": "Based on the constraints and requirements you've provided, I will design a Spectral rule that ensures all parameters in an OpenAPI definition file have a description. The rule will follow the basic Spectral rules you outlined.\n\nHere is the Spectral rule:\n\n```yaml\nrules:\n  parameters-should-have-descriptions:\n    description: \"All parameters should have a description.\"\n    message: \"Parameter '{{path}}' is missing a description.\"\n    severity: warn\n    given: \"$..parameters[*]\"\n    then:\n      field: description\n      function: truthy\n```\n\n### Explanation of the Rule:\n1. **Rule Name**: `parameters-should-have-descriptions` - This is the name of the rule.\n2. **Description**: `\"All parameters should have a description.\"` - A string that describes the purpose of the rule.\n3. **Message**: `\"Parameter '{{path}}' is missing a description.\"` - A string message that will be displayed when the rule is violated. The `{{path}}` placeholder dynamically shows the location of the parameter in the OpenAPI document.\n4. **Severity**: `warn` - The severity level of the rule. It can be `error`, `warn`, or `info`.\n5. **Given**: `\"$..parameters[*]\"` - This is the JSONPath expression that defines the scope of the rule. It matches all `parameters` objects in the OpenAPI document.\n6. **Then**:\n   - **Field**: `description` - Specifies that the `description` field of the parameter is being validated.\n   - **Function**: `truthy` - Ensures that the `description` field is present and not empty.\n\n### Compliance with Basic Spectral Rules:\n1. **Function Type and `functionOptions`**:\n   - The function type is `truthy`, which is not falsy, so no `functionOptions` are required. This complies with rule 1.\n2. **Schema Function**:\n   - The function type is not `schema`, so no `schema` object is required in `functionOptions`. This complies with rule 2.\n3. **Description and Message**:\n   - Both `description` and `message` are strings enclosed in quotes. This complies with rule 3.\n4. **Given Path**:\n   - The `given` path is a valid JSONPath expression (`$..parameters[*]`), which matches all `parameters` objects in the OpenAPI document. This complies with rule 4.\n\nThis rule will ensure that all parameters in the OpenAPI definition file have a `description` field, and it adheres to the constraints and requirements you provided.",
+          "tokenUsage": {
+            "cached": 810,
+            "total": 810
+          },
+          "cached": true,
+          "cost": 0.009550000000000001
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "vars": {
+            "userprompt": "All parameters should have a description."
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://testcase.mjs",
+              "config": {
+                "hits": {
+                  "callback-example.yaml": [],
+                  "petstore.yaml": [
+                    [
+                      "paths",
+                      "/pets",
+                      "get",
+                      "parameters",
+                      "0",
+                      "description"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 0,
+        "vars": {
+          "userprompt": "All parameters should have a description."
+        },
+        "metadata": {},
+        "failureReason": 0
+      },
+      {
+        "cost": 0.007070000000000001,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "All rules meets requirements",
+              "componentResults": [
+                {
+                  "pass": true,
+                  "score": 1,
+                  "reason": "Hit the critical path paths,/doStreams,post,responses,200 from file callback-example.yaml"
+                },
+                {
+                  "pass": true,
+                  "score": 1,
+                  "reason": "Hit the critical path paths,/pets,post,responses,200 from file petstore.yaml"
+                }
+              ]
+            },
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Hit the critical path paths,/doStreams,post,responses,200 from file callback-example.yaml"
+            },
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Hit the critical path paths,/pets,post,responses,200 from file petstore.yaml"
+            }
+          ],
+          "assertion": null
+        },
+        "id": "25a17625-1d1d-46eb-8ed8-5ae27a0451ba",
+        "latencyMs": 16748,
+        "namedScores": {},
+        "prompt": {
+          "raw": "You are an spectral spec rule designer, I hope you can accurately understand the constraints regarding the OpenAPI definition file in the next line, and consider the scope of application of this rule within the OpenAPI definition file, this scope is defined as `given` filed and is a valid regular expression match.\r\nPOST requests should return a 201 or 202 status on success instead of 200.\r\nThe following is a valid spectral rule example, ```yaml rules: \\n  paths-kebab-case: \\n    description: Paths should be kebab-case.\\n message: \" should be kebab-case (lower-case and separated with hyphens)\"\\n severity: warn\\n given: $.paths[*]~ \\n then: \\nfunction: pattern \\n functionOptions: \\n   match: \"^(\\/|[a-z0-9-.]+|{[a-zA-Z0-9_]+})+$\"```\r\nthere are some basic spectral rules that you must follow:\r\n1. if function type is falsy, then there should not appear as \"functionOptions\".\r\n2. if function type is schema, the functionOptions should define the schema object with required and properties.\r\n3. description and message should be string with quota.\r\n4. given path should be a valid regex.",
+          "label": "prompts.txt: You are an spectral spec rule designer, I hope you can accurately understand the constraints regarding the OpenAPI definition file in the next line, and consider the scope of application of this rule within the OpenAPI definition file, this scope is defined as `given` filed and is a valid regular expression match.\r\n{{userprompt}}\r\nThe following is a valid spectral rule example, ```yaml rules: \\n  paths-kebab-case: \\n    description: Paths should be kebab-case.\\n message: \"{{property}} should be kebab-case (lower-case and separated with hyphens)\"\\n severity: warn\\n given: $.paths[*]~ \\n then: \\nfunction: pattern \\n functionOptions: \\n   match: \"^(\\/|[a-z0-9-.]+|{[a-zA-Z0-9_]+})+$\"```\r\nthere are some basic spectral rules that you must follow:\r\n1. if function type is falsy, then there should not appear as \"functionOptions\".\r\n2. if function type is schema, the functionOptions should define the schema object with required and properties.\r\n3. description and message should be string with quota.\r\n4. given path should be a valid regex."
+        },
+        "promptId": "f2715200b513e66fd0c4d13f719f1c4731809ad4b9c4acec629e992c6e398222",
+        "promptIdx": 0,
+        "provider": {
+          "id": "azure:chat:gpt-4o",
+          "label": ""
+        },
+        "response": {
+          "output": "Based on the constraints and requirements you've provided, here is a valid Spectral rule that enforces the condition that POST requests should return a 201 or 202 status on success instead of 200. The rule adheres to the basic Spectral rules you outlined:\n\n```yaml\nrules:\n  post-success-status:\n    description: \"POST requests should return a 201 or 202 status on success instead of 200.\"\n    message: \"POST requests should not return a 200 status on success. Use 201 or 202 instead.\"\n    severity: error\n    given: \"$.paths[*][post].responses\"\n    then:\n      field: \"200\"\n      function: falsy\n```\n\n### Explanation:\n1. **Description and Message**:\n   - The `description` and `message` fields are strings enclosed in quotes, as required.\n\n2. **Given Path**:\n   - The `given` field is a valid JSONPath expression (`$.paths[*][post].responses`) that matches the `responses` object of all `POST` operations in the OpenAPI definition file.\n\n3. **Function Type**:\n   - The `function` is set to `falsy`, which checks that the `200` status code does not exist in the `responses` object for `POST` requests.\n   - Since the function type is `falsy`, there is no `functionOptions` field, as per the first rule in your constraints.\n\n4. **Scope of Application**:\n   - The rule applies specifically to `POST` requests (`[post]`) and their `responses` objects.\n\nThis rule ensures that any `POST` request in the OpenAPI definition file will trigger an error if it includes a `200` status code in its `responses` object. Instead, the API designer should use `201` or `202` for successful POST responses.",
+          "tokenUsage": {
+            "cached": 652,
+            "total": 652
+          },
+          "cached": true,
+          "cost": 0.007070000000000001
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "vars": {
+            "userprompt": "POST requests should return a 201 or 202 status on success instead of 200."
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://testcase.mjs",
+              "config": {
+                "hits": {
+                  "callback-example.yaml": [
+                    [
+                      "paths",
+                      "/doStreams",
+                      "post",
+                      "responses",
+                      "200"
+                    ]
+                  ],
+                  "petstore.yaml": [
+                    [
+                      "paths",
+                      "/pets",
+                      "post",
+                      "responses",
+                      "200"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 3,
+        "vars": {
+          "userprompt": "POST requests should return a 201 or 202 status on success instead of 200."
+        },
+        "metadata": {},
+        "failureReason": 0
+      },
+      {
+        "cost": 0.01132,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "All rules meets requirements",
+              "componentResults": [
+                {
+                  "pass": true,
+                  "score": 1,
+                  "reason": "Hit the critical path paths,/doStreams,post,responses,200,content,application/json,schema,properties,subscriptionId from file callback-example.yaml"
+                },
+                {
+                  "pass": true,
+                  "score": 1,
+                  "reason": "Hit the critical path paths,/stream/{id},get,responses,200,content,application/json,schema,properties,timestamp from file callback-example.yaml"
+                },
+                {
+                  "pass": true,
+                  "score": 1,
+                  "reason": "Hit the critical path paths,/stream/{id},get,responses,200,content,application/json,schema,properties,userData from file callback-example.yaml"
+                },
+                {
+                  "pass": true,
+                  "score": 1,
+                  "reason": "Hit the critical path components,schemas,Pet,properties,name from file petstore.yaml"
+                },
+                {
+                  "pass": true,
+                  "score": 1,
+                  "reason": "Hit the critical path components,schemas,Pet,properties,tag from file petstore.yaml"
+                },
+                {
+                  "pass": true,
+                  "score": 1,
+                  "reason": "Hit the critical path components,schemas,Pet,properties,time from file petstore.yaml"
+                },
+                {
+                  "pass": true,
+                  "score": 1,
+                  "reason": "Hit the critical path components,schemas,Error,properties,code from file petstore.yaml"
+                },
+                {
+                  "pass": true,
+                  "score": 1,
+                  "reason": "Hit the critical path components,schemas,Error,properties,message from file petstore.yaml"
+                }
+              ]
+            },
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Hit the critical path paths,/doStreams,post,responses,200,content,application/json,schema,properties,subscriptionId from file callback-example.yaml"
+            },
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Hit the critical path paths,/stream/{id},get,responses,200,content,application/json,schema,properties,timestamp from file callback-example.yaml"
+            },
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Hit the critical path paths,/stream/{id},get,responses,200,content,application/json,schema,properties,userData from file callback-example.yaml"
+            },
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Hit the critical path components,schemas,Pet,properties,name from file petstore.yaml"
+            },
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Hit the critical path components,schemas,Pet,properties,tag from file petstore.yaml"
+            },
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Hit the critical path components,schemas,Pet,properties,time from file petstore.yaml"
+            },
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Hit the critical path components,schemas,Error,properties,code from file petstore.yaml"
+            },
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Hit the critical path components,schemas,Error,properties,message from file petstore.yaml"
+            }
+          ],
+          "assertion": null
+        },
+        "id": "2fbc9f7b-6852-42be-88e8-167349c52860",
+        "latencyMs": 16781,
+        "namedScores": {},
+        "prompt": {
+          "raw": "You are an spectral spec rule designer, I hope you can accurately understand the constraints regarding the OpenAPI definition file in the next line, and consider the scope of application of this rule within the OpenAPI definition file, this scope is defined as `given` filed and is a valid regular expression match.\r\nAll resources in a response should have an `id` `created_at` and `updated_at` property\r\nThe following is a valid spectral rule example, ```yaml rules: \\n  paths-kebab-case: \\n    description: Paths should be kebab-case.\\n message: \" should be kebab-case (lower-case and separated with hyphens)\"\\n severity: warn\\n given: $.paths[*]~ \\n then: \\nfunction: pattern \\n functionOptions: \\n   match: \"^(\\/|[a-z0-9-.]+|{[a-zA-Z0-9_]+})+$\"```\r\nthere are some basic spectral rules that you must follow:\r\n1. if function type is falsy, then there should not appear as \"functionOptions\".\r\n2. if function type is schema, the functionOptions should define the schema object with required and properties.\r\n3. description and message should be string with quota.\r\n4. given path should be a valid regex.",
+          "label": "prompts.txt: You are an spectral spec rule designer, I hope you can accurately understand the constraints regarding the OpenAPI definition file in the next line, and consider the scope of application of this rule within the OpenAPI definition file, this scope is defined as `given` filed and is a valid regular expression match.\r\n{{userprompt}}\r\nThe following is a valid spectral rule example, ```yaml rules: \\n  paths-kebab-case: \\n    description: Paths should be kebab-case.\\n message: \"{{property}} should be kebab-case (lower-case and separated with hyphens)\"\\n severity: warn\\n given: $.paths[*]~ \\n then: \\nfunction: pattern \\n functionOptions: \\n   match: \"^(\\/|[a-z0-9-.]+|{[a-zA-Z0-9_]+})+$\"```\r\nthere are some basic spectral rules that you must follow:\r\n1. if function type is falsy, then there should not appear as \"functionOptions\".\r\n2. if function type is schema, the functionOptions should define the schema object with required and properties.\r\n3. description and message should be string with quota.\r\n4. given path should be a valid regex."
+        },
+        "promptId": "f2715200b513e66fd0c4d13f719f1c4731809ad4b9c4acec629e992c6e398222",
+        "promptIdx": 0,
+        "provider": {
+          "id": "azure:chat:gpt-4o",
+          "label": ""
+        },
+        "response": {
+          "output": "Based on the constraints and requirements you've provided, I will design a valid Spectral rule that ensures all resources in a response have an `id`, `created_at`, and `updated_at` property. Here's the rule:\n\n```yaml\nrules:\n  response-resources-should-have-id-created-at-updated-at:\n    description: \"All resources in a response should have an `id`, `created_at`, and `updated_at` property.\"\n    message: \"Response resources should include `id`, `created_at`, and `updated_at` properties.\"\n    severity: error\n    given: \"$.paths[*][*].responses[*].content.application/json.schema.properties[*]\"\n    then:\n      function: schema\n      functionOptions:\n        schema:\n          type: object\n          required:\n            - id\n            - created_at\n            - updated_at\n          properties:\n            id:\n              type: string\n            created_at:\n              type: string\n              format: date-time\n            updated_at:\n              type: string\n              format: date-time\n```\n\n### Explanation of the Rule:\n1. **Rule Name**: `response-resources-should-have-id-created-at-updated-at`\n   - The name of the rule is descriptive and follows a clear naming convention.\n\n2. **Description**: `\"All resources in a response should have an 'id', 'created_at', and 'updated_at' property.\"`\n   - The description clearly explains the purpose of the rule.\n\n3. **Message**: `\"Response resources should include 'id', 'created_at', and 'updated_at' properties.\"`\n   - The message provides feedback when the rule is violated.\n\n4. **Severity**: `error`\n   - The severity is set to `error` to indicate that this is a critical rule.\n\n5. **Given**: `$.paths[*][*].responses[*].content.application/json.schema.properties[*]`\n   - This is the scope of the rule. It targets the JSON schema of response objects in the OpenAPI definition file. The given path is a valid JSONPath expression.\n\n6. **Then**:\n   - **Function**: `schema`\n     - The `schema` function is used to validate the structure of the response objects.\n   - **FunctionOptions**:\n     - The `schema` object defines the required properties (`id`, `created_at`, `updated_at`) and their types.\n     - `id` is a string.\n     - `created_at` and `updated_at` are strings with the `date-time` format.\n\n### Compliance with Basic Spectral Rules:\n1. **Function Type and FunctionOptions**:\n   - The function type is `schema`, so `functionOptions` is defined with a valid `schema` object.\n\n2. **Description and Message**:\n   - Both `description` and `message` are strings enclosed in quotes.\n\n3. **Given Path**:\n   - The `given` path is a valid JSONPath expression.\n\n4. **Schema Object**:\n   - The `schema` object in `functionOptions` defines the required properties and their types.\n\nThis rule ensures that all resources in a response conform to the required structure, and it adheres to the constraints and guidelines you provided.",
+          "tokenUsage": {
+            "cached": 938,
+            "total": 938
+          },
+          "cached": true,
+          "cost": 0.01132
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "vars": {
+            "userprompt": "All resources in a response should have an `id` `created_at` and `updated_at` property"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://testcase.mjs",
+              "config": {
+                "hits": {
+                  "callback-example.yaml": [
+                    [
+                      "paths",
+                      "/doStreams",
+                      "post",
+                      "responses",
+                      "200",
+                      "content",
+                      "application/json",
+                      "schema",
+                      "properties",
+                      "subscriptionId"
+                    ],
+                    [
+                      "paths",
+                      "/stream/{id}",
+                      "get",
+                      "responses",
+                      "200",
+                      "content",
+                      "application/json",
+                      "schema",
+                      "properties",
+                      "timestamp"
+                    ],
+                    [
+                      "paths",
+                      "/stream/{id}",
+                      "get",
+                      "responses",
+                      "200",
+                      "content",
+                      "application/json",
+                      "schema",
+                      "properties",
+                      "userData"
+                    ]
+                  ],
+                  "petstore.yaml": [
+                    [
+                      "components",
+                      "schemas",
+                      "Pet",
+                      "properties",
+                      "name"
+                    ],
+                    [
+                      "components",
+                      "schemas",
+                      "Pet",
+                      "properties",
+                      "tag"
+                    ],
+                    [
+                      "components",
+                      "schemas",
+                      "Pet",
+                      "properties",
+                      "time"
+                    ],
+                    [
+                      "components",
+                      "schemas",
+                      "Error",
+                      "properties",
+                      "code"
+                    ],
+                    [
+                      "components",
+                      "schemas",
+                      "Error",
+                      "properties",
+                      "message"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 2,
+        "vars": {
+          "userprompt": "All resources in a response should have an `id` `created_at` and `updated_at` property"
+        },
+        "metadata": {},
+        "failureReason": 0
+      },
+      {
+        "cost": 0.009250000000000001,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "All rules meets requirements",
+              "componentResults": [
+                {
+                  "pass": true,
+                  "score": 1,
+                  "reason": "Hit the critical path paths,/doStreams,post from file callback-example.yaml"
+                },
+                {
+                  "pass": true,
+                  "score": 1,
+                  "reason": "Hit the critical path paths,/stream/{id},get from file callback-example.yaml"
+                },
+                {
+                  "pass": true,
+                  "score": 1,
+                  "reason": "Hit the critical path paths,/pets,get from file petstore.yaml"
+                },
+                {
+                  "pass": true,
+                  "score": 1,
+                  "reason": "Hit the critical path paths,/pets,post from file petstore.yaml"
+                }
+              ]
+            },
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Hit the critical path paths,/doStreams,post from file callback-example.yaml"
+            },
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Hit the critical path paths,/stream/{id},get from file callback-example.yaml"
+            },
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Hit the critical path paths,/pets,get from file petstore.yaml"
+            },
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Hit the critical path paths,/pets,post from file petstore.yaml"
+            }
+          ],
+          "assertion": null
+        },
+        "id": "9e0a93d0-0d46-416c-aef4-edac19561635",
+        "latencyMs": 16893,
+        "namedScores": {},
+        "prompt": {
+          "raw": "You are an spectral spec rule designer, I hope you can accurately understand the constraints regarding the OpenAPI definition file in the next line, and consider the scope of application of this rule within the OpenAPI definition file, this scope is defined as `given` filed and is a valid regular expression match.\r\nAll operations should have operationId\r\nThe following is a valid spectral rule example, ```yaml rules: \\n  paths-kebab-case: \\n    description: Paths should be kebab-case.\\n message: \" should be kebab-case (lower-case and separated with hyphens)\"\\n severity: warn\\n given: $.paths[*]~ \\n then: \\nfunction: pattern \\n functionOptions: \\n   match: \"^(\\/|[a-z0-9-.]+|{[a-zA-Z0-9_]+})+$\"```\r\nthere are some basic spectral rules that you must follow:\r\n1. if function type is falsy, then there should not appear as \"functionOptions\".\r\n2. if function type is schema, the functionOptions should define the schema object with required and properties.\r\n3. description and message should be string with quota.\r\n4. given path should be a valid regex.",
+          "label": "prompts.txt: You are an spectral spec rule designer, I hope you can accurately understand the constraints regarding the OpenAPI definition file in the next line, and consider the scope of application of this rule within the OpenAPI definition file, this scope is defined as `given` filed and is a valid regular expression match.\r\n{{userprompt}}\r\nThe following is a valid spectral rule example, ```yaml rules: \\n  paths-kebab-case: \\n    description: Paths should be kebab-case.\\n message: \"{{property}} should be kebab-case (lower-case and separated with hyphens)\"\\n severity: warn\\n given: $.paths[*]~ \\n then: \\nfunction: pattern \\n functionOptions: \\n   match: \"^(\\/|[a-z0-9-.]+|{[a-zA-Z0-9_]+})+$\"```\r\nthere are some basic spectral rules that you must follow:\r\n1. if function type is falsy, then there should not appear as \"functionOptions\".\r\n2. if function type is schema, the functionOptions should define the schema object with required and properties.\r\n3. description and message should be string with quota.\r\n4. given path should be a valid regex."
+        },
+        "promptId": "f2715200b513e66fd0c4d13f719f1c4731809ad4b9c4acec629e992c6e398222",
+        "promptIdx": 0,
+        "provider": {
+          "id": "azure:chat:gpt-4o",
+          "label": ""
+        },
+        "response": {
+          "output": "Based on the constraints and requirements you've provided, I will design a valid Spectral rule to enforce the requirement that all operations in an OpenAPI definition file should have an `operationId`. Here's the rule:\n\n```yaml\nrules:\n  operations-must-have-operationId:\n    description: \"All operations must have an operationId.\"\n    message: \"Operation is missing an operationId.\"\n    severity: error\n    given: \"$.paths[*][*]\"\n    then:\n      field: operationId\n      function: truthy\n```\n\n### Explanation of the Rule:\n1. **Rule Name**: `operations-must-have-operationId`\n   - The rule is named to reflect its purpose clearly.\n\n2. **Description**: `\"All operations must have an operationId.\"`\n   - A string description explaining the purpose of the rule.\n\n3. **Message**: `\"Operation is missing an operationId.\"`\n   - A string message that will be displayed when the rule is violated.\n\n4. **Severity**: `error`\n   - The severity level is set to `error` to indicate that this is a critical issue.\n\n5. **Given**: `\"$paths[*][*]\"`\n   - This is the scope of the rule. It uses a valid JSONPath expression to target all operations under the `paths` object in the OpenAPI definition file.\n\n6. **Then**:\n   - **Field**: `operationId`\n     - Specifies that the rule applies to the `operationId` field.\n   - **Function**: `truthy`\n     - Ensures that the `operationId` field exists and is not null or empty.\n   - No `functionOptions` are provided because the `truthy` function does not require additional options.\n\n### Compliance with Basic Spectral Rules:\n1. **Function Type and `functionOptions`**:\n   - The function type is `truthy`, which is not falsy, so no `functionOptions` are included.\n\n2. **Schema Function**:\n   - The function type is not `schema`, so there is no need to define a schema object with `required` and `properties`.\n\n3. **Description and Message**:\n   - Both `description` and `message` are strings enclosed in quotes.\n\n4. **Given Path**:\n   - The `given` path is a valid JSONPath expression (`$.paths[*][*]`), which matches all operations under the `paths` object.\n\nThis rule ensures that every operation in the OpenAPI definition file has an `operationId`, adhering to the constraints and requirements you provided.",
+          "tokenUsage": {
+            "cached": 790,
+            "total": 790
+          },
+          "cached": true,
+          "cost": 0.009250000000000001
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "vars": {
+            "userprompt": "All operations should have operationId"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://testcase.mjs",
+              "config": {
+                "hits": {
+                  "callback-example.yaml": [
+                    [
+                      "paths",
+                      "/doStreams",
+                      "post"
+                    ],
+                    [
+                      "paths",
+                      "/stream/{id}",
+                      "get"
+                    ]
+                  ],
+                  "petstore.yaml": [
+                    [
+                      "paths",
+                      "/pets",
+                      "get"
+                    ],
+                    [
+                      "paths",
+                      "/pets",
+                      "post"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 1,
+        "vars": {
+          "userprompt": "All operations should have operationId"
+        },
+        "metadata": {},
+        "failureReason": 0
+      },
+      {
+        "cost": 0.009555000000000001,
+        "error": "Some paths are not expected from the files",
+        "gradingResult": {
+          "pass": false,
+          "score": 0.6666666666666666,
+          "reason": "Some paths are not expected from the files",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0
+          },
+          "componentResults": [
+            {
+              "pass": false,
+              "score": 0.6666666666666666,
+              "reason": "Some paths are not expected from the files",
+              "componentResults": [
+                {
+                  "pass": true,
+                  "score": 1,
+                  "reason": "Hit the critical path paths,/stream/{id},get,responses from file callback-example.yaml"
+                },
+                {
+                  "pass": false,
+                  "score": 0,
+                  "reason": "Path paths,/pets,get,responses not expected from file petstore.yaml"
+                },
+                {
+                  "pass": true,
+                  "score": 1,
+                  "reason": "Hit the critical path paths,/pets/{pet-id},get,responses from file petstore.yaml"
+                }
+              ]
+            },
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Hit the critical path paths,/stream/{id},get,responses from file callback-example.yaml"
+            },
+            {
+              "pass": false,
+              "score": 0,
+              "reason": "Path paths,/pets,get,responses not expected from file petstore.yaml"
+            },
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Hit the critical path paths,/pets/{pet-id},get,responses from file petstore.yaml"
+            }
+          ],
+          "assertion": null
+        },
+        "id": "001a1581-0e74-4b42-af2f-652907525ffa",
+        "latencyMs": 169,
+        "namedScores": {},
+        "prompt": {
+          "raw": "You are an spectral spec rule designer, I hope you can accurately understand the constraints regarding the OpenAPI definition file in the next line, and consider the scope of application of this rule within the OpenAPI definition file, this scope is defined as `given` filed and is a valid regular expression match.\r\nGET requests that have an ID at the end of their path (ie /teams/{teamID}) should define a 404.\r\nThe following is a valid spectral rule example, ```yaml rules: \\n  paths-kebab-case: \\n    description: Paths should be kebab-case.\\n message: \" should be kebab-case (lower-case and separated with hyphens)\"\\n severity: warn\\n given: $.paths[*]~ \\n then: \\nfunction: pattern \\n functionOptions: \\n   match: \"^(\\/|[a-z0-9-.]+|{[a-zA-Z0-9_]+})+$\"```\r\nthere are some basic spectral rules that you must follow:\r\n1. if function type is falsy, then there should not appear as \"functionOptions\".\r\n2. if function type is schema, the functionOptions should define the schema object with required and properties.\r\n3. description and message should be string with quota.\r\n4. given path should be a valid regex.",
+          "label": "prompts.txt: You are an spectral spec rule designer, I hope you can accurately understand the constraints regarding the OpenAPI definition file in the next line, and consider the scope of application of this rule within the OpenAPI definition file, this scope is defined as `given` filed and is a valid regular expression match.\r\n{{userprompt}}\r\nThe following is a valid spectral rule example, ```yaml rules: \\n  paths-kebab-case: \\n    description: Paths should be kebab-case.\\n message: \"{{property}} should be kebab-case (lower-case and separated with hyphens)\"\\n severity: warn\\n given: $.paths[*]~ \\n then: \\nfunction: pattern \\n functionOptions: \\n   match: \"^(\\/|[a-z0-9-.]+|{[a-zA-Z0-9_]+})+$\"```\r\nthere are some basic spectral rules that you must follow:\r\n1. if function type is falsy, then there should not appear as \"functionOptions\".\r\n2. if function type is schema, the functionOptions should define the schema object with required and properties.\r\n3. description and message should be string with quota.\r\n4. given path should be a valid regex."
+        },
+        "promptId": "f2715200b513e66fd0c4d13f719f1c4731809ad4b9c4acec629e992c6e398222",
+        "promptIdx": 0,
+        "provider": {
+          "id": "azure:chat:gpt-4o",
+          "label": ""
+        },
+        "response": {
+          "output": "Based on the constraints and requirements you've provided, here is a valid Spectral rule that enforces the condition: \"GET requests that have an ID at the end of their path (e.g., `/teams/{teamID}`) should define a 404 response.\"\n\n```yaml\nrules:\n  get-requests-id-404:\n    description: \"GET requests with an ID at the end of their path should define a 404 response.\"\n    message: \"GET requests with an ID at the end of their path must define a 404 response.\"\n    severity: error\n    given: \"$.paths[*][get]\"\n    then:\n      field: responses\n      function: schema\n      functionOptions:\n        schema:\n          type: object\n          required:\n            - \"404\"\n          properties:\n            \"404\":\n              type: object\n```\n\n### Explanation of the Rule:\n1. **Rule Name (`get-requests-id-404`)**:\n   - The rule is named to reflect its purpose: ensuring GET requests with an ID at the end of their path define a 404 response.\n\n2. **Description and Message**:\n   - Both `description` and `message` are strings enclosed in quotes, as per the basic Spectral rules.\n\n3. **`given` Field**:\n   - The `given` field uses a valid JSONPath expression (`$.paths[*][get]`) to target all GET operations in the OpenAPI definition file.\n\n4. **`then` Field**:\n   - The `then` field specifies the `responses` field of the GET operation as the target for validation.\n\n5. **Function and FunctionOptions**:\n   - The `function` is set to `schema`, which validates the structure of the `responses` object.\n   - The `functionOptions` define a schema object that requires a `404` response to be present. The `404` response is expected to be an object.\n\n### Additional Notes:\n- This rule assumes that the OpenAPI definition file uses the standard structure for paths and operations.\n- The `given` field does not explicitly filter paths ending with an ID (e.g., `/teams/{teamID}`). If stricter filtering is required, you can modify the `given` field to include a regex match for such paths. For example:\n  ```yaml\n  given: \"$.paths[?(@property.match(/.*\\{[a-zA-Z0-9_]+\\}$/))][get]\"\n  ```\n  This would target only GET operations where the path ends with a parameter enclosed in curly braces (e.g., `{teamID}`).\n\nLet me know if you need further clarification or adjustments!",
+          "tokenUsage": {
+            "cached": 823,
+            "total": 823
+          },
+          "cached": true,
+          "cost": 0.009555000000000001
+        },
+        "score": 0.6666666666666666,
+        "success": false,
+        "testCase": {
+          "vars": {
+            "userprompt": "GET requests that have an ID at the end of their path (ie /teams/{teamID}) should define a 404."
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://testcase.mjs",
+              "config": {
+                "hits": {
+                  "callback-example.yaml": [
+                    [
+                      "paths",
+                      "/stream/{id}",
+                      "get",
+                      "responses"
+                    ]
+                  ],
+                  "petstore.yaml": [
+                    [
+                      "paths",
+                      "/pets/{pet-id}",
+                      "get",
+                      "responses"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 4,
+        "vars": {
+          "userprompt": "GET requests that have an ID at the end of their path (ie /teams/{teamID}) should define a 404."
+        },
+        "metadata": {},
+        "failureReason": 1
+      },
+      {
+        "cost": 0.01027,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {},
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "All rules meets requirements",
+              "componentResults": [
+                {
+                  "pass": true,
+                  "score": 1,
+                  "reason": "Hit the critical path paths,/doStreams,post,callbacks,onData,{$request.query.callbackUrl}/data,post,requestBody,content,application/json,schema,properties,timestamp,format from file callback-example.yaml"
+                },
+                {
+                  "pass": true,
+                  "score": 1,
+                  "reason": "Hit the critical path paths,/stream/{id},get,responses,200,content,application/json,schema,properties,timestamp,format from file callback-example.yaml"
+                },
+                {
+                  "pass": true,
+                  "score": 1,
+                  "reason": "Hit the critical path components,schemas,Pet,properties,time,format from file petstore.yaml"
+                }
+              ]
+            },
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Hit the critical path paths,/doStreams,post,callbacks,onData,{$request.query.callbackUrl}/data,post,requestBody,content,application/json,schema,properties,timestamp,format from file callback-example.yaml"
+            },
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Hit the critical path paths,/stream/{id},get,responses,200,content,application/json,schema,properties,timestamp,format from file callback-example.yaml"
+            },
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "Hit the critical path components,schemas,Pet,properties,time,format from file petstore.yaml"
+            }
+          ],
+          "assertion": null
+        },
+        "id": "47d6adda-0dc0-4c18-8629-c06f6958fa49",
+        "latencyMs": 175,
+        "namedScores": {},
+        "prompt": {
+          "raw": "You are an spectral spec rule designer, I hope you can accurately understand the constraints regarding the OpenAPI definition file in the next line, and consider the scope of application of this rule within the OpenAPI definition file, this scope is defined as `given` filed and is a valid regular expression match.\r\nProperties contains `time` should use format: datetime or timestamp\r\nThe following is a valid spectral rule example, ```yaml rules: \\n  paths-kebab-case: \\n    description: Paths should be kebab-case.\\n message: \" should be kebab-case (lower-case and separated with hyphens)\"\\n severity: warn\\n given: $.paths[*]~ \\n then: \\nfunction: pattern \\n functionOptions: \\n   match: \"^(\\/|[a-z0-9-.]+|{[a-zA-Z0-9_]+})+$\"```\r\nthere are some basic spectral rules that you must follow:\r\n1. if function type is falsy, then there should not appear as \"functionOptions\".\r\n2. if function type is schema, the functionOptions should define the schema object with required and properties.\r\n3. description and message should be string with quota.\r\n4. given path should be a valid regex.",
+          "label": "prompts.txt: You are an spectral spec rule designer, I hope you can accurately understand the constraints regarding the OpenAPI definition file in the next line, and consider the scope of application of this rule within the OpenAPI definition file, this scope is defined as `given` filed and is a valid regular expression match.\r\n{{userprompt}}\r\nThe following is a valid spectral rule example, ```yaml rules: \\n  paths-kebab-case: \\n    description: Paths should be kebab-case.\\n message: \"{{property}} should be kebab-case (lower-case and separated with hyphens)\"\\n severity: warn\\n given: $.paths[*]~ \\n then: \\nfunction: pattern \\n functionOptions: \\n   match: \"^(\\/|[a-z0-9-.]+|{[a-zA-Z0-9_]+})+$\"```\r\nthere are some basic spectral rules that you must follow:\r\n1. if function type is falsy, then there should not appear as \"functionOptions\".\r\n2. if function type is schema, the functionOptions should define the schema object with required and properties.\r\n3. description and message should be string with quota.\r\n4. given path should be a valid regex."
+        },
+        "promptId": "f2715200b513e66fd0c4d13f719f1c4731809ad4b9c4acec629e992c6e398222",
+        "promptIdx": 0,
+        "provider": {
+          "id": "azure:chat:gpt-4o",
+          "label": ""
+        },
+        "response": {
+          "output": "Based on the constraints and requirements you've provided, I will design a valid Spectral rule that enforces the following condition: **Properties containing `time` should use the format `datetime` or `timestamp`.**\n\nHere is the Spectral rule:\n\n```yaml\nrules:\n  properties-time-format:\n    description: \"Properties containing 'time' should use format: datetime or timestamp.\"\n    message: \"Property '{{property}}' should use format 'datetime' or 'timestamp'.\"\n    severity: warn\n    given: \"$..properties[?(@property.match(/time/i))]\"\n    then:\n      field: format\n      function: enumeration\n      functionOptions:\n        values:\n          - datetime\n          - timestamp\n```\n\n### Explanation of the Rule:\n1. **Rule Name (`properties-time-format`)**:\n   - The rule is named `properties-time-format` to reflect its purpose.\n\n2. **Description**:\n   - The `description` field provides a clear explanation of the rule's intent: ensuring that properties containing the word `time` use the correct format.\n\n3. **Message**:\n   - The `message` field specifies the error message that will be displayed if the rule is violated. It uses the `{{property}}` placeholder to dynamically include the property name in the error message.\n\n4. **Severity**:\n   - The severity is set to `warn`, meaning violations will be flagged as warnings.\n\n5. **Given**:\n   - The `given` field specifies the scope of the rule using a valid JSONPath expression. It matches all properties whose names contain the word `time` (case-insensitive) using the regular expression `/time/i`.\n\n6. **Then**:\n   - The `then` block specifies the validation logic:\n     - The `field` is set to `format`, meaning the rule will check the `format` field of the matched properties.\n     - The `function` is `enumeration`, which ensures that the value of the `format` field is one of the allowed values.\n     - The `functionOptions` defines the allowed values for the `format` field: `datetime` and `timestamp`.\n\n### Compliance with Basic Spectral Rules:\n1. **Function Type and `functionOptions`**:\n   - The `function` is `enumeration`, which requires `functionOptions` to define the allowed values. This is correctly implemented.\n\n2. **Schema Function**:\n   - The `function` is not `schema`, so there is no need to define a `schema` object in `functionOptions`.\n\n3. **Description and Message**:\n   - Both `description` and `message` are strings enclosed in quotes, as required.\n\n4. **Given Path**:\n   - The `given` path is a valid JSONPath expression that uses a regular expression to match property names containing `time`.\n\nThis rule should work as intended and comply with the constraints you provided.",
+          "tokenUsage": {
+            "cached": 862,
+            "total": 862
+          },
+          "cached": true,
+          "cost": 0.01027
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "vars": {
+            "userprompt": "Properties contains `time` should use format: datetime or timestamp"
+          },
+          "assert": [
+            {
+              "type": "javascript",
+              "value": "file://testcase.mjs",
+              "config": {
+                "hits": {
+                  "callback-example.yaml": [
+                    [
+                      "paths",
+                      "/doStreams",
+                      "post",
+                      "callbacks",
+                      "onData",
+                      "{$request.query.callbackUrl}/data",
+                      "post",
+                      "requestBody",
+                      "content",
+                      "application/json",
+                      "schema",
+                      "properties",
+                      "timestamp",
+                      "format"
+                    ],
+                    [
+                      "paths",
+                      "/stream/{id}",
+                      "get",
+                      "responses",
+                      "200",
+                      "content",
+                      "application/json",
+                      "schema",
+                      "properties",
+                      "timestamp",
+                      "format"
+                    ]
+                  ],
+                  "petstore.yaml": [
+                    [
+                      "components",
+                      "schemas",
+                      "Pet",
+                      "properties",
+                      "time",
+                      "format"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 5,
+        "vars": {
+          "userprompt": "Properties contains `time` should use format: datetime or timestamp"
+        },
+        "metadata": {},
+        "failureReason": 0
+      }
+    ],
+    "stats": {
+      "successes": 5,
+      "failures": 1,
+      "errors": 0,
+      "tokenUsage": {
+        "cached": 4875,
+        "completion": 0,
+        "prompt": 0,
+        "total": 4875,
+        "numRequests": 6
+      }
+    }
+  },
+  "config": {
+    "prompts": [
+      {
+        "id": "file://prompts.txt"
+      }
+    ],
+    "providers": [
+      {
+        "id": "azure:chat:gpt-4o",
+        "config": {
+          "apiHost": "apicevaluationtestai.openai.azure.com",
+          "maxtoken": 15000
+        }
+      }
+    ],
+    "tests": [
+      {
+        "vars": {
+          "userprompt": "All parameters should have a description."
+        },
+        "assert": [
+          {
+            "type": "javascript",
+            "value": "file://testcase.mjs",
+            "config": {
+              "hits": {
+                "callback-example.yaml": [],
+                "petstore.yaml": [
+                  [
+                    "paths",
+                    "/pets",
+                    "get",
+                    "parameters",
+                    "0",
+                    "description"
+                  ]
+                ]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "vars": {
+          "userprompt": "All operations should have operationId"
+        },
+        "assert": [
+          {
+            "type": "javascript",
+            "value": "file://testcase.mjs",
+            "config": {
+              "hits": {
+                "callback-example.yaml": [
+                  [
+                    "paths",
+                    "/doStreams",
+                    "post"
+                  ],
+                  [
+                    "paths",
+                    "/stream/{id}",
+                    "get"
+                  ]
+                ],
+                "petstore.yaml": [
+                  [
+                    "paths",
+                    "/pets",
+                    "get"
+                  ],
+                  [
+                    "paths",
+                    "/pets",
+                    "post"
+                  ]
+                ]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "vars": {
+          "userprompt": "All resources in a response should have an `id` `created_at` and `updated_at` property"
+        },
+        "assert": [
+          {
+            "type": "javascript",
+            "value": "file://testcase.mjs",
+            "config": {
+              "hits": {
+                "callback-example.yaml": [
+                  [
+                    "paths",
+                    "/doStreams",
+                    "post",
+                    "responses",
+                    "200",
+                    "content",
+                    "application/json",
+                    "schema",
+                    "properties",
+                    "subscriptionId"
+                  ],
+                  [
+                    "paths",
+                    "/stream/{id}",
+                    "get",
+                    "responses",
+                    "200",
+                    "content",
+                    "application/json",
+                    "schema",
+                    "properties",
+                    "timestamp"
+                  ],
+                  [
+                    "paths",
+                    "/stream/{id}",
+                    "get",
+                    "responses",
+                    "200",
+                    "content",
+                    "application/json",
+                    "schema",
+                    "properties",
+                    "userData"
+                  ]
+                ],
+                "petstore.yaml": [
+                  [
+                    "components",
+                    "schemas",
+                    "Pet",
+                    "properties",
+                    "name"
+                  ],
+                  [
+                    "components",
+                    "schemas",
+                    "Pet",
+                    "properties",
+                    "tag"
+                  ],
+                  [
+                    "components",
+                    "schemas",
+                    "Pet",
+                    "properties",
+                    "time"
+                  ],
+                  [
+                    "components",
+                    "schemas",
+                    "Error",
+                    "properties",
+                    "code"
+                  ],
+                  [
+                    "components",
+                    "schemas",
+                    "Error",
+                    "properties",
+                    "message"
+                  ]
+                ]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "vars": {
+          "userprompt": "POST requests should return a 201 or 202 status on success instead of 200."
+        },
+        "assert": [
+          {
+            "type": "javascript",
+            "value": "file://testcase.mjs",
+            "config": {
+              "hits": {
+                "callback-example.yaml": [
+                  [
+                    "paths",
+                    "/doStreams",
+                    "post",
+                    "responses",
+                    "200"
+                  ]
+                ],
+                "petstore.yaml": [
+                  [
+                    "paths",
+                    "/pets",
+                    "post",
+                    "responses",
+                    "200"
+                  ]
+                ]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "vars": {
+          "userprompt": "GET requests that have an ID at the end of their path (ie /teams/{teamID}) should define a 404."
+        },
+        "assert": [
+          {
+            "type": "javascript",
+            "value": "file://testcase.mjs",
+            "config": {
+              "hits": {
+                "callback-example.yaml": [
+                  [
+                    "paths",
+                    "/stream/{id}",
+                    "get",
+                    "responses"
+                  ]
+                ],
+                "petstore.yaml": [
+                  [
+                    "paths",
+                    "/pets/{pet-id}",
+                    "get",
+                    "responses"
+                  ]
+                ]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "vars": {
+          "userprompt": "Properties contains `time` should use format: datetime or timestamp"
+        },
+        "assert": [
+          {
+            "type": "javascript",
+            "value": "file://testcase.mjs",
+            "config": {
+              "hits": {
+                "callback-example.yaml": [
+                  [
+                    "paths",
+                    "/doStreams",
+                    "post",
+                    "callbacks",
+                    "onData",
+                    "{$request.query.callbackUrl}/data",
+                    "post",
+                    "requestBody",
+                    "content",
+                    "application/json",
+                    "schema",
+                    "properties",
+                    "timestamp",
+                    "format"
+                  ],
+                  [
+                    "paths",
+                    "/stream/{id}",
+                    "get",
+                    "responses",
+                    "200",
+                    "content",
+                    "application/json",
+                    "schema",
+                    "properties",
+                    "timestamp",
+                    "format"
+                  ]
+                ],
+                "petstore.yaml": [
+                  [
+                    "components",
+                    "schemas",
+                    "Pet",
+                    "properties",
+                    "time",
+                    "format"
+                  ]
+                ]
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "sharing": true,
+    "outputPath": [
+      "output.json"
+    ],
+    "extensions": []
+  },
+  "shareableUrl": null
+}

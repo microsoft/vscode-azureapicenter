@@ -1,0 +1,15 @@
+[PASS]✅  LLM prompt result for genRuleFromPrompt
+
+| From | Success | Failure |  Score  |
+|---------|---------|---------|---------|
+| Output | 5 | 1 | 5.666666666666667 |
+|Baseline| 5 | 1 | 5.5 |
+        **» View eval results in CI console «**
+
+ LLM prompt result for genSpecFromApi
+
+| From | Success | Failure |  Score  |
+|---------|---------|---------|---------|
+| Output | 3 | 0 | 1.5 |
+**» View eval results in CI console «**
+
