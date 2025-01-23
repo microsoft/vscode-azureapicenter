@@ -45,10 +45,8 @@ export default async function (output, context) {
             "openapi.yaml",
         );
         let res = await spectral.run(myDocument);
-        console.log('=============', file, '============\n');
         let hitArr = hits[hit];
         for (let item of res) {
-            console.dir(item, { depth: null });
             let itemArr = item.path;
             if (hitArr.some(r => JSON.stringify(r) === JSON.stringify(itemArr))) {
                 componentsRes.push({
@@ -65,9 +63,8 @@ export default async function (output, context) {
             }
         }
     }
-    console.log('=============', componentsRes, '============\n');
     const passCount = componentsRes.filter(item => item.pass).length;
-    if (componentsRes.length != TotalCount) {
+    if (passCount != TotalCount || TotalCount != componentsRes.length) {
         return {
             pass: false,
             score: passCount / componentsRes.length,
@@ -79,6 +76,6 @@ export default async function (output, context) {
         pass: true,
         score: 1,
         reason: `All rules meets requirements`,
-        componentsRes: componentsRes
+        componentResults: componentsRes
     }
 }

@@ -3,7 +3,6 @@ prompts:
   - id: file://prompts.txt
 
 providers:
-  # - echo
   - id: azure:chat:gpt-4o
     config:
       apiHost: "apicevaluationtestai.openai.azure.com"
@@ -11,7 +10,7 @@ providers:
 
 tests:
   - vars:
-      userprompt: "Property names must be lower snake case ie 'snake_case'"
+      userprompt: "All parameters should have a description."
     assert:
       - type: javascript
         value: file://testcase.mjs
@@ -20,7 +19,7 @@ tests:
             {
               "callback-example.yaml": [],
               "petstore.yaml":
-                [["paths", "/pets/{pet-id}", "get", "operationId"]],
+                [["paths", "/pets", "get", "parameters", "0", "description"]],
             }
 
   - vars:
@@ -59,6 +58,8 @@ tests:
                     "content",
                     "application/json",
                     "schema",
+                    "properties",
+                    "subscriptionId",
                   ],
                   [
                     "paths",
@@ -69,13 +70,29 @@ tests:
                     "content",
                     "application/json",
                     "schema",
+                    "properties",
+                    "timestamp",
+                  ],
+                  [
+                    "paths",
+                    "/stream/{id}",
+                    "get",
+                    "responses",
+                    "200",
+                    "content",
+                    "application/json",
+                    "schema",
+                    "properties",
+                    "userData",
                   ],
                 ],
               "petstore.yaml":
                 [
-                  ["components", "schemas", "Pet"],
-                  ["components", "schemas", "Pets"],
-                  ["components", "schemas", "Error"],
+                  ["components", "schemas", "Pet", "properties", "name"],
+                  ["components", "schemas", "Pet", "properties", "tag"],
+                  ["components", "schemas", "Pet", "properties", "time"],
+                  ["components", "schemas", "Error", "properties", "code"],
+                  ["components", "schemas", "Error", "properties", "message"],
                 ],
             }
   - vars:
