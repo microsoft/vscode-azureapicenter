@@ -54,8 +54,11 @@ export class ApiCenterVersionDefinitionsDataplane implements IDefinitionsBase {
     async getChild(context: ISubscriptionContext, apiName: string, apiServiceName: string): Promise<GeneralApiCenterApiVersionDefinition[]> {
         const server = new ApiCenterDataPlaneService(context);
         const res = await server.getApiCenterApiDefinitions(apiServiceName, this.data.name);
-        this._nextLink = res.nextLink;
-        return res.value;
+        if (res) {
+            this._nextLink = res.nextLink;
+            return res.value;
+        }
+        return [];
     }
     generateChild(data: GeneralApiCenterApiVersionDefinition): IDefinitionBase {
         return new ApiCenterVersionDefinitionDataPlane(data as DataPlaneApiCenterApiVersionDefinition);

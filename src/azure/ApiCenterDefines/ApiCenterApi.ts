@@ -60,8 +60,11 @@ export class ApiCenterApisDataplane implements IApiCenterApisBase {
     async getChild(context: ISubscriptionContext, content: string): Promise<GeneralApiCenterApi[]> {
         let server = new ApiCenterDataPlaneService(context);
         const res = await server.getApiCenterApis();
-        this._nextLink = res.nextLink;
-        return res.value;
+        if (res) {
+            this._nextLink = res.nextLink;
+            return res.value;
+        }
+        return [];
     }
     generateChild(data: GeneralApiCenterApi): IApiCenterApiBase {
         return new ApiCenterApiDataPlane(data as DataPlaneApiCenterApi);
