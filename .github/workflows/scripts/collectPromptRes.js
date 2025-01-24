@@ -32,9 +32,9 @@ for (const dir of directories) {
         }
     }
     if (output.shareableUrl) {
-        body = body.concat(`**» [View eval results](${output.shareableUrl}) «**`);
+        body = body.concat(`\n**» [View eval results](${output.shareableUrl}) «**\n`);
     } else {
-        body = body.concat('**» View eval results in CI console «**');
+        body = body.concat('\n**» View eval results in CI console «**\n');
     }
     commentContent += body + "\n\n";
 }
