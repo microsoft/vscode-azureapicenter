@@ -35,10 +35,10 @@ export default async function (output, context) {
     spectral.setRuleset(rule);
     hits = context.config.hits;
     const componentsRes = [];
-    let TotalCount = 0;
+    let hitCount = 0;
     for (let hit in hits) {
         const file = hit;
-        TotalCount += hits[hit].length;
+        hitCount += hits[hit].length;
         const myDocument = new Document(
             fs.readFileSync(path.join(__dirname, "apispec", file), "utf-8").trim(),
             Yaml,
@@ -64,10 +64,11 @@ export default async function (output, context) {
         }
     }
     const passCount = componentsRes.filter(item => item.pass).length;
-    if (passCount != TotalCount || TotalCount != componentsRes.length) {
+    const totalCount = componentsRes.length;
+    if (passCount != hitCount || hitCount != componentsRes.length) {
         return {
             pass: false,
-            score: passCount / componentsRes.length,
+            score: passCount * 2 > totalCount ? (passCount * 2 - totalCount) / hitCount : 0,
             reason: `Some paths are not expected from the files`,
             componentResults: componentsRes
         }
