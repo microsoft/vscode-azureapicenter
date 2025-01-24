@@ -55,11 +55,32 @@ describe('Azure ApiCenter Defines ApiCenterApisDataplane', () => {
         const res = api.getName();
         assert.strictEqual("fakeName", res);
     });
-    it('ApiCenterApisDataplane class getChild', async () => {
+    it("ApiCenterApisDataplane class getChild empty", async () => {
         const api: ApiCenterApisDataplane = new ApiCenterApisDataplane(data);
         sandbox.stub(ApiCenterDataPlaneService.prototype, "getApiCenterApis").resolves(undefined);
         const res = await api.getChild(context as any, "fakeContent");
         assert.strictEqual(res.length, 0);
+    });
+    it("ApiCenterApisDataplane class getChild with 1 api", async() => {
+        const api: ApiCenterApisDataplane = new ApiCenterApisDataplane(data);
+        sandbox.stub(ApiCenterDataPlaneService.prototype, "getApiCenterApis").resolves({
+            nextLink: "fakeNextLink",
+            value: [
+                {
+                    name: "fakeName",
+                    title: "fakeTitle",
+                    kind: "fakeKind",
+                    lifecycleStage: "fakeStage",
+                    externalDocumentation: [],
+                    contacts: [],
+                    customProperties: {}
+                }
+            ]
+        });
+        const res = await api.getChild(context as any, "fakeContent");
+        assert.strictEqual(res.length, 1);
+        assert.strictEqual(res[0].name, "fakeName");
+        assert.strictEqual(api.getNextLink(), "fakeNextLink");
     });
 });
 describe('Azure ApiCenter Defines ApiCenterApiManagement', () => {
