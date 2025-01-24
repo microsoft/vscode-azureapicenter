@@ -53,11 +53,8 @@ export class ApiCneterVersionsDataplane implements IVersionsBase {
     async getChild(context: ISubscriptionContext, apiName: string): Promise<GeneralApiCenterApiVersion[]> {
         const server = new ApiCenterDataPlaneService(context);
         const res = await server.getAPiCenterApiVersions(this.data.name);
-        if (res) {
-            this._nextLink = res.nextLink;
-            return res.value;
-        }
-        return [];
+        this._nextLink = res.nextLink;
+        return res.value;
     }
     generateChild(data: GeneralApiCenterApiVersion): IVersionBase {
         return new ApiCenterVersionDataplane(data as DataPlaneApiCenterApiVersion);
