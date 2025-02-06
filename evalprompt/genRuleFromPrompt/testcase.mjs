@@ -34,6 +34,7 @@ export default async function (output, context) {
     const spectral = new Spectral();
     spectral.setRuleset(rule);
     hits = context.config.hits;
+    expScore = context.config.score;
     const componentsRes = [];
     let hitCount = 0;
     for (let hit in hits) {
@@ -67,11 +68,14 @@ export default async function (output, context) {
     const totalCount = componentsRes.length;
     const npCount = totalCount - pCount;
     if (pCount != hitCount || hitCount != componentsRes.length) {
-        return {
-            pass: false,
-            score: pCount > npCount ? (pCount - npCount) / hitCount : 0,
-            reason: `Some paths are not expected from the files`,
-            componentResults: componentsRes
+        let resScore = pCount > npCount ? (pCount - npCount) / hitCount : 0;
+        if (resScore < expScore) {
+            return {
+                pass: false,
+                score: resScore,
+                reason: `Some paths are not expected from the files`,
+                componentResults: componentsRes
+            }
         }
     }
     return {
