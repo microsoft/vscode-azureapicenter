@@ -63,12 +63,13 @@ export default async function (output, context) {
             }
         }
     }
-    const passCount = componentsRes.filter(item => item.pass).length;
+    const pCount = componentsRes.filter(item => item.pass).length;
     const totalCount = componentsRes.length;
-    if (passCount != hitCount || hitCount != componentsRes.length) {
+    const npCount = totalCount - pCount;
+    if (pCount != hitCount || hitCount != componentsRes.length) {
         return {
             pass: false,
-            score: passCount * 2 > totalCount ? (passCount * 2 - totalCount) / hitCount : 0,
+            score: pCount > npCount ? (pCount - npCount) / hitCount : 0,
             reason: `Some paths are not expected from the files`,
             componentResults: componentsRes
         }
