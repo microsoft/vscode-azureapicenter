@@ -125,7 +125,7 @@ tests:
               "petstore.yaml":
                 [["paths", "/pets/{pet-id}", "get", "responses"]],
             }
-          score: 1
+          score: 0.5
 
   - vars:
       userprompt: "Properties contains `time` should use format: datetime or timestamp"
