@@ -41,7 +41,7 @@ export namespace CreateDeclarativeAgent {
             return await writeToTemporaryFile(fileContent, folderName, fileName);
         });
 
-        await vscode.commands.executeCommand("fx-extension.createProjectWithApiSpec", fileUri.fsPath);
+        await vscode.commands.executeCommand("fx-extension.createDeclarativeAgentWithApiSpec", fileUri.fsPath);
     }
 
     function getFolderName(treeItem: ApiVersionDefinitionTreeItem): string {
