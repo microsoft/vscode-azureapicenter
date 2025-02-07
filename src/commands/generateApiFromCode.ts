@@ -3,7 +3,9 @@
 import { IActionContext } from "@microsoft/vscode-azext-utils";
 import * as fs from "fs";
 import * as vscode from 'vscode';
+import createContextWithTuple from "../common/promptContext";
 import { ExceedTokenLimit, MODEL_SELECTOR } from "../constants";
+import genSpecFromApi from "../prompts/genSpecFromApi";
 import { UiStrings } from "../uiStrings";
 import { GeneralUtils } from "../utils/generalUtils";
 
@@ -28,17 +30,10 @@ export namespace GenerateApiFromCode {
             try {
                 const codeContent = await fs.promises.readFile(fileUri.fsPath, { encoding: 'utf-8' });
 
+                let prompt = genSpecFromApi(createContextWithTuple(languageId, codeContent));
+
                 const messages = [
-                    vscode.LanguageModelChatMessage.User(`You are an expert in ${languageId} programming language and OpenAPI.
-Generate the OpenAPI Specification from the provided ${languageId} programming language.
-Try your best to parse the code and understand the code structure.
-Only return the specification content with YAML format, without any additional information.
-If the code is not REST API related, return "Not REST API related code" and provide an explanation.
-If this task can't be completed, return "Sorry, I can't assist" and provide an explanation.
-Here's the ${languageId} code of Web API:
-\`\`\`
-${codeContent}
-\`\`\``),
+                    vscode.LanguageModelChatMessage.User(prompt),
                 ];
 
                 let llmResponseText = '';

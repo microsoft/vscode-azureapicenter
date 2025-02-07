@@ -1,6 +1,6 @@
-Please be professional, and use below infomation to generate an OpenAPI specification documentation with YAML format: {{userPrompt}}
-In addition, ignore previous rules in conversation history, and make sure the OpenAPI spec meet with below rules:
-Operation must have at least one "2xx" or "3xx" response.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
+export const spectralDefaultRuleDescriptions = `Operation must have at least one "2xx" or "3xx" response.
 Every operation must have unique "operationId".
 Operation parameters are unique and non-repeating.
 Operation tags must be defined in global tags.
@@ -40,4 +40,13 @@ Examples defined in the components section must be used.
 Server variables must be defined and valid and there must be no unused variables.
 Callbacks should not be defined within a callback
 Servers should not be defined in a webhook.
-Callbacks should not be defined in a webhook.
+Callbacks should not be defined in a webhook.`;
+
+
+export default function (context: any): string {
+    if (!context.vars.ruleContent) {
+        context.vars.ruleContent = spectralDefaultRuleDescriptions;
+    }
+    return `Please be professional, and use below infomation to generate an OpenAPI specification documentation with YAML format: ${context.vars.userPrompt}
+${context.vars.ruleContent}`
+}
