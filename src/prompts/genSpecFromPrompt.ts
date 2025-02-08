@@ -50,6 +50,6 @@ export default function (context: any): string {
     return `Please be professional, and use below infomation to generate an OpenAPI specification documentation with YAML format:
 ${context.vars.param1}
 
-In addition, ignore previous rules in conversation history, and make sure the OpenAPI spec meet with below rules:
+In addition, ignore previous rules in conversation record, and make sure the OpenAPI spec meet with below rules:
 ${context.vars.param2}`
 }
