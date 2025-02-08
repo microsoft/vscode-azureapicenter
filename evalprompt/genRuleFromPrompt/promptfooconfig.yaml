@@ -10,7 +10,7 @@ providers:
 
 tests:
   - vars:
-      userprompt: "All parameters should have a description."
+      param1: "All parameters should have a description."
     assert:
       - type: javascript
         value: file://testcase.mjs
@@ -24,7 +24,7 @@ tests:
           score: 1
 
   - vars:
-      userprompt: "All operations should have operationId"
+      param1: "All operations should have operationId"
     assert:
       - type: javascript
         value: file://testcase.mjs
@@ -42,7 +42,7 @@ tests:
           score: 1
 
   - vars:
-      userprompt: "All resources in a response should have an `id` `created_at` and `updated_at` property"
+      param1: "All resources in a response should have an `id` `created_at` and `updated_at` property"
     assert:
       - type: javascript
         value: file://testcase.mjs
@@ -99,7 +99,7 @@ tests:
             }
           score: 1
   - vars:
-      userprompt: "POST requests should return a 201 or 202 status on success instead of 200."
+      param1: "POST requests should return a 201 or 202 status on success instead of 200."
     assert:
       - type: javascript
         value: file://testcase.mjs
@@ -113,7 +113,7 @@ tests:
           score: 1
 
   - vars:
-      userprompt: "GET requests that have an ID at the end of their path (ie /teams/{teamID}) should define a 404."
+      param1: "GET requests that have an ID at the end of their path (ie /teams/{teamID}) should define a 404."
     assert:
       - type: javascript
         value: file://testcase.mjs
@@ -128,7 +128,7 @@ tests:
           score: 0.5
 
   - vars:
-      userprompt: "Properties contains `time` should use format: datetime or timestamp"
+      param1: "Properties contains `time` should use format: datetime or timestamp"
     assert:
       - type: javascript
         value: file://testcase.mjs

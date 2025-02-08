@@ -14,13 +14,13 @@ defaultTest:
 
 tests:
   - vars:
-      languageId: javascript
-      codeContent: file://src/pet.txt
+      param1: javascript
+      param2: file://src/pet.txt
 
   - vars:
-      languageId: python
-      codeContent: file://src/pytest.txt
+      param1: python
+      param2: file://src/pytest.txt
 
   - vars:
-      languageId: csharp
-      codeContent: file://src/cstest.txt
+      param1: csharp
+      param2: file://src/cstest.txt

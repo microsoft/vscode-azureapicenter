@@ -25,7 +25,9 @@ export namespace GenerateOpenApi {
         let userPrompt = agentRequest.userPrompt;
         let ruleContent = await getRuleDescriptions(rulesetFile);
 
-        const responseForLanguageModel = genSpecFromPrompt(createContextWithTuple(userPrompt, ruleContent));
+        const responseForLanguageModel = {
+            result: genSpecFromPrompt(createContextWithTuple(userPrompt, ruleContent))
+        }
 
         const chatResponseParts: vscode.ChatResponsePart[] = [];
 
