@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=https://promptfoo.dev/config-schema.json
 prompts:
-  - file://../../src/prompts/genSpecFromApi.ts
+  - file://../../src/prompts/generateApiSpecFromCode.ts
 
 providers:
   - id: azure:chat:gpt-4o
@@ -14,13 +14,13 @@ defaultTest:
 
 tests:
   - vars:
-      param1: javascript
-      param2: file://src/pet.txt
+      languageId: javascript
+      codeContent: file://src/pet.txt
 
   - vars:
-      param1: python
-      param2: file://src/pytest.txt
+      languageId: python
+      codeContent: file://src/pytest.txt
 
   - vars:
-      param1: csharp
-      param2: file://src/cstest.txt
+      languageId: csharp
+      codeContent: file://src/cstest.txt

@@ -1,4 +1,4 @@
-param1
+userPrompt
 "Generate OpenAPI Specification: A simple service to manage repairs for various items"
 "Generate OpenAPI Spec: Create an API that allows customers to pay for an order using various payment methods such as credit cards and debit cards."
 "Generate OpenAPI: Accept purchase orders for specialized coffee bean purchases through an API."

@@ -5,7 +5,7 @@ import * as fs from "fs";
 import * as vscode from 'vscode';
 import createContextWithTuple from "../common/promptContext";
 import { ExceedTokenLimit, MODEL_SELECTOR } from "../constants";
-import genSpecFromApi from "../prompts/genSpecFromApi";
+import genSpecFromApi from "../prompts/generateApiSpecFromCode";
 import { UiStrings } from "../uiStrings";
 import { GeneralUtils } from "../utils/generalUtils";
 
@@ -30,7 +30,7 @@ export namespace GenerateApiFromCode {
             try {
                 const codeContent = await fs.promises.readFile(fileUri.fsPath, { encoding: 'utf-8' });
 
-                let prompt = genSpecFromApi(createContextWithTuple(languageId, codeContent));
+                let prompt = genSpecFromApi(createContextWithTuple({ languageId, codeContent }));
 
                 const messages = [
                     vscode.LanguageModelChatMessage.User(prompt),

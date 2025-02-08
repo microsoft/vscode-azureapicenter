@@ -44,12 +44,12 @@ Callbacks should not be defined in a webhook.`;
 
 
 export default function (context: any): string {
-    if (!(context.vars.hasOwnProperty('param2'))) {
-        context.vars.param2 = spectralDefaultRuleDescriptions;
+    if (!(context.vars.hasOwnProperty('ruleContent'))) {
+        context.vars.ruleContent = spectralDefaultRuleDescriptions;
     }
     return `Please be professional, and use below infomation to generate an OpenAPI specification documentation with YAML format:
-${context.vars.param1}
+${context.vars.userPrompt}
 
 In addition, ignore previous rules in conversation history, and make sure the OpenAPI spec meet with below rules:
-${context.vars.param2}`
+${context.vars.ruleContent}`
 }
