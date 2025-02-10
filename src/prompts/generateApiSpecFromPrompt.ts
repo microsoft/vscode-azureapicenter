@@ -47,5 +47,5 @@ export default function (context: any): string {
     return `Please be professional, and use below infomation to generate an OpenAPI specification documentation with YAML format:
 ${context.vars.userPrompt}
 In addition, ignore previous rules in conversation history, and make sure the OpenAPI spec meet with below rules:
-${context.vars.ruleContent}`
+${context.vars.ruleContent}`;
 };
