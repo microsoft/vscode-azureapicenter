@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=https://promptfoo.dev/config-schema.json
 prompts:
-  - file://../../src/prompts/generateApiSpecFromPrompt.ts
+  - file://./prompts.ts
 
 providers:
   - id: azure:chat:gpt-4o

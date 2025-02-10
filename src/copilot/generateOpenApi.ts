@@ -6,7 +6,7 @@ import { promises as fs } from 'fs';
 import * as yaml from 'js-yaml';
 import * as vscode from 'vscode';
 import createContextWithTuple from '../common/promptContext';
-import genSpecFromPrompt, { spectralDefaultRuleDescriptions } from "../prompts/generateApiSpecFromPrompt";
+import generateApiSpecFromPrompt, { spectralDefaultRuleDescriptions } from "../prompts/generateApiSpecFromPrompt";
 import { AgentRequest, LocalPluginResult } from "../types/AzureAgent";
 import { UiStrings } from '../uiStrings';
 
@@ -22,12 +22,12 @@ export namespace GenerateOpenApi {
         agentRequest.responseStream.progress(UiStrings.GenerateOpenApiProgress);
 
         const rulesetFile = getRulesetFile();
-        let userPrompt = agentRequest.userPrompt;
-        let ruleContent = await getRuleDescriptions(rulesetFile);
+        const userPrompt = agentRequest.userPrompt;
+        const ruleContent = await getRuleDescriptions(rulesetFile);
 
         const responseForLanguageModel = {
-            result: genSpecFromPrompt(createContextWithTuple({ userPrompt, ruleContent }))
-        }
+            result: generateApiSpecFromPrompt(createContextWithTuple({ userPrompt, ruleContent }))
+        };
 
         const chatResponseParts: vscode.ChatResponsePart[] = [];
 

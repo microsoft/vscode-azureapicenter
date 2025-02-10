@@ -9,4 +9,4 @@ there are some basic spectral rules that you must follow:
 2. if function type is schema, the functionOptions should define the schema object with required and properties.
 3. description and message should be string with quota.
 4. given path should be a valid regex.`;
-}
+};
