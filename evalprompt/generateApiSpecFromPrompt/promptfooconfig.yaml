@@ -1,11 +1,12 @@
 # yaml-language-server: $schema=https://promptfoo.dev/config-schema.json
 prompts:
-  - file://prompts.js
+  - file://./prompts.ts
 
 providers:
   - id: azure:chat:gpt-4o
     config:
       apiHost: "apicevaluationtestai.openai.azure.com"
+      max_tokens: 15000
 
 defaultTest:
   assert:
@@ -13,14 +14,4 @@ defaultTest:
       value: file://spectral.mjs
 
 tests:
-  - vars:
-      languageId: javascript
-      file: pet.js
-
-  - vars:
-      languageId: python
-      file: pytest.py
-
-  - vars:
-      languageId: csharp
-      file: cstest.cs
+  - file://vars.csv

@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=https://promptfoo.dev/config-schema.json
 prompts:
-  - id: file://prompts.txt
+  - id: file://../../src/prompts/generateRuleFromPrompt.ts
 
 providers:
   - id: azure:chat:gpt-4o

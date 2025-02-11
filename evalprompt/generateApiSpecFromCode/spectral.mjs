@@ -8,6 +8,7 @@ import * as path from "node:path";
 import { fileURLToPath } from "node:url";
 
 export default async function (output, context) {
+    console.log('=====\n', output, '\n=====');
     text = output.replace(/^```yaml.*\n/, '');
     text = text.replace(/\n```$/, '');
     const spectral = new Spectral();
