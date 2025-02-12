@@ -4,8 +4,9 @@ import { IActionContext } from "@microsoft/vscode-azext-utils";
 
 import * as vscode from "vscode";
 import { ApiSpecExportResultFormat } from "../azure/ApiCenter/contracts";
-import { TeamsToolkitExtensionId } from "../constants";
+import { TeamsToolkitExtensionId, TeamsToolkitMinimumVersion } from "../constants";
 import { ApiVersionDefinitionTreeItem } from "../tree/ApiVersionDefinitionTreeItem";
+import { UiStrings } from "../uiStrings";
 import { EnsureExtension } from "../utils/ensureExtension";
 import { writeToTemporaryFile } from "../utils/fsUtil";
 import { GeneralUtils } from "../utils/generalUtils";
@@ -25,13 +26,14 @@ export namespace CreateDeclarativeAgent {
         }, async (progress, token): Promise<vscode.Uri> => {
             EnsureExtension.ensureExtension(context, {
                 extensionId: TeamsToolkitExtensionId,
-                noExtensionErrorMessage: "Need to instal Teams Toolkit extension to create a Declarative Agent",
+                noExtensionErrorMessage: vscode.l10n.t(UiStrings.NoTeamsToolkitExtension, TeamsToolkitMinimumVersion),
+                minimumVersion: TeamsToolkitMinimumVersion,
             });
 
-            progress.report({ message: "Activating Teams Toolkit" });
+            progress.report({ message: UiStrings.ActivatingTeamsToolkit });
             await vscode.extensions.getExtension(TeamsToolkitExtensionId)?.activate();
 
-            progress.report({ message: "Exporting API Definition" });
+            progress.report({ message: UiStrings.ExportingApiDefinition });
             const exportedSpec = await node!.apiCenterApiVersionDefinition.getDefinitions(node!.subscription, node!.apiCenterName, node!.apiCenterApiName, node!.apiCenterApiVersionName);
             const fileContent = (exportedSpec.format === ApiSpecExportResultFormat.link) ? await GeneralUtils.fetchDataFromLink(exportedSpec.value) : exportedSpec.value;
 
