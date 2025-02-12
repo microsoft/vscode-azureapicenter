@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 import { IActionContext } from "@microsoft/vscode-azext-utils";
-
 import * as vscode from "vscode";
 import { ApiSpecExportResultFormat } from "../azure/ApiCenter/contracts";
 import { TeamsToolkitExtensionId, TeamsToolkitMinimumVersion } from "../constants";
@@ -37,13 +36,16 @@ export namespace CreateDeclarativeAgent {
             const exportedSpec = await node!.apiCenterApiVersionDefinition.getDefinitions(node!.subscription, node!.apiCenterName, node!.apiCenterApiName, node!.apiCenterApiVersionName);
             const fileContent = (exportedSpec.format === ApiSpecExportResultFormat.link) ? await GeneralUtils.fetchDataFromLink(exportedSpec.value) : exportedSpec.value;
 
-            const folderName = getFolderName(node!);
-            const fileName = getFilename(node!);
-
-            return await writeToTemporaryFile(fileContent, folderName, fileName);
+            return await CreateDeclarativeAgent.writeApiSpecToTemporaryFile(fileContent, node!);
         });
 
         await vscode.commands.executeCommand("fx-extension.createDeclarativeAgentWithApiSpec", fileUri.fsPath);
+    }
+
+    export async function writeApiSpecToTemporaryFile(fileContent: string, node: ApiVersionDefinitionTreeItem): Promise<vscode.Uri> {
+        const folderName = getFolderName(node);
+        const fileName = getFilename(node);
+        return await writeToTemporaryFile(fileContent, folderName, fileName);
     }
 
     function getFolderName(treeItem: ApiVersionDefinitionTreeItem): string {
