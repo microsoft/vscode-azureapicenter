@@ -192,7 +192,7 @@
       },
       {
         "command": "azure-api-center.createDeclarativeAgent",
-        "title": "Create Declarative Agent",
+        "title": "%azure-api-center.commands.createDeclarativeAgent.title%",
         "category": "Azure API Center"
       }
     ],
