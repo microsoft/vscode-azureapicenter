@@ -1,0 +1,20 @@
+rules:
+  get-id-path-404-required:
+    description: GET endpoints with ID parameters at path end must define 404 response
+    message: "GET {{path}} must include 404 response - resources with IDs should handle not-found cases"
+    given: $.paths[?(@property.match(/\/{[^}]+}$/))].get
+    severity: error
+    resolved: true
+    then:
+      function: schema
+      functionOptions:
+        schema:
+          required: ["404"]
+          properties:
+            "404":
+              type: object
+              required: ["description"]
+              properties:
+                description:
+                  type: string
+                  minLength: 1

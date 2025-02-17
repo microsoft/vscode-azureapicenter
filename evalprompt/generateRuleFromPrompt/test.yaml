@@ -1,0 +1,16 @@
+rules:
+  response-resource-id-required:
+    description: "All resources in a response must have an `id` property."
+    given: "$.components.schemas.*"
+    then:
+      field: "id"
+      function: truthy
+    severity: warn
+
+  response-resource-created-at-required:
+    description: "All resources in a response must have a `created_at` property."
+    given: "$.components.schemas.*"
+    then:
+      field: "created_at"
+      function: truthy
+    severity: warn

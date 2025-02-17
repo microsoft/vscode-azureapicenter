@@ -1,0 +1,15 @@
+rules:
+  resource-id-and-created_at-required:
+    description: "All resource objects must have an 'id' and 'created_at' property."
+    message: "Resource object must include both 'id' and 'created_at' properties."
+    severity: error
+    given: "$..[?(@.type=='object' && @.properties)]"
+    then:
+      function: schema
+      field: required
+      functionOptions:
+        schema:
+          type: object
+          required:
+            - id
+            - created_at

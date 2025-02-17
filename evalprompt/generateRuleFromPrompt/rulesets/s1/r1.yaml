@@ -1,0 +1,52 @@
+rules:
+  resource-has-id:
+    description: All response resources must contain an 'id' field
+    given: $.paths[*][*].responses[*].content[*].schema
+    severity: error
+    resolved: true
+    then:
+      function: schema
+      functionOptions:
+        schema:
+          anyOf:
+            - type: object
+              required: ["id"]
+              properties:
+                id:
+                  type:
+                    - string
+                    - integer
+            - type: array
+              items:
+                type: object
+                required: ["id"]
+                properties:
+                  id:
+                    type:
+                      - string
+                      - integer
+
+  resource-has-created-at:
+    description: All response resources must contain a 'created_at' field
+    given: $.paths[*][*].responses[*].content[*].schema
+    severity: error
+    resolved: true
+    then:
+      function: schema
+      functionOptions:
+        schema:
+          anyOf:
+            - type: object
+              required: ["created_at"]
+              properties:
+                created_at:
+                  type: string
+                  format: date-time
+            - type: array
+              items:
+                type: object
+                required: ["created_at"]
+                properties:
+                  created_at:
+                    type: string
+                    format: date-time

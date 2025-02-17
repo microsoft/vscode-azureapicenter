@@ -1,0 +1,24 @@
+rules:
+  post-success-status:
+    description: POST operations must return 201 or 202 for success responses
+    message: "POST {{path}} uses 200 OK status code. Use 201 (Created) for resource creation or 202 (Accepted) for async processing."
+    given: $.paths[*].post
+    severity: error
+    resolved: true
+    then:
+      function: and
+      functionOptions:
+        checks:
+          - field: responses
+            function: schema
+            functionOptions:
+              schema:
+                not:
+                  required: ["200"]
+          - field: responses
+            function: schema
+            functionOptions:
+              schema:
+                anyOf:
+                  - required: ["201"]
+                  - required: ["202"]

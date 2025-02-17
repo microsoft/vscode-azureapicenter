@@ -1,0 +1,13 @@
+rules:
+  ensure-post-responses-201-202:
+    description: POST requests must include 201 or 202 status codes in their responses.
+    message: POST operations must return a 201 or 202 status code on success.
+    given: $.paths[*].post.responses
+    severity: error
+    then:
+      field: $key
+      function: truthy
+      functionOptions:
+        keys:
+          - "201"
+          - "202"

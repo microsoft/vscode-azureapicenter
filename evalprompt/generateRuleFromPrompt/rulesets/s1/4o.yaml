@@ -1,0 +1,6 @@
+name: "response-resource-id-required"
+given: "$..responses..content..schema.properties"
+then:
+  field: "id"
+  function: truthy
+severity: error

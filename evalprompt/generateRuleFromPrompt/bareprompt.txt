@@ -1,0 +1,2 @@
+please help me generate the spectral ruleset for API spec:
+{{userprompt}}

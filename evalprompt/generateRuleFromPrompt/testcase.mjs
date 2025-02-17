@@ -21,6 +21,9 @@ export default async function (output, context) {
     };
     const __dirname = path.dirname(fileURLToPath(import.meta.url));
     const ruleYaml = output.match(/```yaml([\s\S]*?)```/)?.[1]?.trim();
+    console.log('===========\n');
+    console.log(ruleYaml);
+    console.log('===========\n')
     const rule = yaml.load(ruleYaml);
     for (let ymlObj in rule.rules) {
         let obj = rule.rules[ymlObj];

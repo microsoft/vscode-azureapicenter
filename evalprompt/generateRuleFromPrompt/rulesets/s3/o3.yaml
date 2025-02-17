@@ -1,0 +1,17 @@
+rules:
+  get-ends-with-id-should-define-404:
+    description: "GET endpoints with an ID parameter at the end of the path must define a 404 response."
+    message: "GET operations on parameterized paths (e.g. /teams/{teamID}) must specify a 404 response."
+    severity: error
+    given: "$.paths"
+    then:
+      # The "if" block tests the key (the path name) against our regex.
+      if:
+        pattern: "^.*/\\{[^}]+\\}$"
+      field: "[get].responses"
+      function: schema
+      functionOptions:
+        schema:
+          type: object
+          required:
+            - "404"

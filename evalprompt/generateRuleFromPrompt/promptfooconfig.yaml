@@ -10,39 +10,7 @@ providers:
 
 tests:
   - vars:
-      userprompt: "All parameters should have a description."
-    assert:
-      - type: javascript
-        value: file://testcase.mjs
-        config:
-          hits:
-            {
-              "callback-example.yaml": [],
-              "petstore.yaml":
-                [["paths", "/pets", "get", "parameters", "0", "description"]],
-            }
-          score: 1
-
-  - vars:
-      userprompt: "All operations should have operationId"
-    assert:
-      - type: javascript
-        value: file://testcase.mjs
-        config:
-          hits:
-            {
-              "callback-example.yaml":
-                [
-                  ["paths", "/doStreams", "post"],
-                  ["paths", "/stream/{id}", "get"],
-                ],
-              "petstore.yaml":
-                [["paths", "/pets", "get"], ["paths", "/pets", "post"]],
-            }
-          score: 1
-
-  - vars:
-      userprompt: "All resources in a response should have an `id` `created_at` and `updated_at` property"
+      userprompt: "All resources in a response should have an `id` and `created_at` property"
     assert:
       - type: javascript
         value: file://testcase.mjs
@@ -126,57 +94,3 @@ tests:
                 [["paths", "/pets/{pet-id}", "get", "responses"]],
             }
           score: 0.5
-
-  - vars:
-      userprompt: "Properties contains `time` should use format: datetime or timestamp"
-    assert:
-      - type: javascript
-        value: file://testcase.mjs
-        config:
-          hits:
-            {
-              "callback-example.yaml":
-                [
-                  [
-                    "paths",
-                    "/doStreams",
-                    "post",
-                    "callbacks",
-                    "onData",
-                    "{$request.query.callbackUrl}/data",
-                    "post",
-                    "requestBody",
-                    "content",
-                    "application/json",
-                    "schema",
-                    "properties",
-                    "timestamp",
-                    "format",
-                  ],
-                  [
-                    "paths",
-                    "/stream/{id}",
-                    "get",
-                    "responses",
-                    "200",
-                    "content",
-                    "application/json",
-                    "schema",
-                    "properties",
-                    "timestamp",
-                    "format",
-                  ],
-                ],
-              "petstore.yaml":
-                [
-                  [
-                    "components",
-                    "schemas",
-                    "Pet",
-                    "properties",
-                    "time",
-                    "format",
-                  ],
-                ],
-            }
-          score: 1

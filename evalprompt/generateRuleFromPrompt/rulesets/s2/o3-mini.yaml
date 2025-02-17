@@ -1,0 +1,9 @@
+rules:
+  no-200-for-post:
+    description: "POST requests should return a 201 or 202 status on success instead of 200."
+    message: "POST operations must not return a 200 status code. Use 201 or 202 instead."
+    severity: error
+    given: "$.paths[*].post.responses"
+    then:
+      field: "200"
+      function: falsy
