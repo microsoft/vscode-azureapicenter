@@ -132,6 +132,8 @@ export class UiStrings {
     static readonly APIControlPlaneView = vscode.l10n.t("API Center Management Plane");
     static readonly APIDataPlaneView = vscode.l10n.t("API Center Data Plane");
     static readonly APIDataPlaneWiki = vscode.l10n.t("API Catalog Guide");
+    static readonly ApiAccessesTreeItemChildTypeLabel = vscode.l10n.t("API Access");
+    static readonly TreeitemLabelAccesses = vscode.l10n.t("Accesses");
     static readonly GenerateOpenApiProgress = vscode.l10n.t("Invoking Azure API Center plugin to generate OpenAPI specification documentation...");
     static readonly GenerateOpenApiRegisterApiDesc = vscode.l10n.t("\n\nAzure API Center is a centralized hub for discovering, reusing, and governing all of your organization's APIs. Would you like to register your API in Azure API Center?");
     static readonly GenerateOpenApiRegisterApiButton = vscode.l10n.t("Register your API in API Center");

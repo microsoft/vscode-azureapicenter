@@ -202,3 +202,12 @@ export enum ArmAsyncOperationStatus {
 export enum ApiCenterRulesetImportFormat {
     InlineZip = 'inline-zip',
 };
+
+export type ApiCenterApiAccess = {
+    id: string;
+    name: string;
+    properties: {
+    };
+    // tslint:disable-next-line:no-reserved-keywords
+    type: string;
+};
