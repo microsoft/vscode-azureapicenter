@@ -211,3 +211,12 @@ export type ApiCenterApiAccess = {
     // tslint:disable-next-line:no-reserved-keywords
     type: string;
 };
+
+export type ApiCenterApiCredential = {
+    securityScheme: string;
+    apiKey?: {
+        value: string;
+        in: 'header' | 'query' | 'cookie';
+        name: string;
+    };
+};

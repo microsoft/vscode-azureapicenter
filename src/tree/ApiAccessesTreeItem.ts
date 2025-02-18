@@ -36,7 +36,7 @@ export class ApiAccessesTreeItem extends AzExtParentTreeItem {
     return await this.createTreeItemsWithErrorHandling(
       accesses.value,
       'invalidResource',
-      access => new ApiAccessTreeItem(this, access),
+      access => new ApiAccessTreeItem(this, this.apiCenterName, this.apiCenterApiName, this.apiCenterApiVersionName, access),
       access => access.name
     );
   }

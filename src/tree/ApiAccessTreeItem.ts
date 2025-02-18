@@ -7,7 +7,12 @@ import { ApiCenterApiAccess } from "../azure/ApiCenter/contracts";
 export class ApiAccessTreeItem extends AzExtTreeItem {
   public static contextValue: string = "azureApiCenterApiAccess";
   public readonly contextValue: string = ApiAccessTreeItem.contextValue;
-  constructor(parent: AzExtParentTreeItem, public apiCenterApiAccess: ApiCenterApiAccess) {
+  constructor(
+    parent: AzExtParentTreeItem,
+    public apiCenterName: string,
+    public apiCenterApiName: string,
+    public apiCenterApiVersionName: string,
+    public apiCenterApiAccess: ApiCenterApiAccess) {
     super(parent);
   }
 

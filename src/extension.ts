@@ -21,6 +21,7 @@ import { GenerateApiFromCode } from './commands/generateApiFromCode';
 import { generateApiLibrary } from './commands/generateApiLibrary';
 import { GenerateHttpFile } from './commands/generateHttpFile';
 import { generateMarkdownDocument } from './commands/generateMarkdownDocument';
+import { getCredential } from './commands/getCredential';
 import { handleUri } from './commands/handleUri';
 import { importOpenApi } from './commands/importOpenApi';
 import { openAPiInSwagger } from './commands/openApiInSwagger';
@@ -117,6 +118,8 @@ export async function activate(context: vscode.ExtensionContext) {
     registerCommandWithTelemetry('azure-api-center.renameCustomFunction', renameCustomFunction);
 
     registerCommandWithTelemetry('azure-api-center.deleteCustomFunction', deleteCustomFunction);
+
+    registerCommandWithTelemetry('azure-api-center.getCredential', getCredential);
 
     registerCommandWithTelemetry('azure-api-center.agent.getPlugins', getPlugins);
 
