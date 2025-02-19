@@ -335,8 +335,7 @@
         },
         {
           "command": "azure-api-center.getCredential",
-          "when": "view == apiCenterTreeView && viewItem == azureApiCenterApiAccess",
-          "group": "function@1"
+          "when": "view == apiCenterTreeView && viewItem == azureApiCenterApiAccess"
         },
         {
           "command": "azure-api-center.apiCenterWorkspace.removeApi",
