@@ -189,6 +189,11 @@
         "title": "%azure-api-center.commands.apiCenterWorkspace.learnApiCatalog.title%",
         "icon": "$(info)",
         "category": "Azure API Center"
+      },
+      {
+        "command": "azure-api-center.createDeclarativeAgent",
+        "title": "%azure-api-center.commands.createDeclarativeAgent.title%",
+        "category": "Azure API Center"
       }
     ],
     "views": {
@@ -327,6 +332,10 @@
           "command": "azure-api-center.apiCenterWorkspace.removeApi",
           "when": "view == apiCenterWorkspace && viewItem == azureApiCenterDataPlane",
           "group": "inline@0"
+        },
+        {
+          "command": "azure-api-center.createDeclarativeAgent",
+          "when": "(view == apiCenterTreeView && viewItem == azureApiCenterApiVersionDefinitionTreeItem-openapi)"
         }
       ],
       "copilot": [
@@ -513,7 +522,6 @@
     "mocha": "^10.2.0",
     "openai": "^4.77.3",
     "promptfoo": "^0.103.3",
-    "semver": "^7.6.0",
     "sinon": "^17.0.1",
     "sqlite3": "^5.1.7",
     "terser-webpack-plugin": "^5.3.9",
@@ -546,6 +554,7 @@
     "get-port": "^7.0.0",
     "json-schema-faker": "^0.5.8",
     "openapi-types": "^12.1.3",
+    "semver": "^7.7.1",
     "swagger2openapi": "^7.0.8",
     "unzipper": "^0.12.1",
     "vscode-nls": "^5.2.0",

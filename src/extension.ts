@@ -14,6 +14,7 @@ import { AzureSessionProviderHelper } from "./azure/azureLogin/azureSessionProvi
 import { AzureDataSessionProviderHelper } from "./azure/azureLogin/dataSessionProvider";
 import { ConnectDataPlaneApi } from "./commands/addDataPlaneApis";
 import { cleanupSearchResult } from './commands/cleanUpSearch';
+import { CreateDeclarativeAgent } from './commands/createDeclarativeAgent';
 import { detectBreakingChange } from './commands/detectBreakingChange';
 import { showOpenApi } from './commands/editOpenApi';
 import { ExportAPI } from './commands/exportApi';
@@ -136,6 +137,8 @@ export async function activate(context: vscode.ExtensionContext) {
     registerCommandWithTelemetry('azure-api-center.apiCenterWorkspace.learnApiCatalog', () => vscode.env.openExternal(vscode.Uri.parse(LearnMoreAboutAPICatalog)));
 
     registerCommandWithTelemetry('azure-api-center.apiCenterWorkspace.removeApi', removeDataplaneAPI);
+
+    registerCommandWithTelemetry('azure-api-center.createDeclarativeAgent', CreateDeclarativeAgent.createDeclarativeAgent);
 
     context.subscriptions.push(
         vscode.window.registerUriHandler({
