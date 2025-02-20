@@ -4,7 +4,7 @@
 > Note: This changelog only includes the changes for the pre-release versions of Azure API Center for Visual Studio Code. For the changelog of stable versions, please refer to the [Changelog of Azure API Center for Visual Studio Code](https://github.com/microsoft/vscode-azureapicenter/blob/main/CHANGELOG.md).
 
 ### February 26, 2025
-* Integrate with 'Teams Toolkit' extension to enable developers to create M365 Copilot Declarative Agent with an API definition from API Center.
+* Integrate with `Teams Toolkit` extension to enable developers to create M365 Copilot Declarative Agent with an API definition from API Center.
 
 ### January 15, 2025
 * Add support for API Analysis Profiles
