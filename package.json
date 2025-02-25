@@ -84,6 +84,11 @@
         "category": "Azure API Center"
       },
       {
+        "command": "azure-api-center.openInPortal",
+        "title": "%azure-api-center.commands.openInPortal.title%",
+        "category": "Azure API Center"
+      },
+      {
         "command": "azure-api-center.generateHttpFile",
         "title": "%azure-api-center.commands.generateHttpFile.title%",
         "category": "Azure API Center"
@@ -336,6 +341,16 @@
         {
           "command": "azure-api-center.createDeclarativeAgent",
           "when": "(view == apiCenterTreeView && viewItem == azureApiCenterApiVersionDefinitionTreeItem-openapi)"
+        },
+        {
+          "command": "azure-api-center.openInPortal",
+          "when": "view == apiCenterTreeView && viewItem == azureApiCenter",
+          "group": "1@1"
+        },
+        {
+          "command": "azure-api-center.openInPortal",
+          "when": "view == apiCenterTreeView && viewItem == azureApiCenterAzureSubscription",
+          "group": "1@1"
         }
       ],
       "copilot": [
@@ -420,6 +435,10 @@
         },
         {
           "command": "azure-api-center.apiCenterWorkspace.collapse",
+          "when": "never"
+        },
+        {
+          "command": "azure-api-center.openInPortal",
           "when": "never"
         }
       ]
