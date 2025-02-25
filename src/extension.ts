@@ -25,7 +25,7 @@ import { generateMarkdownDocument } from './commands/generateMarkdownDocument';
 import { handleUri } from './commands/handleUri';
 import { importOpenApi } from './commands/importOpenApi';
 import { openAPiInSwagger } from './commands/openApiInSwagger';
-import { OpenInPortal } from './commands/openInPortal';
+import openInAzurePortal from './commands/openInPortal';
 import { openUrlFromTreeNode } from './commands/openUrl';
 import { refreshTree } from './commands/refreshTree';
 import { registerApi } from './commands/registerApi';
@@ -141,7 +141,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
     registerCommandWithTelemetry('azure-api-center.createDeclarativeAgent', CreateDeclarativeAgent.createDeclarativeAgent);
 
-    registerCommandWithTelemetry('azure-api-center.openInPortal', OpenInPortal.openInPortal);
+    registerCommandWithTelemetry('azure-api-center.openInPortal', openInAzurePortal);
 
     context.subscriptions.push(
         vscode.window.registerUriHandler({

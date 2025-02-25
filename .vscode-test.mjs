@@ -8,7 +8,7 @@ const vscodeVer = semver.minVersion(pkg.engines.vscode).version;
 export default defineConfig({
     tests: [{
         label: 'unitTests',
-        files: 'out/test/unit/commands/openInPortal.test.js',
+        files: 'out/test/unit/**/*.test.js',
         workspaceFolder: 'out/test',
         version: 'insiders',
         mocha: {
