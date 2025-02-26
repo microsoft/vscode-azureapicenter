@@ -18,7 +18,7 @@ describe('handleUri test happy path', () => {
         openInPortalStub = sandbox.stub().resolves();
 
         // Mock the entire openInPortal module with proxyquire
-        openInPortalCommand = proxyquire('../../../commands/openInPortal', {
+        openInPortalCommand = proxyquire('../../../commands/openInAzurePortal', {
             '@microsoft/vscode-azext-azureutils': {
                 openInPortal: openInPortalStub
             }
