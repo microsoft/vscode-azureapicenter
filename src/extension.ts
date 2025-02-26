@@ -25,7 +25,7 @@ import { generateMarkdownDocument } from './commands/generateMarkdownDocument';
 import { handleUri } from './commands/handleUri';
 import { importOpenApi } from './commands/importOpenApi';
 import { openAPiInSwagger } from './commands/openApiInSwagger';
-import openInAzurePortal from './commands/openInPortal';
+import openInAzurePortal from './commands/openInAzurePortal';
 import { openUrlFromTreeNode } from './commands/openUrl';
 import { refreshTree } from './commands/refreshTree';
 import { registerApi } from './commands/registerApi';

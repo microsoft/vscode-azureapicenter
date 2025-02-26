@@ -344,13 +344,7 @@
         },
         {
           "command": "azure-api-center.openInPortal",
-          "when": "view == apiCenterTreeView && viewItem == azureApiCenter",
-          "group": "1@1"
-        },
-        {
-          "command": "azure-api-center.openInPortal",
-          "when": "view == apiCenterTreeView && viewItem == azureApiCenterAzureSubscription",
-          "group": "1@1"
+          "when": "view == apiCenterTreeView && (viewItem == azureApiCenter || viewItem == azureApiCenterAzureSubscription)"
         }
       ],
       "copilot": [

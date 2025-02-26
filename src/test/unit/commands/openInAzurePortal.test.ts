@@ -6,7 +6,7 @@ import * as sinon from "sinon";
 import { ApiCenterTreeItem } from "../../../tree/ApiCenterTreeItem";
 
 describe('handleUri test happy path', () => {
-    let sandbox = null as any;
+    let sandbox: sinon.SinonSandbox
     let openInPortalStub: sinon.SinonStub;
     let openInPortalCommand: any;
 
