@@ -63,6 +63,10 @@ Export API specification document for a specific API either from the tree view o
 
 ![Export API specification](./media/export-api.gif)
 
+Create M365 Copilot Declarative Agent
+
+![Create M365 Copilot Declarative Agent](./media/create-declarative-agent.png)
+
 ## Pre-Release
 
 For the features with `[Pre-Release]` flag, you need to install pre-release version of the extension.
