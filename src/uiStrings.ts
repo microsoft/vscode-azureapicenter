@@ -78,7 +78,7 @@ export class UiStrings {
     static readonly SearchAPIsResult = vscode.l10n.t("Search Result for '{0}'");
     static readonly SearchContentHint = vscode.l10n.t("Search for API name, kind, lifecycle stage");
     static readonly AIContentIncorrect = vscode.l10n.t("AI-generated content may be incorrect");
-    static readonly NoActiveFileOpen = vscode.l10n.t("'No active file is open.");
+    static readonly NoActiveFileOpen = vscode.l10n.t("No active file is open.");
     static readonly GeneratingOpenAPI = vscode.l10n.t("Generating OpenAPI Specification from Current File...");
     static readonly SelectTenantBeforeSignIn = vscode.l10n.t("You must sign in before selecting a tenant.");
     static readonly NoTenantSelected = vscode.l10n.t("No tenant selected.");
@@ -141,4 +141,7 @@ export class UiStrings {
     static readonly GenerateOpenApiSetRuleButton = vscode.l10n.t("Set active API style guide");
     static readonly GenerateOpenApiRegenerateDesc = vscode.l10n.t("\n\nAfter your API style guide is set, you could regenerate the API specification again.");
     static readonly GenerateOpenApiRegenerateButton = vscode.l10n.t("Regenerate API specification");
+    static readonly NoTeamsToolkitExtension = vscode.l10n.t("Please install the Teams Toolkit extension with minimum version '{0}'.");
+    static readonly ActivatingTeamsToolkit = vscode.l10n.t("Activating Teams Toolkit");
+    static readonly ExportingApiDefinition = vscode.l10n.t("Exporting API Definition");
 }
