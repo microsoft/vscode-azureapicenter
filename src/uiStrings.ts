@@ -152,4 +152,11 @@ export class UiStrings {
     static readonly CredentialFor = vscode.l10n.t("Credential for '{0}':");
     static readonly GetSpectralRulesToolInvocationMessage = vscode.l10n.t("@apicenter: getting Spectral rules");
     static readonly RuntimeUrlCopied = vscode.l10n.t("Runtime URL copied: {0}");
+    static readonly ResourceGroupName = vscode.l10n.t("Resource Group");
+    static readonly ApiCenterServiceLocation = vscode.l10n.t("Location");
+    static readonly ApiCenterService = vscode.l10n.t("API Center Service");
+    static readonly CreatingApiCenterService = vscode.l10n.t("Creating API Center Service");
+    static readonly GetResourceGroup = vscode.l10n.t("Get Resource Group...");
+    static readonly CreateResourceGroup = vscode.l10n.t("Create Resource Group...");
+    static readonly FailedToCreateApiCenterService = vscode.l10n.t("Failed to Api Center Service.");
 }
