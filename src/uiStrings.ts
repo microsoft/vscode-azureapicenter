@@ -144,4 +144,11 @@ export class UiStrings {
     static readonly NoTeamsToolkitExtension = vscode.l10n.t("Please install the Teams Toolkit extension with minimum version '{0}'.");
     static readonly ActivatingTeamsToolkit = vscode.l10n.t("Activating Teams Toolkit");
     static readonly ExportingApiDefinition = vscode.l10n.t("Exporting API Definition");
+    static readonly ResourceGroupName = vscode.l10n.t("Resource Group");
+    static readonly ApiCenterServiceLocation = vscode.l10n.t("Location");
+    static readonly ApiCenterService = vscode.l10n.t("API Center Service");
+    static readonly CreatingApiCenterService = vscode.l10n.t("Creating API Center Service");
+    static readonly GetResourceGroup = vscode.l10n.t("Get Resource Group...");
+    static readonly CreateResourceGroup = vscode.l10n.t("Create Resource Group...");
+    static readonly FailedToCreateApiCenterService = vscode.l10n.t("Failed to Api Center Service.");
 }

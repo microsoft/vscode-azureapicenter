@@ -2,6 +2,12 @@
 // Licensed under the MIT license.
 export type GeneralApiCenter = ApiCenter | DataPlaneApiCenter;
 
+export type ResourceGroup = {
+    id: string;
+    location: string;
+    name: string;
+};
+
 export type ApiCenter = {
     id: string;
     location: string;
