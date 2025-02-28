@@ -19,11 +19,11 @@ export class ApiCenterService {
     this.resourceGroupName = resourceGroupName;
   }
 
-  public async getResourceGroup(): Promise<ResourceGroup> {
+  public async checkResourceGroup(): Promise<ResourceGroup> {
     const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
     const client = new ServiceClient(creds, clientOptions);
     const options: RequestPrepareOptions = {
-      method: "GET",
+      method: "HEAD",
       url: APICenterRestAPIs.GetResrouceGroup(this.susbcriptionContext.subscriptionId, this.resourceGroupName)
     };
     const response = await client.sendRequest(options);

@@ -24,7 +24,7 @@ export namespace AzureApiCenterService {
         }, async (progress, token) => {
             const apiCenterService = new ApiCenterService(node.subscriptionContext!, resourceGroupName, apiCenterName);
 
-            const rgExist = await apiCenterService.getResourceGroup();
+            const rgExist = await apiCenterService.checkResourceGroup();
             progress.report({ message: UiStrings.CreatingApiVersion });
 
             if (validaResourceGroup(rgExist)) {
