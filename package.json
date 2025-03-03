@@ -372,11 +372,13 @@
         },
         {
           "command": "azure-api-center.openInPortal",
-          "when": "view == apiCenterTreeView && (viewItem == azureApiCenter || viewItem == azureApiCenterAzureSubscription )"
+          "when": "view == apiCenterTreeView && (viewItem == azureApiCenter || viewItem == azureApiCenterAzureSubscription )",
+          "group": "1@1"
         },
         {
           "command": "azure-api-center.createApiCenterService",
-          "when": "(view == apiCenterTreeView && viewItem == azureApiCenterAzureSubscription)"
+          "when": "(view == apiCenterTreeView && viewItem == azureApiCenterAzureSubscription)",
+          "group": "2@1"
         }
       ],
       "copilot": [

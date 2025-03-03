@@ -153,10 +153,13 @@ export class UiStrings {
     static readonly GetSpectralRulesToolInvocationMessage = vscode.l10n.t("@apicenter: getting Spectral rules");
     static readonly RuntimeUrlCopied = vscode.l10n.t("Runtime URL copied: {0}");
     static readonly ResourceGroupName = vscode.l10n.t("Resource Group");
+    static readonly ServiceName = vscode.l10n.t("Api Center Service Name");
+    static readonly GlobalServiceNamePrompt = vscode.l10n.t("Enter a globally unique name for the new API Center Service instance.")
+    static readonly SelectLocation = vscode.l10n.t("Select Location");
     static readonly ApiCenterServiceLocation = vscode.l10n.t("Location");
-    static readonly ApiCenterService = vscode.l10n.t("API Center Service");
     static readonly CreatingApiCenterService = vscode.l10n.t("Creating API Center Service");
     static readonly GetResourceGroup = vscode.l10n.t("Get Resource Group...");
     static readonly CreateResourceGroup = vscode.l10n.t("Create Resource Group...");
     static readonly FailedToCreateApiCenterService = vscode.l10n.t("Failed to Api Center Service.");
+    static readonly CreateResourceSuccess = vscode.l10n.t("Resource Group created successfully.");
 }

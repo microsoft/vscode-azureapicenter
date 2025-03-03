@@ -41,6 +41,17 @@ export class ApiCenterService {
     return response.parsedBody;
   }
 
+  public async getApiServerList(): Promise<any> {
+    const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
+    const client = new ServiceClient(creds, clientOptions);
+    const options: RequestPrepareOptions = {
+      method: "GET",
+      url: APICenterRestAPIs.ListServerLocation(this.susbcriptionContext.subscriptionId)
+    };
+    const response = await client.sendRequest(options);
+    return response.parsedBody;
+  }
+
   public async getApiCenterApis(searchContent: string): Promise<{ value: ApiCenterApi[]; nextLink: string }> {
     const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
     const client = new ServiceClient(creds, clientOptions);
@@ -122,14 +133,14 @@ export class ApiCenterService {
     return response.parsedBody;
   }
 
-  public async createOrUpdateResourceGroup(): Promise<ResourceGroup> {
+  public async createOrUpdateResourceGroup(subLocation: string): Promise<ResourceGroup> {
     const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
     const client = new ServiceClient(creds, clientOptions);
     const options: RequestPrepareOptions = {
       method: "PUT",
       url: APICenterRestAPIs.CreateResourceGroup(this.susbcriptionContext.subscriptionId, this.resourceGroupName),
       body: {
-        location: "eastus"
+        location: subLocation
       }
     };
     const response = await client.sendRequest(options);
@@ -147,14 +158,14 @@ export class ApiCenterService {
     return response.parsedBody;
   }
 
-  public async createOrUpdateApiCenterService(): Promise<ApiCenter> {
+  public async createOrUpdateApiCenterService(serviceLocation: string): Promise<ApiCenter> {
     const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
     const client = new ServiceClient(creds, clientOptions);
     const options: RequestPrepareOptions = {
       method: "PUT",
       url: APICenterRestAPIs.CreateApiService(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, "2024-03-01"),
       body: {
-        location: "eastus"
+        location: serviceLocation
       }
     };
     const response = await client.sendRequest(options);

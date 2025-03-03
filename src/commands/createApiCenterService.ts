@@ -10,33 +10,39 @@ export namespace AzureApiCenterService {
         if (!node) {
             return;
         }
-        const resourceGroupName = await vscode.window.showInputBox({ title: UiStrings.ResourceGroupName, ignoreFocusOut: true });
-        if (!resourceGroupName) {
+        const serverName = await vscode.window.showInputBox({ title: UiStrings.ServiceName, prompt: UiStrings.GlobalServiceNamePrompt, ignoreFocusOut: true });
+        if (!serverName) {
             return;
         }
-        const apiCenterName = await vscode.window.showInputBox({ title: UiStrings.ApiCenterService, ignoreFocusOut: true });
-        if (!apiCenterName) {
+
+        const apiCenterService = new ApiCenterService(node.subscriptionContext!, serverName, serverName);
+
+        const serverRes = await apiCenterService.getApiServerList();
+
+        const locations = serverRes.resourceTypes.find((item: any) => item.resourceType === 'services').locations;
+
+        const location = await vscode.window.showQuickPick(locations, { placeHolder: UiStrings.SelectLocation });
+        if (!location) {
             return;
         }
+
         await vscode.window.withProgress({
             location: vscode.ProgressLocation.Notification,
             title: UiStrings.CreatingApiCenterService
         }, async (progress, token) => {
-            const apiCenterService = new ApiCenterService(node.subscriptionContext!, resourceGroupName, apiCenterName);
-
             const rgExist = await apiCenterService.checkResourceGroup();
             progress.report({ message: UiStrings.CreatingApiVersion });
 
             if (validaResourceGroup(rgExist)) {
-                validateResponse(await apiCenterService.createOrUpdateResourceGroup());
+                validateResponse(await apiCenterService.createOrUpdateResourceGroup(location));
                 progress.report({ message: UiStrings.CreatingApiVersion });
             }
 
-            const result = await apiCenterService.createOrUpdateApiCenterService();
+            const result = await apiCenterService.createOrUpdateApiCenterService(location);
 
             if (result) {
-                vscode.window.showInformationMessage(UiStrings.ApiIsRegistered);
-                node.refresh(actionContext);
+                // Retry mechanism to check API center creation status
+                await confrimServerStatusWithRetry(apiCenterService, node, actionContext);
             } else {
                 throw new Error(UiStrings.FailedToCreateApiCenterService);
             }
@@ -53,4 +59,25 @@ export namespace AzureApiCenterService {
             throw new Error(response.message);
         }
     };
+    async function confrimServerStatusWithRetry(apiCenterService: ApiCenterService, node: SubscriptionTreeItem, actionContext: IActionContext) {
+        let retryCount = 0;
+        const maxRetries = 5;
+        const retryDelay = 30000; // 30 seconds
+
+        do {
+            try {
+                const result = await apiCenterService.getApiCenter();
+                if (result && result.provisioningState && result.provisioningState === 'Succeeded') {
+                    node.refresh(actionContext);
+                    vscode.window.showInformationMessage(UiStrings.CreateResourceSuccess);
+                    break;
+                }
+            } catch (error) {
+                throw new Error(UiStrings.FailedToCreateApiCenterService);
+            }
+
+            retryCount++;
+            await new Promise(resolve => setTimeout(resolve, retryDelay));
+        } while (retryCount < maxRetries);
+    }
 }

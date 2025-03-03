@@ -14,7 +14,10 @@ export type ApiCenter = {
     name: string;
     resourceGroup: string;
     properties: {
+        dataApiHostname: string;
+        portalHostname: string;
     };
+    provisioningState: string;
     // tslint:disable-next-line:no-reserved-keywords
     type: string;
 };
