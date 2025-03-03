@@ -151,4 +151,5 @@ export class UiStrings {
     static readonly GetResourceGroup = vscode.l10n.t("Get Resource Group...");
     static readonly CreateResourceGroup = vscode.l10n.t("Create Resource Group...");
     static readonly FailedToCreateApiCenterService = vscode.l10n.t("Failed to Api Center Service.");
+    static readonly CreateResourceSuccess = vscode.l10n.t("Resource Group created successfully.");
 }

@@ -35,8 +35,8 @@ export namespace AzureApiCenterService {
             const result = await apiCenterService.createOrUpdateApiCenterService();
 
             if (result) {
-                vscode.window.showInformationMessage(UiStrings.ApiIsRegistered);
-                node.refresh(actionContext);
+                // Retry mechanism to check API center creation status
+                await confrimServerStatusWithRetry(apiCenterService, node, actionContext);
             } else {
                 throw new Error(UiStrings.FailedToCreateApiCenterService);
             }
@@ -53,4 +53,25 @@ export namespace AzureApiCenterService {
             throw new Error(response.message);
         }
     };
+    async function confrimServerStatusWithRetry(apiCenterService: ApiCenterService, node: SubscriptionTreeItem, actionContext: IActionContext) {
+        let retryCount = 0;
+        const maxRetries = 5;
+        const retryDelay = 30000; // 30 seconds
+
+        do {
+            try {
+                const result = await apiCenterService.getApiCenter();
+                if (result && result.properties && result.properties.provisioningState === 'Succeeded') {
+                    node.refresh(actionContext);
+                    vscode.window.showInformationMessage(UiStrings.CreateResourceSuccess);
+                    break;
+                }
+            } catch (error) {
+                throw new Error(UiStrings.FailedToCreateApiCenterService);
+            }
+
+            retryCount++;
+            await new Promise(resolve => setTimeout(resolve, retryDelay));
+        } while (retryCount < maxRetries);
+    }
 }

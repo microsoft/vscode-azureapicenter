@@ -142,11 +142,8 @@ export async function activate(context: vscode.ExtensionContext) {
 
     registerCommandWithTelemetry('azure-api-center.createDeclarativeAgent', CreateDeclarativeAgent.createDeclarativeAgent);
 
-<<<<<<< HEAD
     registerCommandWithTelemetry('azure-api-center.openInPortal', openInAzurePortal);
-=======
     registerCommandWithTelemetry('azure-api-center.createApiCenterService', AzureApiCenterService.createApiCenterService);
->>>>>>> cfa460c (feat: support create api service)
 
     context.subscriptions.push(
         vscode.window.registerUriHandler({
