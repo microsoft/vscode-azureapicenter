@@ -10,29 +10,35 @@ export namespace AzureApiCenterService {
         if (!node) {
             return;
         }
-        const resourceGroupName = await vscode.window.showInputBox({ title: UiStrings.ResourceGroupName, ignoreFocusOut: true });
-        if (!resourceGroupName) {
+        const serverName = await vscode.window.showInputBox({ title: UiStrings.ServiceName, prompt: UiStrings.GlobalServiceNamePrompt, ignoreFocusOut: true });
+        if (!serverName) {
             return;
         }
-        const apiCenterName = await vscode.window.showInputBox({ title: UiStrings.ApiCenterService, ignoreFocusOut: true });
-        if (!apiCenterName) {
+
+        const apiCenterService = new ApiCenterService(node.subscriptionContext!, serverName, serverName);
+
+        const serverRes = await apiCenterService.getApiServerList();
+
+        const locations = serverRes.resourceTypes.find((item: any) => item.resourceType === 'services').locations;
+
+        const location = await vscode.window.showQuickPick(locations, { placeHolder: UiStrings.SelectLocation });
+        if (!location) {
             return;
         }
+
         await vscode.window.withProgress({
             location: vscode.ProgressLocation.Notification,
             title: UiStrings.CreatingApiCenterService
         }, async (progress, token) => {
-            const apiCenterService = new ApiCenterService(node.subscriptionContext!, resourceGroupName, apiCenterName);
-
             const rgExist = await apiCenterService.checkResourceGroup();
             progress.report({ message: UiStrings.CreatingApiVersion });
 
             if (validaResourceGroup(rgExist)) {
-                validateResponse(await apiCenterService.createOrUpdateResourceGroup());
+                validateResponse(await apiCenterService.createOrUpdateResourceGroup(location));
                 progress.report({ message: UiStrings.CreatingApiVersion });
             }
 
-            const result = await apiCenterService.createOrUpdateApiCenterService();
+            const result = await apiCenterService.createOrUpdateApiCenterService(location);
 
             if (result) {
                 // Retry mechanism to check API center creation status
