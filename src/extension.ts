@@ -191,7 +191,7 @@ function setupControlView(context: vscode.ExtensionContext) {
     context.subscriptions.push(treeView);
     treeView.onDidChangeSelection((e: vscode.TreeViewSelectionChangeEvent<AzExtTreeItem>) => {
         const selectedNode = e.selection[0];
-        ext.outputChannel.appendLine(selectedNode.id!);
+        // ext.outputChannel.appendLine(selectedNode.id!);
         ext.context.globalState.update(selectedNodeKey, selectedNode.id);
     });
 }
