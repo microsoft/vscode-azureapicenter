@@ -69,13 +69,13 @@ export namespace GenerateOpenApi {
         };
     }
 
-    function getRulesetFile(): string | undefined {
+    export function getRulesetFile(): string | undefined {
         const config = vscode.workspace.getConfiguration('spectral');
         const rulesetFile = config.get<string>('rulesetFile');
         return rulesetFile;
     }
 
-    async function getRuleDescriptions(rulesetFile: string | undefined): Promise<string> {
+    export async function getRuleDescriptions(rulesetFile: string | undefined): Promise<string> {
         if (rulesetFile) {
             const rulesetFileContent = await getRulesetFileContent(rulesetFile);
             if (!rulesetFileContent) {
