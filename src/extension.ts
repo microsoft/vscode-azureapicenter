@@ -137,7 +137,10 @@ export async function activate(context: vscode.ExtensionContext) {
 
     registerCommandWithTelemetry('azure-api-center.apiCenterWorkspace.removeApi', removeDataplaneAPI);
 
-    registerCommandWithTelemetry('azure-api-center.generateApiFromCodeProject', async () => await vscode.commands.executeCommand('workbench.action.chat.open', { query: "Genereate OpenAPI spec with YAML format from #codebase, please make sure all the routes files and models files are included." }));
+    registerCommandWithTelemetry('azure-api-center.generateApiFromCodeProject', async () => await vscode.commands.executeCommand('workbench.action.chat.open', {
+        query: `Genereate OpenAPI spec from #codebase.
+Please make sure all the Controller files are included.
+Please return a YAML OpenAPI spec file.` }));
 
     context.subscriptions.push(
         vscode.window.registerUriHandler({
