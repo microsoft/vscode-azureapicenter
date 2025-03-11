@@ -120,6 +120,11 @@
         "category": "Azure API Center"
       },
       {
+        "command": "azure-api-center.generateApiSpecFromCodeProject",
+        "title": "%azure-api-center.commands.generateApiSpecFromCodeProject.title%",
+        "category": "Azure API Center"
+      },
+      {
         "command": "azure-api-center.cleanupSearchResult",
         "title": "%azure-api-center.commands.cleanupSearchResult.title%",
         "category": "Azure API Center",
@@ -351,6 +356,11 @@
         {
           "command": "azure-api-center.generateApiFromCode",
           "when": "github.copilot-chat.activated && resourceScheme == 'file'",
+          "group": "apiCenter"
+        },
+        {
+          "command": "azure-api-center.generateApiSpecFromCodeProject",
+          "when": "github.copilot-chat.activated",
           "group": "apiCenter"
         }
       ],
