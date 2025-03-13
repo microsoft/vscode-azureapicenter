@@ -360,7 +360,7 @@
         },
         {
           "command": "azure-api-center.generateApiSpecFromCodeProject",
-          "when": "github.copilot-chat.activated",
+          "when": "github.copilot-chat.activated && workspaceFolderCount >= 1",
           "group": "apiCenter"
         }
       ],
@@ -444,6 +444,10 @@
         {
           "command": "azure-api-center.openInPortal",
           "when": "never"
+        },
+        {
+          "command": "azure-api-center.generateApiSpecFromCodeProject",
+          "when": "workspaceFolderCount >= 1"
         }
       ]
     },
