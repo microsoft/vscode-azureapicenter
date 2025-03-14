@@ -71,7 +71,7 @@ export namespace GenerateHttpFile {
         for (const key in apiKeySecuritySchemes) {
             const apiKeySecurityScheme = apiKeySecuritySchemes[key];
             if (accessesWithAuthConfig.length > 0) {
-                const filteredAccesses = accessesWithAuthConfig.filter(access => access.properties.apiKey?.name === apiKeySecurityScheme.name);
+                const filteredAccesses = accessesWithAuthConfig.filter(access => access.properties.apiKey?.name === apiKeySecurityScheme.name && access.properties.apiKey?.in === apiKeySecurityScheme.in);
                 let accessName: string = "";
 
                 if (filteredAccesses.length === 1) {
