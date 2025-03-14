@@ -203,10 +203,27 @@ export enum ApiCenterRulesetImportFormat {
     InlineZip = 'inline-zip',
 };
 
+export type ApiCenterAuthConfig = {
+    id: string;
+    name: string;
+    properties: {
+        title: string;
+        description: string;
+        securityScheme: string;
+        apiKey?: {
+            in: 'header' | 'query' | 'cookie';
+            name: string;
+        };
+    };
+    // tslint:disable-next-line:no-reserved-keywords
+    type: string;
+};
+
 export type ApiCenterApiAccess = {
     id: string;
     name: string;
     properties: {
+        authConfigResourceId: string;
     };
     // tslint:disable-next-line:no-reserved-keywords
     type: string;
