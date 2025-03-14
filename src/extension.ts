@@ -20,6 +20,7 @@ import { showOpenApi } from './commands/editOpenApi';
 import { ExportAPI } from './commands/exportApi';
 import { GenerateApiFromCode } from './commands/generateApiFromCode';
 import { generateApiLibrary } from './commands/generateApiLibrary';
+import { generateApiSpecFromCodeProject } from './commands/generateApiSpecFromCodeProject';
 import { GenerateHttpFile } from './commands/generateHttpFile';
 import { generateMarkdownDocument } from './commands/generateMarkdownDocument';
 import { handleUri } from './commands/handleUri';
@@ -103,6 +104,8 @@ export async function activate(context: vscode.ExtensionContext) {
     registerCommandWithTelemetry('azure-api-center.setApiRuleset', SetApiRuleset.setApiRuleset);
 
     registerCommandWithTelemetry('azure-api-center.generateApiFromCode', GenerateApiFromCode.generateApiFromCode);
+
+    registerCommandWithTelemetry('azure-api-center.generateApiSpecFromCodeProject', generateApiSpecFromCodeProject);
 
     registerCommandWithTelemetry('azure-api-center.detectBreakingChange', detectBreakingChange);
 
