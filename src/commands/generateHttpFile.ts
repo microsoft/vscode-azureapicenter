@@ -66,36 +66,42 @@ export namespace GenerateHttpFile {
             }
         }
 
+        if (accessesWithAuthConfig.length === 0) {
+            return {};
+        }
+
         const apiKeySecuritySchemesWithValue: ApiKeySecuritySchemesWithValue = {};
 
         for (const key in apiKeySecuritySchemes) {
             const apiKeySecurityScheme = apiKeySecuritySchemes[key];
-            if (accessesWithAuthConfig.length > 0) {
-                const filteredAccesses = accessesWithAuthConfig.filter(access => access.properties.apiKey?.name === apiKeySecurityScheme.name && access.properties.apiKey?.in === apiKeySecurityScheme.in);
-                let accessName: string = "";
 
-                if (filteredAccesses.length === 1) {
-                    accessName = filteredAccesses[0].name;
-                } else if (filteredAccesses.length > 1) {
-                    const selectedAccess = await vscode.window.showQuickPick(
-                        filteredAccesses.map(access => ({
-                            label: access.name,
-                            description: access.properties.title,
-                            detail: access.properties.description,
-                            value: access
-                        })) as (vscode.QuickPickItem & { value: ApiCenterApiAccess })[],
-                        { placeHolder: `Select security requirement for "${apiKeySecurityScheme.name}"` }
-                    );
-                    if (selectedAccess) {
-                        accessName = selectedAccess.value.name;
-                    } else {
-                        throw new UserCancelledError();
-                    }
+            const filteredAccesses = accessesWithAuthConfig.filter(access => access.properties.apiKey?.name === apiKeySecurityScheme.name && access.properties.apiKey?.in === apiKeySecurityScheme.in);
+            let accessName: string = "";
+
+            if (filteredAccesses.length === 1) {
+                accessName = filteredAccesses[0].name;
+            } else if (filteredAccesses.length > 1) {
+                const selectedAccess = await vscode.window.showQuickPick(
+                    filteredAccesses.map(access => ({
+                        label: access.name,
+                        description: access.properties.title,
+                        detail: access.properties.description,
+                        value: access
+                    })) as (vscode.QuickPickItem & { value: ApiCenterApiAccess })[],
+                    { placeHolder: `Select security requirement for "${apiKeySecurityScheme.name}"` }
+                );
+                if (selectedAccess) {
+                    accessName = selectedAccess.value.name;
+                } else {
+                    throw new UserCancelledError();
                 }
+            }
 
-                if (accessName) {
-                    const credential = await apiCenterService.getApiCenterApiCredential(node.apiCenterApiName, node.apiCenterApiVersionName, accessName);
-                    apiKeySecuritySchemesWithValue[key] = { ...apiKeySecurityScheme, value: credential.apiKey?.value || "" };
+            if (accessName) {
+                const credential = await apiCenterService.getApiCenterApiCredential(node.apiCenterApiName, node.apiCenterApiVersionName, accessName);
+                const credentialValue = credential.apiKey?.value;
+                if (credentialValue) {
+                    apiKeySecuritySchemesWithValue[key] = { ...apiKeySecurityScheme, value: credentialValue };
                 }
             }
         }
