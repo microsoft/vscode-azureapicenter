@@ -1,0 +1,5 @@
+@url = https://plugin51f723.azurewebsites.net/api
+@assignedTo =\s
+
+GET {{url}}/repairs\?assignedTo={{assignedTo}} HTTP/1.1
+X-API-KEY: mysecretvalue
