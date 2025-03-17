@@ -6,12 +6,23 @@ info:
 servers:
   - url: https://plugin51f723.azurewebsites.net/api
     description: The repair api server
+security:
+  - apiKey: []
+
 components:
   securitySchemes:
     apiKey:
       type: apiKey
-      in: header # can be "header", "query" or "cookie"
-      name: X-API-KEY # name of the header, query parameter or cookie
+      in: header
+      name: x-api-key
+    apiKey2:
+      type: apiKey
+      in: query
+      name: x-api-key-2
+    apiKey3:
+      type: apiKey
+      in: header
+      name: x-api-key-3
 paths:
   /repairs:
     get:
@@ -27,6 +38,9 @@ paths:
           required: false
       security:
         - apiKey: []
+          apiKey3: []
+        - apiKey: []
+          apiKey2: []
       responses:
         "200":
           description: A list of repairs
@@ -60,3 +74,23 @@ paths:
                           type: string
                           format: uri
                           description: The URL of the image of the item to be repaired or the repair process
+    delete:
+      summary: Delete an existing repair
+      description: Delete an existing repair from the list using its ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - id
+              properties:
+                id:
+                  type: integer
+                  description: The unique identifier of the repair to delete
+      responses:
+        "200":
+          description: Repair deleted
+        "404":
+          description: Repair not found

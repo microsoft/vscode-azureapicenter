@@ -4,6 +4,7 @@ import * as assert from "assert";
 import * as fs from "fs";
 import * as path from "path";
 import * as sinon from "sinon";
+import * as vscode from "vscode";
 import { ApiCenterService } from "../../../azure/ApiCenter/ApiCenterService";
 import { GenerateHttpFile } from "../../../commands/generateHttpFile";
 import { ApiVersionDefinitionTreeItem } from "../../../tree/ApiVersionDefinitionTreeItem";
@@ -64,15 +65,22 @@ describe("generateHttpFile", () => {
         setupForNoAuth();
         await testHttpFileGeneration("multiUrls");
     });
-    it("auth", async () => {
+    it("apiKey basic", async () => {
         sandbox.stub(ApiCenterService.prototype, "getApiCenterApiAccesses").resolves({
             value: [{
                 type: "Microsoft.ApiCenter/services/workspaces/apis/versions/securityRequirements",
                 properties: {
-                    authConfigResourceId: "/authConfigs/repair-service-apiKey"
+                    authConfigResourceId: "/authConfigs/authConfig1",
                 },
-                id: "/subscriptions/1756abc0-3554-4341-8d6a-46674962ea19/resourceGroups/jun-1109/providers/Microsoft.ApiCenter/services/jun-apiaccess-20250212/workspaces/default/apis/repair-service-with-custom-api-key/versions/v1/securityRequirements/repair-service-apiKey-sr",
-                name: "repair-service-apiKey-sr"
+                id: "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test/providers/Microsoft.ApiCenter/services/test/workspaces/default/apis/api/versions/v1/securityRequirements/securityRequirement1",
+                name: "securityRequirement1"
+            }, {
+                type: "Microsoft.ApiCenter/services/workspaces/apis/versions/securityRequirements",
+                properties: {
+                    authConfigResourceId: "/authConfigs/authConfig2",
+                },
+                id: "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test/providers/Microsoft.ApiCenter/services/test/workspaces/default/apis/api/versions/v1/securityRequirements/securityRequirement2",
+                name: "securityRequirement2"
             }], nextLink: ""
         });
         sandbox.stub(ApiCenterService.prototype, "getApiCenterAuthConfigs").resolves({
@@ -84,11 +92,90 @@ describe("generateHttpFile", () => {
                     securityScheme: "apiKey",
                     apiKey: {
                         in: "header",
-                        name: "X-API-KEY",
+                        name: "x-api-key",
                     },
                 },
-                id: "/subscriptions/1756abc0-3554-4341-8d6a-46674962ea19/resourceGroups/jun-1109/providers/Microsoft.ApiCenter/services/jun-apiaccess-20250212/workspaces/default/authConfigs/repair-service-apiKey",
-                name: "repair-service-apiKey",
+                id: "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test/providers/Microsoft.ApiCenter/services/test/workspaces/default/authConfigs/authConfig1",
+                name: "authConfig1",
+            }, {
+                type: "Microsoft.ApiCenter/services/workspaces/authConfigs",
+                properties: {
+                    title: "Default access 2",
+                    description: "Default access 2 to the API.",
+                    securityScheme: "apiKey",
+                    apiKey: {
+                        in: "query",
+                        name: "x-api-key-2",
+                    },
+                },
+                id: "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test/providers/Microsoft.ApiCenter/services/test/workspaces/default/authConfigs/authConfig2",
+                name: "authConfig2",
+            }], nextLink: ""
+        });
+        const getApiCenterApiCredentialStub = sandbox.stub(ApiCenterService.prototype, "getApiCenterApiCredential");
+        getApiCenterApiCredentialStub.onFirstCall().resolves({
+            securityScheme: "apiKey",
+            apiKey: {
+                value: "mysecretvalue",
+                in: "header",
+                name: "x-api-key"
+            }
+        });
+        getApiCenterApiCredentialStub.onSecondCall().resolves({
+            securityScheme: "apiKey",
+            apiKey: {
+                value: "mysecretvalue2",
+                in: "query",
+                name: "x-api-key-2"
+            }
+        });
+        await testHttpFileGeneration("apiKeyBasic");
+    });
+    it("apiKey QuickPick", async () => {
+        sandbox.stub(ApiCenterService.prototype, "getApiCenterApiAccesses").resolves({
+            value: [{
+                type: "Microsoft.ApiCenter/services/workspaces/apis/versions/securityRequirements",
+                properties: {
+                    authConfigResourceId: "/authConfigs/authConfig1",
+                },
+                id: "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test/providers/Microsoft.ApiCenter/services/test/workspaces/default/apis/api/versions/v1/securityRequirements/securityRequirement1",
+                name: "securityRequirement1"
+            }, {
+                type: "Microsoft.ApiCenter/services/workspaces/apis/versions/securityRequirements",
+                properties: {
+                    authConfigResourceId: "/authConfigs/authConfig2",
+                },
+                id: "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test/providers/Microsoft.ApiCenter/services/test/workspaces/default/apis/api/versions/v1/securityRequirements/securityRequirement2",
+                name: "securityRequirement2"
+            }], nextLink: ""
+        });
+        sandbox.stub(ApiCenterService.prototype, "getApiCenterAuthConfigs").resolves({
+            value: [{
+                type: "Microsoft.ApiCenter/services/workspaces/authConfigs",
+                properties: {
+                    title: "Default access",
+                    description: "Default access to the API.",
+                    securityScheme: "apiKey",
+                    apiKey: {
+                        in: "header",
+                        name: "x-api-key",
+                    },
+                },
+                id: "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test/providers/Microsoft.ApiCenter/services/test/workspaces/default/authConfigs/authConfig1",
+                name: "authConfig1",
+            }, {
+                type: "Microsoft.ApiCenter/services/workspaces/authConfigs",
+                properties: {
+                    title: "Default access 2",
+                    description: "Default access 2 to the API.",
+                    securityScheme: "apiKey",
+                    apiKey: {
+                        in: "header",
+                        name: "x-api-key",
+                    },
+                },
+                id: "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test/providers/Microsoft.ApiCenter/services/test/workspaces/default/authConfigs/authConfig2",
+                name: "authConfig2",
             }], nextLink: ""
         });
         sandbox.stub(ApiCenterService.prototype, "getApiCenterApiCredential").resolves({
@@ -96,23 +183,25 @@ describe("generateHttpFile", () => {
             apiKey: {
                 value: "mysecretvalue",
                 in: "header",
-                name: "X-API-KEY"
+                name: "x-api-key"
             }
         });
-        await testHttpFileGeneration("auth");
+        const quickPickStub = sandbox.stub(vscode.window, "showQuickPick").resolves({
+            label: "fakeName",
+            value: {
+                name: "fakeName"
+            }
+        } as unknown as vscode.QuickPickItem);
+        await testHttpFileGeneration("apiKeyQuickPick");
+        sandbox.assert.calledOnce(quickPickStub);
+        sandbox.assert.calledWithMatch(quickPickStub, sinon.match.array, {
+            placeHolder: 'Select security requirement for "x-api-key"',
+        });
     });
 
     function setupForNoAuth() {
         sandbox.stub(ApiCenterService.prototype, "getApiCenterApiAccesses").resolves({ value: [], nextLink: "" });
         sandbox.stub(ApiCenterService.prototype, "getApiCenterAuthConfigs").resolves({ value: [], nextLink: "" });
-        sandbox.stub(ApiCenterService.prototype, "getApiCenterApiCredential").resolves({
-            securityScheme: "apiKey",
-            apiKey: {
-                value: "mysecretvalue",
-                in: "header",
-                name: "X-API-KEY"
-            }
-        });
     }
 
     async function testHttpFileGeneration(scenario: string): Promise<void> {
