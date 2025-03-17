@@ -195,8 +195,8 @@
         "category": "Azure API Center"
       },
       {
-        "command": "azure-api-center.apiCenterWorkspace.learnApiCatalog",
-        "title": "%azure-api-center.commands.apiCenterWorkspace.learnApiCatalog.title%",
+        "command": "azure-api-center.apiCenterWorkspace.learnApiPortal",
+        "title": "%azure-api-center.commands.apiCenterWorkspace.learnApiPortal.title%",
         "icon": "$(info)",
         "category": "Azure API Center"
       },
@@ -238,7 +238,7 @@
           "group": "navigation"
         },
         {
-          "command": "azure-api-center.apiCenterWorkspace.learnApiCatalog",
+          "command": "azure-api-center.apiCenterWorkspace.learnApiPortal",
           "when": "view == apiCenterWorkspace",
           "group": "navigation"
         },
