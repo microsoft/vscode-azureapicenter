@@ -204,6 +204,11 @@
         "command": "azure-api-center.createDeclarativeAgent",
         "title": "%azure-api-center.commands.createDeclarativeAgent.title%",
         "category": "Azure API Center"
+      },
+      {
+        "command": "azure-api-center.registerAsMcpServer",
+        "title": "Register as MCP Server",
+        "category": "Azure API Center"
       }
     ],
     "views": {
@@ -345,6 +350,10 @@
         },
         {
           "command": "azure-api-center.createDeclarativeAgent",
+          "when": "(view == apiCenterTreeView && viewItem == azureApiCenterApiVersionDefinitionTreeItem-openapi)"
+        },
+        {
+          "command": "azure-api-center.registerAsMcpServer",
           "when": "(view == apiCenterTreeView && viewItem == azureApiCenterApiVersionDefinitionTreeItem-openapi)"
         },
         {
