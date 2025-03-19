@@ -146,4 +146,5 @@ export class UiStrings {
     static readonly NoTeamsToolkitExtension = vscode.l10n.t("Please install the Teams Toolkit extension with minimum version '{0}'.");
     static readonly ActivatingTeamsToolkit = vscode.l10n.t("Activating Teams Toolkit");
     static readonly ExportingApiDefinition = vscode.l10n.t("Exporting API Definition");
+    static readonly GeneratingHttpFile = vscode.l10n.t("Generating HTTP File");
 }

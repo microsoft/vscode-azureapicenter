@@ -23,10 +23,15 @@ export namespace GenerateHttpFile {
     };
 
     export async function generateHttpFile(context: IActionContext, node?: ApiVersionDefinitionTreeItem) {
-        const definitionFileRaw = await ext.openApiEditor.getData(node!);
-        const api = await OpenApiUtils.pasreDefinitionFileRawToOpenAPIV3FullObject(definitionFileRaw);
-        const httpFileContent = await pasreSwaggerObjectToHttpFileContent(api, node!);
-        await writeToHttpFile(node!, httpFileContent);
+        await vscode.window.withProgress({
+            location: vscode.ProgressLocation.Notification,
+            title: UiStrings.GeneratingHttpFile
+        }, async (progress, token) => {
+            const definitionFileRaw = await ext.openApiEditor.getData(node!);
+            const api = await OpenApiUtils.pasreDefinitionFileRawToOpenAPIV3FullObject(definitionFileRaw);
+            const httpFileContent = await pasreSwaggerObjectToHttpFileContent(api, node!);
+            await writeToHttpFile(node!, httpFileContent);
+        });
 
         EnsureExtension.ensureExtension(context, {
             extensionId: 'humao.rest-client',
@@ -217,6 +222,7 @@ ${httpRequestsContent}`;
     function parseSecurity(header: string, queryString: string, securityRequirementObject: OpenAPIV3.SecurityRequirementObject[], apiKeySecuritySchemesWithValue: ApiKeySecuritySchemesWithValue): { header: string, queryString: string } {
         for (const security of securityRequirementObject) {
             if (Object.keys(security).every(key => key in apiKeySecuritySchemesWithValue)) {
+                let cookie = "";
                 for (const key in security) {
                     const apiKeySecurityScheme = apiKeySecuritySchemesWithValue[key];
                     const apiKeyName = apiKeySecurityScheme.name;
@@ -233,6 +239,20 @@ ${httpRequestsContent}`;
                         } else {
                             queryString = `?${apiKeyName}=${apiKeyValue}`;
                         }
+                    } else if (apiKeySecurityScheme.in === "cookie") {
+                        if (cookie) {
+                            cookie += `; ${apiKeyName}=${apiKeyValue}`;
+                        } else {
+                            cookie = `${apiKeyName}=${apiKeyValue}`;
+                        }
+                    }
+                }
+                if (cookie) {
+                    cookie = `Cookie: ${cookie}`;
+                    if (header) {
+                        header += `\n${cookie}`;
+                    } else {
+                        header = cookie;
                     }
                 }
                 break; // Pick the first set of security schemes
