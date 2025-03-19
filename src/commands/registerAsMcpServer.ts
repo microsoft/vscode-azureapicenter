@@ -24,8 +24,8 @@ async function updateVsCodeSettings(filePath: string, api: OpenAPIV3.Document, a
     const configuration = vscode.workspace.getConfiguration();
     const servers = configuration.get<any>("mcp.servers") || {};
     servers[`openapi_mcp_server_${apiName}`] = {
-        command: "uv",
-        args: ["run", "openapi_mcp_server"],
+        command: "python",
+        args: ["-m", "openapi_mcp_server"],
         env: {
             DEBUG: "1",
             API_BASE_URL: api.servers?.[0]?.url,
