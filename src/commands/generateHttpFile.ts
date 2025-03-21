@@ -97,11 +97,11 @@ export namespace GenerateHttpFile {
                     kind: vscode.QuickPickItemKind.Separator
                 });
                 quickPickItems.push({
-                    label: "Continue without selecting",
+                    label: UiStrings.ContinueWithoutSelecting,
                 });
                 const selectedAccess = await vscode.window.showQuickPick(
                     quickPickItems,
-                    { placeHolder: `Select Authentication for "${apiKeySecurityScheme.name}"` }
+                    { placeHolder: vscode.l10n.t(UiStrings.SelectAccess, apiKeySecurityScheme.name) }
                 );
                 if (selectedAccess) {
                     if (selectedAccess.value) {

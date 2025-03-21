@@ -162,7 +162,7 @@
       },
       {
         "command": "azure-api-center.getCredential",
-        "title": "Get Credential",
+        "title": "%azure-api-center.commands.getCredential.title%",
         "category": "Azure API Center"
       },
       {
