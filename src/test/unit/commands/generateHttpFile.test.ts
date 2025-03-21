@@ -195,7 +195,7 @@ describe("generateHttpFile", () => {
         await testHttpFileGeneration("apiKeyQuickPick");
         sandbox.assert.calledOnce(quickPickStub);
         sandbox.assert.calledWithMatch(quickPickStub, sinon.match.array, {
-            placeHolder: 'Select security requirement for "x-api-key"',
+            placeHolder: 'Select Authentication for \'x-api-key\'',
         });
     });
 
