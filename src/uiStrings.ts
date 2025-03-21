@@ -78,7 +78,7 @@ export class UiStrings {
     static readonly SearchAPIsResult = vscode.l10n.t("Search Result for '{0}'");
     static readonly SearchContentHint = vscode.l10n.t("Search for API name, kind, lifecycle stage");
     static readonly AIContentIncorrect = vscode.l10n.t("AI-generated content may be incorrect");
-    static readonly NoActiveFileOpen = vscode.l10n.t("'No active file is open.");
+    static readonly NoActiveFileOpen = vscode.l10n.t("No active file is open.");
     static readonly GeneratingOpenAPI = vscode.l10n.t("Generating OpenAPI Specification from Current File...");
     static readonly SelectTenantBeforeSignIn = vscode.l10n.t("You must sign in before selecting a tenant.");
     static readonly NoTenantSelected = vscode.l10n.t("No tenant selected.");
@@ -131,7 +131,7 @@ export class UiStrings {
     static readonly GetTreeView = vscode.l10n.t("Please connect to Azure API Center Service first.");
     static readonly APIControlPlaneView = vscode.l10n.t("API Center Management Plane");
     static readonly APIDataPlaneView = vscode.l10n.t("API Center Data Plane");
-    static readonly APIDataPlaneWiki = vscode.l10n.t("API Catalog Guide");
+    static readonly APIDataPlaneWiki = vscode.l10n.t("API Center Portal Guide");
     static readonly ApiAccessesTreeItemChildTypeLabel = vscode.l10n.t("Authentication");
     static readonly TreeitemLabelAccesses = vscode.l10n.t("Authentication");
     static readonly GenerateOpenApiProgress = vscode.l10n.t("Invoking Azure API Center plugin to generate OpenAPI specification documentation...");

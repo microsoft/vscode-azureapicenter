@@ -22,7 +22,7 @@ export const ExceedTokenLimit = "Message exceeds token limit";
 export const SpectralExtensionId = "stoplight.spectral";
 export const tenantSetting: string = 'tenant';
 export const TeamsToolkitExtensionId = "TeamsDevApp.ms-teams-vscode-extension";
-export const TeamsToolkitMinimumVersion = "5.0.0";
+export const TeamsToolkitMinimumVersion = "5.13.2025021807";
 
 export const AzureAccountType = {
     createAzureAccount: "azureapicenterCreateAzureAccount",
