@@ -86,17 +86,27 @@ export namespace GenerateHttpFile {
             if (filteredAccesses.length === 1) {
                 accessName = filteredAccesses[0].name;
             } else if (filteredAccesses.length > 1) {
+                const quickPickItems = filteredAccesses.map(access => ({
+                    label: access.name,
+                    description: access.properties.title,
+                    detail: access.properties.description,
+                    value: access
+                })) as (vscode.QuickPickItem & { value?: ApiCenterApiAccess })[];
+                quickPickItems.push({
+                    label: "",
+                    kind: vscode.QuickPickItemKind.Separator
+                });
+                quickPickItems.push({
+                    label: "Continue without selecting",
+                });
                 const selectedAccess = await vscode.window.showQuickPick(
-                    filteredAccesses.map(access => ({
-                        label: access.name,
-                        description: access.properties.title,
-                        detail: access.properties.description,
-                        value: access
-                    })) as (vscode.QuickPickItem & { value: ApiCenterApiAccess })[],
-                    { placeHolder: `Select security requirement for "${apiKeySecurityScheme.name}"` }
+                    quickPickItems,
+                    { placeHolder: `Select Authentication for "${apiKeySecurityScheme.name}"` }
                 );
                 if (selectedAccess) {
-                    accessName = selectedAccess.value.name;
+                    if (selectedAccess.value) {
+                        accessName = selectedAccess.value.name;
+                    }
                 } else {
                     throw new UserCancelledError();
                 }
