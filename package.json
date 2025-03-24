@@ -64,6 +64,11 @@
         "category": "Azure API Center"
       },
       {
+        "command": "azure-api-center.generate-ai-foundry-agent",
+        "title": "%azure-api-center.commands.generate-ai-foundry-agent.title%",
+        "category": "Azure API Center"
+      },
+      {
         "command": "azure-api-center.importOpenApiByFile",
         "title": "%azure-api-center.commands.importOpenApiByFile.title%",
         "category": "Azure API Center"
@@ -277,6 +282,10 @@
           "when": "(view == apiCenterTreeView && viewItem == azureApiCenterApiVersionDefinitionTreeItem-openapi) || (view == apiCenterWorkspace && viewItem == azureApiCenterApiVersionDataPlaneDefinitionTreeItem-openapi)"
         },
         {
+          "command": "azure-api-center.generate-ai-foundry-agent",
+          "when": "(view == apiCenterTreeView && viewItem == azureApiCenterApiVersionDefinitionTreeItem-openapi) || (view == apiCenterWorkspace && viewItem == azureApiCenterApiVersionDataPlaneDefinitionTreeItem-openapi)"
+        },
+        {
           "command": "azure-api-center.importOpenApiByFile",
           "when": "view == apiCenterTreeView && viewItem =~ /never/"
         },
@@ -391,6 +400,10 @@
         },
         {
           "command": "azure-api-center.generate-api-client",
+          "when": "never"
+        },
+        {
+          "command": "azure-api-center.generate-ai-foundry-agent",
           "when": "never"
         },
         {

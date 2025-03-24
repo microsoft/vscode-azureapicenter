@@ -34,5 +34,6 @@
     "azure-api-center.commands.apiCenterWorkspace.removeApis.title": "Disconnect from API Center",
     "azure-api-center.commands.apiCenterWorkspace.learnApiPortal.title": "Learn about API Center Portal",
     "azure-api-center.commands.createDeclarativeAgent.title": "Create M365 Copilot Declarative Agent",
-    "azure-api-center.commands.openInPortal.title": "Open in Azure Portal"
+    "azure-api-center.commands.openInPortal.title": "Open in Azure Portal",
+    "azure-api-center.commands.generate-ai-foundry-agent.title": "Generate AI Foundry Agent with OpenAPI Spec"
 }

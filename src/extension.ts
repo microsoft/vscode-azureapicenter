@@ -18,6 +18,7 @@ import { CreateDeclarativeAgent } from './commands/createDeclarativeAgent';
 import { detectBreakingChange } from './commands/detectBreakingChange';
 import { showOpenApi } from './commands/editOpenApi';
 import { ExportAPI } from './commands/exportApi';
+import { AIFAgentGenerator } from './commands/generateAiFoundryAgent';
 import { GenerateApiFromCode } from './commands/generateApiFromCode';
 import { generateApiLibrary } from './commands/generateApiLibrary';
 import { generateApiSpecFromCodeProject } from './commands/generateApiSpecFromCodeProject';
@@ -145,6 +146,8 @@ export async function activate(context: vscode.ExtensionContext) {
     registerCommandWithTelemetry('azure-api-center.createDeclarativeAgent', CreateDeclarativeAgent.createDeclarativeAgent);
 
     registerCommandWithTelemetry('azure-api-center.openInPortal', openInAzurePortal);
+
+    registerCommandWithTelemetry('azure-api-center.generate-ai-foundry-agent', AIFAgentGenerator.generateAIFAgent);
 
     context.subscriptions.push(
         vscode.window.registerUriHandler({
