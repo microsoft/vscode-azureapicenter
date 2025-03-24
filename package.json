@@ -455,6 +455,10 @@
           "when": "never"
         },
         {
+          "command": "azure-api-center.getCredential",
+          "when": "never"
+        },
+        {
           "command": "azure-api-center.generateApiSpecFromCodeProject",
           "when": "workspaceFolderCount >= 1"
         }
