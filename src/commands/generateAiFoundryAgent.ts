@@ -53,7 +53,6 @@ export namespace AIFAgentGenerator {
 
         // Write YAML to a file
         fs.writeFileSync(localFilePath, yamlString, 'utf8');
-        await vscode.window.showTextDocument(document);
         await vscode.commands.executeCommand('azure-ai-foundry.explorerContext.openAgentDesigner', vscode.Uri.file(localFilePath));
     }
 
