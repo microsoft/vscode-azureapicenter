@@ -271,7 +271,7 @@ describe("generateHttpFile", () => {
 
     async function generateHttpFileContent(openApiFileContent: string): Promise<string> {
         const api = await OpenApiUtils.pasreDefinitionFileRawToOpenAPIV3FullObject(openApiFileContent);
-        const httpFileContent = await GenerateHttpFile.pasreSwaggerObjectToHttpFileContent(api, node);
+        const httpFileContent = await GenerateHttpFile.parseSwaggerObjectToHttpFileContent(api, node);
 
         return httpFileContent;
     }

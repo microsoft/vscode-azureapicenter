@@ -29,7 +29,7 @@ export namespace GenerateHttpFile {
         }, async (progress, token) => {
             const definitionFileRaw = await ext.openApiEditor.getData(node!);
             const api = await OpenApiUtils.pasreDefinitionFileRawToOpenAPIV3FullObject(definitionFileRaw);
-            const httpFileContent = await pasreSwaggerObjectToHttpFileContent(api, node!);
+            const httpFileContent = await parseSwaggerObjectToHttpFileContent(api, node!);
             await writeToHttpFile(node!, httpFileContent);
         });
 
@@ -39,10 +39,10 @@ export namespace GenerateHttpFile {
         });
     }
 
-    export async function pasreSwaggerObjectToHttpFileContent(api: OpenAPIV3.Document, node: ApiVersionDefinitionTreeItem): Promise<string> {
+    export async function parseSwaggerObjectToHttpFileContent(api: OpenAPIV3.Document, node: ApiVersionDefinitionTreeItem): Promise<string> {
         const apiKeySecuritySchemes = getApiKeySecuritySchemes(api);
         const apiKeySecuritySchemesWithValue = await getApiKeySecuritySchemesWithValue(apiKeySecuritySchemes, node!);
-        return pasreSwaggerObjectToHttpFileContentWithAuth(api, apiKeySecuritySchemesWithValue);
+        return parseSwaggerObjectToHttpFileContentWithAuth(api, apiKeySecuritySchemesWithValue);
     }
 
     function getApiKeySecuritySchemes(api: OpenAPIV3.Document): ApiKeySecuritySchemes {
@@ -124,7 +124,7 @@ export namespace GenerateHttpFile {
         return apiKeySecuritySchemesWithValue;
     }
 
-    function pasreSwaggerObjectToHttpFileContentWithAuth(api: OpenAPIV3.Document, apiKeySecuritySchemesWithValue: ApiKeySecuritySchemesWithValue): string {
+    function parseSwaggerObjectToHttpFileContentWithAuth(api: OpenAPIV3.Document, apiKeySecuritySchemesWithValue: ApiKeySecuritySchemesWithValue): string {
         const httpRequests: string[] = [];
         const variableNames = new Set<string>();
 
