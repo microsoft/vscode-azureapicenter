@@ -81,6 +81,20 @@ describe("generateHttpFile", () => {
                 },
                 id: "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test/providers/Microsoft.ApiCenter/services/test/workspaces/default/apis/api/versions/v1/securityRequirements/securityRequirement2",
                 name: "securityRequirement2"
+            }, {
+                type: "Microsoft.ApiCenter/services/workspaces/apis/versions/securityRequirements",
+                properties: {
+                    authConfigResourceId: "/authConfigs/authConfig4",
+                },
+                id: "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test/providers/Microsoft.ApiCenter/services/test/workspaces/default/apis/api/versions/v1/securityRequirements/securityRequirement4",
+                name: "securityRequirement4"
+            }, {
+                type: "Microsoft.ApiCenter/services/workspaces/apis/versions/securityRequirements",
+                properties: {
+                    authConfigResourceId: "/authConfigs/authConfig5",
+                },
+                id: "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test/providers/Microsoft.ApiCenter/services/test/workspaces/default/apis/api/versions/v1/securityRequirements/securityRequirement5",
+                name: "securityRequirement5"
             }], nextLink: ""
         });
         sandbox.stub(ApiCenterService.prototype, "getApiCenterAuthConfigs").resolves({
@@ -110,6 +124,32 @@ describe("generateHttpFile", () => {
                 },
                 id: "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test/providers/Microsoft.ApiCenter/services/test/workspaces/default/authConfigs/authConfig2",
                 name: "authConfig2",
+            }, {
+                type: "Microsoft.ApiCenter/services/workspaces/authConfigs",
+                properties: {
+                    title: "Default access 4",
+                    description: "Default access 4 to the API.",
+                    securityScheme: "apiKey",
+                    apiKey: {
+                        in: "cookie",
+                        name: "x-api-key-4",
+                    },
+                },
+                id: "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test/providers/Microsoft.ApiCenter/services/test/workspaces/default/authConfigs/authConfig4",
+                name: "authConfig4",
+            }, {
+                type: "Microsoft.ApiCenter/services/workspaces/authConfigs",
+                properties: {
+                    title: "Default access 5",
+                    description: "Default access 5 to the API.",
+                    securityScheme: "apiKey",
+                    apiKey: {
+                        in: "cookie",
+                        name: "x-api-key-5",
+                    },
+                },
+                id: "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test/providers/Microsoft.ApiCenter/services/test/workspaces/default/authConfigs/authConfig5",
+                name: "authConfig5",
             }], nextLink: ""
         });
         const getApiCenterApiCredentialStub = sandbox.stub(ApiCenterService.prototype, "getApiCenterApiCredential");
@@ -127,6 +167,22 @@ describe("generateHttpFile", () => {
                 value: "mysecretvalue2",
                 in: "query",
                 name: "x-api-key-2"
+            }
+        });
+        getApiCenterApiCredentialStub.onThirdCall().resolves({
+            securityScheme: "apiKey",
+            apiKey: {
+                value: "mysecretvalue4",
+                in: "cookie",
+                name: "x-api-key-4"
+            }
+        });
+        getApiCenterApiCredentialStub.onCall(3).resolves({
+            securityScheme: "apiKey",
+            apiKey: {
+                value: "mysecretvalue5",
+                in: "header",
+                name: "x-api-key-5"
             }
         });
         await testHttpFileGeneration("apiKeyBasic");

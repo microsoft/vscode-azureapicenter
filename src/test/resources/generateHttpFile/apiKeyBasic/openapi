@@ -8,6 +8,7 @@ servers:
     description: The repair api server
 security:
   - apiKey: []
+    apiKey4: []
 
 components:
   securitySchemes:
@@ -23,6 +24,14 @@ components:
       type: apiKey
       in: header
       name: x-api-key-3
+    apiKey4:
+      type: apiKey
+      in: cookie
+      name: x-api-key-4
+    apiKey5:
+      type: apiKey
+      in: cookie
+      name: x-api-key-5
 paths:
   /repairs:
     get:
@@ -41,6 +50,8 @@ paths:
           apiKey3: []
         - apiKey: []
           apiKey2: []
+          apiKey4: []
+          apiKey5: []
       responses:
         "200":
           description: A list of repairs
