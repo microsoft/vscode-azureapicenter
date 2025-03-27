@@ -1,9 +1,12 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
-import { IActionContext } from "@microsoft/vscode-azext-utils";
+import { getResourceGroupFromId } from "@microsoft/vscode-azext-azureutils";
+import { IActionContext, UserCancelledError } from "@microsoft/vscode-azext-utils";
 import { JSONSchemaFaker } from 'json-schema-faker';
 import { OpenAPIV3 } from "openapi-types";
 import * as vscode from 'vscode';
+import { ApiCenterService } from "../azure/ApiCenter/ApiCenterService";
+import { ApiCenterApiAccess, ApiCenterAuthConfig } from "../azure/ApiCenter/contracts";
 import { ext } from "../extensionVariables";
 import { ApiVersionDefinitionTreeItem } from "../tree/ApiVersionDefinitionTreeItem";
 import { UiStrings } from "../uiStrings";
@@ -12,11 +15,23 @@ import { writeToTemporaryFile } from "../utils/fsUtil";
 import { OpenApiUtils } from "../utils/openApiUtils";
 
 export namespace GenerateHttpFile {
+    interface ApiKeySecuritySchemes {
+        [key: string]: OpenAPIV3.ApiKeySecurityScheme;
+    };
+    interface ApiKeySecuritySchemesWithValue {
+        [key: string]: OpenAPIV3.ApiKeySecurityScheme & { value: string };
+    };
+
     export async function generateHttpFile(context: IActionContext, node?: ApiVersionDefinitionTreeItem) {
-        const definitionFileRaw = await ext.openApiEditor.getData(node!);
-        const api = await OpenApiUtils.pasreDefinitionFileRawToOpenAPIV3FullObject(definitionFileRaw);
-        const httpFileContent = pasreSwaggerObjectToHttpFileContent(api);
-        await writeToHttpFile(node!, httpFileContent);
+        await vscode.window.withProgress({
+            location: vscode.ProgressLocation.Notification,
+            title: UiStrings.GeneratingHttpFile
+        }, async (progress, token) => {
+            const definitionFileRaw = await ext.openApiEditor.getData(node!);
+            const api = await OpenApiUtils.pasreDefinitionFileRawToOpenAPIV3FullObject(definitionFileRaw);
+            const httpFileContent = await parseSwaggerObjectToHttpFileContent(api, node!);
+            await writeToHttpFile(node!, httpFileContent);
+        });
 
         EnsureExtension.ensureExtension(context, {
             extensionId: 'humao.rest-client',
@@ -24,7 +39,92 @@ export namespace GenerateHttpFile {
         });
     }
 
-    export function pasreSwaggerObjectToHttpFileContent(api: OpenAPIV3.Document): string {
+    export async function parseSwaggerObjectToHttpFileContent(api: OpenAPIV3.Document, node: ApiVersionDefinitionTreeItem): Promise<string> {
+        const apiKeySecuritySchemes = getApiKeySecuritySchemes(api);
+        const apiKeySecuritySchemesWithValue = await getApiKeySecuritySchemesWithValue(apiKeySecuritySchemes, node!);
+        return parseSwaggerObjectToHttpFileContentWithAuth(api, apiKeySecuritySchemesWithValue);
+    }
+
+    function getApiKeySecuritySchemes(api: OpenAPIV3.Document): ApiKeySecuritySchemes {
+        return Object.fromEntries(
+            Object.entries(api.components?.securitySchemes || {}).filter(
+                ([, scheme]) => (scheme as OpenAPIV3.SecuritySchemeObject).type === 'apiKey'
+            )
+        ) as ApiKeySecuritySchemes;
+    }
+
+    async function getApiKeySecuritySchemesWithValue(apiKeySecuritySchemes: ApiKeySecuritySchemes, node: ApiVersionDefinitionTreeItem): Promise<ApiKeySecuritySchemesWithValue> {
+        const apiCenterService = new ApiCenterService(node?.subscription!, getResourceGroupFromId(node?.id!), node?.apiCenterName!);
+        const [{ value: accesses }, { value: authConfigs }] = await Promise.all([
+            apiCenterService.getApiCenterApiAccesses(node.apiCenterApiName, node.apiCenterApiVersionName),
+            apiCenterService.getApiCenterAuthConfigs()
+        ]);
+
+        const accessesWithAuthConfig: (ApiCenterApiAccess & ApiCenterAuthConfig)[] = [];
+
+        for (const access of accesses) {
+            const authConfig = authConfigs.find(authConfig => authConfig.id.endsWith(access.properties.authConfigResourceId));
+
+            if (authConfig) {
+                access.properties = { ...access.properties, ...authConfig.properties };
+                accessesWithAuthConfig.push(access as (ApiCenterApiAccess & ApiCenterAuthConfig));
+            }
+        }
+
+        if (accessesWithAuthConfig.length === 0) {
+            return {};
+        }
+
+        const apiKeySecuritySchemesWithValue: ApiKeySecuritySchemesWithValue = {};
+
+        for (const key in apiKeySecuritySchemes) {
+            const apiKeySecurityScheme = apiKeySecuritySchemes[key];
+
+            const filteredAccesses = accessesWithAuthConfig.filter(access => access.properties.apiKey?.name === apiKeySecurityScheme.name && access.properties.apiKey?.in === apiKeySecurityScheme.in);
+            let accessName: string = "";
+
+            if (filteredAccesses.length === 1) {
+                accessName = filteredAccesses[0].name;
+            } else if (filteredAccesses.length > 1) {
+                const quickPickItems = filteredAccesses.map(access => ({
+                    label: access.name,
+                    description: access.properties.title,
+                    detail: access.properties.description,
+                    value: access
+                })) as (vscode.QuickPickItem & { value?: ApiCenterApiAccess })[];
+                quickPickItems.push({
+                    label: "",
+                    kind: vscode.QuickPickItemKind.Separator
+                });
+                quickPickItems.push({
+                    label: UiStrings.ContinueWithoutSelecting,
+                });
+                const selectedAccess = await vscode.window.showQuickPick(
+                    quickPickItems,
+                    { placeHolder: vscode.l10n.t(UiStrings.SelectAccess, apiKeySecurityScheme.name) }
+                );
+                if (selectedAccess) {
+                    if (selectedAccess.value) {
+                        accessName = selectedAccess.value.name;
+                    }
+                } else {
+                    throw new UserCancelledError();
+                }
+            }
+
+            if (accessName) {
+                const credential = await apiCenterService.getApiCenterApiCredential(node.apiCenterApiName, node.apiCenterApiVersionName, accessName);
+                const credentialValue = credential.apiKey?.value;
+                if (credentialValue) {
+                    apiKeySecuritySchemesWithValue[key] = { ...apiKeySecurityScheme, value: credentialValue };
+                }
+            }
+        }
+
+        return apiKeySecuritySchemesWithValue;
+    }
+
+    function parseSwaggerObjectToHttpFileContentWithAuth(api: OpenAPIV3.Document, apiKeySecuritySchemesWithValue: ApiKeySecuritySchemesWithValue): string {
         const httpRequests: string[] = [];
         const variableNames = new Set<string>();
 
@@ -36,8 +136,11 @@ export namespace GenerateHttpFile {
                     const operation: OpenAPIV3.OperationObject = (api.paths[path] as any)[method];
                     const parameters = operation.parameters as (OpenAPIV3.ParameterObject[] | undefined);
 
-                    const queryString = parseQueryString(parameters, variableNames);
+                    let queryString = parseQueryString(parameters, variableNames);
                     let header = parseHeader(parameters, variableNames);
+
+                    ({ header, queryString } = parseSecurity(header, queryString, operation.security || api.security || [], apiKeySecuritySchemesWithValue));
+
                     const body = parseBody(operation.requestBody as (OpenAPIV3.RequestBodyObject | undefined));
 
                     if (body) {
@@ -124,6 +227,49 @@ ${httpRequestsContent}`;
         variableNames.add(parameterObject.name);
 
         return `{{${parameterObject.name}}}`;
+    }
+
+    function parseSecurity(header: string, queryString: string, securityRequirementObject: OpenAPIV3.SecurityRequirementObject[], apiKeySecuritySchemesWithValue: ApiKeySecuritySchemesWithValue): { header: string, queryString: string } {
+        for (const security of securityRequirementObject) {
+            if (Object.keys(security).every(key => key in apiKeySecuritySchemesWithValue)) {
+                let cookie = "";
+                for (const key in security) {
+                    const apiKeySecurityScheme = apiKeySecuritySchemesWithValue[key];
+                    const apiKeyName = apiKeySecurityScheme.name;
+                    const apiKeyValue = apiKeySecurityScheme.value;
+                    if (apiKeySecurityScheme.in === "header") {
+                        if (header) {
+                            header += `\n${apiKeyName}: ${apiKeyValue}`;
+                        } else {
+                            header = `${apiKeyName}: ${apiKeyValue}`;
+                        }
+                    } else if (apiKeySecurityScheme.in === "query") {
+                        if (queryString) {
+                            queryString += `&${apiKeyName}=${apiKeyValue}`;
+                        } else {
+                            queryString = `?${apiKeyName}=${apiKeyValue}`;
+                        }
+                    } else if (apiKeySecurityScheme.in === "cookie") {
+                        if (cookie) {
+                            cookie += `; ${apiKeyName}=${apiKeyValue}`;
+                        } else {
+                            cookie = `${apiKeyName}=${apiKeyValue}`;
+                        }
+                    }
+                }
+                if (cookie) {
+                    cookie = `Cookie: ${cookie}`;
+                    if (header) {
+                        header += `\n${cookie}`;
+                    } else {
+                        header = cookie;
+                    }
+                }
+                break; // Pick the first set of security schemes
+            }
+        };
+
+        return { header, queryString };
     }
 
     function parseBody(requestBody: OpenAPIV3.RequestBodyObject | undefined): string {

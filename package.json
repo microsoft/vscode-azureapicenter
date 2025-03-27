@@ -171,6 +171,11 @@
         "category": "Azure API Center"
       },
       {
+        "command": "azure-api-center.getCredential",
+        "title": "%azure-api-center.commands.getCredential.title%",
+        "category": "Azure API Center"
+      },
+      {
         "command": "azure-api-center.apiCenterWorkspace.addApis",
         "title": "%azure-api-center.commands.apiCenterWorkspace.addApis.title%",
         "icon": "$(add)",
@@ -339,6 +344,10 @@
           "group": "function@1"
         },
         {
+          "command": "azure-api-center.getCredential",
+          "when": "view == apiCenterTreeView && viewItem == azureApiCenterApiAccess"
+        },
+        {
           "command": "azure-api-center.apiCenterWorkspace.removeApi",
           "when": "view == apiCenterWorkspace && viewItem == azureApiCenterDataPlane",
           "group": "inline@0"
@@ -443,6 +452,10 @@
         },
         {
           "command": "azure-api-center.openInPortal",
+          "when": "never"
+        },
+        {
+          "command": "azure-api-center.getCredential",
           "when": "never"
         },
         {

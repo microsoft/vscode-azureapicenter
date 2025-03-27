@@ -23,6 +23,7 @@ import { generateApiLibrary } from './commands/generateApiLibrary';
 import { generateApiSpecFromCodeProject } from './commands/generateApiSpecFromCodeProject';
 import { GenerateHttpFile } from './commands/generateHttpFile';
 import { generateMarkdownDocument } from './commands/generateMarkdownDocument';
+import { getCredential } from './commands/getCredential';
 import { handleUri } from './commands/handleUri';
 import { importOpenApi } from './commands/importOpenApi';
 import { openAPiInSwagger } from './commands/openApiInSwagger';
@@ -123,6 +124,8 @@ export async function activate(context: vscode.ExtensionContext) {
 
     registerCommandWithTelemetry('azure-api-center.deleteCustomFunction', deleteCustomFunction);
 
+    registerCommandWithTelemetry('azure-api-center.getCredential', getCredential);
+
     registerCommandWithTelemetry('azure-api-center.agent.getPlugins', getPlugins);
 
     registerCommandWithTelemetry('azure-api-center.apiCenterTreeView.refresh', async (context: IActionContext) => refreshTree(context));
@@ -194,7 +197,6 @@ function setupControlView(context: vscode.ExtensionContext) {
     context.subscriptions.push(treeView);
     treeView.onDidChangeSelection((e: vscode.TreeViewSelectionChangeEvent<AzExtTreeItem>) => {
         const selectedNode = e.selection[0];
-        ext.outputChannel.appendLine(selectedNode.id!);
         ext.context.globalState.update(selectedNodeKey, selectedNode.id);
     });
 }

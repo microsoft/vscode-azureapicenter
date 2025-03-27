@@ -33,6 +33,7 @@
     "azure-api-center.commands.apiCenterWorkspace.addApis.title": "Connect to an API Center",
     "azure-api-center.commands.apiCenterWorkspace.removeApis.title": "Disconnect from API Center",
     "azure-api-center.commands.apiCenterWorkspace.learnApiPortal.title": "Learn about API Center Portal",
+    "azure-api-center.commands.getCredential.title": "Get Credential",
     "azure-api-center.commands.createDeclarativeAgent.title": "Create M365 Copilot Declarative Agent",
     "azure-api-center.commands.openInPortal.title": "Open in Azure Portal"
 }
