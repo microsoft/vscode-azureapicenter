@@ -8,7 +8,8 @@ import { TelemetryClient } from './common/telemetryClient';
 
 // Tree View UI
 import { registerAzureUtilsExtensionVariables } from '@microsoft/vscode-azext-azureutils';
-import { AzExtTreeDataProvider, AzExtTreeItem, CommandCallback, IActionContext, IParsedError, createAzExtOutputChannel, isUserCancelledError, parseError, registerCommand, registerEvent } from '@microsoft/vscode-azext-utils';
+import { AzExtTreeDataProvider, AzExtTreeItem, CommandCallback, IActionContext, IParsedError, createAzExtLogOutputChannel, isUserCancelledError, parseError, registerCommand, registerEvent } from '@microsoft/vscode-azext-utils';
+import { getSubscriptionProviderFactory } from "./azure/azureAccount/getSubscriptionProviderFactory";
 import { AzureAccount } from "./azure/azureLogin/azureAccount";
 import { AzureSessionProviderHelper } from "./azure/azureLogin/azureSessionProvider";
 import { AzureDataSessionProviderHelper } from "./azure/azureLogin/dataSessionProvider";
@@ -58,9 +59,11 @@ export async function activate(context: vscode.ExtensionContext) {
 
     TelemetryClient.sendEvent('activate');
 
+    ext.subscriptionProviderFactory = getSubscriptionProviderFactory(context);
+
     // https://github.com/microsoft/vscode-azuretools/tree/main/azure
     ext.context = context;
-    ext.outputChannel = createAzExtOutputChannel('Azure API Center', ext.prefix);
+    ext.outputChannel = createAzExtLogOutputChannel('Azure API Center');
     context.subscriptions.push(ext.outputChannel);
     registerAzureUtilsExtensionVariables(ext);
 
