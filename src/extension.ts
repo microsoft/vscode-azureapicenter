@@ -9,6 +9,7 @@ import { TelemetryClient } from './common/telemetryClient';
 // Tree View UI
 import { registerAzureUtilsExtensionVariables } from '@microsoft/vscode-azext-azureutils';
 import { AzExtTreeDataProvider, AzExtTreeItem, CommandCallback, IActionContext, IParsedError, createAzExtOutputChannel, isUserCancelledError, parseError, registerCommand, registerEvent } from '@microsoft/vscode-azext-utils';
+import { createVSCodeAzureSubscriptionProviderFactory } from './azure/azureAccount/VSCodeAzureSubscriptionProvider';
 import { AzureAccount } from "./azure/azureLogin/azureAccount";
 import { AzureSessionProviderHelper } from "./azure/azureLogin/azureSessionProvider";
 import { AzureDataSessionProviderHelper } from "./azure/azureLogin/dataSessionProvider";
@@ -57,6 +58,8 @@ export async function activate(context: vscode.ExtensionContext) {
     await TelemetryClient.initialize(context);
 
     TelemetryClient.sendEvent('activate');
+
+    ext.subscriptionProviderFactory = createVSCodeAzureSubscriptionProviderFactory();
 
     // https://github.com/microsoft/vscode-azuretools/tree/main/azure
     ext.context = context;

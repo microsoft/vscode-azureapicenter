@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 import { Subscription } from "@azure/arm-resources-subscriptions";
+import { AzureSubscriptionProvider } from '@microsoft/vscode-azext-azureauth';
 import {
   AzExtParentTreeItem,
   AzExtTreeItem,
@@ -13,10 +14,10 @@ import { AzureSessionProvider, ReadyAzureSessionProvider, SelectionType, SignInS
 import { AzureAuth } from "../azure/azureLogin/azureAuth";
 import { AzureSubscriptionHelper } from "../azure/azureLogin/subscriptions";
 import { AzureAccountType } from "../constants";
+import { ext } from "../extensionVariables";
 import { UiStrings } from "../uiStrings";
 import { GeneralUtils } from "../utils/generalUtils";
 import { createSubscriptionTreeItem } from "./SubscriptionTreeItem";
-
 export function createAzureAccountTreeItem(
   sessionProvider: AzureSessionProvider,
 ): AzExtParentTreeItem & { dispose(): unknown } {
@@ -24,6 +25,8 @@ export function createAzureAccountTreeItem(
 }
 
 export class AzureAccountTreeItem extends AzExtParentTreeItem {
+  private subscriptionProvider: AzureSubscriptionProvider | undefined;
+  private statusSubscription: vscode.Disposable | undefined;
   private subscriptionTreeItems: AzExtTreeItem[] | undefined;
   public static contextValue: string = "azureApiCenterAzureAccount";
   public readonly contextValue: string = AzureAccountTreeItem.contextValue;
@@ -48,6 +51,52 @@ export class AzureAccountTreeItem extends AzExtParentTreeItem {
 
   public hasMoreChildrenImpl(): boolean {
     return false;
+  }
+
+  public async getAzureSubscriptionProvider(): Promise<AzureSubscriptionProvider> {
+    // override for testing
+    if (!this.subscriptionProvider) {
+      this.subscriptionProvider = await ext.subscriptionProviderFactory();
+    }
+
+    this.statusSubscription = vscode.authentication.onDidChangeSessions((evt: vscode.AuthenticationSessionsChangeEvent) => {
+      if (evt.provider.id === 'microsoft' || evt.provider.id === 'microsoft-sovereign-cloud') {
+        if (Date.now() > nextSessionChangeMessageMinimumTime) {
+          nextSessionChangeMessageMinimumTime = Date.now() + sessionChangeMessageInterval;
+          // This event gets HEAVILY spammed and needs to be debounced
+          // Suppress additional messages for 1 second after the first one
+          this.notifyTreeDataChanged();
+        }
+      }
+    });
+
+    return this.subscriptionProvider;
+
+  }
+
+  notifyTreeDataChanged(data: void | ResourceModelBase | ResourceModelBase[] | null | undefined): void {
+    const rgItems: ResourceGroupsItem[] = [];
+
+    // eslint-disable-next-line no-extra-boolean-cast
+    if (!!data) {
+      // e was defined, either a single item or array
+      // Make an array for consistency
+      const branchItems: ResourceModelBase[] = Array.isArray(data) ? data : [data];
+
+      for (const branchItem of branchItems) {
+        const rgItem = this.itemCache.getItemForBranchItem(branchItem);
+
+        if (rgItem) {
+          rgItems.push(rgItem);
+        }
+      }
+      this.onDidChangeTreeDataEmitter.fire(rgItems);
+    } else {
+      // e was null/undefined/void
+      // Translate it to fire on all elements for this branch data provider
+      // TODO
+      this.onDidChangeTreeDataEmitter.fire();
+    }
   }
 
   // no need to sort the array
@@ -185,6 +234,9 @@ export class AzureAccountTreeItem extends AzExtParentTreeItem {
     return this.subscriptionTreeItems!;
   }
 }
+
+let nextSessionChangeMessageMinimumTime = 0;
+const sessionChangeMessageInterval = 1 * 1000; // 1 second
 
 function getSubscriptionContext(
   sessionProvider: ReadyAzureSessionProvider,

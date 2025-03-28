@@ -1,5 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
+import { AzureSubscriptionProvider } from "@microsoft/vscode-azext-azureauth";
 import { AzExtParentTreeItem, AzExtTreeDataProvider, IAzExtOutputChannel } from "@microsoft/vscode-azext-utils";
 import { ExtensionContext } from "vscode";
 import { DataPlaneAccount } from "./azure/ApiCenter/ApiCenterDataPlaneAPIs";
@@ -22,4 +23,6 @@ export namespace ext {
     export let dataPlaneAccounts: DataPlaneAccount[];
     export let dataPlaneTreeDataProvider: AzExtTreeDataProvider;
     export let dataPlaneTreeItem: AzExtParentTreeItem & { dispose(): unknown; };
+
+    export let subscriptionProviderFactory: () => Promise<AzureSubscriptionProvider>;
 }
