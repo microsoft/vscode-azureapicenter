@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
+import { signInToTenant } from '@microsoft/vscode-azext-azureauth';
 import * as vscode from 'vscode';
 import { TelemetryClient } from './common/telemetryClient';
-
 // Commands
 // Copilot
 
@@ -10,9 +10,10 @@ import { TelemetryClient } from './common/telemetryClient';
 import { registerAzureUtilsExtensionVariables } from '@microsoft/vscode-azext-azureutils';
 import { AzExtTreeDataProvider, AzExtTreeItem, CommandCallback, IActionContext, IParsedError, createAzExtOutputChannel, isUserCancelledError, parseError, registerCommand, registerEvent } from '@microsoft/vscode-azext-utils';
 import { createVSCodeAzureSubscriptionProviderFactory } from './azure/azureAccount/VSCodeAzureSubscriptionProvider';
-import { AzureAccount } from "./azure/azureLogin/azureAccount";
 import { AzureSessionProviderHelper } from "./azure/azureLogin/azureSessionProvider";
 import { AzureDataSessionProviderHelper } from "./azure/azureLogin/dataSessionProvider";
+import { logIn } from './commands/accounts/logIn';
+import { selectSubscriptions } from './commands/accounts/selectSubscriptions';
 import { ConnectDataPlaneApi } from "./commands/addDataPlaneApis";
 import { cleanupSearchResult } from './commands/cleanUpSearch';
 import { CreateDeclarativeAgent } from './commands/createDeclarativeAgent';
@@ -133,9 +134,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
     registerCommandWithTelemetry('azure-api-center.apiCenterTreeView.refresh', async (context: IActionContext) => refreshTree(context));
 
-    registerCommandWithTelemetry('azure-api-center.signInToAzure', AzureAccount.signInToAzure);
-    registerCommandWithTelemetry('azure-api-center.selectTenant', AzureAccount.selectTenant);
-    registerCommandWithTelemetry('azure-api-center.selectSubscriptions', AzureAccount.selectSubscriptions);
+    registerCommandWithTelemetry('azure-api-center.signInToAzure', (context: IActionContext) => logIn(context));
+    registerCommandWithTelemetry('azure-api-center.selectTenant', async () => signInToTenant(await ext.subscriptionProviderFactory()));
+    registerCommandWithTelemetry('azure-api-center.selectSubscriptions', (context: IActionContext) => selectSubscriptions(context));
     registerCommandWithTelemetry('azure-api-center.openUrl', openUrlFromTreeNode);
     registerCommandWithTelemetry('azure-api-center.apiCenterWorkspace.signInToDataPlane', SignInToDataPlane);
     registerCommandWithTelemetry('azure-api-center.apiCenterWorkspace.refresh', async (context: IActionContext) => ext.dataPlaneTreeItem.refresh(context));

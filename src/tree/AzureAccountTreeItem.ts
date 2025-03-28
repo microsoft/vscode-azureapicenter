@@ -1,22 +1,22 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
-import { Subscription } from "@azure/arm-resources-subscriptions";
-import { AzureSubscriptionProvider } from '@microsoft/vscode-azext-azureauth';
+import { Environment } from '@azure/ms-rest-azure-env';
+import { AzureSubscription, AzureSubscriptionProvider, getUnauthenticatedTenants } from '@microsoft/vscode-azext-azureauth';
 import {
   AzExtParentTreeItem,
+  AzExtServiceClientCredentials,
   AzExtTreeItem,
   GenericTreeItem,
   ISubscriptionContext,
   registerEvent
 } from "@microsoft/vscode-azext-utils";
 import * as vscode from "vscode";
-import { AzureSessionProvider, ReadyAzureSessionProvider, SelectionType, SignInStatus } from "../azure/azureLogin/authTypes";
-import { AzureAuth } from "../azure/azureLogin/azureAuth";
+import { AzureSessionProvider } from "../azure/azureLogin/authTypes";
 import { AzureSubscriptionHelper } from "../azure/azureLogin/subscriptions";
+import { isLoggingIn } from "../commands/accounts/logIn";
 import { AzureAccountType } from "../constants";
 import { ext } from "../extensionVariables";
 import { UiStrings } from "../uiStrings";
-import { GeneralUtils } from "../utils/generalUtils";
 import { createSubscriptionTreeItem } from "./SubscriptionTreeItem";
 export function createAzureAccountTreeItem(
   sessionProvider: AzureSessionProvider,
@@ -26,7 +26,7 @@ export function createAzureAccountTreeItem(
 
 export class AzureAccountTreeItem extends AzExtParentTreeItem {
   private subscriptionProvider: AzureSubscriptionProvider | undefined;
-  private statusSubscription: vscode.Disposable | undefined;
+  // private statusSubscription: vscode.Disposable | undefined;
   private subscriptionTreeItems: AzExtTreeItem[] | undefined;
   public static contextValue: string = "azureApiCenterAzureAccount";
   public readonly contextValue: string = AzureAccountTreeItem.contextValue;
@@ -59,44 +59,8 @@ export class AzureAccountTreeItem extends AzExtParentTreeItem {
       this.subscriptionProvider = await ext.subscriptionProviderFactory();
     }
 
-    this.statusSubscription = vscode.authentication.onDidChangeSessions((evt: vscode.AuthenticationSessionsChangeEvent) => {
-      if (evt.provider.id === 'microsoft' || evt.provider.id === 'microsoft-sovereign-cloud') {
-        if (Date.now() > nextSessionChangeMessageMinimumTime) {
-          nextSessionChangeMessageMinimumTime = Date.now() + sessionChangeMessageInterval;
-          // This event gets HEAVILY spammed and needs to be debounced
-          // Suppress additional messages for 1 second after the first one
-          this.notifyTreeDataChanged();
-        }
-      }
-    });
-
     return this.subscriptionProvider;
 
-  }
-
-  notifyTreeDataChanged(data: void | ResourceModelBase | ResourceModelBase[] | null | undefined): void {
-    const rgItems: ResourceGroupsItem[] = [];
-
-    // eslint-disable-next-line no-extra-boolean-cast
-    if (!!data) {
-      // e was defined, either a single item or array
-      // Make an array for consistency
-      const branchItems: ResourceModelBase[] = Array.isArray(data) ? data : [data];
-
-      for (const branchItem of branchItems) {
-        const rgItem = this.itemCache.getItemForBranchItem(branchItem);
-
-        if (rgItem) {
-          rgItems.push(rgItem);
-        }
-      }
-      this.onDidChangeTreeDataEmitter.fire(rgItems);
-    } else {
-      // e was null/undefined/void
-      // Translate it to fire on all elements for this branch data provider
-      // TODO
-      this.onDidChangeTreeDataEmitter.fire();
-    }
   }
 
   // no need to sort the array
@@ -108,8 +72,9 @@ export class AzureAccountTreeItem extends AzExtParentTreeItem {
     const existingSubscriptionTreeItems: AzExtTreeItem[] = this.subscriptionTreeItems || [];
     this.subscriptionTreeItems = [];
 
-    switch (this.sessionProvider.signInStatus) {
-      case SignInStatus.Initializing:
+    const subscriptionProvider = await this.getAzureSubscriptionProvider();
+    if (subscriptionProvider) {
+      if (isLoggingIn()) {
         return [
           new GenericTreeItem(this, {
             label: UiStrings.Loading,
@@ -117,8 +82,52 @@ export class AzureAccountTreeItem extends AzExtParentTreeItem {
             id: "azureapicenterAccountLoading",
             iconPath: new vscode.ThemeIcon("loading~spin"),
           }),
-        ];
-      case SignInStatus.SignedOut:
+        ]
+      } else if (await subscriptionProvider.isSignedIn()) {
+        let subscriptions: AzureSubscription[];
+        if ((subscriptions = await subscriptionProvider.getSubscriptions(true)).length === 0) {
+          if (
+            // If there are no subscriptions at all (ignoring filters) AND if unauthenicated tenants exist
+            (await subscriptionProvider.getSubscriptions(false)).length === 0 &&
+            (await getUnauthenticatedTenants(subscriptionProvider)).length > 0
+          ) {
+            return [
+              new GenericTreeItem(this, {
+                label: UiStrings.SelectTenant,
+                commandId: "azure-api-center.selectTenant",
+                contextValue: "azureCommand",
+                id: "azureapicenterAccountSelectTenant",
+                iconPath: new vscode.ThemeIcon("account"),
+                includeInTreeItemPicker: true,
+              }),
+            ];
+          } else {
+            return [
+              new GenericTreeItem(this, {
+                label: UiStrings.SelectSubscriptions,
+                commandId: "azure-api-center.selectSubscriptions",
+                contextValue: "azureCommand",
+                id: "azureapicenterSubscription",
+                includeInTreeItemPicker: true,
+              }),
+            ];
+          }
+        } else {
+          this.subscriptionTreeItems = await Promise.all(
+            subscriptions.map(async (subscription: any) => {
+              const existingTreeItem: AzExtTreeItem | undefined = existingSubscriptionTreeItems.find(
+                (ti) => ti.id === subscription.subscriptionId,
+              );
+              if (existingTreeItem) {
+                return existingTreeItem;
+              } else {
+                const subscriptionContext = createSubscriptionContext(subscription);
+                return await createSubscriptionTreeItem(this, subscriptionContext);
+              }
+            }),
+          );
+        }
+      } else {
         return [
           new GenericTreeItem(this, {
             label: UiStrings.SignIntoAzure,
@@ -145,115 +154,43 @@ export class AzureAccountTreeItem extends AzExtParentTreeItem {
             includeInTreeItemPicker: true,
           })
         ];
-      case SignInStatus.SigningIn:
-        return [
-          new GenericTreeItem(this, {
-            label: UiStrings.WaitForAzureSignIn,
-            contextValue: "azureCommand",
-            id: "azureapicenterAccountSigningIn",
-            iconPath: new vscode.ThemeIcon("loading~spin"),
-          }),
-        ];
+      }
     }
-
-    if (this.sessionProvider.selectedTenant === null && this.sessionProvider.availableTenants.length > 1) {
-      // Signed in, but no tenant selected, AND there is more than one tenant to choose from.
-      return [
-        new GenericTreeItem(this, {
-          label: UiStrings.SelectTenant,
-          commandId: "azure-api-center.selectTenant",
-          contextValue: "azureCommand",
-          id: "azureapicenterAccountSelectTenant",
-          iconPath: new vscode.ThemeIcon("account"),
-          includeInTreeItemPicker: true,
-        }),
-      ];
-    }
-
-    // Either we have a selected tenant, or there is only one available tenant and it's not selected
-    // because it requires extra interaction. Calling `getAuthSession` will complete that process.
-    // We will need the returned auth session in any case for creating a subscription context.
-    const session = await this.sessionProvider.getAuthSession();
-    if (GeneralUtils.failed(session) || !AzureAuth.isReady(this.sessionProvider)) {
-      return [
-        new GenericTreeItem(this, {
-          label: UiStrings.ErrorAuthenticating,
-          contextValue: "azureCommand",
-          id: "AzureAccountError",
-          iconPath: new vscode.ThemeIcon("error"),
-        }),
-      ];
-    }
-
-    const subscriptions = await AzureSubscriptionHelper.getSubscriptions(this.sessionProvider, SelectionType.Filtered);
-    if (GeneralUtils.failed(subscriptions)) {
-      return [
-        new GenericTreeItem(this, {
-          label: UiStrings.ErrorLoadingSubscriptions,
-          contextValue: "azureCommand",
-          id: "AzureAccountError",
-          iconPath: new vscode.ThemeIcon("error"),
-          description: subscriptions.error,
-        }),
-      ];
-    }
-
-    if (subscriptions.result.length === 0) {
-      return [
-        new GenericTreeItem(this, {
-          label: UiStrings.SelectSubscriptions,
-          commandId: "azure-api-center.selectSubscriptions",
-          contextValue: "azureCommand",
-          id: "azureapicenterSubscription",
-          includeInTreeItemPicker: true,
-        }),
-      ];
-    }
-
-    // We've confirmed above that the provider is ready.
-    const readySessionProvider: ReadyAzureSessionProvider = this.sessionProvider;
-
-    this.subscriptionTreeItems = await Promise.all(
-      subscriptions.result.map(async (subscription: any) => {
-        const existingTreeItem: AzExtTreeItem | undefined = existingSubscriptionTreeItems.find(
-          (ti) => ti.id === subscription.subscriptionId,
-        );
-        if (existingTreeItem) {
-          return existingTreeItem;
-        } else {
-          const subscriptionContext = getSubscriptionContext(
-            readySessionProvider,
-            session.result,
-            subscription,
-          );
-          return await createSubscriptionTreeItem(this, subscriptionContext);
-        }
-      }),
-    );
 
     return this.subscriptionTreeItems!;
   }
 }
 
-let nextSessionChangeMessageMinimumTime = 0;
-const sessionChangeMessageInterval = 1 * 1000; // 1 second
-
-function getSubscriptionContext(
-  sessionProvider: ReadyAzureSessionProvider,
-  session: vscode.AuthenticationSession,
-  subscription: Subscription,
-): ISubscriptionContext {
-  const credentials = AzureAuth.getCredential(sessionProvider);
-  const environment = AzureAuth.getEnvironment();
-
+function createSubscriptionContext(subscription: AzureSubscription): ISubscriptionContext {
   return {
-    credentials,
-    subscriptionDisplayName: subscription.displayName || "",
-    subscriptionId: subscription.subscriptionId || "",
-    subscriptionPath: `/subscriptions/${subscription.subscriptionId}`,
-    tenantId: subscription.tenantId || "",
-    userId: session.account.id,
-    environment,
-    isCustomCloud: environment.name === "AzureCustomCloud",
+    environment: Environment.AzureCloud,
+    isCustomCloud: false,
+    subscriptionDisplayName: subscription.name,
+    subscriptionId: subscription.subscriptionId,
+    subscriptionPath: '',
+    tenantId: '',
+    userId: '',
+    credentials: createCredential(subscription.authentication.getSession)
   };
 }
+
+function createCredential(getSession: (scopes?: string[]) => vscode.ProviderResult<vscode.AuthenticationSession>): AzExtServiceClientCredentials {
+  return {
+    getToken: async (scopes?: string | string[]) => {
+      if (typeof scopes === 'string') {
+        scopes = [scopes];
+      }
+
+      const session = await getSession(scopes);
+
+      if (session) {
+        return {
+          token: session.accessToken
+        };
+      } else {
+        return null;
+      }
+    }
+  };
+}
+
