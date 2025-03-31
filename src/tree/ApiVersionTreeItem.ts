@@ -2,8 +2,9 @@
 // Licensed under the MIT license.
 import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import * as vscode from 'vscode';
-import { IVersionBase } from "../azure/ApiCenterDefines/ApiCenterVersion";
+import { ApiCenterVersionManagement, IVersionBase } from "../azure/ApiCenterDefines/ApiCenterVersion";
 import { UiStrings } from "../uiStrings";
+import { ApiAccessesTreeItem } from "./ApiAccessesTreeItem";
 import { ApiVersionDefinitionsTreeItem } from "./ApiVersionDefinitionsTreeItem";
 export class ApiVersionTreeItem extends AzExtParentTreeItem {
   public readonly childTypeLabel: string = UiStrings.ApiVersionChildTypeLabel;
@@ -11,6 +12,7 @@ export class ApiVersionTreeItem extends AzExtParentTreeItem {
   public readonly contextValue: string = ApiVersionTreeItem.contextValue;
   private readonly _apiCenterApiVersion: IVersionBase;
   public readonly apiVersionDefinitionsTreeItem: ApiVersionDefinitionsTreeItem;
+  public readonly apiAccessesTreeItem?: ApiAccessesTreeItem;
   constructor(
     parent: AzExtParentTreeItem,
     apiCenterName: string,
@@ -19,6 +21,9 @@ export class ApiVersionTreeItem extends AzExtParentTreeItem {
     super(parent);
     this._apiCenterApiVersion = apiCenterApiVersion;
     this.apiVersionDefinitionsTreeItem = new ApiVersionDefinitionsTreeItem(this, apiCenterName, apiCenterApiName, apiCenterApiVersion.generateChild());
+    if (apiCenterApiVersion instanceof ApiCenterVersionManagement) {
+      this.apiAccessesTreeItem = new ApiAccessesTreeItem(this, apiCenterName, apiCenterApiName, apiCenterApiVersion.getName());
+    }
   }
 
   public get iconPath(): TreeItemIconPath {
@@ -38,6 +43,6 @@ export class ApiVersionTreeItem extends AzExtParentTreeItem {
   }
 
   public async loadMoreChildrenImpl(clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
-    return [this.apiVersionDefinitionsTreeItem];
+    return this.apiAccessesTreeItem ? [this.apiVersionDefinitionsTreeItem, this.apiAccessesTreeItem] : [this.apiVersionDefinitionsTreeItem];
   }
 }

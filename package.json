@@ -120,6 +120,11 @@
         "category": "Azure API Center"
       },
       {
+        "command": "azure-api-center.generateApiSpecFromCodeProject",
+        "title": "%azure-api-center.commands.generateApiSpecFromCodeProject.title%",
+        "category": "Azure API Center"
+      },
+      {
         "command": "azure-api-center.cleanupSearchResult",
         "title": "%azure-api-center.commands.cleanupSearchResult.title%",
         "category": "Azure API Center",
@@ -166,6 +171,11 @@
         "category": "Azure API Center"
       },
       {
+        "command": "azure-api-center.getCredential",
+        "title": "%azure-api-center.commands.getCredential.title%",
+        "category": "Azure API Center"
+      },
+      {
         "command": "azure-api-center.apiCenterWorkspace.addApis",
         "title": "%azure-api-center.commands.apiCenterWorkspace.addApis.title%",
         "icon": "$(add)",
@@ -190,8 +200,8 @@
         "category": "Azure API Center"
       },
       {
-        "command": "azure-api-center.apiCenterWorkspace.learnApiCatalog",
-        "title": "%azure-api-center.commands.apiCenterWorkspace.learnApiCatalog.title%",
+        "command": "azure-api-center.apiCenterWorkspace.learnApiPortal",
+        "title": "%azure-api-center.commands.apiCenterWorkspace.learnApiPortal.title%",
         "icon": "$(info)",
         "category": "Azure API Center"
       },
@@ -233,7 +243,7 @@
           "group": "navigation"
         },
         {
-          "command": "azure-api-center.apiCenterWorkspace.learnApiCatalog",
+          "command": "azure-api-center.apiCenterWorkspace.learnApiPortal",
           "when": "view == apiCenterWorkspace",
           "group": "navigation"
         },
@@ -334,6 +344,10 @@
           "group": "function@1"
         },
         {
+          "command": "azure-api-center.getCredential",
+          "when": "view == apiCenterTreeView && viewItem == azureApiCenterApiAccess"
+        },
+        {
           "command": "azure-api-center.apiCenterWorkspace.removeApi",
           "when": "view == apiCenterWorkspace && viewItem == azureApiCenterDataPlane",
           "group": "inline@0"
@@ -351,6 +365,11 @@
         {
           "command": "azure-api-center.generateApiFromCode",
           "when": "github.copilot-chat.activated && resourceScheme == 'file'",
+          "group": "apiCenter"
+        },
+        {
+          "command": "azure-api-center.generateApiSpecFromCodeProject",
+          "when": "github.copilot-chat.activated && workspaceFolderCount >= 1",
           "group": "apiCenter"
         }
       ],
@@ -434,6 +453,14 @@
         {
           "command": "azure-api-center.openInPortal",
           "when": "never"
+        },
+        {
+          "command": "azure-api-center.getCredential",
+          "when": "never"
+        },
+        {
+          "command": "azure-api-center.generateApiSpecFromCodeProject",
+          "when": "workspaceFolderCount >= 1"
         }
       ]
     },

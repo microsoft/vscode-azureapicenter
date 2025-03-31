@@ -20,8 +20,10 @@ import { showOpenApi } from './commands/editOpenApi';
 import { ExportAPI } from './commands/exportApi';
 import { GenerateApiFromCode } from './commands/generateApiFromCode';
 import { generateApiLibrary } from './commands/generateApiLibrary';
+import { generateApiSpecFromCodeProject } from './commands/generateApiSpecFromCodeProject';
 import { GenerateHttpFile } from './commands/generateHttpFile';
 import { generateMarkdownDocument } from './commands/generateMarkdownDocument';
+import { getCredential } from './commands/getCredential';
 import { handleUri } from './commands/handleUri';
 import { importOpenApi } from './commands/importOpenApi';
 import { openAPiInSwagger } from './commands/openApiInSwagger';
@@ -105,6 +107,8 @@ export async function activate(context: vscode.ExtensionContext) {
 
     registerCommandWithTelemetry('azure-api-center.generateApiFromCode', GenerateApiFromCode.generateApiFromCode);
 
+    registerCommandWithTelemetry('azure-api-center.generateApiSpecFromCodeProject', generateApiSpecFromCodeProject);
+
     registerCommandWithTelemetry('azure-api-center.detectBreakingChange', detectBreakingChange);
 
     registerCommandWithTelemetry('azure-api-center.generateMarkdownDocument', generateMarkdownDocument);
@@ -121,6 +125,8 @@ export async function activate(context: vscode.ExtensionContext) {
 
     registerCommandWithTelemetry('azure-api-center.deleteCustomFunction', deleteCustomFunction);
 
+    registerCommandWithTelemetry('azure-api-center.getCredential', getCredential);
+
     registerCommandWithTelemetry('azure-api-center.agent.getPlugins', getPlugins);
 
     registerCommandWithTelemetry('azure-api-center.apiCenterTreeView.refresh', async (context: IActionContext) => refreshTree(context));
@@ -136,7 +142,7 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.commands.executeCommand('workbench.actions.treeView.apiCenterWorkspace.collapseAll');
     });
 
-    registerCommandWithTelemetry('azure-api-center.apiCenterWorkspace.learnApiCatalog', () => vscode.env.openExternal(vscode.Uri.parse(LearnMoreAboutAPICatalog)));
+    registerCommandWithTelemetry('azure-api-center.apiCenterWorkspace.learnApiPortal', () => vscode.env.openExternal(vscode.Uri.parse(LearnMoreAboutAPICatalog)));
 
     registerCommandWithTelemetry('azure-api-center.apiCenterWorkspace.removeApi', removeDataplaneAPI);
 
@@ -194,7 +200,6 @@ function setupControlView(context: vscode.ExtensionContext) {
     context.subscriptions.push(treeView);
     treeView.onDidChangeSelection((e: vscode.TreeViewSelectionChangeEvent<AzExtTreeItem>) => {
         const selectedNode = e.selection[0];
-        ext.outputChannel.appendLine(selectedNode.id!);
         ext.context.globalState.update(selectedNodeKey, selectedNode.id);
     });
 }
