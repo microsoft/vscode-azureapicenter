@@ -7,6 +7,7 @@ import generateApiSpecFromCodeProjectPrompt from "../prompts/generateApiSpecFrom
 export async function generateApiSpecFromCodeProject(context: IActionContext) {
     const query = generateApiSpecFromCodeProjectPrompt();
     await vscode.commands.executeCommand('workbench.action.chat.open', {
-        query
+        query,
+        toolIds: ['azure-api-center_getSpectralRules'],
     });
 }
