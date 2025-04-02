@@ -3,6 +3,7 @@
 import * as vscode from 'vscode';
 import { TelemetryClient } from '../common/telemetryClient';
 import { TelemetryEvent } from '../common/telemetryEvent';
+import { UiStrings } from '../uiStrings';
 import { GenerateOpenApi } from './generateOpenApi';
 
 export class GetSpectralRulesTool implements vscode.LanguageModelTool<void> {
@@ -23,7 +24,7 @@ export class GetSpectralRulesTool implements vscode.LanguageModelTool<void> {
     ) {
         TelemetryClient.sendEvent(TelemetryEvent.getSpectralRulesToolPrepareInvocation);
         return {
-            invocationMessage: `@apicenter: Getting Spectral rules`,
+            invocationMessage: UiStrings.GetSpectralRulesToolInvocationMessage,
         };
     }
 }

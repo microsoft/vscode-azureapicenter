@@ -24,7 +24,8 @@ describe('generateApiSpecFromCodeProject Tests', () => {
 
         const expectedQuery = generateApiSpecFromCodeProjectPrompt();
         sinon.assert.calledWith(executeCommandStub, 'workbench.action.chat.open', {
-            query: expectedQuery
+            query: expectedQuery,
+            toolIds: ['azure-api-center_getSpectralRules'],
         });
     });
 });
