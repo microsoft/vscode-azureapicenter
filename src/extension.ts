@@ -46,6 +46,7 @@ import { testInPostman } from './commands/testInPostman';
 import { ErrorProperties, TelemetryProperties } from './common/telemetryEvent';
 import { LearnMoreAboutAPICatalog, doubleClickDebounceDelay, selectedNodeKey } from './constants';
 import { getPlugins } from './copilot/getPlugins';
+import { GetSpectralRulesTool } from './copilot/getSpectralRulesTool';
 import { ext } from './extensionVariables';
 import { ApiVersionDefinitionTreeItem } from './tree/ApiVersionDefinitionTreeItem';
 import { createAzureAccountTreeItem } from "./tree/AzureAccountTreeItem";
@@ -157,6 +158,8 @@ export async function activate(context: vscode.ExtensionContext) {
             handleUri
         })
     );
+
+    context.subscriptions.push(vscode.lm.registerTool('azure-api-center_getSpectralRules', new GetSpectralRulesTool()));
 }
 
 async function registerCommandWithTelemetry(commandId: string, callback: CommandCallback, debounce?: number): Promise<void> {

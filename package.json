@@ -7,7 +7,7 @@
   "icon": "media/api-center-icon.png",
   "license": "MIT",
   "engines": {
-    "vscode": "^1.91.0"
+    "vscode": "^1.95.0"
   },
   "aiKey": "20f6d4af-3678-4602-ae98-f6724f057cd5",
   "repository": {
@@ -477,6 +477,21 @@
         }
       ]
     },
+    "languageModelTools": [
+      {
+        "name": "azure-api-center_getSpectralRules",
+        "tags": [
+          "azure-api-center"
+        ],
+        "displayName": "%azure-api-center.lmTool.getSpectralRules.displayName%",
+        "canBeReferencedInPrompt": true,
+        "toolReferenceName": "getSpectralRules",
+        "icon": "$(tools)",
+        "userDescription": "%azure-api-center.lmTool.getSpectralRules.userDescription%",
+        "modelDescription": "Get Spectral rules from active API style guide which makes OpenAPI spec compliant with the API style guide. Whenever user wants to generate or update OpenAPI spec, this tool will be used to fetch the rules.",
+        "inputSchema": {}
+      }
+    ],
     "problemMatchers": [
       {
         "name": "optic",
@@ -558,7 +573,7 @@
     "@types/sinon": "^17.0.3",
     "@types/swagger2openapi": "^7.0.4",
     "@types/unzipper": "^0.10.9",
-    "@types/vscode": "^1.90.0",
+    "@types/vscode": "^1.95.0",
     "@typescript-eslint/eslint-plugin": "^6.7.3",
     "@typescript-eslint/parser": "^6.7.3",
     "@vscode/test-cli": "^0.0.6",
