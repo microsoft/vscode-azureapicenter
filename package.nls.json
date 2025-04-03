@@ -35,5 +35,7 @@
     "azure-api-center.commands.apiCenterWorkspace.learnApiPortal.title": "Learn about API Center Portal",
     "azure-api-center.commands.getCredential.title": "Get Credential",
     "azure-api-center.commands.createDeclarativeAgent.title": "Create M365 Copilot Declarative Agent",
-    "azure-api-center.commands.openInPortal.title": "Open in Azure Portal"
+    "azure-api-center.commands.openInPortal.title": "Open in Azure Portal",
+    "azure-api-center.lmTool.getSpectralRules.displayName": "Get Spectral Rules",
+    "azure-api-center.lmTool.getSpectralRules.userDescription": "Get Spectral rules from active API style guide."
 }
