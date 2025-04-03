@@ -24,7 +24,7 @@ export class ApiCenterService {
     const client = new ServiceClient(creds, clientOptions);
     const options: RequestPrepareOptions = {
       method: "HEAD",
-      url: APICenterRestAPIs.GetResrouceGroup(this.susbcriptionContext.subscriptionId, this.resourceGroupName)
+      url: APICenterRestAPIs.GetResrouceGroup(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiVersion)
     };
     const response = await client.sendRequest(options);
     return response.parsedBody;
@@ -46,7 +46,7 @@ export class ApiCenterService {
     const client = new ServiceClient(creds, clientOptions);
     const options: RequestPrepareOptions = {
       method: "GET",
-      url: APICenterRestAPIs.ListServerLocation(this.susbcriptionContext.subscriptionId)
+      url: APICenterRestAPIs.ListServerLocation(this.susbcriptionContext.subscriptionId, this.apiVersion)
     };
     const response = await client.sendRequest(options);
     return response.parsedBody;
@@ -138,7 +138,7 @@ export class ApiCenterService {
     const client = new ServiceClient(creds, clientOptions);
     const options: RequestPrepareOptions = {
       method: "PUT",
-      url: APICenterRestAPIs.CreateResourceGroup(this.susbcriptionContext.subscriptionId, this.resourceGroupName),
+      url: APICenterRestAPIs.CreateResourceGroup(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiVersion),
       body: {
         location: subLocation
       }
