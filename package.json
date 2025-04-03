@@ -206,6 +206,11 @@
         "category": "Azure API Center"
       },
       {
+        "command": "azure-api-center.copyDeploymentUrl",
+        "title": "%azure-api-center.commands.copyDeploymentUrl.title%",
+        "category": "Azure API Center"
+      },
+      {
         "command": "azure-api-center.createDeclarativeAgent",
         "title": "%azure-api-center.commands.createDeclarativeAgent.title%",
         "category": "Azure API Center"
@@ -357,6 +362,10 @@
           "when": "(view == apiCenterTreeView && viewItem == azureApiCenterApiVersionDefinitionTreeItem-openapi)"
         },
         {
+          "command": "azure-api-center.copyDeploymentUrl",
+          "when": "view == apiCenterTreeView && viewItem == azureApiCenterApiDeployment"
+        },
+        {
           "command": "azure-api-center.openInPortal",
           "when": "view == apiCenterTreeView && (viewItem == azureApiCenter || viewItem == azureApiCenterAzureSubscription )"
         }
@@ -456,6 +465,10 @@
         },
         {
           "command": "azure-api-center.getCredential",
+          "when": "never"
+        },
+        {
+          "command": "azure-api-center.copyDeploymentUrl",
           "when": "never"
         },
         {
