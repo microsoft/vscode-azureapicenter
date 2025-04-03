@@ -37,5 +37,5 @@
     "azure-api-center.commands.createDeclarativeAgent.title": "Create M365 Copilot Declarative Agent",
     "azure-api-center.commands.openInPortal.title": "Open in Azure Portal",
     "azure-api-center.lmTool.getSpectralRules.displayName": "Get Spectral Rules",
-    "azure-api-center.lmTool.getSpectralRules.userDescription": "Get Spectral rules from active API Style Guide."
+    "azure-api-center.lmTool.getSpectralRules.userDescription": "Get Spectral rules from active API style guide."
 }
