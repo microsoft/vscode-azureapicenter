@@ -28,14 +28,14 @@ export namespace AzureApiCenterService {
 
         await vscode.window.withProgress({
             location: vscode.ProgressLocation.Notification,
-            title: UiStrings.CreatingApiCenterService
+            title: UiStrings.CreateApiCenterService
         }, async (progress, token) => {
             const rgExist = await apiCenterService.checkResourceGroup();
-            progress.report({ message: UiStrings.CreatingApiVersion });
+            progress.report({ message: UiStrings.GetResourceGroup });
 
             if (validaResourceGroup(rgExist)) {
                 validateResponse(await apiCenterService.createOrUpdateResourceGroup(location));
-                progress.report({ message: UiStrings.CreatingApiVersion });
+                progress.report({ message: UiStrings.CreateResourceGroup });
             }
 
             const result = await apiCenterService.createOrUpdateApiCenterService(location);
@@ -43,13 +43,14 @@ export namespace AzureApiCenterService {
             if (result) {
                 // Retry mechanism to check API center creation status
                 await confrimServerStatusWithRetry(apiCenterService, node, actionContext);
+                progress.report({ message: UiStrings.CreatingApiCenterService });
             } else {
                 throw new Error(UiStrings.FailedToCreateApiCenterService);
             }
         });
     };
     function validaResourceGroup(response: any): boolean {
-        if (response && response.id) {
+        if (response && response == 204) {
             return false;
         }
         return true;

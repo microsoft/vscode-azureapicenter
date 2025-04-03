@@ -90,4 +90,46 @@ describe("ApiCenterService", () => {
         assert.strictEqual(response.isSuccessful, false);
         assert.strictEqual(response.message, "error");
     });
+    it("checkResourceGroup not existed", async () => {
+        const mockResponse = {
+            status: 204,
+            parsedBody: { id: "fakeId", location: "fakeLocation", name: "fakeName" },
+        } as HttpOperationResponse;
+        const sendRequestStub = sandbox.stub(ServiceClient.prototype, "sendRequest");
+        sendRequestStub.onFirstCall().resolves(mockResponse);
+
+        const apiCenterService = new ApiCenterService(subscriptionContext, "fakeResourceGroup", "fakeServiceName");
+        const response = await apiCenterService.checkResourceGroup();
+
+        assert.strictEqual(response, 204);
+    });
+    it("checkResourceGroup existed", async () => {
+        const mockResponse = {
+            status: 400,
+            parsedBody: { id: "fakeId", location: "fakeLocation", name: "fakeName" },
+        } as HttpOperationResponse;
+        const sendRequestStub = sandbox.stub(ServiceClient.prototype, "sendRequest");
+        sendRequestStub.onFirstCall().resolves(mockResponse);
+
+        const apiCenterService = new ApiCenterService(subscriptionContext, "fakeResourceGroup", "fakeServiceName");
+        const response = await apiCenterService.checkResourceGroup();
+
+        assert.strictEqual(response, 400);
+    });
+    it("createOrUpdateResourceGroup succeeded", async () => {
+        const mockResponse = {
+            status: 200,
+            parsedBody: { id: "fakeId", location: "fakeLocation", name: "fakeName" },
+        } as HttpOperationResponse;
+
+        const sendRequestStub = sandbox.stub(ServiceClient.prototype, "sendRequest");
+        sendRequestStub.onFirstCall().resolves(mockResponse);
+
+        const apiCenterService = new ApiCenterService(subscriptionContext, "fakeResourceGroup", "fakeServiceName");
+        const response = await apiCenterService.createOrUpdateResourceGroup("fakeLocation");
+        assert.strictEqual(response.id, "fakeId");
+        assert.strictEqual(response.location, "fakeLocation");
+        assert.strictEqual(response.name, "fakeName");
+    });
+
 });
