@@ -546,7 +546,7 @@
   "devDependencies": {
     "@azure/openai": "^2.0.0",
     "@playwright/test": "^1.42.1",
-    "@stoplight/spectral-core": "^1.19.4",
+    "@stoplight/spectral-core": "^1.19.5",
     "@stoplight/spectral-formats": "^1.8.2",
     "@stoplight/spectral-functions": "^1.9.3",
     "@stoplight/spectral-ruleset-bundler": "^1.6.1",
