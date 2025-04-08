@@ -76,6 +76,9 @@ export type ApiCenterApiDeployment = {
     location: string;
     name: string;
     properties: {
+        server: {
+            runtimeUri: string[];
+        }
     };
     // tslint:disable-next-line:no-reserved-keywords
     type: string;

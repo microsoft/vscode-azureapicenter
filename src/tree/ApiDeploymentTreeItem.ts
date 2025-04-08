@@ -7,10 +7,10 @@ import { ApiCenterApiDeployment } from "../azure/ApiCenter/contracts";
 export class ApiDeploymentTreeItem extends AzExtTreeItem {
   public static contextValue: string = "azureApiCenterApiDeployment";
   public readonly contextValue: string = ApiDeploymentTreeItem.contextValue;
-  private readonly _apiCenterApiDeployment: ApiCenterApiDeployment;
-  constructor(parent: AzExtParentTreeItem, apiCenterApiDeployment: ApiCenterApiDeployment) {
+  constructor(
+    parent: AzExtParentTreeItem,
+    public apiCenterApiDeployment: ApiCenterApiDeployment) {
     super(parent);
-    this._apiCenterApiDeployment = apiCenterApiDeployment;
   }
 
   public get iconPath(): TreeItemIconPath {
@@ -18,10 +18,10 @@ export class ApiDeploymentTreeItem extends AzExtTreeItem {
   }
 
   public get id(): string {
-    return this._apiCenterApiDeployment.id;
+    return this.apiCenterApiDeployment.id;
   }
 
   public get label(): string {
-    return this._apiCenterApiDeployment.name;
+    return this.apiCenterApiDeployment.name;
   }
 }
