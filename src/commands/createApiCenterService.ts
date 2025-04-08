@@ -17,9 +17,14 @@ export namespace AzureApiCenterService {
 
         const apiCenterService = new ApiCenterService(node.subscriptionContext!, serverName, serverName);
 
-        const serverRes = await apiCenterService.getApiServerList();
+        const serverRes = await apiCenterService.getSubServerList();
 
-        const locations = serverRes.resourceTypes.find((item: any) => item.resourceType === 'services').locations;
+        const locations = serverRes.resourceTypes.find((item: any) => item.resourceType === 'services')?.locations;
+
+        if (!locations || locations.length === 0) {
+            vscode.window.showWarningMessage(UiStrings.NoLocationAvailable);
+            return;
+        }
 
         const location = await vscode.window.showQuickPick(locations, { placeHolder: UiStrings.SelectLocation });
         if (!location) {
@@ -30,10 +35,10 @@ export namespace AzureApiCenterService {
             location: vscode.ProgressLocation.Notification,
             title: UiStrings.CreateApiCenterService
         }, async (progress, token) => {
-            const rgExist = await apiCenterService.checkResourceGroup();
+            const rgExist = await apiCenterService.isResourceGroupExist();
             progress.report({ message: UiStrings.GetResourceGroup });
 
-            if (validaResourceGroup(rgExist)) {
+            if (!rgExist) {
                 validateResponse(await apiCenterService.createOrUpdateResourceGroup(location));
                 progress.report({ message: UiStrings.CreateResourceGroup });
             }
@@ -49,18 +54,12 @@ export namespace AzureApiCenterService {
             }
         });
     };
-    function validaResourceGroup(response: any): boolean {
-        if (response && response == 204) {
-            return false;
-        }
-        return true;
-    }
-    function validateResponse(response: any) {
+    export function validateResponse(response: any) {
         if (response && response.message) {
             throw new Error(response.message);
         }
     };
-    async function confrimServerStatusWithRetry(apiCenterService: ApiCenterService, node: SubscriptionTreeItem, actionContext: IActionContext) {
+    export async function confrimServerStatusWithRetry(apiCenterService: ApiCenterService, node: SubscriptionTreeItem, actionContext: IActionContext) {
         let retryCount = 0;
         const maxRetries = 5;
         const retryDelay = 30000; // 30 seconds

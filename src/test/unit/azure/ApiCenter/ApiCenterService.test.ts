@@ -99,9 +99,9 @@ describe("ApiCenterService", () => {
         sendRequestStub.onFirstCall().resolves(mockResponse);
 
         const apiCenterService = new ApiCenterService(subscriptionContext, "fakeResourceGroup", "fakeServiceName");
-        const response = await apiCenterService.checkResourceGroup();
+        const response = await apiCenterService.isResourceGroupExist();
 
-        assert.strictEqual(response, 204);
+        assert.strictEqual(response, false);
     });
     it("checkResourceGroup existed", async () => {
         const mockResponse = {
@@ -112,9 +112,9 @@ describe("ApiCenterService", () => {
         sendRequestStub.onFirstCall().resolves(mockResponse);
 
         const apiCenterService = new ApiCenterService(subscriptionContext, "fakeResourceGroup", "fakeServiceName");
-        const response = await apiCenterService.checkResourceGroup();
+        const response = await apiCenterService.isResourceGroupExist();
 
-        assert.strictEqual(response, 400);
+        assert.strictEqual(response, true);
     });
     it("createOrUpdateResourceGroup succeeded", async () => {
         const mockResponse = {
@@ -131,5 +131,45 @@ describe("ApiCenterService", () => {
         assert.strictEqual(response.location, "fakeLocation");
         assert.strictEqual(response.name, "fakeName");
     });
+    it("createOrUpdateAPICenterService succeeded", async () => {
+        const mockResponse = {
+            status: 200,
+            parsedBody: { id: "fakeId", location: "fakeLocation", name: "fakeName", provisioningState: "Succeeded" },
+        } as HttpOperationResponse;
 
+        const sendRequestStub = sandbox.stub(ServiceClient.prototype, "sendRequest");
+        sendRequestStub.onFirstCall().resolves(mockResponse);
+
+        const apiCenterService = new ApiCenterService(subscriptionContext, "fakeResourceGroup", "fakeServiceName");
+        const response = await apiCenterService.createOrUpdateApiCenterService("fakeLocation");
+        assert.strictEqual(response.id, "fakeId");
+        assert.strictEqual(response.location, "fakeLocation");
+        assert.strictEqual(response.name, "fakeName");
+        assert.strictEqual(response.provisioningState, "Succeeded");
+    });
+    it("createOrUpdateAPICenterService that provisioning", async () => {
+        const mockResponse = {
+            status: 400,
+            parsedBody: { id: "fakeId", location: "fakeLocation", name: "fakeName", provisioningState: "provisioning" },
+        } as HttpOperationResponse;
+
+        const sendRequestStub = sandbox.stub(ServiceClient.prototype, "sendRequest");
+        sendRequestStub.onFirstCall().resolves(mockResponse);
+
+        const apiCenterService = new ApiCenterService(subscriptionContext, "fakeResourceGroup", "fakeServiceName");
+        const response = await apiCenterService.createOrUpdateApiCenterService("fakeLocation");
+
+        assert.strictEqual(response.provisioningState, "provisioning");
+    });
+    it("getSubServerList success", async () => {
+        const mockResponse = {
+            status: 400,
+            parsedBody: { id: "fakeId", namespace: "Microsoft.ApiCenter", registrationPolicy: "RegistrationRequired", registrationState: "Registered" },
+        } as HttpOperationResponse;
+        const sendRequestStub = sandbox.stub(ServiceClient.prototype, "sendRequest");
+        sendRequestStub.onFirstCall().resolves(mockResponse);
+        const apiCenterService = new ApiCenterService(subscriptionContext, "fakeResourceGroup", "fakeServiceName");
+        const response = await apiCenterService.getSubServerList();
+        assert.strictEqual(response.namespace, "Microsoft.ApiCenter");
+    });
 });

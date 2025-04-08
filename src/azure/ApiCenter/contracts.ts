@@ -8,6 +8,21 @@ export type ResourceGroup = {
     name: string;
 };
 
+export type ResourceType = {
+    apiVersions: string[];
+    capabilities: string;
+    locations: string[];
+    resourceType: string;
+}
+
+export type SubServers = {
+    id: string;
+    namespace: string;
+    registrationPolicy: string;
+    registrationState: string;
+    resourceTypes: ResourceType[];
+}
+
 export type ApiCenter = {
     id: string;
     location: string;
