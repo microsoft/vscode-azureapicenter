@@ -1,0 +1,8 @@
+{
+    "servers": {
+        "my-mcp-server-08a3eaa3": {
+            "type": "sse",
+            "url": "http://0.0.0.0:7071/runtime/webhooks/mcp/sse"
+        }
+    }
+}

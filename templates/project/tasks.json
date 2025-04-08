@@ -1,0 +1,43 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "npm install",
+            "type": "shell",
+            "command": "npm install",
+            "hide": true,
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "npm start",
+            "type": "shell",
+            "command": "npm start",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "hide": true,
+            "problemMatcher": [],
+            "dependsOn": [
+                "npm install"
+            ]
+        },
+        {
+            "label": "Install and Start",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "npm install",
+                "npm start"
+            ],
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}

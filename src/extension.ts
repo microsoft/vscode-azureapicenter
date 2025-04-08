@@ -23,6 +23,7 @@ import { generateApiLibrary } from './commands/generateApiLibrary';
 import { generateApiSpecFromCodeProject } from './commands/generateApiSpecFromCodeProject';
 import { GenerateHttpFile } from './commands/generateHttpFile';
 import { generateMarkdownDocument } from './commands/generateMarkdownDocument';
+import { generateMCPSSE } from './commands/generateMCPSSE';
 import { getCredential } from './commands/getCredential';
 import { handleUri } from './commands/handleUri';
 import { importOpenApi } from './commands/importOpenApi';
@@ -149,6 +150,8 @@ export async function activate(context: vscode.ExtensionContext) {
     registerCommandWithTelemetry('azure-api-center.createDeclarativeAgent', CreateDeclarativeAgent.createDeclarativeAgent);
 
     registerCommandWithTelemetry('azure-api-center.openInPortal', openInAzurePortal);
+
+    registerCommandWithTelemetry('azure-api-center.generateMCPSSE', generateMCPSSE);
 
     context.subscriptions.push(
         vscode.window.registerUriHandler({
