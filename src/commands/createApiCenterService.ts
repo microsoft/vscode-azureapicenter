@@ -44,11 +44,12 @@ export namespace AzureApiCenterService {
             }
 
             const result = await apiCenterService.createOrUpdateApiCenterService(location);
+            progress.report({ message: UiStrings.CreatingApiCenterService });
 
             if (result) {
                 // Retry mechanism to check API center creation status
                 await confrimServerStatusWithRetry(apiCenterService, node, actionContext);
-                progress.report({ message: UiStrings.CreatingApiCenterService });
+                // progress.report({ message: UiStrings.CreatingApiCenterService });
             } else {
                 throw new Error(UiStrings.FailedToCreateApiCenterService);
             }

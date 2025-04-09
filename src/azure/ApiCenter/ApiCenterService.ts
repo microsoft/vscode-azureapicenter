@@ -28,10 +28,10 @@ export class ApiCenterService {
     };
     const response = await client.sendRequest(options);
     if (response.status === 204) {
-      return false;
+      return true;
     }
     else if (response.status === 404) {
-      return true;
+      return false;
     }
     else {
       throw new Error(`Failed to check resource group status. Status code: ${response.status}.`);

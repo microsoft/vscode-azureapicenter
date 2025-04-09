@@ -101,7 +101,7 @@ describe("ApiCenterService", () => {
         const apiCenterService = new ApiCenterService(subscriptionContext, "fakeResourceGroup", "fakeServiceName");
         const response = await apiCenterService.isResourceGroupExist();
 
-        assert.strictEqual(response, false);
+        assert.strictEqual(response, true);
     });
     it("checkResourceGroup existed", async () => {
         const mockResponse = {
@@ -114,7 +114,7 @@ describe("ApiCenterService", () => {
         const apiCenterService = new ApiCenterService(subscriptionContext, "fakeResourceGroup", "fakeServiceName");
         const response = await apiCenterService.isResourceGroupExist();
 
-        assert.strictEqual(response, true);
+        assert.strictEqual(response, false);
     });
     it("createOrUpdateResourceGroup succeeded", async () => {
         const mockResponse = {
