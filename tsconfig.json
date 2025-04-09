@@ -16,6 +16,7 @@
 	},
 	"exclude": [
 		"./src/test/e2e",
-		"./evalprompt"
+		"./evalprompt",
+		"./templates"
 	]
 }
