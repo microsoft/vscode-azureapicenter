@@ -24,7 +24,7 @@ export class ApiCenterService {
     const client = new ServiceClient(creds, clientOptions);
     const options: RequestPrepareOptions = {
       method: "HEAD",
-      url: APICenterRestAPIs.GetResrouceGroup(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiVersion)
+      url: APICenterRestAPIs.GetResourceGroup(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiVersion)
     };
     const response = await client.sendRequest(options);
     if (response.status === 204) {

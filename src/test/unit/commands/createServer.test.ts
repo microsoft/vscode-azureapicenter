@@ -28,7 +28,7 @@ describe("createApiCenterService", () => {
     afterEach(() => {
         sandbox.restore();
     });
-    it("confrimServerStatusWithRetry success", async () => {
+    it("confirmServerStatusWithRetry success", async () => {
         const apiCenterService = new ApiCenterService({} as ISubscriptionContext, "testServer", "testServer");
         const mockResponse1 = { id: "fakeId", name: "fakeName", provisioningState: "provisioning" } as ApiCenter;
         const mockResponse2 = {

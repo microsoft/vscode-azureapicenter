@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 export const APICenterRestAPIs = {
-    GetResrouceGroup: (subscriptionId: string, resourceGroupName: string, restApiVersion: string) => `https://management.azure.com/subscriptions/${subscriptionId}/resourcegroups/${resourceGroupName}?api-version=${restApiVersion}`,
+    GetResourceGroup: (subscriptionId: string, resourceGroupName: string, restApiVersion: string) => `https://management.azure.com/subscriptions/${subscriptionId}/resourcegroups/${resourceGroupName}?api-version=${restApiVersion}`,
     GetAPIService: (subscriptionId: string, resourceGroupName: string, apiCenterName: string, restApiVersion: string) => `https://management.azure.com/subscriptions/${subscriptionId}/resourceGroups/${resourceGroupName}/providers/Microsoft.ApiCenter/services/${apiCenterName}?api-version=${restApiVersion}`,
     ListSubscriptionServers: (subscriptionID: string, restApiVersion: string) => `https://management.azure.com/subscriptions/${subscriptionID}/providers/Microsoft.ApiCenter?api-version=${restApiVersion}`,
     ListAPIs: (subscriptionId: string, resourceGroupName: string, apiCenterName: string, restApiVersion: string) => `https://management.azure.com/subscriptions/${subscriptionId}/resourceGroups/${resourceGroupName}/providers/Microsoft.ApiCenter/services/${apiCenterName}/workspaces/default/apis?api-version=${restApiVersion}`,
