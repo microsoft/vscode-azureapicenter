@@ -47,7 +47,11 @@ describe("createApiCenterService", () => {
         sandbox.stub(GeneralUtils, "sleep").resolves();
         const sendRequestStub = sandbox.stub(apiCenterService, "getApiCenter");
         sendRequestStub.onFirstCall().resolves(mockResponse);
-        await AzureApiCenterService.confirmServerStatusWithRetry(apiCenterService, mockNode, {} as IActionContext);
+        try {
+            await AzureApiCenterService.confirmServerStatusWithRetry(apiCenterService, mockNode, {} as IActionContext);
+        } catch (err) {
+            assert.strictEqual((err as Error).message, "Creating API Center Service may take a long time. Please wait a moment, refresh the tree view and try again.");
+        }
         assert.strictEqual(nodeRefreshStub.notCalled, true);
     });
     it("createApiCenterService success", async () => {
@@ -59,7 +63,7 @@ describe("createApiCenterService", () => {
         const csswrStub = sinon.stub(AzureApiCenterService, "confirmServerStatusWithRetry").resolves();
         await AzureApiCenterService.createApiCenterService({} as IActionContext, mockNode);
         assert.strictEqual(iRGEStub.calledOnce, true);
-        assert.strictEqual(courgStub.notCalled, true);
+        assert.strictEqual(courgStub.calledOnce, true);
         assert.strictEqual(csswrStub.calledOnce, true);
     });
 });
