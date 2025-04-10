@@ -105,7 +105,7 @@ describe("ApiCenterService", () => {
     });
     it("checkResourceGroup existed", async () => {
         const mockResponse = {
-            status: 400,
+            status: 404,
             parsedBody: { id: "fakeId", location: "fakeLocation", name: "fakeName" },
         } as HttpOperationResponse;
         const sendRequestStub = sandbox.stub(ServiceClient.prototype, "sendRequest");

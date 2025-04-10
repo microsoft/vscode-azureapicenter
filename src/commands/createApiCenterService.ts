@@ -5,6 +5,7 @@ import * as vscode from 'vscode';
 import { ApiCenterService } from "../azure/ApiCenter/ApiCenterService";
 import { SubscriptionTreeItem } from "../tree/SubscriptionTreeItem";
 import { UiStrings } from "../uiStrings";
+import { GeneralUtils } from "../utils/generalUtils";
 export namespace AzureApiCenterService {
     export async function createApiCenterService(actionContext: IActionContext, node?: SubscriptionTreeItem): Promise<void> {
         if (!node) {
@@ -78,7 +79,7 @@ export namespace AzureApiCenterService {
             }
 
             retryCount++;
-            await new Promise(resolve => setTimeout(resolve, retryDelay));
+            await GeneralUtils.sleep(retryDelay);
         } while (retryCount < maxRetries);
     }
 }
