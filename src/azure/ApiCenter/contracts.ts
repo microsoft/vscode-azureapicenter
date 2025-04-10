@@ -6,6 +6,9 @@ export type ResourceGroup = {
     id: string;
     location: string;
     name: string;
+    properties: {
+        provisioningState: string;
+    };
 };
 
 export type ResourceType = {
@@ -13,7 +16,7 @@ export type ResourceType = {
     capabilities: string;
     locations: string[];
     resourceType: string;
-}
+};
 
 export type SubServers = {
     id: string;
@@ -21,7 +24,7 @@ export type SubServers = {
     registrationPolicy: string;
     registrationState: string;
     resourceTypes: ResourceType[];
-}
+};
 
 export type ApiCenter = {
     id: string;

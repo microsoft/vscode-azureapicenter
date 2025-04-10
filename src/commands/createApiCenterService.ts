@@ -3,6 +3,7 @@
 import { IActionContext } from "@microsoft/vscode-azext-utils";
 import * as vscode from 'vscode';
 import { ApiCenterService } from "../azure/ApiCenter/ApiCenterService";
+import { ApiCenter, ResourceGroup } from "../azure/ApiCenter/contracts";
 import { SubscriptionTreeItem } from "../tree/SubscriptionTreeItem";
 import { UiStrings } from "../uiStrings";
 import { GeneralUtils } from "../utils/generalUtils";
@@ -31,41 +32,63 @@ export namespace AzureApiCenterService {
             location: vscode.ProgressLocation.Notification,
             title: UiStrings.CreateApiCenterService
         }, async (progress, token) => {
-            const rgExist = await apiCenterService.isResourceGroupExist();
             progress.report({ message: UiStrings.GetResourceGroup });
+            const rgExist = await apiCenterService.isResourceGroupExist();
             if (!rgExist) {
-                validateResponse(await apiCenterService.createOrUpdateResourceGroup(location));
-                progress.report({ message: UiStrings.CreateResourceGroup });
+                progress.report({ message: UiStrings.CreatingResourceGroup });
+                await AzureApiCenterService.confirmResourceGroupWithRetry(apiCenterService, location);
             }
-            // Retry mechanism to check API center creation status
-            await AzureApiCenterService.createServerStatusWithRetry(apiCenterService, node, actionContext);
+
             progress.report({ message: UiStrings.CreatingApiCenterService });
+            validateResponse(await apiCenterService.createOrUpdateApiCenterService(location));
+            // Retry mechanism to check API center creation status
+            await AzureApiCenterService.confirmServerStatusWithRetry(apiCenterService, node, actionContext);
         });
     };
     export function validateResponse(response: any) {
-        if (response && response.message) {
-            throw new Error(response.message);
+        if (response && (response as any).message) {
+            throw new Error((response as any).message);
         }
     };
-    export async function createServerStatusWithRetry(apiCenterService: ApiCenterService, node: SubscriptionTreeItem, actionContext: IActionContext) {
+    export async function confirmResourceGroupWithRetry(apiCenterService: ApiCenterService, location: string) {
         let retryCount = 0;
         const maxRetries = 5;
         const retryDelay = 10000; // 10 seconds
-
+        let result: ResourceGroup;
+        do {
+            validateResponse(result = await apiCenterService.createOrUpdateResourceGroup(location));
+            if (result && result.properties && result.properties.provisioningState && result.properties.provisioningState === 'Succeeded') {
+                break;
+            }
+            retryCount++;
+            await GeneralUtils.sleep(retryDelay);
+        } while (retryCount < maxRetries);
+        if (retryCount >= maxRetries) {
+            throw new Error(UiStrings.LongTimeToCreateResourceGroup);
+        }
+    };
+    export async function confirmServerStatusWithRetry(apiCenterService: ApiCenterService, node: SubscriptionTreeItem, actionContext: IActionContext) {
+        let retryCount = 0;
+        const maxRetries = 5;
+        const retryDelay = 10000; // 10 seconds
+        let result: ApiCenter;
         do {
             try {
-                const result = await apiCenterService.getApiCenter();
+                result = await apiCenterService.getApiCenter();
                 if (result && result.provisioningState && result.provisioningState === 'Succeeded') {
                     node.refresh(actionContext);
                     vscode.window.showInformationMessage(UiStrings.CreateResourceSuccess);
                     break;
                 }
             } catch (error) {
-                throw new Error(UiStrings.FailedToCreateApiCenterService);
+                throw new Error(vscode.l10n.t(UiStrings.FailedToCreateApiCenterService, GeneralUtils.getErrorMessage(error)));
             }
 
             retryCount++;
             await GeneralUtils.sleep(retryDelay);
         } while (retryCount < maxRetries);
-    }
+        if (retryCount >= maxRetries) {
+            throw new Error(UiStrings.LongTimeToCreateApiCenterService);
+        }
+    };
 }
