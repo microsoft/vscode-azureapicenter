@@ -6,6 +6,7 @@ import * as sinon from "sinon";
 import * as vscode from "vscode";
 import { ApiCenterService } from "../../../azure/ApiCenter/ApiCenterService";
 import { ApiCenter, SubServers } from "../../../azure/ApiCenter/contracts";
+import { ResourceGraphService } from "../../../azure/ResourceGraph/ResourceGraphService";
 import { AzureApiCenterService } from "../../../commands/createApiCenterService";
 import { SubscriptionTreeItem } from "../../../tree/SubscriptionTreeItem";
 import { GeneralUtils } from "../../../utils/generalUtils";
@@ -29,26 +30,23 @@ describe("createApiCenterService", () => {
         sandbox.restore();
     });
     it("confirmServerStatusWithRetry success", async () => {
-        const apiCenterService = new ApiCenterService({} as ISubscriptionContext, "testServer", "testServer");
-        const mockResponse1 = { id: "fakeId", name: "fakeName", provisioningState: "provisioning" } as ApiCenter;
-        const mockResponse2 = {
+        const mockResponse = {
             id: "fakeId", name: "fakeName", provisioningState: "Succeeded"
         } as ApiCenter;
         sandbox.stub(GeneralUtils, "sleep").resolves();
-        const sendRequestStub = sandbox.stub(apiCenterService, "getApiCenter");
-        sendRequestStub.onFirstCall().resolves(mockResponse1);
-        sendRequestStub.onSecondCall().resolves(mockResponse2);
-        await AzureApiCenterService.confirmServerStatusWithRetry(apiCenterService, mockNode, {} as IActionContext);
+        const resStub = sandbox.stub(ResourceGraphService.prototype, "queryApiCenterByName");
+        resStub.onFirstCall().resolves([]);
+        resStub.onSecondCall().resolves([mockResponse]);
+        await AzureApiCenterService.confirmServerStatusWithRetry("fakeName", mockNode, {} as IActionContext);
         assert.strictEqual(nodeRefreshStub.calledOnce, true);
     });
     it("confirmServerStatusWithRetry failed", async () => {
-        const apiCenterService = new ApiCenterService({} as ISubscriptionContext, "testServer", "testServer");
-        const mockResponse = { id: "fakeId", name: "fakeName", provisioningState: "provisioning" } as ApiCenter;
+        const mockResponse = { id: "fakeId", name: "fakeName", provisioningState: "Succeeded" } as ApiCenter;
         sandbox.stub(GeneralUtils, "sleep").resolves();
-        const sendRequestStub = sandbox.stub(apiCenterService, "getApiCenter");
-        sendRequestStub.onFirstCall().resolves(mockResponse);
+        const resStub = sandbox.stub(ResourceGraphService.prototype, "queryApiCenterByName");
+        resStub.onFirstCall().resolves([]);
         try {
-            await AzureApiCenterService.confirmServerStatusWithRetry(apiCenterService, mockNode, {} as IActionContext);
+            await AzureApiCenterService.confirmServerStatusWithRetry("fakeName", mockNode, {} as IActionContext);
         } catch (err) {
             assert.strictEqual((err as Error).message, "Creating API Center Service may take a long time. Please wait a moment, refresh the tree view and try again.");
         }

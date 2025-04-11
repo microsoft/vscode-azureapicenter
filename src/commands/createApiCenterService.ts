@@ -3,12 +3,13 @@
 import { IActionContext } from "@microsoft/vscode-azext-utils";
 import * as vscode from 'vscode';
 import { ApiCenterService } from "../azure/ApiCenter/ApiCenterService";
-import { ApiCenter, ResourceGroup } from "../azure/ApiCenter/contracts";
+import { ResourceGroup } from "../azure/ApiCenter/contracts";
+import { ResourceGraphService } from "../azure/ResourceGraph/ResourceGraphService";
 import { SubscriptionTreeItem } from "../tree/SubscriptionTreeItem";
 import { UiStrings } from "../uiStrings";
 import { GeneralUtils } from "../utils/generalUtils";
 export namespace AzureApiCenterService {
-    export async function createApiCenterService(actionContext: IActionContext, node?: SubscriptionTreeItem): Promise<void> {
+    export async function createApiCenterService(context: IActionContext, node?: SubscriptionTreeItem): Promise<void> {
         if (!node) {
             return;
         }
@@ -42,7 +43,7 @@ export namespace AzureApiCenterService {
             progress.report({ message: UiStrings.CreatingApiCenterService });
             validateResponse(await apiCenterService.createOrUpdateApiCenterService(location));
             // Retry mechanism to check API center creation status
-            await AzureApiCenterService.confirmServerStatusWithRetry(apiCenterService, node, actionContext);
+            await AzureApiCenterService.confirmServerStatusWithRetry(serverName, node, context);
         });
     };
     export function validateResponse(response: any) {
@@ -67,16 +68,16 @@ export namespace AzureApiCenterService {
             throw new Error(UiStrings.LongTimeToCreateResourceGroup);
         }
     };
-    export async function confirmServerStatusWithRetry(apiCenterService: ApiCenterService, node: SubscriptionTreeItem, actionContext: IActionContext) {
+    export async function confirmServerStatusWithRetry(serverName: string, node: SubscriptionTreeItem, context: IActionContext) {
         let retryCount = 0;
         const maxRetries = 5;
         const retryDelay = 10000; // 10 seconds
-        let result: ApiCenter;
         do {
             try {
-                result = await apiCenterService.getApiCenter();
-                if (result && result.provisioningState && result.provisioningState === 'Succeeded') {
-                    node.refresh(actionContext);
+                const resourceGraphService = new ResourceGraphService(node.subscription);
+                const apiCenter = await resourceGraphService.queryApiCenterByName(serverName);
+                if (apiCenter && apiCenter.length > 0) {
+                    await node.refresh(context);
                     vscode.window.showInformationMessage(UiStrings.CreateResourceSuccess);
                     break;
                 }
