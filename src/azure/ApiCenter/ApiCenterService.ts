@@ -54,7 +54,7 @@ export class ApiCenterService {
     const client = new ServiceClient(creds, clientOptions);
     const options: RequestPrepareOptions = {
       method: "GET",
-      url: APICenterRestAPIs.ListSubscriptionServers(this.susbcriptionContext.subscriptionId, this.apiVersion)
+      url: APICenterRestAPIs.ListSubscriptionServers(this.susbcriptionContext.subscriptionId, "2021-04-01")
     };
     const response = await client.sendRequest(options);
     return response.parsedBody;
