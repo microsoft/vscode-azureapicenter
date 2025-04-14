@@ -169,7 +169,7 @@ describe("ApiCenterService", () => {
         const sendRequestStub = sandbox.stub(ServiceClient.prototype, "sendRequest");
         sendRequestStub.onFirstCall().resolves(mockResponse);
         const apiCenterService = new ApiCenterService(subscriptionContext, "fakeResourceGroup", "fakeServiceName");
-        const response = await apiCenterService.getSubServerList();
+        const response = await apiCenterService.listApiCenterServers();
         assert.strictEqual(response.namespace, "Microsoft.ApiCenter");
     });
 });

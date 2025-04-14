@@ -15,7 +15,7 @@ import { AzureDataSessionProviderHelper } from "./azure/azureLogin/dataSessionPr
 import { ConnectDataPlaneApi } from "./commands/addDataPlaneApis";
 import { cleanupSearchResult } from './commands/cleanUpSearch';
 import { copyDeploymentUrl } from './commands/copyDeploymentUrl';
-import { AzureApiCenterService } from './commands/createApiCenterService';
+import { CreateAzureApiCenterService } from './commands/createApiCenterService';
 import { CreateDeclarativeAgent } from './commands/createDeclarativeAgent';
 import { detectBreakingChange } from './commands/detectBreakingChange';
 import { showOpenApi } from './commands/editOpenApi';
@@ -154,7 +154,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
     registerCommandWithTelemetry('azure-api-center.openInPortal', openInAzurePortal);
 
-    registerCommandWithTelemetry('azure-api-center.createApiCenterService', AzureApiCenterService.createApiCenterService);
+    registerCommandWithTelemetry('azure-api-center.createApiCenterService', CreateAzureApiCenterService.createApiCenterService);
 
     context.subscriptions.push(
         vscode.window.registerUriHandler({
