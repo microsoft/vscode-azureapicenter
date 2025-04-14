@@ -211,6 +211,11 @@
         "category": "Azure API Center"
       },
       {
+        "command": "azure-api-center.callTool",
+        "title": "Call Tool",
+        "category": "Azure API Center"
+      },
+      {
         "command": "azure-api-center.createDeclarativeAgent",
         "title": "%azure-api-center.commands.createDeclarativeAgent.title%",
         "category": "Azure API Center"
@@ -364,6 +369,10 @@
         {
           "command": "azure-api-center.copyDeploymentUrl",
           "when": "view == apiCenterTreeView && viewItem == azureApiCenterApiDeployment"
+        },
+        {
+          "command": "azure-api-center.callTool",
+          "when": "view == apiCenterTreeView && viewItem == mcpTool"
         },
         {
           "command": "azure-api-center.openInPortal",
@@ -615,6 +624,7 @@
     "@microsoft/vscode-azext-azureauth": "^1.2.1",
     "@microsoft/vscode-azext-azureutils": "^2.0.0",
     "@microsoft/vscode-azext-utils": "^2.5.1",
+    "@modelcontextprotocol/sdk": "^1.9.0",
     "@vscode/extension-telemetry": "^0.6.2",
     "ajv": "^8.17.0",
     "archiver": "^7.0.1",

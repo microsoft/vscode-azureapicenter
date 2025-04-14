@@ -13,6 +13,7 @@ import { AzureAccount } from "./azure/azureLogin/azureAccount";
 import { AzureSessionProviderHelper } from "./azure/azureLogin/azureSessionProvider";
 import { AzureDataSessionProviderHelper } from "./azure/azureLogin/dataSessionProvider";
 import { ConnectDataPlaneApi } from "./commands/addDataPlaneApis";
+import { callTool } from './commands/callTool';
 import { cleanupSearchResult } from './commands/cleanUpSearch';
 import { copyDeploymentUrl } from './commands/copyDeploymentUrl';
 import { CreateDeclarativeAgent } from './commands/createDeclarativeAgent';
@@ -150,6 +151,8 @@ export async function activate(context: vscode.ExtensionContext) {
     registerCommandWithTelemetry('azure-api-center.createDeclarativeAgent', CreateDeclarativeAgent.createDeclarativeAgent);
 
     registerCommandWithTelemetry('azure-api-center.copyDeploymentUrl', copyDeploymentUrl);
+
+    registerCommandWithTelemetry('azure-api-center.callTool', callTool);
 
     registerCommandWithTelemetry('azure-api-center.openInPortal', openInAzurePortal);
 
