@@ -1,6 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
-import { IActionContext } from "@microsoft/vscode-azext-utils";
+import { IActionContext, UserCancelledError } from "@microsoft/vscode-azext-utils";
 import * as vscode from 'vscode';
 import { ApiCenterService } from "../azure/ApiCenter/ApiCenterService";
 import { ResourceGroup } from "../azure/ApiCenter/contracts";
@@ -9,19 +9,19 @@ import { ext } from "../extensionVariables";
 import { SubscriptionTreeItem } from "../tree/SubscriptionTreeItem";
 import { UiStrings } from "../uiStrings";
 import { GeneralUtils } from "../utils/generalUtils";
-export namespace AzureApiCenterService {
+export namespace CreateAzureApiCenterService {
     export async function createApiCenterService(context: IActionContext, node?: SubscriptionTreeItem): Promise<void> {
         if (!node) {
             node = await ext.treeDataProvider.showTreeItemPicker<SubscriptionTreeItem>(SubscriptionTreeItem.contextValue, context);
         }
         if (!node) {
-            return;
+            throw new UserCancelledError();
         }
         const serverName = await vscode.window.showInputBox({
             title: UiStrings.ServiceName, prompt: UiStrings.GlobalServiceNamePrompt, ignoreFocusOut: true, validateInput: validateInputName
         });
         if (!serverName) {
-            return;
+            throw new UserCancelledError();
         }
         const apiCenterService = new ApiCenterService(node.subscriptionContext!, serverName, serverName);
         const serverRes = await apiCenterService.listApiCenterServers();
@@ -32,7 +32,7 @@ export namespace AzureApiCenterService {
         }
         const location = await vscode.window.showQuickPick(locations, { placeHolder: UiStrings.SelectLocation });
         if (!location) {
-            return;
+            throw new UserCancelledError();
         }
 
         await vscode.window.withProgress({
@@ -43,13 +43,13 @@ export namespace AzureApiCenterService {
             const rgExist = await apiCenterService.isResourceGroupExist();
             if (!rgExist) {
                 progress.report({ message: UiStrings.CreatingResourceGroup });
-                await AzureApiCenterService.confirmResourceGroupWithRetry(apiCenterService, location);
+                await CreateAzureApiCenterService.confirmResourceGroupWithRetry(apiCenterService, location);
             }
 
             progress.report({ message: UiStrings.CreatingApiCenterService });
             validateResponse(await apiCenterService.createOrUpdateApiCenterService(location));
             // Retry mechanism to check API center creation status
-            await AzureApiCenterService.confirmServerStatusWithRetry(serverName, node, context);
+            await CreateAzureApiCenterService.confirmServerStatusWithRetry(serverName, node, context);
         });
     };
     export function validateResponse(response: any) {
