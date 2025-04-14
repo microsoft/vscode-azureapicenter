@@ -5,20 +5,26 @@ import * as vscode from 'vscode';
 import { ApiCenterService } from "../azure/ApiCenter/ApiCenterService";
 import { ResourceGroup } from "../azure/ApiCenter/contracts";
 import { ResourceGraphService } from "../azure/ResourceGraph/ResourceGraphService";
+import { ext } from "../extensionVariables";
 import { SubscriptionTreeItem } from "../tree/SubscriptionTreeItem";
 import { UiStrings } from "../uiStrings";
 import { GeneralUtils } from "../utils/generalUtils";
 export namespace AzureApiCenterService {
     export async function createApiCenterService(context: IActionContext, node?: SubscriptionTreeItem): Promise<void> {
         if (!node) {
+            node = await ext.treeDataProvider.showTreeItemPicker<SubscriptionTreeItem>(SubscriptionTreeItem.contextValue, context);
+        }
+        if (!node) {
             return;
         }
-        const serverName = await vscode.window.showInputBox({ title: UiStrings.ServiceName, prompt: UiStrings.GlobalServiceNamePrompt, ignoreFocusOut: true });
+        const serverName = await vscode.window.showInputBox({
+            title: UiStrings.ServiceName, prompt: UiStrings.GlobalServiceNamePrompt, ignoreFocusOut: true, validateInput: validateInputName
+        });
         if (!serverName) {
             return;
         }
         const apiCenterService = new ApiCenterService(node.subscriptionContext!, serverName, serverName);
-        const serverRes = await apiCenterService.getSubServerList();
+        const serverRes = await apiCenterService.listApiCenterServers();
         const locations = serverRes.resourceTypes.find((item: any) => item.resourceType === 'services')?.locations;
         if (!locations || locations.length === 0) {
             vscode.window.showWarningMessage(UiStrings.NoLocationAvailable);
@@ -92,4 +98,12 @@ export namespace AzureApiCenterService {
             throw new Error(UiStrings.LongTimeToCreateApiCenterService);
         }
     };
+
+    async function validateInputName(input: string): Promise<string | undefined> {
+        if (!input) return UiStrings.InputNameShouldNotBeEmpty;
+        if (input.length > 90) return UiStrings.InputNameTooLong;
+        if (!/^[\w\.\-\(\)]+$/.test(input)) return UiStrings.InputNameWithInvalidCharacter;
+        if (input.endsWith('.')) return UiStrings.InputNameShouldNotEndWithPeriod;
+        return undefined;
+    }
 }

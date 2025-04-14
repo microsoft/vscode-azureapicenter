@@ -166,4 +166,8 @@ export class UiStrings {
     static readonly LongTimeToCreateApiCenterService = vscode.l10n.t("Creating API Center Service may take a long time. Please wait a moment, refresh the tree view and try again.");
     static readonly CreateResourceSuccess = vscode.l10n.t("API Center Service created successfully.");
     static readonly NoLocationAvailable = vscode.l10n.t("No location available for API Center Service.");
+    static readonly InputNameShouldNotBeEmpty = vscode.l10n.t("Api Center Name is required!");
+    static readonly InputNameTooLong = vscode.l10n.t("Api CenterName must be 90 characters or fewer");
+    static readonly InputNameWithInvalidCharacter = vscode.l10n.t("Invalid characters used for Api Center Name");
+    static readonly InputNameShouldNotEndWithPeriod = vscode.l10n.t("Api Center Name cannot end with a period.")
 }

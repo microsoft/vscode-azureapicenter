@@ -49,12 +49,12 @@ export class ApiCenterService {
     return response.parsedBody;
   }
 
-  public async getSubServerList(): Promise<SubServers> {
+  public async listApiCenterServers(): Promise<SubServers> {
     const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
     const client = new ServiceClient(creds, clientOptions);
     const options: RequestPrepareOptions = {
       method: "GET",
-      url: APICenterRestAPIs.ListSubscriptionServers(this.susbcriptionContext.subscriptionId, "2021-04-01")
+      url: APICenterRestAPIs.listApiCenterServers(this.susbcriptionContext.subscriptionId, "2021-04-01")
     };
     const response = await client.sendRequest(options);
     return response.parsedBody;

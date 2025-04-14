@@ -55,7 +55,7 @@ describe("createApiCenterService", () => {
     it("createApiCenterService success", async () => {
         showInputBoxStub = sinon.stub(vscode.window, "showInputBox").resolves("testServerName");
         showQuickPickStub = sinon.stub(vscode.window, "showQuickPick").resolves("US" as unknown as vscode.QuickPickItem);
-        sinon.stub(ApiCenterService.prototype, "getSubServerList").resolves({ id: "fakeId", namespace: "fakeName", registrationPolicy: "fakeRP", registrationState: "fakeRS", resourceTypes: [{ apiVersions: ["fakeApiVersion"], capabilities: "fakeCap", locations: ["US", "UK"], resourceType: "services" }] } as SubServers);
+        sinon.stub(ApiCenterService.prototype, "listApiCenterServers").resolves({ id: "fakeId", namespace: "fakeName", registrationPolicy: "fakeRP", registrationState: "fakeRS", resourceTypes: [{ apiVersions: ["fakeApiVersion"], capabilities: "fakeCap", locations: ["US", "UK"], resourceType: "services" }] } as SubServers);
         const iRGEStub = sinon.stub(ApiCenterService.prototype, "isResourceGroupExist").resolves(true);
         const courgStub = sinon.stub(ApiCenterService.prototype, "createOrUpdateApiCenterService").resolves({} as ApiCenter);
         const csswrStub = sinon.stub(AzureApiCenterService, "confirmServerStatusWithRetry").resolves();
