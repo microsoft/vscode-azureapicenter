@@ -214,6 +214,11 @@
         "command": "azure-api-center.createDeclarativeAgent",
         "title": "%azure-api-center.commands.createDeclarativeAgent.title%",
         "category": "Azure API Center"
+      },
+      {
+        "command": "azure-api-center.generateMcpConfig",
+        "title": "Generate MCP config with Access Key",
+        "category": "Azure API Center"
       }
     ],
     "views": {
@@ -296,6 +301,10 @@
         },
         {
           "command": "azure-api-center.exportApi",
+          "when": "(view == apiCenterTreeView && viewItem =~ /azureApiCenterApiVersionDefinitionTreeItem/) || (view == apiCenterWorkspace && viewItem =~ /azureApiCenterApiVersionDataPlaneDefinitionTreeItem/)"
+        },
+        {
+          "command": "azure-api-center.generateMcpConfig",
           "when": "(view == apiCenterTreeView && viewItem =~ /azureApiCenterApiVersionDefinitionTreeItem/) || (view == apiCenterWorkspace && viewItem =~ /azureApiCenterApiVersionDataPlaneDefinitionTreeItem/)"
         },
         {

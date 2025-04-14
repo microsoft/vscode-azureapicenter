@@ -24,6 +24,7 @@ import { generateApiLibrary } from './commands/generateApiLibrary';
 import { generateApiSpecFromCodeProject } from './commands/generateApiSpecFromCodeProject';
 import { GenerateHttpFile } from './commands/generateHttpFile';
 import { generateMarkdownDocument } from './commands/generateMarkdownDocument';
+import { generateMcpConfig } from './commands/generateMcpConfig';
 import { getCredential } from './commands/getCredential';
 import { handleUri } from './commands/handleUri';
 import { importOpenApi } from './commands/importOpenApi';
@@ -152,6 +153,8 @@ export async function activate(context: vscode.ExtensionContext) {
     registerCommandWithTelemetry('azure-api-center.copyDeploymentUrl', copyDeploymentUrl);
 
     registerCommandWithTelemetry('azure-api-center.openInPortal', openInAzurePortal);
+
+    registerCommandWithTelemetry('azure-api-center.generateMcpConfig', generateMcpConfig);
 
     context.subscriptions.push(
         vscode.window.registerUriHandler({

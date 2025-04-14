@@ -15,10 +15,10 @@ import { writeToTemporaryFile } from "../utils/fsUtil";
 import { OpenApiUtils } from "../utils/openApiUtils";
 
 export namespace GenerateHttpFile {
-    interface ApiKeySecuritySchemes {
+    export interface ApiKeySecuritySchemes {
         [key: string]: OpenAPIV3.ApiKeySecurityScheme;
     };
-    interface ApiKeySecuritySchemesWithValue {
+    export interface ApiKeySecuritySchemesWithValue {
         [key: string]: OpenAPIV3.ApiKeySecurityScheme & { value: string };
     };
 
@@ -45,7 +45,7 @@ export namespace GenerateHttpFile {
         return parseSwaggerObjectToHttpFileContentWithAuth(api, apiKeySecuritySchemesWithValue);
     }
 
-    function getApiKeySecuritySchemes(api: OpenAPIV3.Document): ApiKeySecuritySchemes {
+    export function getApiKeySecuritySchemes(api: OpenAPIV3.Document): ApiKeySecuritySchemes {
         return Object.fromEntries(
             Object.entries(api.components?.securitySchemes || {}).filter(
                 ([, scheme]) => (scheme as OpenAPIV3.SecuritySchemeObject).type === 'apiKey'
@@ -53,7 +53,7 @@ export namespace GenerateHttpFile {
         ) as ApiKeySecuritySchemes;
     }
 
-    async function getApiKeySecuritySchemesWithValue(apiKeySecuritySchemes: ApiKeySecuritySchemes, node: ApiVersionDefinitionTreeItem): Promise<ApiKeySecuritySchemesWithValue> {
+    export async function getApiKeySecuritySchemesWithValue(apiKeySecuritySchemes: ApiKeySecuritySchemes, node: ApiVersionDefinitionTreeItem): Promise<ApiKeySecuritySchemesWithValue> {
         const apiCenterService = new ApiCenterService(node?.subscription!, getResourceGroupFromId(node?.id!), node?.apiCenterName!);
         const [{ value: accesses }, { value: authConfigs }] = await Promise.all([
             apiCenterService.getApiCenterApiAccesses(node.apiCenterApiName, node.apiCenterApiVersionName),
@@ -124,7 +124,7 @@ export namespace GenerateHttpFile {
         return apiKeySecuritySchemesWithValue;
     }
 
-    function parseSwaggerObjectToHttpFileContentWithAuth(api: OpenAPIV3.Document, apiKeySecuritySchemesWithValue: ApiKeySecuritySchemesWithValue): string {
+    export function parseSwaggerObjectToHttpFileContentWithAuth(api: OpenAPIV3.Document, apiKeySecuritySchemesWithValue: ApiKeySecuritySchemesWithValue): string {
         const httpRequests: string[] = [];
         const variableNames = new Set<string>();
 
@@ -300,7 +300,7 @@ ${httpRequestsContent}`;
         return "";
     }
 
-    async function writeToHttpFile(node: ApiVersionDefinitionTreeItem, httpFileContent: string) {
+    export async function writeToHttpFile(node: ApiVersionDefinitionTreeItem, httpFileContent: string) {
         const folderName = getFolderName(node);
         const fileName = getFilename(node);
 
