@@ -18,7 +18,7 @@ export type ResourceType = {
     resourceType: string;
 };
 
-export type SubServers = {
+export type SubApiCenterMetaData = {
     id: string;
     namespace: string;
     registrationPolicy: string;

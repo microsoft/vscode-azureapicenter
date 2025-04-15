@@ -5,7 +5,7 @@ import * as assert from "assert";
 import * as sinon from "sinon";
 import * as vscode from "vscode";
 import { ApiCenterService } from "../../../azure/ApiCenter/ApiCenterService";
-import { ApiCenter, SubServers } from "../../../azure/ApiCenter/contracts";
+import { ApiCenter, SubApiCenterMetaData } from "../../../azure/ApiCenter/contracts";
 import { ResourceGraphService } from "../../../azure/ResourceGraph/ResourceGraphService";
 import { CreateAzureApiCenterService } from "../../../commands/createApiCenterService";
 import { SubscriptionTreeItem } from "../../../tree/SubscriptionTreeItem";
@@ -55,7 +55,7 @@ describe("createApiCenterService", () => {
     it("createApiCenterService success", async () => {
         showInputBoxStub = sinon.stub(vscode.window, "showInputBox").resolves("testServerName");
         showQuickPickStub = sinon.stub(vscode.window, "showQuickPick").resolves("US" as unknown as vscode.QuickPickItem);
-        sinon.stub(ApiCenterService.prototype, "listApiCenterServers").resolves({ id: "fakeId", namespace: "fakeName", registrationPolicy: "fakeRP", registrationState: "fakeRS", resourceTypes: [{ apiVersions: ["fakeApiVersion"], capabilities: "fakeCap", locations: ["US", "UK"], resourceType: "services" }] } as SubServers);
+        sinon.stub(ApiCenterService.prototype, "listApiCenterServers").resolves({ id: "fakeId", namespace: "fakeName", registrationPolicy: "fakeRP", registrationState: "fakeRS", resourceTypes: [{ apiVersions: ["fakeApiVersion"], capabilities: "fakeCap", locations: ["US", "UK"], resourceType: "services" }] } as SubApiCenterMetaData);
         const iRGEStub = sinon.stub(ApiCenterService.prototype, "isResourceGroupExist").resolves(true);
         const courgStub = sinon.stub(ApiCenterService.prototype, "createOrUpdateApiCenterService").resolves({} as ApiCenter);
         const csswrStub = sinon.stub(CreateAzureApiCenterService, "checkApiCenterServerStatusWithRetry").resolves();
