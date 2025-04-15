@@ -43,13 +43,13 @@ export namespace CreateAzureApiCenterService {
             const rgExist = await apiCenterService.isResourceGroupExist();
             if (!rgExist) {
                 progress.report({ message: UiStrings.CreatingResourceGroup });
-                await CreateAzureApiCenterService.confirmResourceGroupWithRetry(apiCenterService, location);
+                await CreateAzureApiCenterService.createResourceGroupWithRetry(apiCenterService, location);
             }
 
             progress.report({ message: UiStrings.CreatingApiCenterService });
             validateResponse(await apiCenterService.createOrUpdateApiCenterService(location));
             // Retry mechanism to check API center creation status
-            await CreateAzureApiCenterService.confirmServerStatusWithRetry(serverName, node!, context);
+            await CreateAzureApiCenterService.checkApiCenterServerStatusWithRetry(serverName, node!, context);
         });
     };
     export function validateResponse(response: any) {
@@ -57,7 +57,7 @@ export namespace CreateAzureApiCenterService {
             throw new Error((response as any).message);
         }
     };
-    export async function confirmResourceGroupWithRetry(apiCenterService: ApiCenterService, location: string) {
+    export async function createResourceGroupWithRetry(apiCenterService: ApiCenterService, location: string) {
         let retryCount = 0;
         const maxRetries = 5;
         const retryDelay = 10000; // 10 seconds
@@ -74,17 +74,17 @@ export namespace CreateAzureApiCenterService {
             throw new Error(UiStrings.LongTimeToCreateResourceGroup);
         }
     };
-    export async function confirmServerStatusWithRetry(serverName: string, node: SubscriptionTreeItem, context: IActionContext) {
+    export async function checkApiCenterServerStatusWithRetry(serverName: string, node: SubscriptionTreeItem, context: IActionContext) {
         let retryCount = 0;
         const maxRetries = 5;
-        const retryDelay = 10000; // 10 seconds
+        const retryDelay = 2000; // 2 seconds
         do {
             try {
                 const resourceGraphService = new ResourceGraphService(node.subscription);
                 const apiCenter = await resourceGraphService.queryApiCenterByName(serverName);
                 if (apiCenter && apiCenter.length > 0) {
-                    await node.refresh(context);
                     vscode.window.showInformationMessage(UiStrings.CreateResourceSuccess);
+                    await node.refresh(context);
                     break;
                 }
             } catch (error) {
@@ -92,7 +92,7 @@ export namespace CreateAzureApiCenterService {
             }
 
             retryCount++;
-            await GeneralUtils.sleep(retryDelay);
+            await GeneralUtils.sleep(retryDelay * retryCount);
         } while (retryCount < maxRetries);
         if (retryCount >= maxRetries) {
             throw new Error(UiStrings.LongTimeToCreateApiCenterService);

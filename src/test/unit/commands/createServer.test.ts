@@ -37,7 +37,7 @@ describe("createApiCenterService", () => {
         const resStub = sandbox.stub(ResourceGraphService.prototype, "queryApiCenterByName");
         resStub.onFirstCall().resolves([]);
         resStub.onSecondCall().resolves([mockResponse]);
-        await CreateAzureApiCenterService.confirmServerStatusWithRetry("fakeName", mockNode, {} as IActionContext);
+        await CreateAzureApiCenterService.checkApiCenterServerStatusWithRetry("fakeName", mockNode, {} as IActionContext);
         assert.strictEqual(nodeRefreshStub.calledOnce, true);
     });
     it("confirmServerStatusWithRetry failed", async () => {
@@ -46,7 +46,7 @@ describe("createApiCenterService", () => {
         const resStub = sandbox.stub(ResourceGraphService.prototype, "queryApiCenterByName");
         resStub.onFirstCall().resolves([]);
         try {
-            await CreateAzureApiCenterService.confirmServerStatusWithRetry("fakeName", mockNode, {} as IActionContext);
+            await CreateAzureApiCenterService.checkApiCenterServerStatusWithRetry("fakeName", mockNode, {} as IActionContext);
         } catch (err) {
             assert.strictEqual((err as Error).message, "Creating API Center Service may take a long time. Please wait a moment, refresh the tree view and try again.");
         }
@@ -58,7 +58,7 @@ describe("createApiCenterService", () => {
         sinon.stub(ApiCenterService.prototype, "listApiCenterServers").resolves({ id: "fakeId", namespace: "fakeName", registrationPolicy: "fakeRP", registrationState: "fakeRS", resourceTypes: [{ apiVersions: ["fakeApiVersion"], capabilities: "fakeCap", locations: ["US", "UK"], resourceType: "services" }] } as SubServers);
         const iRGEStub = sinon.stub(ApiCenterService.prototype, "isResourceGroupExist").resolves(true);
         const courgStub = sinon.stub(ApiCenterService.prototype, "createOrUpdateApiCenterService").resolves({} as ApiCenter);
-        const csswrStub = sinon.stub(CreateAzureApiCenterService, "confirmServerStatusWithRetry").resolves();
+        const csswrStub = sinon.stub(CreateAzureApiCenterService, "checkApiCenterServerStatusWithRetry").resolves();
         await CreateAzureApiCenterService.createApiCenterService({} as IActionContext, mockNode);
         assert.strictEqual(iRGEStub.calledOnce, true);
         assert.strictEqual(courgStub.calledOnce, true);
