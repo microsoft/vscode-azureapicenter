@@ -60,7 +60,7 @@ export namespace CreateAzureApiCenterService {
     export async function createResourceGroupWithRetry(apiCenterService: ApiCenterService, location: string) {
         let retryCount = 0;
         const maxRetries = 5;
-        const retryDelay = 10000; // 10 seconds
+        const retryDelay = 2000; // 2 seconds
         let result: ResourceGroup;
         do {
             validateResponse(result = await apiCenterService.createOrUpdateResourceGroup(location));
@@ -68,7 +68,7 @@ export namespace CreateAzureApiCenterService {
                 break;
             }
             retryCount++;
-            await GeneralUtils.sleep(retryDelay);
+            await GeneralUtils.sleep(retryDelay * retryCount);
         } while (retryCount < maxRetries);
         if (retryCount >= maxRetries) {
             throw new Error(UiStrings.LongTimeToCreateResourceGroup);
