@@ -60,7 +60,7 @@ export namespace CreateAzureApiCenterService {
     export async function createResourceGroupWithRetry(apiCenterService: ApiCenterService, location: string) {
         let retryCount = 0;
         const maxRetries = 10;
-        const retryDelay = 3000; // 2 seconds
+        const retryDelay = 3000; // 3 seconds
         let result: ResourceGroup;
         do {
             validateResponse(result = await apiCenterService.createOrUpdateResourceGroup(location));
@@ -77,7 +77,7 @@ export namespace CreateAzureApiCenterService {
     export async function checkApiCenterServerStatusWithRetry(serverName: string, node: SubscriptionTreeItem, context: IActionContext) {
         let retryCount = 0;
         const maxRetries = 10;
-        const retryDelay = 3000; // 2 seconds
+        const retryDelay = 3000; // 3 seconds
         do {
             try {
                 const resourceGraphService = new ResourceGraphService(node.subscription);
