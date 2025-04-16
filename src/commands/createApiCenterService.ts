@@ -40,7 +40,7 @@ export namespace CreateAzureApiCenterService {
             title: UiStrings.CreateApiCenterService
         }, async (progress, token) => {
             progress.report({ message: UiStrings.GetResourceGroup });
-            const rgExist = await apiCenterService.isResourceGroupExist();
+            const rgExist = await apiCenterService.checkResourceGroupExist();
             if (!rgExist) {
                 progress.report({ message: UiStrings.CreatingResourceGroup });
                 await CreateAzureApiCenterService.createResourceGroupWithRetry(apiCenterService, location);
@@ -59,8 +59,8 @@ export namespace CreateAzureApiCenterService {
     };
     export async function createResourceGroupWithRetry(apiCenterService: ApiCenterService, location: string) {
         let retryCount = 0;
-        const maxRetries = 5;
-        const retryDelay = 2000; // 2 seconds
+        const maxRetries = 10;
+        const retryDelay = 3000; // 2 seconds
         let result: ResourceGroup;
         do {
             validateResponse(result = await apiCenterService.createOrUpdateResourceGroup(location));
@@ -68,7 +68,7 @@ export namespace CreateAzureApiCenterService {
                 break;
             }
             retryCount++;
-            await GeneralUtils.sleep(retryDelay * retryCount);
+            await GeneralUtils.sleep(retryDelay);
         } while (retryCount < maxRetries);
         if (retryCount >= maxRetries) {
             throw new Error(UiStrings.LongTimeToCreateResourceGroup);
@@ -76,8 +76,8 @@ export namespace CreateAzureApiCenterService {
     };
     export async function checkApiCenterServerStatusWithRetry(serverName: string, node: SubscriptionTreeItem, context: IActionContext) {
         let retryCount = 0;
-        const maxRetries = 5;
-        const retryDelay = 2000; // 2 seconds
+        const maxRetries = 10;
+        const retryDelay = 3000; // 2 seconds
         do {
             try {
                 const resourceGraphService = new ResourceGraphService(node.subscription);
@@ -92,7 +92,7 @@ export namespace CreateAzureApiCenterService {
             }
 
             retryCount++;
-            await GeneralUtils.sleep(retryDelay * retryCount);
+            await GeneralUtils.sleep(retryDelay);
         } while (retryCount < maxRetries);
         if (retryCount >= maxRetries) {
             throw new Error(UiStrings.LongTimeToCreateApiCenterService);

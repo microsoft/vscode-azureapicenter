@@ -99,7 +99,7 @@ describe("ApiCenterService", () => {
         sendRequestStub.onFirstCall().resolves(mockResponse);
 
         const apiCenterService = new ApiCenterService(subscriptionContext, "fakeResourceGroup", "fakeServiceName");
-        const response = await apiCenterService.isResourceGroupExist();
+        const response = await apiCenterService.checkResourceGroupExist();
 
         assert.strictEqual(response, true);
     });
@@ -112,7 +112,7 @@ describe("ApiCenterService", () => {
         sendRequestStub.onFirstCall().resolves(mockResponse);
 
         const apiCenterService = new ApiCenterService(subscriptionContext, "fakeResourceGroup", "fakeServiceName");
-        const response = await apiCenterService.isResourceGroupExist();
+        const response = await apiCenterService.checkResourceGroupExist();
 
         assert.strictEqual(response, false);
     });

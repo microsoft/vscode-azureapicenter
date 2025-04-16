@@ -19,7 +19,7 @@ export class ApiCenterService {
     this.resourceGroupName = resourceGroupName;
   }
 
-  public async isResourceGroupExist(): Promise<boolean> {
+  public async checkResourceGroupExist(): Promise<boolean> {
     const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
     const client = new ServiceClient(creds, clientOptions);
     const options: RequestPrepareOptions = {
