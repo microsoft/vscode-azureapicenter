@@ -15,7 +15,11 @@ describe('Azure ApiCenter Defines ApiCenterApisManagement', () => {
             location: "fakeLocation",
             name: "fakeName",
             resourceGroup: "fakeRG",
-            properties: {},
+            properties: {
+                portalHostname: "fakePortalHostname",
+                dataApiHostname: "fakeDataApiHostname"
+            },
+            provisioningState: 'Succeeded',
             type: "fakeType"
         };
     });
@@ -61,7 +65,7 @@ describe('Azure ApiCenter Defines ApiCenterApisDataplane', () => {
         const res = await api.getChild(context as any, "fakeContent");
         assert.strictEqual(res.length, 0);
     });
-    it("ApiCenterApisDataplane class getChild with 1 api", async() => {
+    it("ApiCenterApisDataplane class getChild with 1 api", async () => {
         const api: ApiCenterApisDataplane = new ApiCenterApisDataplane(data);
         sandbox.stub(ApiCenterDataPlaneService.prototype, "getApiCenterApis").resolves({
             nextLink: "fakeNextLink",

@@ -2,13 +2,40 @@
 // Licensed under the MIT license.
 export type GeneralApiCenter = ApiCenter | DataPlaneApiCenter;
 
+export type ResourceGroup = {
+    id: string;
+    location: string;
+    name: string;
+    properties: {
+        provisioningState: string;
+    };
+};
+
+export type ResourceType = {
+    apiVersions: string[];
+    capabilities: string;
+    locations: string[];
+    resourceType: string;
+};
+
+export type SubApiCenterMetaData = {
+    id: string;
+    namespace: string;
+    registrationPolicy: string;
+    registrationState: string;
+    resourceTypes: ResourceType[];
+};
+
 export type ApiCenter = {
     id: string;
     location: string;
     name: string;
     resourceGroup: string;
     properties: {
+        dataApiHostname: string;
+        portalHostname: string;
     };
+    provisioningState: string;
     // tslint:disable-next-line:no-reserved-keywords
     type: string;
 };
@@ -76,6 +103,9 @@ export type ApiCenterApiDeployment = {
     location: string;
     name: string;
     properties: {
+        server: {
+            runtimeUri: string[];
+        }
     };
     // tslint:disable-next-line:no-reserved-keywords
     type: string;
@@ -201,4 +231,39 @@ export enum ArmAsyncOperationStatus {
 
 export enum ApiCenterRulesetImportFormat {
     InlineZip = 'inline-zip',
+};
+
+export type ApiCenterAuthConfig = {
+    id: string;
+    name: string;
+    properties: {
+        title: string;
+        description: string;
+        securityScheme: string;
+        apiKey?: {
+            in: 'header' | 'query' | 'cookie';
+            name: string;
+        };
+    };
+    // tslint:disable-next-line:no-reserved-keywords
+    type: string;
+};
+
+export type ApiCenterApiAccess = {
+    id: string;
+    name: string;
+    properties: {
+        authConfigResourceId: string;
+    };
+    // tslint:disable-next-line:no-reserved-keywords
+    type: string;
+};
+
+export type ApiCenterApiCredential = {
+    securityScheme: string;
+    apiKey?: {
+        value: string;
+        in: 'header' | 'query' | 'cookie';
+        name: string;
+    };
 };
