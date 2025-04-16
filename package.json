@@ -214,6 +214,11 @@
         "command": "azure-api-center.createDeclarativeAgent",
         "title": "%azure-api-center.commands.createDeclarativeAgent.title%",
         "category": "Azure API Center"
+      },
+      {
+        "command": "azure-api-center.createApiCenterService",
+        "title": "%azure-api-center.commands.createApiCenterService.title%",
+        "category": "Azure API Center"
       }
     ],
     "views": {
@@ -367,7 +372,13 @@
         },
         {
           "command": "azure-api-center.openInPortal",
-          "when": "view == apiCenterTreeView && (viewItem == azureApiCenter || viewItem == azureApiCenterAzureSubscription )"
+          "when": "view == apiCenterTreeView && (viewItem == azureApiCenter || viewItem == azureApiCenterAzureSubscription )",
+          "group": "1@1"
+        },
+        {
+          "command": "azure-api-center.createApiCenterService",
+          "when": "(view == apiCenterTreeView && viewItem == azureApiCenterAzureSubscription)",
+          "group": "2@1"
         }
       ],
       "copilot": [
@@ -602,7 +613,6 @@
   },
   "dependencies": {
     "@apidevtools/swagger-parser": "^10.1.0",
-    "@azure/arm-apicenter": "^1.0.0-beta.1",
     "@azure/arm-resourcegraph": "^4.2.1",
     "@azure/arm-resources-subscriptions": "^2.1.0",
     "@azure/arm-subscriptions": "^5.1.0",

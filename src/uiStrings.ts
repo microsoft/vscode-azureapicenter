@@ -152,4 +152,22 @@ export class UiStrings {
     static readonly CredentialFor = vscode.l10n.t("Credential for '{0}':");
     static readonly GetSpectralRulesToolInvocationMessage = vscode.l10n.t("@apicenter: getting Spectral rules");
     static readonly RuntimeUrlCopied = vscode.l10n.t("Runtime URL copied: {0}");
+    static readonly ResourceGroupName = vscode.l10n.t("Resource Group");
+    static readonly ServiceName = vscode.l10n.t("Api Center Service Name");
+    static readonly GlobalServiceNamePrompt = vscode.l10n.t("Enter a globally unique name for the new API Center Service instance.");
+    static readonly SelectLocation = vscode.l10n.t("Select Location");
+    static readonly ApiCenterServiceLocation = vscode.l10n.t("Location");
+    static readonly CreateApiCenterService = vscode.l10n.t("Create API Center Service");
+    static readonly CreatingApiCenterService = vscode.l10n.t("Creating API Center Service...");
+    static readonly GetResourceGroup = vscode.l10n.t("Getting Resource Group...");
+    static readonly CreatingResourceGroup = vscode.l10n.t("Creating Resource Group...");
+    static readonly FailedToCreateApiCenterService = vscode.l10n.t("Failed to Api Center Service: {0}");
+    static readonly LongTimeToCreateResourceGroup = vscode.l10n.t("Creating Resource Group may take a long time. Please wait a moment, refresh the tree view and try again.");
+    static readonly LongTimeToCreateApiCenterService = vscode.l10n.t("Creating API Center Service may take a long time. Please wait a moment, refresh the tree view and try again.");
+    static readonly CreateResourceSuccess = vscode.l10n.t("API Center Service created successfully.");
+    static readonly NoLocationAvailable = vscode.l10n.t("No location available for API Center Service.");
+    static readonly InputNameShouldNotBeEmpty = vscode.l10n.t("Api Center Name is required!");
+    static readonly InputNameTooLong = vscode.l10n.t("Api CenterName must be 90 characters or fewer");
+    static readonly InputNameWithInvalidCharacter = vscode.l10n.t("Invalid characters used for Api Center Name");
+    static readonly InputNameShouldNotEndWithPeriod = vscode.l10n.t("Api Center Name cannot end with a period.")
 }

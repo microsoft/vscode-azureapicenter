@@ -2,13 +2,40 @@
 // Licensed under the MIT license.
 export type GeneralApiCenter = ApiCenter | DataPlaneApiCenter;
 
+export type ResourceGroup = {
+    id: string;
+    location: string;
+    name: string;
+    properties: {
+        provisioningState: string;
+    };
+};
+
+export type ResourceType = {
+    apiVersions: string[];
+    capabilities: string;
+    locations: string[];
+    resourceType: string;
+};
+
+export type SubApiCenterMetaData = {
+    id: string;
+    namespace: string;
+    registrationPolicy: string;
+    registrationState: string;
+    resourceTypes: ResourceType[];
+};
+
 export type ApiCenter = {
     id: string;
     location: string;
     name: string;
     resourceGroup: string;
     properties: {
+        dataApiHostname: string;
+        portalHostname: string;
     };
+    provisioningState: string;
     // tslint:disable-next-line:no-reserved-keywords
     type: string;
 };

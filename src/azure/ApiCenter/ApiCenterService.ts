@@ -5,7 +5,7 @@ import { ISubscriptionContext } from "@microsoft/vscode-azext-utils";
 import { clientOptions } from "../../common/clientOptions";
 import { getCredentialForToken } from "../../utils/credentialUtil";
 import { APICenterRestAPIs } from "./ApiCenterRestAPIs";
-import { ApiCenter, ApiCenterAnalyzerConfigs, ApiCenterApi, ApiCenterApiAccess, ApiCenterApiCredential, ApiCenterApiDeployment, ApiCenterApiVersion, ApiCenterApiVersionDefinition, ApiCenterApiVersionDefinitionExport, ApiCenterApiVersionDefinitionImport, ApiCenterAuthConfig, ApiCenterEnvironment, ApiCenterRulesetExport, ApiCenterRulesetImport, ApiCenterRulesetImportResult, ApiCenterRulesetImportStatus, ArmAsyncOperationStatus } from "./contracts";
+import { ApiCenter, ApiCenterAnalyzerConfigs, ApiCenterApi, ApiCenterApiAccess, ApiCenterApiCredential, ApiCenterApiDeployment, ApiCenterApiVersion, ApiCenterApiVersionDefinition, ApiCenterApiVersionDefinitionExport, ApiCenterApiVersionDefinitionImport, ApiCenterAuthConfig, ApiCenterEnvironment, ApiCenterRulesetExport, ApiCenterRulesetImport, ApiCenterRulesetImportResult, ApiCenterRulesetImportStatus, ArmAsyncOperationStatus, ResourceGroup, SubApiCenterMetaData } from "./contracts";
 
 export class ApiCenterService {
   private susbcriptionContext: ISubscriptionContext;
@@ -19,12 +19,42 @@ export class ApiCenterService {
     this.resourceGroupName = resourceGroupName;
   }
 
+  public async checkResourceGroupExists(): Promise<boolean> {
+    const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
+    const client = new ServiceClient(creds, clientOptions);
+    const options: RequestPrepareOptions = {
+      method: "HEAD",
+      url: APICenterRestAPIs.GetResourceGroup(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiVersion)
+    };
+    const response = await client.sendRequest(options);
+    if (response.status === 204) {
+      return true;
+    }
+    else if (response.status === 404) {
+      return false;
+    }
+    else {
+      throw new Error(`Failed to check resource group status. Status code: ${response.status}.`);
+    }
+  }
+
   public async getApiCenter(): Promise<ApiCenter> {
     const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
     const client = new ServiceClient(creds, clientOptions);
     const options: RequestPrepareOptions = {
       method: "GET",
       url: APICenterRestAPIs.GetAPIService(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, this.apiVersion)
+    };
+    const response = await client.sendRequest(options);
+    return response.parsedBody;
+  }
+
+  public async listApiCenterServers(): Promise<SubApiCenterMetaData> {
+    const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
+    const client = new ServiceClient(creds, clientOptions);
+    const options: RequestPrepareOptions = {
+      method: "GET",
+      url: APICenterRestAPIs.GetApiCenterMetaDataFromSub(this.susbcriptionContext.subscriptionId, "2021-04-01")
     };
     const response = await client.sendRequest(options);
     return response.parsedBody;
@@ -111,12 +141,40 @@ export class ApiCenterService {
     return response.parsedBody;
   }
 
+  public async createOrUpdateResourceGroup(subLocation: string): Promise<ResourceGroup> {
+    const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
+    const client = new ServiceClient(creds, clientOptions);
+    const options: RequestPrepareOptions = {
+      method: "PUT",
+      url: APICenterRestAPIs.CreateResourceGroup(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiVersion),
+      body: {
+        location: subLocation
+      }
+    };
+    const response = await client.sendRequest(options);
+    return response.parsedBody;
+  }
+
   public async getApiCenterApiAccesses(apiName: string, apiVersion: string): Promise<{ value: ApiCenterApiAccess[]; nextLink: string }> {
     const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
     const client = new ServiceClient(creds, clientOptions);
     const options: RequestPrepareOptions = {
       method: "GET",
       url: APICenterRestAPIs.GetAPIAccesses(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, apiName, apiVersion, this.apiVersionNew)
+    };
+    const response = await client.sendRequest(options);
+    return response.parsedBody;
+  }
+
+  public async createOrUpdateApiCenterService(serviceLocation: string): Promise<ApiCenter> {
+    const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
+    const client = new ServiceClient(creds, clientOptions);
+    const options: RequestPrepareOptions = {
+      method: "PUT",
+      url: APICenterRestAPIs.CreateApiService(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, "2024-03-01"),
+      body: {
+        location: serviceLocation
+      }
     };
     const response = await client.sendRequest(options);
     return response.parsedBody;
