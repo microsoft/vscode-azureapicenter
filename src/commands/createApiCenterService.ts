@@ -40,7 +40,7 @@ export namespace CreateAzureApiCenterService {
             title: UiStrings.CreateApiCenterService
         }, async (progress, token) => {
             progress.report({ message: UiStrings.GetResourceGroup });
-            const rgExist = await apiCenterService.checkResourceGroupExist();
+            const rgExist = await apiCenterService.checkResourceGroupExists();
             if (!rgExist) {
                 progress.report({ message: UiStrings.CreatingResourceGroup });
                 await CreateAzureApiCenterService.createResourceGroupWithRetry(apiCenterService, location);

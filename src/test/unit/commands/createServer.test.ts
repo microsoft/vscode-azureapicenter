@@ -56,7 +56,7 @@ describe("createApiCenterService", () => {
         showInputBoxStub = sinon.stub(vscode.window, "showInputBox").resolves("testServerName");
         showQuickPickStub = sinon.stub(vscode.window, "showQuickPick").resolves("US" as unknown as vscode.QuickPickItem);
         sinon.stub(ApiCenterService.prototype, "listApiCenterServers").resolves({ id: "fakeId", namespace: "fakeName", registrationPolicy: "fakeRP", registrationState: "fakeRS", resourceTypes: [{ apiVersions: ["fakeApiVersion"], capabilities: "fakeCap", locations: ["US", "UK"], resourceType: "services" }] } as SubApiCenterMetaData);
-        const iRGEStub = sinon.stub(ApiCenterService.prototype, "checkResourceGroupExist").resolves(true);
+        const iRGEStub = sinon.stub(ApiCenterService.prototype, "checkResourceGroupExists").resolves(true);
         const courgStub = sinon.stub(ApiCenterService.prototype, "createOrUpdateApiCenterService").resolves({} as ApiCenter);
         const csswrStub = sinon.stub(CreateAzureApiCenterService, "checkApiCenterServerStatusWithRetry").resolves();
         await CreateAzureApiCenterService.createApiCenterService({} as IActionContext, mockNode);
