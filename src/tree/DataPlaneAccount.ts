@@ -37,7 +37,7 @@ export class DataPlanAccountManagerTreeItem extends AzExtParentTreeItem {
         if (!accounts.length) {
             return [new GenericTreeItem(this, {
                 label: UiStrings.APIDataPlaneWiki,
-                commandId: "azure-api-center.apiCenterWorkspace.learnApiCatalog",
+                commandId: "azure-api-center.apiCenterWorkspace.learnApiPortal",
                 contextValue: "azureCommand",
                 id: "azureapicentercatalogwiki",
                 iconPath: new vscode.ThemeIcon("book"),
