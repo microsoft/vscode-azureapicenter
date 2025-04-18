@@ -7,6 +7,8 @@ Build, discover, try, and consume APIs using your favorite development environme
 
 ### Build
 
+Create Azure API Center Service directly in VS Code.
+
 Make APIs you are building discoverable to others by registering them with API Center directly or using CI/CD pipelines in GitHub or Azure DevOps.
 
 Shift-left API design conformance checks into Visual Studio Code with integrated linting support, powered by Spectral.
@@ -29,7 +31,15 @@ Generate OpenAPI specification file from API code.
 
 ![Generate OpenAPI specification](./media/generate-api-documentation.gif)
 
-### Platform API Catalog
+Generate OpenAPI specification file from whole code project
+
+![Generate OpenAPI specification from project](./media/generate-openapi-from-project.png)
+
+'Get Spectral Rules' Language Model Tool to help generate compliant OpenAPI spec
+
+!['Get Spectral Rules' Language Model Tool](./media/lmtool-get-spectral-rules.png)
+
+### API Center Portal View
 ![data-view](./media/add-data-api.gif)
 
 ### Discover
@@ -38,6 +48,7 @@ Find the right API, fast from your organization's hand-crafted API catalog with 
 
 ![tree-view](./media/tree-view.png)
 
+Also, you could open API Center in Azure Portal.
 
 ### Explore
 
@@ -66,6 +77,12 @@ Export API specification document for a specific API either from the tree view o
 Create M365 Copilot Declarative Agent
 
 ![Create M365 Copilot Declarative Agent](./media/create-declarative-agent.png)
+
+Manage API Authentication
+
+![API Authentication](./media/api-access.png)
+
+Get deployment URL from deployment with 'Copy Runtime URL' command
 
 ## Pre-Release
 
