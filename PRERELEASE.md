@@ -3,6 +3,17 @@
 
 > Note: This changelog only includes the changes for the pre-release versions of Azure API Center for Visual Studio Code. For the changelog of stable versions, please refer to the [Changelog of Azure API Center for Visual Studio Code](https://github.com/microsoft/vscode-azureapicenter/blob/main/CHANGELOG.md).
 
+### March 23, 2025
+* Generate OpenAPI spec from whole code project
+* Add 'Open in Azure Portal' command
+* Rebrand 'Platform API Catalog' to 'API Center Portal View'
+* Tree View for API Authentication
+* Add 'Get Credential' command to get credential from API Authentication
+* Generate HTTP File with API Key from API Authentication
+* 'Get Spectral Rules' Language Model Tool to help generate compliant OpenAPI spec
+* Add 'Copy Runtime URL' command to get deployment URL from deployment
+* Add 'Create API Center Service in Azure' command
+
 ### February 27, 2025
 * Integrate with the `Teams Toolkit` extension to empower developers to create M365 Copilot Declarative Agents using API definitions from API Center.
 
@@ -13,7 +24,7 @@
 ### November 4, 2024
 * Add integration with GitHub Copilot for Azure (@Azure extension) to provide a chat experience for developers to leverage its capabilities for a variety of API Center-related tasks:
     * Generate OpenAPI specification compliant with the active API style guide.
-    * If no active API style guide is set, generate OpenAPI specifications compliant with the default ‘spectral:oas’ ruleset.
+    * If no active API style guide is set, generate OpenAPI specifications compliant with the default 'spectral:oas' ruleset.
     * Easily register your generated APIs in API Center.
 * Add wiki guide for Platform API Catalog.
 
