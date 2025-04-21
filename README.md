@@ -7,7 +7,9 @@ Build, discover, try, and consume APIs using your favorite development environme
 
 ### Build
 
-Create Azure API Center Service directly in VS Code.
+Create Azure API Center Service directly in VS Code from Command Palette (`Azure API Center: Create API Center Service in Azure`) or Tree View.
+
+![CreateServer](./media/create-api-center.png)
 
 Make APIs you are building discoverable to others by registering them with API Center directly or using CI/CD pipelines in GitHub or Azure DevOps.
 
@@ -49,6 +51,8 @@ Find the right API, fast from your organization's hand-crafted API catalog with 
 ![tree-view](./media/tree-view.png)
 
 Also, you could open API Center in Azure Portal.
+
+![open-portal](./media/open-in-portal.png)
 
 ### Explore
 
