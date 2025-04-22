@@ -53,7 +53,9 @@ export namespace AIFAgentGenerator {
 
         // Write YAML to a file
         fs.writeFileSync(localFilePath, yamlString, 'utf8');
-        await vscode.commands.executeCommand('azure-ai-foundry.explorerContext.openAgentDesigner', vscode.Uri.file(localFilePath));
+        // Open the file in VS Code editor
+        await vscode.window.showTextDocument(document);
+        // await vscode.commands.executeCommand('azure-ai-foundry.explorerContext.openAgentDesigner', vscode.Uri.file(localFilePath));
     }
 
     async function generateAgentFile(specContent: string) {
@@ -61,7 +63,7 @@ export namespace AIFAgentGenerator {
         let tool = agentToolTemplate("openapi", "generate openapi spec for AI Foundry agent", specContent);
         let toolsList = [];
         toolsList.push(tool);
-        return agentTemplate("Openapi Agent for Ai Foundry", toolsList);
+        return agentTemplate("PetStore Agent for Ai Foundry", toolsList);
     }
 
     interface IAgentSchema {
@@ -81,10 +83,10 @@ export namespace AIFAgentGenerator {
     const agentTemplate = (name: string, specTool: any) => {
         return {
             version: '1.0.0',
-            type: 'foundry_agent',
+            type: 'Swagger Petstore Agent',
             name: name,
             description: 'Description of the agent',
-            id: '',
+            id: 'PetstoreAgent',
             model: {
                 id: '',
                 options: {
@@ -94,7 +96,11 @@ export namespace AIFAgentGenerator {
                     type: 'aifoundry'
                 }
             },
-            instructions: 'Instructions for the agent',
+            metadata: {
+                author: 'wenyutang@microsoft.com',
+                tag: 'petstore',
+            },
+            instructions: 'You are an agent that can answer questions about the petstore API.',
             tools: specTool,
         } as IAgentSchema;
     }
@@ -104,7 +110,7 @@ export namespace AIFAgentGenerator {
             type: 'openapi',
             name: name,
             description: description,
-            configuration: {
+            options: {
                 auth: {
                     type: 'anonymous',
                     security_scheme: {}
