@@ -5,10 +5,10 @@ import * as vscode from 'vscode';
 import { DataPlaneAccount } from "../azure/ApiCenter/ApiCenterDataPlaneAPIs";
 import { TelemetryClient } from "../common/telemetryClient";
 import { DataPlaneApiFromType, TelemetryEvent, TelemetryProperties } from "../common/telemetryEvent";
+import { DataPlaneAccountsKey } from "../constants";
 import { ext } from "../extensionVariables";
 import { UiStrings } from "../uiStrings";
 export namespace ConnectDataPlaneApi {
-    const dataPlaneApiFromInput = "dataPlaneApiFromInput";
     export async function addDataPlaneApis(context: IActionContext): Promise<any | void> {
         const endpointUrl = await vscode.window.showInputBox({ title: UiStrings.AddDataPlaneRuntimeUrl, ignoreFocusOut: true });
         if (!endpointUrl) {
@@ -34,7 +34,7 @@ export namespace ConnectDataPlaneApi {
         properties[TelemetryProperties.dataPlaneAddApiSource] = fromType;
         TelemetryClient.sendEvent(TelemetryEvent.addDataPlaneInstance, properties);
     }
-    export function setAccountToExt(domain: string, clientId: string, tenantId: string) {
+    export async function setAccountToExt(domain: string, clientId: string, tenantId: string) {
         function pushIfNotExist(array: DataPlaneAccount[], element: DataPlaneAccount) {
             if (!array.some(item => item.domain === element.domain)) {
                 array.push(element);
@@ -42,6 +42,12 @@ export namespace ConnectDataPlaneApi {
                 vscode.window.showInformationMessage(UiStrings.DatplaneAlreadyAdded);
             }
         }
+        updateDataPlaneAccounts(domain, clientId, tenantId);
         pushIfNotExist(ext.dataPlaneAccounts, { domain: domain, tenantId: tenantId, clientId: clientId });
+    }
+    export function updateDataPlaneAccounts(domain: string, clientId: string, tenantId: string) {
+        let account: DataPlaneAccount = { domain: domain, tenantId: tenantId, clientId: clientId };
+        ext.dataPlaneAccounts.push(account);
+        ext.context.globalState.update(DataPlaneAccountsKey, ext.dataPlaneAccounts);
     }
 }

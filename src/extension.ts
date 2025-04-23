@@ -9,6 +9,7 @@ import { TelemetryClient } from './common/telemetryClient';
 // Tree View UI
 import { registerAzureUtilsExtensionVariables } from '@microsoft/vscode-azext-azureutils';
 import { AzExtTreeDataProvider, AzExtTreeItem, CommandCallback, IActionContext, IParsedError, createAzExtOutputChannel, isUserCancelledError, parseError, registerCommand, registerEvent } from '@microsoft/vscode-azext-utils';
+import { DataPlaneAccount } from './azure/ApiCenter/ApiCenterDataPlaneAPIs';
 import { AzureAccount } from "./azure/azureLogin/azureAccount";
 import { AzureSessionProviderHelper } from "./azure/azureLogin/azureSessionProvider";
 import { AzureDataSessionProviderHelper } from "./azure/azureLogin/dataSessionProvider";
@@ -46,7 +47,7 @@ import { SetApiRuleset } from './commands/setApiRuleset';
 import { SignInToDataPlane } from "./commands/signInToDataPlane";
 import { testInPostman } from './commands/testInPostman';
 import { ErrorProperties, TelemetryProperties } from './common/telemetryEvent';
-import { LearnMoreAboutAPICatalog, doubleClickDebounceDelay, selectedNodeKey } from './constants';
+import { DataPlaneAccountsKey, LearnMoreAboutAPICatalog, doubleClickDebounceDelay, selectedNodeKey } from './constants';
 import { getPlugins } from './copilot/getPlugins';
 import { GetSpectralRulesTool } from './copilot/getSpectralRulesTool';
 import { ext } from './extensionVariables';
@@ -214,7 +215,7 @@ function setupControlView(context: vscode.ExtensionContext) {
 }
 
 function setupDataTreeView(context: vscode.ExtensionContext) {
-    ext.dataPlaneAccounts = [];
+    ext.dataPlaneAccounts = ext.context.globalState.get<DataPlaneAccount[]>(DataPlaneAccountsKey) || [];
     AzureDataSessionProviderHelper.activateAzureSessionProvider(context);
     const dataPlaneSessionProvider = AzureDataSessionProviderHelper.getSessionProvider();
     const dataPlanAccountManagerTreeItem = createAzureDataAccountTreeItem(dataPlaneSessionProvider);

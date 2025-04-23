@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 import { IActionContext } from "@microsoft/vscode-azext-utils";
 import * as vscode from "vscode";
+import { DataPlaneAccountsKey } from "../constants";
 import { ext } from "../extensionVariables";
 import { ApiServerItem } from "../tree/DataPlaneAccount";
 export async function removeDataplaneAPI(context: IActionContext, node: ApiServerItem) {
@@ -14,5 +15,6 @@ export async function removeDataplaneAPI(context: IActionContext, node: ApiServe
     if (indexToRemove !== -1) {
         accounts.splice(indexToRemove, 1);
     }
+    ext.context.globalState.update(DataPlaneAccountsKey, accounts);
     vscode.commands.executeCommand('azure-api-center.apiCenterWorkspace.refresh');
 }
