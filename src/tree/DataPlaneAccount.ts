@@ -9,6 +9,7 @@ import { AzureAuth } from "../azure/azureLogin/azureAuth";
 import { AzureDataSessionProviderHelper, generateScopes } from "../azure/azureLogin/dataSessionProvider";
 import { TelemetryClient } from "../common/telemetryClient";
 import { TelemetryEvent } from "../common/telemetryEvent";
+import { DataPlaneAccountsKey } from "../constants";
 import { ext } from "../extensionVariables";
 import { UiStrings } from "../uiStrings";
 import { GeneralUtils } from "../utils/generalUtils";
@@ -33,7 +34,7 @@ export class DataPlanAccountManagerTreeItem extends AzExtParentTreeItem {
     }
     public dispose(): void { }
     public async loadMoreChildrenImpl(clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[] | GenericTreeItem[]> {
-        const accounts = ext.dataPlaneAccounts;
+        const accounts = ext.context.globalState.get<DataPlaneAccount[]>(DataPlaneAccountsKey) || [];
         if (!accounts.length) {
             return [new GenericTreeItem(this, {
                 label: UiStrings.APIDataPlaneWiki,

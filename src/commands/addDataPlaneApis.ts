@@ -35,7 +35,8 @@ export namespace ConnectDataPlaneApi {
         TelemetryClient.sendEvent(TelemetryEvent.addDataPlaneInstance, properties);
     }
     export async function setAccountToExt(domain: string, clientId: string, tenantId: string) {
-        function updateAccountsIfNotExist(array: DataPlaneAccount[], element: DataPlaneAccount) {
+        function updateAccountsIfNotExist(element: DataPlaneAccount) {
+            let array: DataPlaneAccount[] = ext.context.globalState.get(DataPlaneAccountsKey) || [];
             if (!array.some(item => item.domain === element.domain)) {
                 array.push(element);
                 ext.context.globalState.update(DataPlaneAccountsKey, array);
@@ -43,6 +44,6 @@ export namespace ConnectDataPlaneApi {
                 vscode.window.showInformationMessage(UiStrings.DatplaneAlreadyAdded);
             }
         }
-        updateAccountsIfNotExist(ext.dataPlaneAccounts, { domain: domain, tenantId: tenantId, clientId: clientId });
+        updateAccountsIfNotExist({ domain: domain, tenantId: tenantId, clientId: clientId });
     }
 }
