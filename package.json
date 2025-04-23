@@ -99,11 +99,6 @@
         "category": "Azure API Center"
       },
       {
-        "command": "azure-api-center.registerMcp",
-        "title": "%azure-api-center.commands.registerMcp.title%",
-        "category": "Azure API Center"
-      },
-      {
         "command": "azure-api-center.searchApi",
         "title": "%azure-api-center.commands.searchApi.title%",
         "category": "Azure API Center",
@@ -322,10 +317,6 @@
         },
         {
           "command": "azure-api-center.registerApi",
-          "when": "view == apiCenterTreeView && viewItem =~ /^azureApiCenterApis/"
-        },
-        {
-          "command": "azure-api-center.registerMcp",
           "when": "view == apiCenterTreeView && viewItem =~ /^azureApiCenterApis/"
         },
         {

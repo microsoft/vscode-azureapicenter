@@ -34,7 +34,6 @@ import openInAzurePortal from './commands/openInAzurePortal';
 import { openUrlFromTreeNode } from './commands/openUrl';
 import { refreshTree } from './commands/refreshTree';
 import { registerApi } from './commands/registerApi';
-import { registerMcp } from './commands/registerMcp';
 import { removeDataplaneAPI } from './commands/removeDataplaneApi';
 import { addCustomFunction } from './commands/rules/addCustomFunction';
 import { deleteCustomFunction } from './commands/rules/deleteCustomFunction';
@@ -102,8 +101,6 @@ export async function activate(context: vscode.ExtensionContext) {
     registerCommandWithTelemetry('azure-api-center.generateHttpFile', GenerateHttpFile.generateHttpFile);
 
     registerCommandWithTelemetry('azure-api-center.registerApi', registerApi);
-
-    registerCommandWithTelemetry('azuree-api-center.registerMcp', registerMcp);
 
     registerCommandWithTelemetry('azure-api-center.searchApi', searchApi);
 

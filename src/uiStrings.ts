@@ -170,5 +170,4 @@ export class UiStrings {
     static readonly InputNameTooLong = vscode.l10n.t("Api CenterName must be 90 characters or fewer");
     static readonly InputNameWithInvalidCharacter = vscode.l10n.t("Invalid characters used for Api Center Name");
     static readonly InputNameShouldNotEndWithPeriod = vscode.l10n.t("Api Center Name cannot end with a period.");
-    static readonly APICenterServiceDeployment = vscode.l10n.t("API Center Service Deployment");
 }
