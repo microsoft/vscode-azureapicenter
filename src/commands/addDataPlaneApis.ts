@@ -42,7 +42,7 @@ export namespace ConnectDataPlaneApi {
                 vscode.window.showInformationMessage(UiStrings.DatplaneAlreadyAdded);
             }
         }
-        updateDataPlaneAccounts(domain, clientId, tenantId);
+        ConnectDataPlaneApi.updateDataPlaneAccounts(domain, clientId, tenantId);
         pushIfNotExist(ext.dataPlaneAccounts, { domain: domain, tenantId: tenantId, clientId: clientId });
     }
     export function updateDataPlaneAccounts(domain: string, clientId: string, tenantId: string) {

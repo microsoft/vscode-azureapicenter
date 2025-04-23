@@ -121,4 +121,17 @@ describe('getDataPlaneApis test happy path', () => {
             assert.equal(error instanceof UserCancelledError, true);
         }
     });
+    it("updateDatPlaneAccounts happy path", async () => {
+        const stubUpdateGlobalstate = sandbox.stub(ext.context.globalState, "update").resolves();
+        ext.dataPlaneAccounts = [] as any;
+        ConnectDataPlaneApi.updateDataPlaneAccounts("https://fakeUrl.com", "fakeClientId", "fakeTenantId");
+        sandbox.assert.calledOnce(stubUpdateGlobalstate);
+        assert.equal(stubUpdateGlobalstate.getCall(0).args[0], "azure-api-center.dataPlaneAccounts");
+        assert.equal(stubUpdateGlobalstate.getCall(0).args[1].length, 1);
+        assert.equal(stubUpdateGlobalstate.getCall(0).args[1][0].domain, "https://fakeUrl.com");
+        assert.equal(stubUpdateGlobalstate.getCall(0).args[1][0].tenantId, "fakeTenantId");
+        assert.equal(ext.dataPlaneAccounts.length, 1);
+        assert.equal(ext.dataPlaneAccounts[0].domain, "https://fakeUrl.com");
+        assert.equal(ext.dataPlaneAccounts[0].tenantId, "fakeTenantId");
+    });
 });
