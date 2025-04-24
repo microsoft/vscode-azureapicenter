@@ -3,6 +3,16 @@
 
 > Note: This changelog only includes the changes for the pre-release versions of Azure API Center for Visual Studio Code. For the changelog of stable versions, please refer to the [Changelog of Azure API Center for Visual Studio Code](https://github.com/microsoft/vscode-azureapicenter/blob/main/CHANGELOG.md).
 
+### April 24, 2025
+* **Generate OpenAPI Specification**: Added functionality to generate an OpenAPI specification from the entire code project.
+* **'Open in Azure Portal' Command**: Introduced a new command that allows users to open their API Center directly in the Azure Portal.
+* **Rebranding**: Rebranded the 'Platform API Catalog' to 'API Center Portal View'.
+* **Tree View for API Authentication**: Implemented a new tree view for API authentication and added 'Get Credential' command to get API credentials from API Authentication to get API access.
+* **Generate HTTP File with API Key**: Introduced the ability to generate an HTTP file that includes the API key from API authentication. This enhancement facilitates easier testing and integration of APIs.
+* **'Get Spectral Rules' Language Model Tool**: Added a language model tool to help generate compliant OpenAPI specifications by providing spectral rules. This tool ensures that the generated specifications adhere to industry standards.
+* **'Copy Runtime URL' Command**: Added a command to copy the deployment URL from the deployment. This feature makes it more convenient to share and access deployment URLs.
+* **'Create API Center Service in Azure' Command**: Introduced a new command to create a new API Center service in Azure.
+
 ### February 27, 2025
 * Integrate with the `Teams Toolkit` extension to empower developers to create M365 Copilot Declarative Agents using API definitions from API Center.
 
@@ -13,7 +23,7 @@
 ### November 4, 2024
 * Add integration with GitHub Copilot for Azure (@Azure extension) to provide a chat experience for developers to leverage its capabilities for a variety of API Center-related tasks:
     * Generate OpenAPI specification compliant with the active API style guide.
-    * If no active API style guide is set, generate OpenAPI specifications compliant with the default ‘spectral:oas’ ruleset.
+    * If no active API style guide is set, generate OpenAPI specifications compliant with the default 'spectral:oas' ruleset.
     * Easily register your generated APIs in API Center.
 * Add wiki guide for Platform API Catalog.
 
