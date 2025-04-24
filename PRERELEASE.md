@@ -3,7 +3,7 @@
 
 > Note: This changelog only includes the changes for the pre-release versions of Azure API Center for Visual Studio Code. For the changelog of stable versions, please refer to the [Changelog of Azure API Center for Visual Studio Code](https://github.com/microsoft/vscode-azureapicenter/blob/main/CHANGELOG.md).
 
-### March 24, 2025
+### April 24, 2025
 * **Generate OpenAPI Specification**: Added functionality to generate an OpenAPI specification from the entire code project.
 * **'Open in Azure Portal' Command**: Introduced a new command that allows users to open their API Center directly in the Azure Portal.
 * **Rebranding**: Rebranded the 'Platform API Catalog' to 'API Center Portal View'.
