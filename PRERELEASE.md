@@ -3,16 +3,15 @@
 
 > Note: This changelog only includes the changes for the pre-release versions of Azure API Center for Visual Studio Code. For the changelog of stable versions, please refer to the [Changelog of Azure API Center for Visual Studio Code](https://github.com/microsoft/vscode-azureapicenter/blob/main/CHANGELOG.md).
 
-### March 23, 2025
-* Generate OpenAPI spec from whole code project
-* Add 'Open in Azure Portal' command
-* Rebrand 'Platform API Catalog' to 'API Center Portal View'
-* Tree View for API Authentication
-* Add 'Get Credential' command to get credential from API Authentication
-* Generate HTTP File with API Key from API Authentication
-* 'Get Spectral Rules' Language Model Tool to help generate compliant OpenAPI spec
-* Add 'Copy Runtime URL' command to get deployment URL from deployment
-* Add 'Create API Center Service in Azure' command
+### March 24, 2025
+* **Generate OpenAPI Specification**: Added functionality to generate an OpenAPI specification from the entire code project.
+* **'Open in Azure Portal' Command**: Introduced a new command that allows users to open their API Center directly in the Azure Portal.
+* **Rebranding**: Rebranded the 'Platform API Catalog' to 'API Center Portal View'.
+* **Tree View for API Authentication**: Implemented a new tree view for API authentication and added 'Get Credential' command to get API credentials from API Authentication to get API access.
+* **Generate HTTP File with API Key**: Introduced the ability to generate an HTTP file that includes the API key from API authentication. This enhancement facilitates easier testing and integration of APIs.
+* **'Get Spectral Rules' Language Model Tool**: Added a language model tool to help generate compliant OpenAPI specifications by providing spectral rules. This tool ensures that the generated specifications adhere to industry standards.
+* **'Copy Runtime URL' Command**: Added a command to copy the deployment URL from the deployment. This feature makes it more convenient to share and access deployment URLs.
+* **'Create API Center Service in Azure' Command**: Introduced a new command to create a new API Center service in Azure.
 
 ### February 27, 2025
 * Integrate with the `Teams Toolkit` extension to empower developers to create M365 Copilot Declarative Agents using API definitions from API Center.
