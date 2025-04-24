@@ -1,6 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
-import { AzExtParentTreeItem, AzExtTreeItem, GenericTreeItem, IActionContext, ISubscriptionContext, TreeItemIconPath, registerEvent } from "@microsoft/vscode-azext-utils";
+import { AzExtParentTreeItem, AzExtTreeItem, GenericParentTreeItem, GenericParentTreeItemOptions, GenericTreeItem, IActionContext, ISubscriptionContext, TreeItemIconPath, registerEvent } from "@microsoft/vscode-azext-utils";
 import * as vscode from "vscode";
 import { DataPlaneAccount } from "../azure/ApiCenter/ApiCenterDataPlaneAPIs";
 import { ApiCenterApisDataplane } from "../azure/ApiCenterDefines/ApiCenterApi";
@@ -67,7 +67,7 @@ export class DataPlanAccountManagerTreeItem extends AzExtParentTreeItem {
 
 }
 
-export class ApiServerItem extends AzExtParentTreeItem {
+export class ApiServerItem extends GenericParentTreeItem {
     public label: string;
     public readonly subscriptionContext: ISubscriptionContext;
     public readonly apisTreeItem: ApisTreeItem;
@@ -98,7 +98,11 @@ export class ApiServerItem extends AzExtParentTreeItem {
         return this.subscriptionContext;
     }
     constructor(parent: AzExtParentTreeItem, subContext: ISubscriptionContext) {
-        super(parent);
+        super(parent, {
+            iconPath: treeUtils.getIconPath('apiCenter'),
+            initialCollapsibleState: vscode.TreeItemCollapsibleState.Expanded,
+        } as GenericParentTreeItemOptions);
+        this.initialCollapsibleState // 如果有这个属性的话
         this.label = subContext.subscriptionPath.split('.')[0];
         this.subscriptionContext = subContext;
         this.apisTreeItem = new ApisTreeItem(this, new ApiCenterApisDataplane({ name: this.label }));
@@ -108,9 +112,6 @@ export class ApiServerItem extends AzExtParentTreeItem {
     }
     public contextValue: string = ApiServerItem.contextValue;
     public static contextValue: string = "azureApiCenterDataPlane";
-    public get iconPath(): TreeItemIconPath {
-        return treeUtils.getIconPath('apiCenter');
-    }
 }
 
 function getSubscriptionContext(
