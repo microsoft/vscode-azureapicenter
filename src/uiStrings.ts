@@ -127,6 +127,7 @@ export class UiStrings {
     static readonly RequestFailedWithStatusCode = vscode.l10n.t("Request failed with status code: {0}");
     static readonly DownloadDefinitionFileWithErrorMsg = vscode.l10n.t("Download API Center Definition File error: {0}");
     static readonly DatplaneAlreadyAdded = vscode.l10n.t("This Data Plane Runtime URL already added to Data View.");
+    static readonly NoDataPlaneAccountToRemove = vscode.l10n.t("No Data Plane APIs to remove.");
     static readonly SelectItemFromTreeView = vscode.l10n.t("Select from which tree view");
     static readonly GetTreeView = vscode.l10n.t("Please connect to Azure API Center Service first.");
     static readonly APIControlPlaneView = vscode.l10n.t("API Center Management Plane");
@@ -169,5 +170,5 @@ export class UiStrings {
     static readonly InputNameShouldNotBeEmpty = vscode.l10n.t("Api Center Name is required!");
     static readonly InputNameTooLong = vscode.l10n.t("Api CenterName must be 90 characters or fewer");
     static readonly InputNameWithInvalidCharacter = vscode.l10n.t("Invalid characters used for Api Center Name");
-    static readonly InputNameShouldNotEndWithPeriod = vscode.l10n.t("Api Center Name cannot end with a period.")
+    static readonly InputNameShouldNotEndWithPeriod = vscode.l10n.t("Api Center Name cannot end with a period.");
 }

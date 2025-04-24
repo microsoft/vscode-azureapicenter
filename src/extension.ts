@@ -211,7 +211,6 @@ function setupControlView(context: vscode.ExtensionContext) {
 }
 
 function setupDataTreeView(context: vscode.ExtensionContext) {
-    ext.dataPlaneAccounts = [];
     AzureDataSessionProviderHelper.activateAzureSessionProvider(context);
     const dataPlaneSessionProvider = AzureDataSessionProviderHelper.getSessionProvider();
     const dataPlanAccountManagerTreeItem = createAzureDataAccountTreeItem(dataPlaneSessionProvider);
