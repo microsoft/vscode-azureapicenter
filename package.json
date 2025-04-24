@@ -501,6 +501,19 @@
         "userDescription": "%azure-api-center.lmTool.getSpectralRules.userDescription%",
         "modelDescription": "Get Spectral rules from active API style guide which makes OpenAPI spec compliant with the API style guide. Whenever user wants to generate or update OpenAPI spec, this tool will be used to fetch the rules.",
         "inputSchema": {}
+      },
+      {
+        "name": "azure-api-center_searchApis",
+        "tags": [
+          "azure-api-center"
+        ],
+        "displayName": "%azure-api-center.lmTool.searchApis.displayName%",
+        "canBeReferencedInPrompt": true,
+        "toolReferenceName": "searchApis",
+        "icon": "$(tools)",
+        "userDescription": "%azure-api-center.lmTool.searchApis.userDescription%",
+        "modelDescription": "Search APIs from Azure API Center.",
+        "inputSchema": {}
       }
     ],
     "problemMatchers": [

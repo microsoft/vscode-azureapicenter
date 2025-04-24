@@ -112,7 +112,7 @@ export class ApiServerItem extends AzExtParentTreeItem {
     }
 }
 
-function getSubscriptionContext(
+export function getSubscriptionContext(
     account: DataPlaneAccount
 ): ISubscriptionContext {
     const credentials = AzureAuth.getDataPlaneCredential(account.clientId, account.tenantId);
