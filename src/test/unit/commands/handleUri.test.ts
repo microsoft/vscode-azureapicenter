@@ -17,7 +17,8 @@ describe('handleUri test happy path', () => {
         const fakeUrl = 'vscode-insiders://apidev.azure-api-center?clientId=fakeClientId&tenantId=fakeTenantId&runtimeUrl=fakeRuntimeUrl';
         const url = vscode.Uri.parse(fakeUrl);
         let stubTelemetryEvent = sandbox.stub(ConnectDataPlaneApi, "sendDataPlaneApiTelemetry").returns();
-        let stubSetAccountToExt = sandbox.stub(ConnectDataPlaneApi, "setAccountToExt").returns();
+        let stubSetAccountToExt = sandbox.stub(ConnectDataPlaneApi, "setAccountToExt").returns(true);
+        let showWindowStub = sandbox.stub(vscode.window, "showInformationMessage").resolves("OK");
         sandbox.stub(vscode.commands, 'executeCommand').resolves();
         await handleUri(url);
         sandbox.assert.calledOnce(stubSetAccountToExt);
@@ -25,6 +26,7 @@ describe('handleUri test happy path', () => {
         assert.equal(stubSetAccountToExt.getCall(0).args[1], 'fakeClientId');
         assert.equal(stubSetAccountToExt.getCall(0).args[2], 'fakeTenantId');
         sandbox.assert.calledOnce(stubTelemetryEvent);
+        sandbox.assert.calledOnce(showWindowStub);
         assert.equal(stubTelemetryEvent.getCall(0).args[3], 'dataPlaneApiAddFromDeepLink');
     });
 });

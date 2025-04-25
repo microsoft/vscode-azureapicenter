@@ -102,7 +102,6 @@ export class ApiServerItem extends GenericParentTreeItem {
             iconPath: treeUtils.getIconPath('apiCenter'),
             initialCollapsibleState: vscode.TreeItemCollapsibleState.Expanded,
         } as GenericParentTreeItemOptions);
-        this.initialCollapsibleState // 如果有这个属性的话
         this.label = subContext.subscriptionPath.split('.')[0];
         this.subscriptionContext = subContext;
         this.apisTreeItem = new ApisTreeItem(this, new ApiCenterApisDataplane({ name: this.label }));
