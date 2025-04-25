@@ -6,6 +6,7 @@ import * as vscode from 'vscode';
 import { removeDataplaneAPI } from "../../../commands/removeDataplaneApi";
 import { ext } from "../../../extensionVariables";
 import { ApiServerItem } from "../../../tree/DataPlaneAccount";
+import { treeUtils } from "../../../utils/treeUtils";
 describe('removeDataplaneAPI test happy path', () => {
     let sandbox = null as any;
     let node: ApiServerItem;
@@ -50,6 +51,7 @@ describe('removeDataplaneAPI test happy path', () => {
             { domain: "domain1", tenantId: "tenantId1", clientId: "clientId1" },
             { domain: "domain2", tenantId: "tenantId2", clientId: "clientId2" }
         ]);
+        sandbox.stub(treeUtils, 'getIconPath').returns("testIconPath");
         const subscription = {
             subscriptionPath: "domain1",
             tenantId: "tenantId1",
