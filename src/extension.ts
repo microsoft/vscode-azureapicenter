@@ -49,6 +49,7 @@ import { LearnMoreAboutAPICatalog, doubleClickDebounceDelay, selectedNodeKey } f
 import { getPlugins } from './copilot/getPlugins';
 import { GetSpectralRulesTool } from './copilot/getSpectralRulesTool';
 import { SearchApisTool } from './copilot/tools/searchApis';
+import { SearchApiVersionsTool } from './copilot/tools/searchApiVersions';
 import { ext } from './extensionVariables';
 import { ApiVersionDefinitionTreeItem } from './tree/ApiVersionDefinitionTreeItem';
 import { createAzureAccountTreeItem } from "./tree/AzureAccountTreeItem";
@@ -165,6 +166,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
     context.subscriptions.push(vscode.lm.registerTool('azure-api-center_getSpectralRules', new GetSpectralRulesTool()));
     context.subscriptions.push(vscode.lm.registerTool('azure-api-center_searchApis', new SearchApisTool()));
+    context.subscriptions.push(vscode.lm.registerTool('azure-api-center_searchApiVersions', new SearchApiVersionsTool()));
 }
 
 async function registerCommandWithTelemetry(commandId: string, callback: CommandCallback, debounce?: number): Promise<void> {

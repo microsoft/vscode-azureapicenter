@@ -514,6 +514,27 @@
         "userDescription": "%azure-api-center.lmTool.searchApis.userDescription%",
         "modelDescription": "Search APIs from Azure API Center.",
         "inputSchema": {}
+      },
+      {
+        "name": "azure-api-center_searchApiVersions",
+        "tags": [
+          "azure-api-center"
+        ],
+        "displayName": "%azure-api-center.lmTool.searchApiVersions.displayName%",
+        "canBeReferencedInPrompt": true,
+        "toolReferenceName": "searchApiVersions",
+        "icon": "$(tools)",
+        "userDescription": "%azure-api-center.lmTool.searchApiVersions.userDescription%",
+        "modelDescription": "Search API versions from Azure API Center.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "apiName": {
+              "type": "string",
+              "description": "API name"
+            }
+          }
+        }
       }
     ],
     "problemMatchers": [

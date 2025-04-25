@@ -8,7 +8,7 @@ import { getSubscriptionContext } from "../../tree/DataPlaneAccount";
 import { GeneralUtils } from "../../utils/generalUtils";
 
 export async function createApiCenterDataPlaneService(): Promise<GeneralUtils.Errorable<ApiCenterDataPlaneService>> {
-    const accounts = ext.context.globalState.get<DataPlaneAccount[]>(DataPlaneAccountsKey) ?? [];
+    const accounts = ext.context.globalState.get<DataPlaneAccount[]>(DataPlaneAccountsKey, []);
 
     if (accounts.length === 0) {
         return { succeeded: false, error: "No Data Plane account found. Let user trigger `Connect to an API Center` VS Code command to add Data Plane account" };
