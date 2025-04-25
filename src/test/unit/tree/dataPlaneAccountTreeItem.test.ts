@@ -84,7 +84,7 @@ describe("ApiServerItem treeItem test case", () => {
         const node: DataPlanAccountManagerTreeItem = new DataPlanAccountManagerTreeItem(sessionProvider);
         const res = await node.loadMoreChildrenImpl(true, {} as IActionContext);
         assert.equal(res.length, 1);
-        assert.equal(res[0].commandId, "azure-api-center.apiCenterWorkspace.learnApiCatalog");
+        assert.equal(res[0].commandId, "azure-api-center.apiCenterWorkspace.learnApiPortal");
         assert.equal(res[0].id, "azureapicentercatalogwiki");
     });
     it("ApiServerItem loadmorechild return login", async () => {
