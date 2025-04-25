@@ -1,8 +1,9 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 
-import { AzExtTreeItem } from "@microsoft/vscode-azext-utils";
-import { TelemetryProperties } from "../common/telemetryEvent";
+import { AzExtTreeItem, IParsedError, parseError } from "@microsoft/vscode-azext-utils";
+import { TelemetryClient } from "../common/telemetryClient";
+import { ErrorProperties, TelemetryProperties } from "../common/telemetryEvent";
 
 export namespace TelemetryUtils {
     export function setAzureResourcesInfo(properties: { [key: string]: string; }, arg: any): void {
@@ -24,6 +25,27 @@ export namespace TelemetryUtils {
 
             if (arg.label) {
                 properties[TelemetryProperties.resourceName] = arg.label;
+            }
+        }
+    }
+
+    export async function callWithTelemetry<T>(eventName: string, callback: () => PromiseLike<T>): Promise<T> {
+        let parsedError: IParsedError | undefined;
+        try {
+            TelemetryClient.sendEvent(`${eventName}.start`);
+            return await callback();
+        } catch (error) {
+            parsedError = parseError(error);
+            throw error;
+        } finally {
+            if (parsedError) {
+                const properties = {
+                    [ErrorProperties.errorType]: parsedError.errorType,
+                    [ErrorProperties.errorMessage]: parsedError.message,
+                };
+                TelemetryClient.sendErrorEvent(`${eventName}.end`, properties);
+            } else {
+                TelemetryClient.sendEvent(`${eventName}.end`);
             }
         }
     }

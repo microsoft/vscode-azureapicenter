@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 import * as vscode from 'vscode';
-import { GeneralUtils } from '../../utils/generalUtils';
+import { TelemetryUtils } from '../../utils/telemetryUtils';
 import { createApiCenterDataPlaneService } from '../utils/dataPlaneUtil';
 
 export class SearchApisTool implements vscode.LanguageModelTool<void> {
@@ -9,16 +9,12 @@ export class SearchApisTool implements vscode.LanguageModelTool<void> {
         _options: vscode.LanguageModelToolInvocationOptions<void>,
         _token: vscode.CancellationToken
     ) {
-        // TelemetryClient.sendEvent(TelemetryEvent.getSpectralRulesToolInvoke);
+        return TelemetryUtils.callWithTelemetry<vscode.LanguageModelToolResult>('lmTool.searchApis', async () => {
+            const apiCenterDataPlaneService = await createApiCenterDataPlaneService();
 
-        const apiCenterDataPlaneService = await createApiCenterDataPlaneService();
+            const apis = (await apiCenterDataPlaneService.getApiCenterApis()).value;
 
-        if (GeneralUtils.failed(apiCenterDataPlaneService)) {
-            return new vscode.LanguageModelToolResult([new vscode.LanguageModelTextPart(apiCenterDataPlaneService.error)]);
-        }
-
-        const apis = (await apiCenterDataPlaneService.result.getApiCenterApis()).value;
-
-        return new vscode.LanguageModelToolResult([new vscode.LanguageModelTextPart(JSON.stringify(apis, null, 2))]);
+            return new vscode.LanguageModelToolResult([new vscode.LanguageModelTextPart(JSON.stringify(apis, null, 2))]);
+        });
     }
 }
