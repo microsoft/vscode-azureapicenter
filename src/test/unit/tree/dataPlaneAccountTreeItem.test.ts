@@ -10,6 +10,7 @@ import { AzureDataSessionProviderHelper } from "../../../azure/azureLogin/dataSe
 import { TelemetryClient } from "../../../common/telemetryClient";
 import { ext } from "../../../extensionVariables";
 import { ApiServerItem, DataPlanAccountManagerTreeItem } from "../../../tree/DataPlaneAccount";
+import { treeUtils } from "../../../utils/treeUtils";
 describe("ApiServerItem treeItem test case", () => {
     let sandbox = null as any;
     let sessionProvider: AzureDataSessionProvider;
@@ -88,6 +89,7 @@ describe("ApiServerItem treeItem test case", () => {
     });
     it("ApiServerItem loadmorechild return login", async () => {
         sandbox.stub(AzureDataSessionProviderHelper, "getSessionProvider").returns(sessionProvider);
+        sandbox.stub(treeUtils, 'getIconPath').returns("testIconPath");
         const node: ApiServerItem = new ApiServerItem(new DataPlanAccountManagerTreeItem(sessionProvider), subContext);
         const res = await node.loadMoreChildrenImpl(true, {} as IActionContext);
         assert.equal(res.length, 1);
@@ -95,6 +97,7 @@ describe("ApiServerItem treeItem test case", () => {
     });
     it("ApiServerItem loadmorechild return item", async () => {
         sandbox.stub(AzureDataSessionProviderHelper, "getSessionProvider").returns(sessionProvider);
+        sandbox.stub(treeUtils, 'getIconPath').returns("testIconPath");
         let autSession: AzureAuthenticationSession = {
             id: 'test123', accessToken: 'fake_token', account: { id: 'fake_id', label: 'fake_label' }, scopes: [], tenantId: 'fake_id'
         };

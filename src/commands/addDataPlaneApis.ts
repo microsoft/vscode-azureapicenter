@@ -23,8 +23,10 @@ export namespace ConnectDataPlaneApi {
             throw new UserCancelledError();
         }
         ConnectDataPlaneApi.sendDataPlaneApiTelemetry(endpointUrl, clientid, tenantid, DataPlaneApiFromType.dataPlaneApiAddFromInput);
-        ConnectDataPlaneApi.setAccountToExt(endpointUrl, clientid, tenantid);
-        ext.dataPlaneTreeItem.refresh(context);
+        if (ConnectDataPlaneApi.setAccountToExt(endpointUrl, clientid, tenantid)) {
+            ext.dataPlaneTreeItem.refresh(context);
+            vscode.window.showInformationMessage(vscode.l10n.t(UiStrings.addDadaPlaneApiSuccess, endpointUrl));
+        }
     }
     export function sendDataPlaneApiTelemetry(runtimeUrl: string, clientId: string, tenantId: string, fromType: DataPlaneApiFromType) {
         const properties: { [key: string]: string; } = {};
@@ -34,16 +36,18 @@ export namespace ConnectDataPlaneApi {
         properties[TelemetryProperties.dataPlaneAddApiSource] = fromType;
         TelemetryClient.sendEvent(TelemetryEvent.addDataPlaneInstance, properties);
     }
-    export async function setAccountToExt(domain: string, clientId: string, tenantId: string) {
-        function updateAccountsIfNotExist(element: DataPlaneAccount) {
+    export function setAccountToExt(domain: string, clientId: string, tenantId: string): boolean {
+        function updateAccountsIfNotExist(element: DataPlaneAccount): boolean {
             let array: DataPlaneAccount[] = ext.context.globalState.get(DataPlaneAccountsKey) || [];
             if (!array.some(item => item.domain === element.domain)) {
                 array.push(element);
                 ext.context.globalState.update(DataPlaneAccountsKey, array);
+                return true;
             } else {
                 vscode.window.showInformationMessage(UiStrings.DatplaneAlreadyAdded);
+                return false;
             }
         }
-        updateAccountsIfNotExist({ domain: domain, tenantId: tenantId, clientId: clientId });
+        return updateAccountsIfNotExist({ domain: domain, tenantId: tenantId, clientId: clientId });
     }
 }
