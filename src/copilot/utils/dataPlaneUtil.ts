@@ -1,5 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
+import * as vscode from 'vscode';
 import { ApiCenterDataPlaneService, DataPlaneAccount } from "../../azure/ApiCenter/ApiCenterDataPlaneAPIs";
 import { AzureDataSessionProviderHelper, generateScopes } from "../../azure/azureLogin/dataSessionProvider";
 import { DataPlaneAccountsKey } from "../../constants";
@@ -8,13 +9,7 @@ import { getSubscriptionContext } from "../../tree/DataPlaneAccount";
 import { GeneralUtils } from "../../utils/generalUtils";
 
 export async function createApiCenterDataPlaneService(): Promise<ApiCenterDataPlaneService> {
-    const accounts = ext.context.globalState.get<DataPlaneAccount[]>(DataPlaneAccountsKey, []);
-
-    if (accounts.length === 0) {
-        throw new Error("No Data Plane account found. Please trigger `Connect to an API Center` VS Code command to add Data Plane account");
-    }
-
-    const account = accounts[0];
+    const account = await getOrSelectActiveAccount();
     const scopes = generateScopes(account.clientId, account.tenantId);
     const authSession = await AzureDataSessionProviderHelper.getSessionProvider().getAuthSession(scopes);
 
@@ -26,4 +21,35 @@ export async function createApiCenterDataPlaneService(): Promise<ApiCenterDataPl
     const apiCenterDataPlaneService = new ApiCenterDataPlaneService(subscriptionContext);
 
     return apiCenterDataPlaneService;
+}
+
+async function getOrSelectActiveAccount(): Promise<DataPlaneAccount> {
+    const accounts = ext.context.globalState.get<DataPlaneAccount[]>(DataPlaneAccountsKey, []);
+
+    if (accounts.length === 0) {
+        throw new Error("No Data Plane account found. Please trigger `Connect to an API Center` VS Code command to add Data Plane account");
+    }
+
+    if (accounts.length === 1) {
+        return accounts[0];
+    }
+
+    const activeAccount = accounts.find(account => account.isActive);
+    if (activeAccount) {
+        return activeAccount;
+    }
+
+    const selectedAccount = await vscode.window.showQuickPick(accounts.map(account => account.domain), {
+        placeHolder: "Select an active Data Plane account",
+        ignoreFocusOut: true,
+    });
+
+    if (!selectedAccount) {
+        throw new Error("User cancelled the selection of Data Plane account.");
+    }
+    const selectedAccountIndex = accounts.findIndex(account => account.domain === selectedAccount);
+    accounts[selectedAccountIndex].isActive = true;
+    ext.context.globalState.update(DataPlaneAccountsKey, accounts);
+
+    return accounts[selectedAccountIndex];
 }

@@ -9,6 +9,7 @@ export interface DataPlaneAccount {
     readonly domain: string;
     readonly tenantId: string;
     readonly clientId: string;
+    isActive?: boolean;
 }
 export class ApiCenterDataPlaneService {
     private susbcriptionContext: ISubscriptionContext;
