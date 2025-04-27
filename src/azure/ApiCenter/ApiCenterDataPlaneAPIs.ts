@@ -3,7 +3,7 @@
 import { RequestPrepareOptions, ServiceClient } from "@azure/ms-rest-js";
 import { ISubscriptionContext } from "@microsoft/vscode-azext-utils";
 import { clientOptions } from "../../common/clientOptions";
-import { ApiCenterApiVersionDefinitionExport, DataPlaneApiCenterApi, DataPlaneApiCenterApiVersion, DataPlaneApiCenterApiVersionDefinition } from "../ApiCenter/contracts";
+import { ApiCenterApiCredential, ApiCenterApiVersionDefinitionExport, DataPlaneApiCenterApi, DataPlaneApiCenterApiVersion, DataPlaneApiCenterApiVersionDefinition } from "../ApiCenter/contracts";
 import { APICenterDataPlaneRestAPIs } from "./ApiCenterRestAPIs";
 export interface DataPlaneAccount {
     readonly domain: string;
@@ -65,5 +65,14 @@ export class ApiCenterDataPlaneService {
         };
         const response = await client.sendRequest(options);
         return response.parsedBody;
-    };
+    }
+    public async getCredential(apiName: string, apiVersion: string, authenticationName: string): Promise<ApiCenterApiCredential> {
+        const client = new ServiceClient(this.susbcriptionContext.credentials, clientOptions);
+        const options: RequestPrepareOptions = {
+            method: "POST",
+            url: APICenterDataPlaneRestAPIs.GetCredential(this.susbcriptionContext.subscriptionPath, apiName, apiVersion, authenticationName),
+        };
+        const response = await client.sendRequest(options);
+        return response.parsedBody;
+    }
 }

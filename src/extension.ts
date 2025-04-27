@@ -49,6 +49,7 @@ import { LearnMoreAboutAPICatalog, doubleClickDebounceDelay, selectedNodeKey } f
 import { getPlugins } from './copilot/getPlugins';
 import { GetSpectralRulesTool } from './copilot/getSpectralRulesTool';
 import { ExportApiSpecificationTool } from './copilot/tools/exportApiSpecification';
+import { GetCredentialTool } from './copilot/tools/getCredential';
 import { SearchApiDefinitionsTool } from './copilot/tools/searchApiDefinitions';
 import { SearchApisTool } from './copilot/tools/searchApis';
 import { SearchApiVersionsTool } from './copilot/tools/searchApiVersions';
@@ -173,6 +174,7 @@ export async function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.lm.registerTool('azure-api-center_searchApiDefinitions', new SearchApiDefinitionsTool()));
     context.subscriptions.push(vscode.lm.registerTool('azure-api-center_exportApiSpecification', new ExportApiSpecificationTool()));
     context.subscriptions.push(vscode.lm.registerTool('azure-api-center_searchAuthentication', new searchAuthenticationTool()));
+    context.subscriptions.push(vscode.lm.registerTool('azure-api-center_getCredential', new GetCredentialTool()));
 }
 
 async function registerCommandWithTelemetry(commandId: string, callback: CommandCallback, debounce?: number): Promise<void> {

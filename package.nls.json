@@ -49,5 +49,7 @@
     "azure-api-center.lmTool.exportApiSpecification.userDescription": "Export API specification from Azure API Center.",
     "azure-api-center.lmTool.searchAuthentication.displayName": "@apicenter Search Authentication",
     "azure-api-center.lmTool.searchAuthentication.userDescription": "Search authentication information from Azure API Center.",
+    "azure-api-center.lmTool.getCredential.displayName": "@apicenter Get Credential",
+    "azure-api-center.lmTool.getCredential.userDescription": "Get credential under authentication from Azure API Center.",
     "azure-api-center.commands.createApiCenterService.title": "Create API Center Service in Azure"
 }

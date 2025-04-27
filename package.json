@@ -614,6 +614,35 @@
             }
           }
         }
+      },
+      {
+        "name": "azure-api-center_getCredential",
+        "tags": [
+          "azure-api-center"
+        ],
+        "displayName": "%azure-api-center.lmTool.getCredential.displayName%",
+        "canBeReferencedInPrompt": true,
+        "toolReferenceName": "getCredential",
+        "icon": "$(tools)",
+        "userDescription": "%azure-api-center.lmTool.getCredential.userDescription%",
+        "modelDescription": "Get credential under authentication from Azure API Center.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "apiName": {
+              "type": "string",
+              "description": "API name"
+            },
+            "apiVersionName": {
+              "type": "string",
+              "description": "API version name"
+            },
+            "authenticationName": {
+              "type": "string",
+              "description": "Authentication name"
+            }
+          }
+        }
       }
     ],
     "problemMatchers": [
