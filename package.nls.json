@@ -43,6 +43,10 @@
     "azure-api-center.lmTool.searchApis.userDescription": "Search APIs from Azure API Center.",
     "azure-api-center.lmTool.searchApiVersions.displayName": "@apicenter Search API versions",
     "azure-api-center.lmTool.searchApiVersions.userDescription": "Search API versions from Azure API Center.",
+    "azure-api-center.lmTool.searchApiDefinitions.displayName": "@apicenter Search API definitions",
+    "azure-api-center.lmTool.searchApiDefinitions.userDescription": "Search API definitions from Azure API Center.",
+    "azure-api-center.lmTool.exportApiSpecification.displayName": "@apicenter Export API specification",
+    "azure-api-center.lmTool.exportApiSpecification.userDescription": "Export API specification from Azure API Center.",
     "azure-api-center.lmTool.searchAuthentication.displayName": "@apicenter Search Authentication",
     "azure-api-center.lmTool.searchAuthentication.userDescription": "Search authentication information from Azure API Center.",
     "azure-api-center.commands.createApiCenterService.title": "Create API Center Service in Azure"

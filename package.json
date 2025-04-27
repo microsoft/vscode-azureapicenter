@@ -537,6 +537,60 @@
         }
       },
       {
+        "name": "azure-api-center_searchApiDefinitions",
+        "tags": [
+          "azure-api-center"
+        ],
+        "displayName": "%azure-api-center.lmTool.searchApiDefinitions.displayName%",
+        "canBeReferencedInPrompt": true,
+        "toolReferenceName": "searchApiDefinitions",
+        "icon": "$(tools)",
+        "userDescription": "%azure-api-center.lmTool.searchApiDefinitions.userDescription%",
+        "modelDescription": "Search API definitions from Azure API Center.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "apiName": {
+              "type": "string",
+              "description": "API name"
+            },
+            "apiVersionName": {
+              "type": "string",
+              "description": "API version name"
+            }
+          }
+        }
+      },
+      {
+        "name": "azure-api-center_exportApiSpecification",
+        "tags": [
+          "azure-api-center"
+        ],
+        "displayName": "%azure-api-center.lmTool.exportApiSpecification.displayName%",
+        "canBeReferencedInPrompt": true,
+        "toolReferenceName": "exportApiSpecification",
+        "icon": "$(tools)",
+        "userDescription": "%azure-api-center.lmTool.exportApiSpecification.userDescription%",
+        "modelDescription": "Export API specification from Azure API Center.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "apiName": {
+              "type": "string",
+              "description": "API name"
+            },
+            "apiVersionName": {
+              "type": "string",
+              "description": "API version name"
+            },
+            "apiDefinitionName": {
+              "type": "string",
+              "description": "API definition name"
+            }
+          }
+        }
+      },
+      {
         "name": "azure-api-center_searchAuthentication",
         "tags": [
           "azure-api-center"

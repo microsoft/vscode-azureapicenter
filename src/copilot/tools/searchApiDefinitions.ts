@@ -4,19 +4,20 @@ import * as vscode from 'vscode';
 import { TelemetryUtils } from '../../utils/telemetryUtils';
 import { createApiCenterDataPlaneService } from '../utils/dataPlaneUtil';
 
-interface ISearchApiVersionsParameters {
+interface ISearchApiDefinitionsParameters {
     apiName: string;
+    apiVersionName: string;
 }
 
-export class SearchApiVersionsTool implements vscode.LanguageModelTool<ISearchApiVersionsParameters> {
+export class SearchApiDefinitionsTool implements vscode.LanguageModelTool<ISearchApiDefinitionsParameters> {
     async invoke(
-        options: vscode.LanguageModelToolInvocationOptions<ISearchApiVersionsParameters>,
+        options: vscode.LanguageModelToolInvocationOptions<ISearchApiDefinitionsParameters>,
         _token: vscode.CancellationToken
     ) {
-        return TelemetryUtils.callWithTelemetry<vscode.LanguageModelToolResult>('lmTool.searchApiVersions', async () => {
+        return TelemetryUtils.callWithTelemetry<vscode.LanguageModelToolResult>('lmTool.searchApiDefinitions', async () => {
             const apiCenterDataPlaneService = await createApiCenterDataPlaneService();
 
-            const response = (await apiCenterDataPlaneService.getAPiCenterApiVersions(options.input.apiName)).value;
+            const response = (await apiCenterDataPlaneService.getApiCenterApiDefinitions(options.input.apiName, options.input.apiVersionName)).value;
 
             return new vscode.LanguageModelToolResult([new vscode.LanguageModelTextPart(JSON.stringify(response, null, 2))]);
         });

@@ -48,6 +48,8 @@ import { ErrorProperties, TelemetryProperties } from './common/telemetryEvent';
 import { LearnMoreAboutAPICatalog, doubleClickDebounceDelay, selectedNodeKey } from './constants';
 import { getPlugins } from './copilot/getPlugins';
 import { GetSpectralRulesTool } from './copilot/getSpectralRulesTool';
+import { ExportApiSpecificationTool } from './copilot/tools/exportApiSpecification';
+import { SearchApiDefinitionsTool } from './copilot/tools/searchApiDefinitions';
 import { SearchApisTool } from './copilot/tools/searchApis';
 import { SearchApiVersionsTool } from './copilot/tools/searchApiVersions';
 import { searchAuthenticationTool } from './copilot/tools/searchAuthentication';
@@ -168,6 +170,8 @@ export async function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.lm.registerTool('azure-api-center_getSpectralRules', new GetSpectralRulesTool()));
     context.subscriptions.push(vscode.lm.registerTool('azure-api-center_searchApis', new SearchApisTool()));
     context.subscriptions.push(vscode.lm.registerTool('azure-api-center_searchApiVersions', new SearchApiVersionsTool()));
+    context.subscriptions.push(vscode.lm.registerTool('azure-api-center_searchApiDefinitions', new SearchApiDefinitionsTool()));
+    context.subscriptions.push(vscode.lm.registerTool('azure-api-center_exportApiSpecification', new ExportApiSpecificationTool()));
     context.subscriptions.push(vscode.lm.registerTool('azure-api-center_searchAuthentication', new searchAuthenticationTool()));
 }
 
