@@ -535,6 +535,31 @@
             }
           }
         }
+      },
+      {
+        "name": "azure-api-center_searchAuthentication",
+        "tags": [
+          "azure-api-center"
+        ],
+        "displayName": "%azure-api-center.lmTool.searchAuthentication.displayName%",
+        "canBeReferencedInPrompt": true,
+        "toolReferenceName": "searchAuthentication",
+        "icon": "$(tools)",
+        "userDescription": "%azure-api-center.lmTool.searchAuthentication.userDescription%",
+        "modelDescription": "Search authentication information under API version from Azure API Center.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "apiName": {
+              "type": "string",
+              "description": "API name"
+            },
+            "apiVersionName": {
+              "type": "string",
+              "description": "API version name"
+            }
+          }
+        }
       }
     ],
     "problemMatchers": [

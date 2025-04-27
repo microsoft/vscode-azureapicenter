@@ -39,9 +39,11 @@
     "azure-api-center.commands.openInPortal.title": "Open in Azure Portal",
     "azure-api-center.lmTool.getSpectralRules.displayName": "Get Spectral Rules",
     "azure-api-center.lmTool.getSpectralRules.userDescription": "Get Spectral rules from active API style guide.",
-    "azure-api-center.lmTool.searchApis.displayName": "Search APIs",
+    "azure-api-center.lmTool.searchApis.displayName": "@apicenter Search APIs",
     "azure-api-center.lmTool.searchApis.userDescription": "Search APIs from Azure API Center.",
-    "azure-api-center.lmTool.searchApiVersions.displayName": "Search API versions",
+    "azure-api-center.lmTool.searchApiVersions.displayName": "@apicenter Search API versions",
     "azure-api-center.lmTool.searchApiVersions.userDescription": "Search API versions from Azure API Center.",
+    "azure-api-center.lmTool.searchAuthentication.displayName": "@apicenter Search Authentication",
+    "azure-api-center.lmTool.searchAuthentication.userDescription": "Search authentication information from Azure API Center.",
     "azure-api-center.commands.createApiCenterService.title": "Create API Center Service in Azure"
 }

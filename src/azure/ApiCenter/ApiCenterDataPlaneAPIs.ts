@@ -56,4 +56,14 @@ export class ApiCenterDataPlaneService {
         const response = await client.sendRequest(options);
         return response.parsedBody;
     }
+    public async listAuthentication(apiName: string, apiVersion: string): Promise<{ value: any[]; nextLink: string }> {
+        const client = new ServiceClient(this.susbcriptionContext.credentials, clientOptions);
+        let url = APICenterDataPlaneRestAPIs.ListAuthentication(this.susbcriptionContext.subscriptionPath, apiName, apiVersion);
+        const options: RequestPrepareOptions = {
+            method: "GET",
+            url: url,
+        };
+        const response = await client.sendRequest(options);
+        return response.parsedBody;
+    };
 }
