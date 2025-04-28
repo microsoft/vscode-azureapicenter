@@ -17,7 +17,7 @@ export class ExportApiSpecificationTool implements vscode.LanguageModelTool<IExp
         options: vscode.LanguageModelToolInvocationOptions<IExportApiSpecificationParameters>,
         _token: vscode.CancellationToken
     ) {
-        return TelemetryUtils.callWithTelemetry<vscode.LanguageModelToolResult>('lmTool.exportApiSpecification', async () => {
+        return TelemetryUtils.callLmToolWithTelemetry('lmTool.exportApiSpecification', async () => {
             const apiCenterDataPlaneService = await createApiCenterDataPlaneService();
 
             const response = await apiCenterDataPlaneService.exportSpecification(options.input.apiName, options.input.apiVersionName, options.input.apiDefinitionName);

@@ -14,7 +14,7 @@ export class SearchApiDefinitionsTool implements vscode.LanguageModelTool<ISearc
         options: vscode.LanguageModelToolInvocationOptions<ISearchApiDefinitionsParameters>,
         _token: vscode.CancellationToken
     ) {
-        return TelemetryUtils.callWithTelemetry<vscode.LanguageModelToolResult>('lmTool.searchApiDefinitions', async () => {
+        return TelemetryUtils.callLmToolWithTelemetry('lmTool.searchApiDefinitions', async () => {
             const apiCenterDataPlaneService = await createApiCenterDataPlaneService();
 
             const response = (await apiCenterDataPlaneService.getApiCenterApiDefinitions(options.input.apiName, options.input.apiVersionName)).value;

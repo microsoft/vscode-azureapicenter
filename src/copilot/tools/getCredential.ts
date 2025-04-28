@@ -15,7 +15,7 @@ export class GetCredentialTool implements vscode.LanguageModelTool<IGetCredentia
         options: vscode.LanguageModelToolInvocationOptions<IGetCredentialParameters>,
         _token: vscode.CancellationToken
     ) {
-        return TelemetryUtils.callWithTelemetry<vscode.LanguageModelToolResult>('lmTool.getCredential', async () => {
+        return TelemetryUtils.callLmToolWithTelemetry('lmTool.getCredential', async () => {
             const apiCenterDataPlaneService = await createApiCenterDataPlaneService();
 
             const response = await apiCenterDataPlaneService.getCredential(options.input.apiName, options.input.apiVersionName, options.input.authenticationName);
