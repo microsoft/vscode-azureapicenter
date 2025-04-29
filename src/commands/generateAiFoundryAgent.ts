@@ -146,10 +146,11 @@ export namespace AIFAgentGenerator {
             instructions: `You are an API assistant specialized in working with the ${name} API.
     Your capabilities:
     1. Search and explore available API endpoints in the connected OpenAPI specification
-    2. Explain what each API endpoint does and what parameters it requires
-    3. Generate code examples in languages like JavaScript, Python, C#, and curl for making API requests
-    4. Help troubleshoot common API issues
-    5. Recommend appropriate endpoints based on user needs
+    2. Invoke the Apis defined in the API definitions and show the relative response.
+    3. Explain what each API endpoint does and what parameters it requires
+    4. Generate code examples in languages like JavaScript, Python, C#, and curl for making API requests
+    5. Help troubleshoot common API issues
+    6. Recommend appropriate endpoints based on user needs
 
     When a user asks about functionality, first check if there's a relevant API endpoint and explain how to use it.
     When generating code, include proper error handling and authentication if required.
@@ -171,10 +172,13 @@ export namespace AIFAgentGenerator {
         } catch (error) {
             console.error("Error parsing spec JSON:", error);
         }
-
+        // Sanitize name to match pattern ^[A-Za-z0-9_]+$
+        const sanitizedName = name.replace(/[^A-Za-z0-9_]/g, '_');
+        // Generate a unique ID if the name is empty after sanitization
+        const toolId = sanitizedName.trim() ? sanitizedName : `api_tool_${crypto.randomBytes(4).toString('hex')}`;
         return {
             type: 'openapi',
-            id: name,
+            id: toolId,
             description: description,
             options: {
                 auth: {
