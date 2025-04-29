@@ -51,5 +51,7 @@
     "azure-api-center.lmTool.searchAuthentication.userDescription": "Search authentication information from Azure API Center.",
     "azure-api-center.lmTool.getCredential.displayName": "@apicenter Get Credential",
     "azure-api-center.lmTool.getCredential.userDescription": "Get credential under authentication from Azure API Center.",
+    "azure-api-center.lmTool.searchApiDeployments.displayName": "@apicenter Search API deployments",
+    "azure-api-center.lmTool.searchApiDeployments.userDescription": "Search API deployments from Azure API Center.",
     "azure-api-center.commands.createApiCenterService.title": "Create API Center Service in Azure"
 }

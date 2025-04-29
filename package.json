@@ -643,6 +643,27 @@
             }
           }
         }
+      },
+      {
+        "name": "azure-api-center_searchApiDeployments",
+        "tags": [
+          "azure-api-center"
+        ],
+        "displayName": "%azure-api-center.lmTool.searchApiDeployments.displayName%",
+        "canBeReferencedInPrompt": true,
+        "toolReferenceName": "searchApiDeployments",
+        "icon": "$(tools)",
+        "userDescription": "%azure-api-center.lmTool.searchApiDeployments.userDescription%",
+        "modelDescription": "Search API deployments under an API from Azure API Center.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "apiName": {
+              "type": "string",
+              "description": "API name"
+            }
+          }
+        }
       }
     ],
     "problemMatchers": [

@@ -76,4 +76,14 @@ export class ApiCenterDataPlaneService {
         const response = await client.sendRequest(options);
         return response.parsedBody;
     }
+    public async listApiDeployments(apiName: string): Promise<{ value: any[]; nextLink: string }> {
+        const client = new ServiceClient(this.susbcriptionContext.credentials, clientOptions);
+        let url = APICenterDataPlaneRestAPIs.ListApiDeployments(this.susbcriptionContext.subscriptionPath, apiName);
+        const options: RequestPrepareOptions = {
+            method: "GET",
+            url: url,
+        };
+        const response = await client.sendRequest(options);
+        return response.parsedBody;
+    }
 }
