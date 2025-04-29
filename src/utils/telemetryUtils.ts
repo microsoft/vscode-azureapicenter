@@ -32,14 +32,14 @@ export namespace TelemetryUtils {
 
     export async function callLmToolWithTelemetry(eventName: string, callback: () => PromiseLike<vscode.LanguageModelToolResult>): Promise<vscode.LanguageModelToolResult> {
         try {
-            return await callWithTelemetry<vscode.LanguageModelToolResult>(eventName, callback);
+            return (await callWithTelemetry<vscode.LanguageModelToolResult>(eventName, callback))!;
         } catch (error) {
             const parsedError = parseError(error);
             return new vscode.LanguageModelToolResult([new vscode.LanguageModelTextPart(parsedError.message)]);
         }
     }
 
-    export async function callWithTelemetry<T>(eventName: string, callback: () => PromiseLike<T>): Promise<T> {
+    export async function callWithTelemetry<T>(eventName: string, callback: () => PromiseLike<T>): Promise<T | undefined> {
         let parsedError: IParsedError | undefined;
         try {
             TelemetryClient.sendEvent(`${eventName}.start`);
