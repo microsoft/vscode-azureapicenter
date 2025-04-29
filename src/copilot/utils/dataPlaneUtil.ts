@@ -6,6 +6,7 @@ import { AzureDataSessionProviderHelper, generateScopes } from "../../azure/azur
 import { DataPlaneAccountsKey } from "../../constants";
 import { ext } from "../../extensionVariables";
 import { getSubscriptionContext } from "../../tree/DataPlaneAccount";
+import { UiStrings } from '../../uiStrings';
 import { GeneralUtils } from "../../utils/generalUtils";
 
 export async function createApiCenterDataPlaneService(): Promise<ApiCenterDataPlaneService> {
@@ -14,7 +15,7 @@ export async function createApiCenterDataPlaneService(): Promise<ApiCenterDataPl
     const authSession = await AzureDataSessionProviderHelper.getSessionProvider().getAuthSession(scopes);
 
     if (GeneralUtils.failed(authSession)) {
-        throw new Error(`Please sign in to Azure in 'Azure API Center Portal' Tree View. Error: ${authSession.error}`);
+        throw new Error(vscode.l10n.t(UiStrings.NeedSignIn, authSession.error));
     }
 
     const subscriptionContext = getSubscriptionContext(account);
@@ -27,7 +28,7 @@ async function getOrSelectActiveAccount(): Promise<DataPlaneAccount> {
     const accounts = ext.context.globalState.get<DataPlaneAccount[]>(DataPlaneAccountsKey, []);
 
     if (accounts.length === 0) {
-        throw new Error("No Data Plane account found. Please trigger `Connect to an API Center` VS Code command to add Data Plane account");
+        throw new Error(vscode.l10n.t(UiStrings.NoDataPlaneAccountFound));
     }
 
     if (accounts.length === 1) {
@@ -40,12 +41,12 @@ async function getOrSelectActiveAccount(): Promise<DataPlaneAccount> {
     }
 
     const selectedAccount = await vscode.window.showQuickPick(accounts.map(account => account.domain), {
-        placeHolder: "Select an active Data Plane account",
+        placeHolder: vscode.l10n.t(UiStrings.SelectDataPlaneAccount),
         ignoreFocusOut: true,
     });
 
     if (!selectedAccount) {
-        throw new Error("User cancelled the selection of Data Plane account.");
+        throw new Error(vscode.l10n.t(UiStrings.UserCancelSelectingDataPlaneAccount));
     }
     const selectedAccountIndex = accounts.findIndex(account => account.domain === selectedAccount);
     accounts[selectedAccountIndex].isActive = true;
