@@ -23,6 +23,8 @@ export const SpectralExtensionId = "stoplight.spectral";
 export const tenantSetting: string = 'tenant';
 export const TeamsToolkitExtensionId = "TeamsDevApp.ms-teams-vscode-extension";
 export const TeamsToolkitMinimumVersion = "5.13.2025021807";
+export const AIFoundryExtenisonId = "teamsdevapp.vscode-ai-foundry";
+export const AIFoundryExtenisonMinimumVerison = "0.2.0";
 
 export const AzureAccountType = {
     createAzureAccount: "azureapicenterCreateAzureAccount",
