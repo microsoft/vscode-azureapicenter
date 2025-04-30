@@ -15,7 +15,7 @@ export async function createApiCenterDataPlaneService(): Promise<ApiCenterDataPl
     const authSession = await AzureDataSessionProviderHelper.getSessionProvider().getAuthSession(scopes);
 
     if (GeneralUtils.failed(authSession)) {
-        throw new Error(vscode.l10n.t(UiStrings.NeedSignIn, authSession.error));
+        throw new Error(`Please sign in to Azure in 'Azure API Center Portal' Tree View. Error: ${authSession.error}`);
     }
 
     const subscriptionContext = getSubscriptionContext(account);
@@ -28,7 +28,7 @@ async function getOrSelectActiveAccount(): Promise<DataPlaneAccount> {
     const accounts = ext.context.globalState.get<DataPlaneAccount[]>(DataPlaneAccountsKey, []);
 
     if (accounts.length === 0) {
-        throw new Error(vscode.l10n.t(UiStrings.NoDataPlaneAccountFound));
+        throw new Error("No Data Plane account found. Please trigger `Connect to an API Center` VS Code command to add Data Plane account");
     }
 
     if (accounts.length === 1) {
@@ -46,7 +46,7 @@ async function getOrSelectActiveAccount(): Promise<DataPlaneAccount> {
     });
 
     if (!selectedAccount) {
-        throw new Error(vscode.l10n.t(UiStrings.UserCancelSelectingDataPlaneAccount));
+        throw new Error("User cancelled the selection of Data Plane account.");
     }
     const selectedAccountIndex = accounts.findIndex(account => account.domain === selectedAccount);
     accounts[selectedAccountIndex].isActive = true;
