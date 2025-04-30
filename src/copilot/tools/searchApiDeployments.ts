@@ -18,7 +18,15 @@ export class SearchApiDeploymentsTool implements vscode.LanguageModelTool<ISearc
 
             const response = (await apiCenterDataPlaneService.listApiDeployments(options.input.apiName)).value;
 
-            return new vscode.LanguageModelToolResult([new vscode.LanguageModelTextPart(JSON.stringify(response, null, 2))]);
+            let languageModelText = "";
+
+            if (response && response.length > 0) {
+                languageModelText = `Unless user want to get all the deployments, select the deployment where the 'isDefault' property is set to true.
+Here are the details of the deployments for the API '${options.input.apiName}':
+${JSON.stringify(response, null, 2)}`;
+            }
+
+            return new vscode.LanguageModelToolResult([new vscode.LanguageModelTextPart(languageModelText)]);
         });
     }
 }
