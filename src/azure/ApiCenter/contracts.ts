@@ -54,6 +54,7 @@ export type ApiCenterApi = {
         title: string;
         kind: string;
         summary?: string;
+        description?: string;
     };
     // tslint:disable-next-line:no-reserved-keywords
     type: string;

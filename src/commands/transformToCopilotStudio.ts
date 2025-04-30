@@ -9,10 +9,10 @@ import { ApiDeploymentTreeItem } from "../tree/ApiDeploymentTreeItem";
 
 export async function transformToCopilotStudio(context: IActionContext, node: ApiDeploymentTreeItem) {
   const apiTitle = node.apiCenterApi.properties.title;
-  const apiSummary = node.apiCenterApi.properties.summary ?? apiTitle;
+  const apiDescription = node.apiCenterApi.properties.summary ?? node.apiCenterApi.properties.description ?? apiTitle;
   const runtimeUrl = node.apiCenterApiDeployment.properties.server.runtimeUri[0];
 
-  const copilotStudioMCPServerSpec = transformDeploymentToCopilotStudioMCPServer(apiTitle, apiSummary, runtimeUrl);
+  const copilotStudioMCPServerSpec = transformDeploymentToCopilotStudioMCPServer(apiTitle, apiDescription, runtimeUrl);
 
   await vscode.window.withProgress({
     location: vscode.ProgressLocation.Notification,
@@ -24,7 +24,7 @@ export async function transformToCopilotStudio(context: IActionContext, node: Ap
   node.parent!.parent!.refresh(context);
 }
 
-function transformDeploymentToCopilotStudioMCPServer(apiTitle: string, apiSummary: string, runtimeUrl: string) {
+function transformDeploymentToCopilotStudioMCPServer(apiTitle: string, apiDescription: string, runtimeUrl: string) {
   const url = new URL(runtimeUrl);
   const host = url.host;
   const path = url.pathname;
@@ -33,7 +33,7 @@ function transformDeploymentToCopilotStudioMCPServer(apiTitle: string, apiSummar
 
 info:
   title: ${apiTitle}
-  description: ${apiSummary}
+  description: ${apiDescription}
   version: 1.0.0
 host: ${host}
 basePath: /
