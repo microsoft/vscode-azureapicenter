@@ -44,6 +44,7 @@ import { searchApi } from './commands/searchApi';
 import { SetApiRuleset } from './commands/setApiRuleset';
 import { SignInToDataPlane } from "./commands/signInToDataPlane";
 import { testInPostman } from './commands/testInPostman';
+import { transformToCopilotStudio } from './commands/transformToCopilotStudio';
 import { ErrorProperties, TelemetryProperties } from './common/telemetryEvent';
 import { LearnMoreAboutAPICatalog, doubleClickDebounceDelay, selectedNodeKey } from './constants';
 import { getPlugins } from './copilot/getPlugins';
@@ -151,6 +152,8 @@ export async function activate(context: vscode.ExtensionContext) {
     registerCommandWithTelemetry('azure-api-center.createDeclarativeAgent', CreateDeclarativeAgent.createDeclarativeAgent);
 
     registerCommandWithTelemetry('azure-api-center.copyDeploymentUrl', copyDeploymentUrl);
+
+    registerCommandWithTelemetry('azure-api-center.transformToCopilotStudio', transformToCopilotStudio);
 
     registerCommandWithTelemetry('azure-api-center.openInPortal', openInAzurePortal);
 

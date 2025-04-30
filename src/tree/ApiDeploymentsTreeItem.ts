@@ -36,7 +36,7 @@ export class ApiDeploymentsTreeItem extends AzExtParentTreeItem {
     return await this.createTreeItemsWithErrorHandling(
       apis.value,
       'invalidResource',
-      resource => new ApiDeploymentTreeItem(this, resource),
+      resource => new ApiDeploymentTreeItem(this, this._apiCenterName, this._apiCenterApi, resource),
       resource => resource.name
     );
   }
