@@ -42,16 +42,22 @@ describe('SearchApisTool', () => {
         sinon.assert.calledTwice(sendEventStub);
     });
 
-    it('should handle errors and return error message in LanguageModelToolResult', async () => {
+    it('should throw error when it fails', async () => {
         createApiCenterDataPlaneServiceStub.restore();
         sandbox.stub(dataPlaneUtil, 'createApiCenterDataPlaneService').rejects(new Error('Test error'));
 
-        const result = await tool.invoke({} as any, {} as any);
-
-        assert.ok(result instanceof vscode.LanguageModelToolResult);
-        assert.deepStrictEqual(result.content, [new vscode.LanguageModelTextPart('Test error')]);
-        sinon.assert.calledOnce(sendEventStub);
-        sinon.assert.calledOnce(sendErrorEventStub);
-        sinon.assert.calledWith(sendErrorEventStub, 'lmTool.searchApis.end', sinon.match({ errorType: 'Error', errorMessage: 'Test error' }));
+        // Verify that the error is thrown
+        await assert.rejects(
+            async () => {
+                await tool.invoke({} as any, {} as any);
+            },
+            (err: Error) => {
+                assert.strictEqual(err.message, 'Test error');
+                sinon.assert.calledOnce(sendEventStub);
+                sinon.assert.calledOnce(sendErrorEventStub);
+                sinon.assert.calledWith(sendErrorEventStub, 'lmTool.searchApis.end', sinon.match({ errorType: 'Error', errorMessage: 'Test error' }));
+                return true;
+            }
+        );
     });
 });

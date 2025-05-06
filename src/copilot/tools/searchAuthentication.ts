@@ -14,7 +14,7 @@ export class SearchAuthenticationTool implements vscode.LanguageModelTool<ISearc
         options: vscode.LanguageModelToolInvocationOptions<ISearchAuthenticationParameters>,
         _token: vscode.CancellationToken
     ) {
-        return TelemetryUtils.callLmToolWithTelemetry('lmTool.searchAuthentication', async () => {
+        return TelemetryUtils.callWithTelemetry<vscode.LanguageModelToolResult>('lmTool.searchAuthentication', async () => {
             const apiCenterDataPlaneService = await createApiCenterDataPlaneService();
 
             const response = (await apiCenterDataPlaneService.listAuthentication(options.input.apiName, options.input.apiVersionName)).value;

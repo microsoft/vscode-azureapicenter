@@ -9,7 +9,7 @@ export class SearchApisTool implements vscode.LanguageModelTool<void> {
         _options: vscode.LanguageModelToolInvocationOptions<void>,
         _token: vscode.CancellationToken
     ) {
-        return TelemetryUtils.callLmToolWithTelemetry('lmTool.searchApis', async () => {
+        return TelemetryUtils.callWithTelemetry<vscode.LanguageModelToolResult>('lmTool.searchApis', async () => {
             const apiCenterDataPlaneService = await createApiCenterDataPlaneService();
 
             const response = (await apiCenterDataPlaneService.getApiCenterApis()).value;

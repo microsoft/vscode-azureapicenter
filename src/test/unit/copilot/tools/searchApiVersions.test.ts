@@ -12,7 +12,7 @@ describe('SearchApiVersionsTool', () => {
     let sandbox: sinon.SinonSandbox;
     let createApiCenterDataPlaneServiceStub: sinon.SinonStub;
     let fakeApiCenterDataPlaneService: any;
-    let callLmToolWithTelemetryStub: sinon.SinonStub;
+    let callLmWithTelemetryStub: sinon.SinonStub;
     let tool: SearchApiVersionsTool;
 
     beforeEach(() => {
@@ -21,7 +21,7 @@ describe('SearchApiVersionsTool', () => {
             getAPiCenterApiVersions: sandbox.stub().resolves({ value: [{ version: 'v1' }, { version: 'v2' }] })
         };
         createApiCenterDataPlaneServiceStub = sandbox.stub(dataPlaneUtil, 'createApiCenterDataPlaneService').resolves(fakeApiCenterDataPlaneService);
-        callLmToolWithTelemetryStub = sandbox.stub(TelemetryUtils, 'callLmToolWithTelemetry').callsFake(async (_eventName, cb) => cb());
+        callLmWithTelemetryStub = sandbox.stub(TelemetryUtils, 'callWithTelemetry').callsFake(async (_eventName, cb) => cb());
         tool = new SearchApiVersionsTool();
     });
 
@@ -41,8 +41,8 @@ describe('SearchApiVersionsTool', () => {
     it('should handle errors and return error message in LanguageModelToolResult', async () => {
         createApiCenterDataPlaneServiceStub.restore();
         sandbox.stub(dataPlaneUtil, 'createApiCenterDataPlaneService').rejects(new Error('Test error'));
-        callLmToolWithTelemetryStub.restore();
-        sandbox.stub(TelemetryUtils, 'callLmToolWithTelemetry').callsFake(async (_eventName, cb) => {
+        callLmWithTelemetryStub.restore();
+        sandbox.stub(TelemetryUtils, 'callWithTelemetry').callsFake(async (_eventName, cb) => {
             try {
                 return await cb();
             } catch (err: any) {

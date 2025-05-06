@@ -13,7 +13,7 @@ export class SearchApiDeploymentsTool implements vscode.LanguageModelTool<ISearc
         options: vscode.LanguageModelToolInvocationOptions<ISearchApiDeploymentsParameters>,
         _token: vscode.CancellationToken
     ) {
-        return TelemetryUtils.callLmToolWithTelemetry('lmTool.searchApiDeployments', async () => {
+        return TelemetryUtils.callWithTelemetry<vscode.LanguageModelToolResult>('lmTool.searchApiDeployments', async () => {
             const apiCenterDataPlaneService = await createApiCenterDataPlaneService();
 
             const response = (await apiCenterDataPlaneService.listApiDeployments(options.input.apiName)).value;

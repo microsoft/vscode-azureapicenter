@@ -13,7 +13,7 @@ export class SearchApiVersionsTool implements vscode.LanguageModelTool<ISearchAp
         options: vscode.LanguageModelToolInvocationOptions<ISearchApiVersionsParameters>,
         _token: vscode.CancellationToken
     ) {
-        return TelemetryUtils.callLmToolWithTelemetry('lmTool.searchApiVersions', async () => {
+        return TelemetryUtils.callWithTelemetry<vscode.LanguageModelToolResult>('lmTool.searchApiVersions', async () => {
             const apiCenterDataPlaneService = await createApiCenterDataPlaneService();
 
             const response = (await apiCenterDataPlaneService.getAPiCenterApiVersions(options.input.apiName)).value;

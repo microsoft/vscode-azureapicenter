@@ -2,7 +2,6 @@
 // Licensed under the MIT license.
 
 import { AzExtTreeItem, IParsedError, isUserCancelledError, parseError } from "@microsoft/vscode-azext-utils";
-import * as vscode from 'vscode';
 import { TelemetryClient } from "../common/telemetryClient";
 import { ErrorProperties, TelemetryProperties } from "../common/telemetryEvent";
 
@@ -27,15 +26,6 @@ export namespace TelemetryUtils {
             if (arg.label) {
                 properties[TelemetryProperties.resourceName] = arg.label;
             }
-        }
-    }
-
-    export async function callLmToolWithTelemetry(eventName: string, callback: () => PromiseLike<vscode.LanguageModelToolResult>): Promise<vscode.LanguageModelToolResult> {
-        try {
-            return (await callWithTelemetry<vscode.LanguageModelToolResult>(eventName, callback))!;
-        } catch (error) {
-            const parsedError = parseError(error);
-            return new vscode.LanguageModelToolResult([new vscode.LanguageModelTextPart(parsedError.message)]);
         }
     }
 

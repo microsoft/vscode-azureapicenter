@@ -15,7 +15,7 @@ export async function createApiCenterDataPlaneService(): Promise<ApiCenterDataPl
     const authSession = await AzureDataSessionProviderHelper.getSessionProvider().getAuthSession(scopes);
 
     if (GeneralUtils.failed(authSession)) {
-        throw new Error(`Please sign in to Azure in 'Azure API Center Portal' Tree View. Error: ${authSession.error}`);
+        throw new Error(`Please sign in to Azure in 'API Center Portal View' Tree View. Error: ${authSession.error}`);
     }
 
     const subscriptionContext = getSubscriptionContext(account);
