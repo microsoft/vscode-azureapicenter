@@ -12,7 +12,7 @@ describe('SearchApiVersionsTool', () => {
     let sandbox: sinon.SinonSandbox;
     let createApiCenterDataPlaneServiceStub: sinon.SinonStub;
     let fakeApiCenterDataPlaneService: any;
-    let callLmWithTelemetryStub: sinon.SinonStub;
+    let callLWithTelemetryStub: sinon.SinonStub;
     let tool: SearchApiVersionsTool;
 
     beforeEach(() => {
@@ -21,7 +21,7 @@ describe('SearchApiVersionsTool', () => {
             getAPiCenterApiVersions: sandbox.stub().resolves({ value: [{ version: 'v1' }, { version: 'v2' }] })
         };
         createApiCenterDataPlaneServiceStub = sandbox.stub(dataPlaneUtil, 'createApiCenterDataPlaneService').resolves(fakeApiCenterDataPlaneService);
-        callLmWithTelemetryStub = sandbox.stub(TelemetryUtils, 'callWithTelemetry').callsFake(async (_eventName, cb) => cb());
+        callLWithTelemetryStub = sandbox.stub(TelemetryUtils, 'callWithTelemetry').callsFake(async (_eventName, cb) => cb());
         tool = new SearchApiVersionsTool();
     });
 
@@ -38,20 +38,12 @@ describe('SearchApiVersionsTool', () => {
         sinon.assert.calledOnce(fakeApiCenterDataPlaneService.getAPiCenterApiVersions);
     });
 
-    it('should handle errors and return error message in LanguageModelToolResult', async () => {
+    it('should throw error when it fails', async () => {
         createApiCenterDataPlaneServiceStub.restore();
         sandbox.stub(dataPlaneUtil, 'createApiCenterDataPlaneService').rejects(new Error('Test error'));
-        callLmWithTelemetryStub.restore();
-        sandbox.stub(TelemetryUtils, 'callWithTelemetry').callsFake(async (_eventName, cb) => {
-            try {
-                return await cb();
-            } catch (err: any) {
-                return new vscode.LanguageModelToolResult([new vscode.LanguageModelTextPart(err.message)]);
-            }
-        });
-        tool = new SearchApiVersionsTool();
-        const result = await tool.invoke({ input: { apiName: 'api1' } } as any, {} as any);
-        assert.ok(result instanceof vscode.LanguageModelToolResult);
-        assert.deepStrictEqual(result.content, [new vscode.LanguageModelTextPart('Test error')]);
+
+        await assert.rejects(async () => {
+            await tool.invoke({ input: { apiName: 'api1' } } as any, {} as any);
+        }, new Error('Test error'));
     });
 });
