@@ -24,7 +24,7 @@ export async function createApiCenterDataPlaneService(): Promise<ApiCenterDataPl
     return apiCenterDataPlaneService;
 }
 
-async function getOrSelectActiveAccount(): Promise<DataPlaneAccount> {
+export async function getOrSelectActiveAccount(): Promise<DataPlaneAccount> {
     const accounts = ext.context.globalState.get<DataPlaneAccount[]>(DataPlaneAccountsKey, []);
 
     if (accounts.length === 0) {
