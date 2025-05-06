@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 
-import { AzExtTreeItem, IParsedError, isUserCancelledError, parseError } from "@microsoft/vscode-azext-utils";
+import { AzExtTreeItem, IParsedError, parseError } from "@microsoft/vscode-azext-utils";
 import { TelemetryClient } from "../common/telemetryClient";
 import { ErrorProperties, TelemetryProperties } from "../common/telemetryEvent";
 
@@ -36,7 +36,7 @@ export namespace TelemetryUtils {
             return await callback();
         } catch (error) {
             parsedError = parseError(error);
-            if (!isUserCancelledError(parsedError)) {
+            if (!parsedError.isUserCancelledError) {
                 throw error;
             }
         } finally {
