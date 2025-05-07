@@ -151,7 +151,6 @@ export class UiStrings {
     static readonly ContinueWithoutSelecting = vscode.l10n.t("Continue without selecting");
     static readonly SelectAccess = vscode.l10n.t("Select Authentication for '{0}'");
     static readonly CredentialFor = vscode.l10n.t("Credential for '{0}':");
-    static readonly GetSpectralRulesToolInvocationMessage = vscode.l10n.t("@apicenter: getting Spectral rules");
     static readonly RuntimeUrlCopied = vscode.l10n.t("Runtime URL copied: {0}");
     static readonly ResourceGroupName = vscode.l10n.t("Resource Group");
     static readonly ServiceName = vscode.l10n.t("Api Center Service Name");
