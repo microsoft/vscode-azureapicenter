@@ -33,7 +33,7 @@ describe('SearchApiDeploymentsTool', () => {
         const result = await tool.invoke({ input: { apiName: 'api1' } } as any, {} as any);
 
         assert.ok(result instanceof vscode.LanguageModelToolResult);
-        const expectedContent = `Unless user want to get all the deployments, select the deployment where the 'isDefault' property is set to true.
+        const expectedContent = `Unless the user wants to retrieve all deployments, please select the deployment where the 'isDefault' property is true.
 Here are the details of the deployments for the API 'api1':
 ${JSON.stringify([{ name: 'deployment1' }, { name: 'deployment2' }], null, 2)}`;
         assert.deepStrictEqual(result.content, [new vscode.LanguageModelTextPart(expectedContent)]);
