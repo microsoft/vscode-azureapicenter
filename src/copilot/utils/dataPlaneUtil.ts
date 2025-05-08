@@ -28,7 +28,7 @@ export async function getOrSelectActiveAccount(): Promise<DataPlaneAccount> {
     const accounts = ext.context.globalState.get<DataPlaneAccount[]>(DataPlaneAccountsKey, []);
 
     if (accounts.length === 0) {
-        throw new Error("No Data Plane account found. Please trigger `Connect to an API Center` VS Code command to add Data Plane account");
+        throw new Error("No Data Plane account found. Please trigger `Connect to an API Center` VS Code command to add Data Plane account, and then sign in to connect this account");
     }
 
     if (accounts.length === 1) {
