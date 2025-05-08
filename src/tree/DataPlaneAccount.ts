@@ -113,7 +113,7 @@ export class ApiServerItem extends GenericParentTreeItem {
     public static contextValue: string = "azureApiCenterDataPlane";
 }
 
-function getSubscriptionContext(
+export function getSubscriptionContext(
     account: DataPlaneAccount
 ): ISubscriptionContext {
     const credentials = AzureAuth.getDataPlaneCredential(account.clientId, account.tenantId);

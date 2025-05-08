@@ -266,4 +266,7 @@ export type ApiCenterApiCredential = {
         in: 'header' | 'query' | 'cookie';
         name: string;
     };
+    oauth2?: {
+        clientSecret?: string;
+    };
 };

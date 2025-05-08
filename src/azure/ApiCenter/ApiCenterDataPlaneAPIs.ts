@@ -3,12 +3,13 @@
 import { RequestPrepareOptions, ServiceClient } from "@azure/ms-rest-js";
 import { ISubscriptionContext } from "@microsoft/vscode-azext-utils";
 import { clientOptions } from "../../common/clientOptions";
-import { ApiCenterApiVersionDefinitionExport, DataPlaneApiCenterApi, DataPlaneApiCenterApiVersion, DataPlaneApiCenterApiVersionDefinition } from "../ApiCenter/contracts";
+import { ApiCenterApiCredential, ApiCenterApiVersionDefinitionExport, DataPlaneApiCenterApi, DataPlaneApiCenterApiVersion, DataPlaneApiCenterApiVersionDefinition } from "../ApiCenter/contracts";
 import { APICenterDataPlaneRestAPIs } from "./ApiCenterRestAPIs";
 export interface DataPlaneAccount {
     readonly domain: string;
     readonly tenantId: string;
     readonly clientId: string;
+    isActive?: boolean;
 }
 export class ApiCenterDataPlaneService {
     private susbcriptionContext: ISubscriptionContext;
@@ -52,6 +53,35 @@ export class ApiCenterDataPlaneService {
         const options: RequestPrepareOptions = {
             method: "POST",
             url: APICenterDataPlaneRestAPIs.ExportApiDefinitions(this.susbcriptionContext.subscriptionPath, apiName, apiVersionName, apiCenterApiVersionDefinitionName),
+        };
+        const response = await client.sendRequest(options);
+        return response.parsedBody;
+    }
+    public async listAuthentication(apiName: string, apiVersion: string): Promise<{ value: any[]; nextLink: string }> {
+        const client = new ServiceClient(this.susbcriptionContext.credentials, clientOptions);
+        let url = APICenterDataPlaneRestAPIs.ListAuthentication(this.susbcriptionContext.subscriptionPath, apiName, apiVersion);
+        const options: RequestPrepareOptions = {
+            method: "GET",
+            url: url,
+        };
+        const response = await client.sendRequest(options);
+        return response.parsedBody;
+    }
+    public async getCredential(apiName: string, apiVersion: string, authenticationName: string): Promise<ApiCenterApiCredential> {
+        const client = new ServiceClient(this.susbcriptionContext.credentials, clientOptions);
+        const options: RequestPrepareOptions = {
+            method: "POST",
+            url: APICenterDataPlaneRestAPIs.GetCredential(this.susbcriptionContext.subscriptionPath, apiName, apiVersion, authenticationName),
+        };
+        const response = await client.sendRequest(options);
+        return response.parsedBody;
+    }
+    public async listApiDeployments(apiName: string): Promise<{ value: any[]; nextLink: string }> {
+        const client = new ServiceClient(this.susbcriptionContext.credentials, clientOptions);
+        let url = APICenterDataPlaneRestAPIs.ListApiDeployments(this.susbcriptionContext.subscriptionPath, apiName);
+        const options: RequestPrepareOptions = {
+            method: "GET",
+            url: url,
         };
         const response = await client.sendRequest(options);
         return response.parsedBody;
