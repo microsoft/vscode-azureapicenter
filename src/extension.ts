@@ -41,6 +41,7 @@ import { exportRules } from './commands/rules/exportRules';
 import { openRule } from './commands/rules/openRule';
 import { renameCustomFunction } from './commands/rules/renameCustomFunction';
 import { searchApi } from './commands/searchApi';
+import { setActiveDataPlaneAccount } from './commands/setActiveDataPlaneAccount';
 import { SetApiRuleset } from './commands/setApiRuleset';
 import { SignInToDataPlane } from "./commands/signInToDataPlane";
 import { testInPostman } from './commands/testInPostman';
@@ -160,6 +161,8 @@ export async function activate(context: vscode.ExtensionContext) {
     registerCommandWithTelemetry('azure-api-center.copyDeploymentUrl', copyDeploymentUrl);
 
     registerCommandWithTelemetry('azure-api-center.openInPortal', openInAzurePortal);
+
+    registerCommandWithTelemetry('azure-api-center.setActiveDataPlaneAccount', setActiveDataPlaneAccount);
 
     registerCommandWithTelemetry('azure-api-center.createApiCenterService', CreateAzureApiCenterService.createApiCenterService);
 

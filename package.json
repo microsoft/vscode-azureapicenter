@@ -219,6 +219,11 @@
         "command": "azure-api-center.createApiCenterService",
         "title": "%azure-api-center.commands.createApiCenterService.title%",
         "category": "Azure API Center"
+      },
+      {
+        "command": "azure-api-center.setActiveDataPlaneAccount",
+        "title": "%azure-api-center.commands.setActiveDataPlaneAccount.title%",
+        "category": "Azure API Center"
       }
     ],
     "views": {

@@ -53,5 +53,6 @@
     "azure-api-center.lmTool.getCredential.userDescription": "Get credential under authentication from Azure API Center.",
     "azure-api-center.lmTool.searchApiDeployments.displayName": "@apicenter Search API deployments",
     "azure-api-center.lmTool.searchApiDeployments.userDescription": "Search API deployments from Azure API Center.",
+    "azure-api-center.commands.setActiveDataPlaneAccount.title": "Set Active Data Plane Account",
     "azure-api-center.commands.createApiCenterService.title": "Create API Center Service in Azure"
 }

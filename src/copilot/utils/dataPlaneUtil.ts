@@ -50,7 +50,7 @@ export async function getOrSelectActiveAccount(): Promise<DataPlaneAccount> {
     }
     const selectedAccountIndex = accounts.findIndex(account => account.domain === selectedAccount);
     accounts[selectedAccountIndex].isActive = true;
-    ext.context.globalState.update(DataPlaneAccountsKey, accounts);
+    await ext.context.globalState.update(DataPlaneAccountsKey, accounts);
 
     return accounts[selectedAccountIndex];
 }

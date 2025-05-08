@@ -172,4 +172,5 @@ export class UiStrings {
     static readonly InputNameShouldNotEndWithPeriod = vscode.l10n.t("Api Center Name cannot end with a period.");
     static readonly addDadaPlaneApiSuccess = vscode.l10n.t("Data Plane API '{0}' added successfully. You can view more content after signing in.");
     static readonly SelectDataPlaneAccount = vscode.l10n.t("Select an active Data Plane account");
+    static readonly DataPlaneAccountSetTo = vscode.l10n.t("Active Data Plane account set to '{0}'.");
 }
