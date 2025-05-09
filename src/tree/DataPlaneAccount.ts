@@ -1,6 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
-import { AzExtParentTreeItem, AzExtTreeItem, GenericTreeItem, IActionContext, ISubscriptionContext, TreeItemIconPath, registerEvent } from "@microsoft/vscode-azext-utils";
+import { AzExtParentTreeItem, AzExtTreeItem, GenericParentTreeItem, GenericParentTreeItemOptions, GenericTreeItem, IActionContext, ISubscriptionContext, TreeItemIconPath, registerEvent } from "@microsoft/vscode-azext-utils";
 import * as vscode from "vscode";
 import { DataPlaneAccount } from "../azure/ApiCenter/ApiCenterDataPlaneAPIs";
 import { ApiCenterApisDataplane } from "../azure/ApiCenterDefines/ApiCenterApi";
@@ -9,6 +9,7 @@ import { AzureAuth } from "../azure/azureLogin/azureAuth";
 import { AzureDataSessionProviderHelper, generateScopes } from "../azure/azureLogin/dataSessionProvider";
 import { TelemetryClient } from "../common/telemetryClient";
 import { TelemetryEvent } from "../common/telemetryEvent";
+import { DataPlaneAccountsKey } from "../constants";
 import { ext } from "../extensionVariables";
 import { UiStrings } from "../uiStrings";
 import { GeneralUtils } from "../utils/generalUtils";
@@ -33,7 +34,7 @@ export class DataPlanAccountManagerTreeItem extends AzExtParentTreeItem {
     }
     public dispose(): void { }
     public async loadMoreChildrenImpl(clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[] | GenericTreeItem[]> {
-        const accounts = ext.dataPlaneAccounts;
+        const accounts = ext.context.globalState.get<DataPlaneAccount[]>(DataPlaneAccountsKey) || [];
         if (!accounts.length) {
             return [new GenericTreeItem(this, {
                 label: UiStrings.APIDataPlaneWiki,
@@ -66,7 +67,7 @@ export class DataPlanAccountManagerTreeItem extends AzExtParentTreeItem {
 
 }
 
-export class ApiServerItem extends AzExtParentTreeItem {
+export class ApiServerItem extends GenericParentTreeItem {
     public label: string;
     public readonly subscriptionContext: ISubscriptionContext;
     public readonly apisTreeItem: ApisTreeItem;
@@ -97,7 +98,10 @@ export class ApiServerItem extends AzExtParentTreeItem {
         return this.subscriptionContext;
     }
     constructor(parent: AzExtParentTreeItem, subContext: ISubscriptionContext) {
-        super(parent);
+        super(parent, {
+            iconPath: treeUtils.getIconPath('apiCenter'),
+            initialCollapsibleState: vscode.TreeItemCollapsibleState.Expanded,
+        } as GenericParentTreeItemOptions);
         this.label = subContext.subscriptionPath.split('.')[0];
         this.subscriptionContext = subContext;
         this.apisTreeItem = new ApisTreeItem(this, new ApiCenterApisDataplane({ name: this.label }));
@@ -107,12 +111,9 @@ export class ApiServerItem extends AzExtParentTreeItem {
     }
     public contextValue: string = ApiServerItem.contextValue;
     public static contextValue: string = "azureApiCenterDataPlane";
-    public get iconPath(): TreeItemIconPath {
-        return treeUtils.getIconPath('apiCenter');
-    }
 }
 
-function getSubscriptionContext(
+export function getSubscriptionContext(
     account: DataPlaneAccount
 ): ISubscriptionContext {
     const credentials = AzureAuth.getDataPlaneCredential(account.clientId, account.tenantId);

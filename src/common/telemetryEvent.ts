@@ -7,8 +7,6 @@ export enum TelemetryEvent {
     setApiRulesetSelectOption = "setApiRuleset.selectOption",
     treeviewListDataPlane = "treeview.listDataPlaneServer",
     addDataPlaneInstance = "dataPlane.addApiInstance",
-    getSpectralRulesToolInvoke = "getSpectralRulesTool.invoke",
-    getSpectralRulesToolPrepareInvocation = "getSpectralRulesTool.prepareInvocation",
 };
 
 export enum TelemetryProperties {

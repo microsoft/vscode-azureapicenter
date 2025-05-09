@@ -41,13 +41,21 @@ import { exportRules } from './commands/rules/exportRules';
 import { openRule } from './commands/rules/openRule';
 import { renameCustomFunction } from './commands/rules/renameCustomFunction';
 import { searchApi } from './commands/searchApi';
+import { setActiveDataPlaneAccount } from './commands/setActiveDataPlaneAccount';
 import { SetApiRuleset } from './commands/setApiRuleset';
 import { SignInToDataPlane } from "./commands/signInToDataPlane";
 import { testInPostman } from './commands/testInPostman';
 import { ErrorProperties, TelemetryProperties } from './common/telemetryEvent';
 import { LearnMoreAboutAPICatalog, doubleClickDebounceDelay, selectedNodeKey } from './constants';
 import { getPlugins } from './copilot/getPlugins';
-import { GetSpectralRulesTool } from './copilot/getSpectralRulesTool';
+import { ExportApiSpecificationTool } from './copilot/tools/exportApiSpecification';
+import { GetCredentialTool } from './copilot/tools/getCredential';
+import { GetSpectralRulesTool } from './copilot/tools/getSpectralRulesTool';
+import { SearchApiDefinitionsTool } from './copilot/tools/searchApiDefinitions';
+import { SearchApiDeploymentsTool } from './copilot/tools/searchApiDeployments';
+import { SearchApisTool } from './copilot/tools/searchApis';
+import { SearchApiVersionsTool } from './copilot/tools/searchApiVersions';
+import { SearchAuthenticationTool } from './copilot/tools/searchAuthentication';
 import { ext } from './extensionVariables';
 import { ApiVersionDefinitionTreeItem } from './tree/ApiVersionDefinitionTreeItem';
 import { createAzureAccountTreeItem } from "./tree/AzureAccountTreeItem";
@@ -154,6 +162,8 @@ export async function activate(context: vscode.ExtensionContext) {
 
     registerCommandWithTelemetry('azure-api-center.openInPortal', openInAzurePortal);
 
+    registerCommandWithTelemetry('azure-api-center.setActiveDataPlaneAccount', setActiveDataPlaneAccount);
+
     registerCommandWithTelemetry('azure-api-center.createApiCenterService', CreateAzureApiCenterService.createApiCenterService);
 
     context.subscriptions.push(
@@ -163,6 +173,13 @@ export async function activate(context: vscode.ExtensionContext) {
     );
 
     context.subscriptions.push(vscode.lm.registerTool('azure-api-center_getSpectralRules', new GetSpectralRulesTool()));
+    context.subscriptions.push(vscode.lm.registerTool('azure-api-center_searchApis', new SearchApisTool()));
+    context.subscriptions.push(vscode.lm.registerTool('azure-api-center_searchApiVersions', new SearchApiVersionsTool()));
+    context.subscriptions.push(vscode.lm.registerTool('azure-api-center_searchApiDefinitions', new SearchApiDefinitionsTool()));
+    context.subscriptions.push(vscode.lm.registerTool('azure-api-center_exportApiSpecification', new ExportApiSpecificationTool()));
+    context.subscriptions.push(vscode.lm.registerTool('azure-api-center_searchAuthentication', new SearchAuthenticationTool()));
+    context.subscriptions.push(vscode.lm.registerTool('azure-api-center_getCredential', new GetCredentialTool()));
+    context.subscriptions.push(vscode.lm.registerTool('azure-api-center_searchApiDeployments', new SearchApiDeploymentsTool()));
 }
 
 async function registerCommandWithTelemetry(commandId: string, callback: CommandCallback, debounce?: number): Promise<void> {
@@ -211,7 +228,6 @@ function setupControlView(context: vscode.ExtensionContext) {
 }
 
 function setupDataTreeView(context: vscode.ExtensionContext) {
-    ext.dataPlaneAccounts = [];
     AzureDataSessionProviderHelper.activateAzureSessionProvider(context);
     const dataPlaneSessionProvider = AzureDataSessionProviderHelper.getSessionProvider();
     const dataPlanAccountManagerTreeItem = createAzureDataAccountTreeItem(dataPlaneSessionProvider);
