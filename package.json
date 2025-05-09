@@ -212,7 +212,7 @@
       },
       {
         "command": "azure-api-center.transformToCopilotStudio",
-        "title": "Transform To Copilot Studio",
+        "title": "Generate Definition for Copilot Studio",
         "category": "Azure API Center"
       },
       {
