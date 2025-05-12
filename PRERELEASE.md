@@ -4,7 +4,7 @@
 > Note: This changelog only includes the changes for the pre-release versions of Azure API Center for Visual Studio Code. For the changelog of stable versions, please refer to the [Changelog of Azure API Center for Visual Studio Code](https://github.com/microsoft/vscode-azureapicenter/blob/main/CHANGELOG.md).
 
 ### May 14, 2025
-* **Language Model Tools for API Center Data Plane APIs**: Added 7 language model tools to help developers easily discover and comsume APIs registered in API Center with GitHub Copilot agent mode.
+* **Language Model Tools for API Center Data Plane APIs**: Added 7 language model tools to help developers easily discover and consume APIs registered in API Center with GitHub Copilot agent mode.
 
 ### April 24, 2025
 * **Generate OpenAPI Specification**: Added functionality to generate an OpenAPI specification from the entire code project.
