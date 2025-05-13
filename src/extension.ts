@@ -49,13 +49,11 @@ import { ErrorProperties, TelemetryProperties } from './common/telemetryEvent';
 import { LearnMoreAboutAPICatalog, doubleClickDebounceDelay, selectedNodeKey } from './constants';
 import { getPlugins } from './copilot/getPlugins';
 import { ExportApiSpecificationTool } from './copilot/tools/exportApiSpecification';
-import { GetCredentialTool } from './copilot/tools/getCredential';
 import { GetSpectralRulesTool } from './copilot/tools/getSpectralRulesTool';
 import { SearchApiDefinitionsTool } from './copilot/tools/searchApiDefinitions';
 import { SearchApiDeploymentsTool } from './copilot/tools/searchApiDeployments';
 import { SearchApisTool } from './copilot/tools/searchApis';
 import { SearchApiVersionsTool } from './copilot/tools/searchApiVersions';
-import { SearchAuthenticationTool } from './copilot/tools/searchAuthentication';
 import { ext } from './extensionVariables';
 import { ApiVersionDefinitionTreeItem } from './tree/ApiVersionDefinitionTreeItem';
 import { createAzureAccountTreeItem } from "./tree/AzureAccountTreeItem";
@@ -177,8 +175,8 @@ export async function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.lm.registerTool('azure-api-center_searchApiVersions', new SearchApiVersionsTool()));
     context.subscriptions.push(vscode.lm.registerTool('azure-api-center_searchApiDefinitions', new SearchApiDefinitionsTool()));
     context.subscriptions.push(vscode.lm.registerTool('azure-api-center_exportApiSpecification', new ExportApiSpecificationTool()));
-    context.subscriptions.push(vscode.lm.registerTool('azure-api-center_searchAuthentication', new SearchAuthenticationTool()));
-    context.subscriptions.push(vscode.lm.registerTool('azure-api-center_getCredential', new GetCredentialTool()));
+    // context.subscriptions.push(vscode.lm.registerTool('azure-api-center_searchAuthentication', new SearchAuthenticationTool()));
+    // context.subscriptions.push(vscode.lm.registerTool('azure-api-center_getCredential', new GetCredentialTool()));
     context.subscriptions.push(vscode.lm.registerTool('azure-api-center_searchApiDeployments', new SearchApiDeploymentsTool()));
 }
 

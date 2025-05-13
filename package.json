@@ -596,60 +596,6 @@
         }
       },
       {
-        "name": "azure-api-center_searchAuthentication",
-        "tags": [
-          "azure-api-center"
-        ],
-        "displayName": "%azure-api-center.lmTool.searchAuthentication.displayName%",
-        "canBeReferencedInPrompt": true,
-        "toolReferenceName": "searchAuthentication",
-        "icon": "$(tools)",
-        "userDescription": "%azure-api-center.lmTool.searchAuthentication.userDescription%",
-        "modelDescription": "Search authentication information under API version from Azure API Center.",
-        "inputSchema": {
-          "type": "object",
-          "properties": {
-            "apiName": {
-              "type": "string",
-              "description": "API name"
-            },
-            "apiVersionName": {
-              "type": "string",
-              "description": "API version name"
-            }
-          }
-        }
-      },
-      {
-        "name": "azure-api-center_getCredential",
-        "tags": [
-          "azure-api-center"
-        ],
-        "displayName": "%azure-api-center.lmTool.getCredential.displayName%",
-        "canBeReferencedInPrompt": true,
-        "toolReferenceName": "getCredential",
-        "icon": "$(tools)",
-        "userDescription": "%azure-api-center.lmTool.getCredential.userDescription%",
-        "modelDescription": "Get credential under authentication from Azure API Center.",
-        "inputSchema": {
-          "type": "object",
-          "properties": {
-            "apiName": {
-              "type": "string",
-              "description": "API name"
-            },
-            "apiVersionName": {
-              "type": "string",
-              "description": "API version name"
-            },
-            "authenticationName": {
-              "type": "string",
-              "description": "Authentication name"
-            }
-          }
-        }
-      },
-      {
         "name": "azure-api-center_searchApiDeployments",
         "tags": [
           "azure-api-center"
