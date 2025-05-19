@@ -86,6 +86,10 @@ Manage API Authentication
 
 ![API Authentication](./media/api-access.png)
 
+Language Model Tools for API Center Data Plane APIs
+
+![Language Model Tools for Data Plane](./media/lmtool-data-plane.png)
+
 Get deployment URL from deployment with 'Copy Runtime URL' command
 
 ## Pre-Release
