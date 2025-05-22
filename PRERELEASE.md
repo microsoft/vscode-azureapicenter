@@ -3,6 +3,9 @@
 
 > Note: This changelog only includes the changes for the pre-release versions of Azure API Center for Visual Studio Code. For the changelog of stable versions, please refer to the [Changelog of Azure API Center for Visual Studio Code](https://github.com/microsoft/vscode-azureapicenter/blob/main/CHANGELOG.md).
 
+### May 22, 2025
+* **API Center Portal Permission Scope Update**: Update the permission scope of the data plane api in API Center Portal View.
+
 ### May 14, 2025
 * **Language Model Tools for API Center Data Plane APIs**: Added 5 language model tools to help developers easily discover and consume APIs registered in API Center with GitHub Copilot agent mode.
 
