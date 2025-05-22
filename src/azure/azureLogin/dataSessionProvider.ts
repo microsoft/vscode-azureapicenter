@@ -24,7 +24,7 @@ export function generateScopes(clientId: string, tenantId: string): string[] {
         `VSCODE_CLIENT_ID:${clientId}`, // Replace by your client id
         `VSCODE_TENANT:${tenantId}`, // Replace with the tenant ID or common if multi-tenant
         "offline_access", // Required for the refresh token.
-        "https://azure-apicenter.net/user_impersonation"
+        "https://azure-apicenter.net/Data.Read.All"
     ];
 }
 
