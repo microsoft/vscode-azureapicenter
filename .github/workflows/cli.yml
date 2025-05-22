@@ -29,9 +29,9 @@ jobs:
 
       - name: Clone azure-cli-extensions repository
         run: |
-          git clone https://github.com/blackchoey/azure-cli-extensions.git
+          git clone https://github.com/Azure/azure-cli-extensions
           cd azure-cli-extensions
-          git checkout dev
+          git checkout main
 
       - name: Setup development environment
         run: |
