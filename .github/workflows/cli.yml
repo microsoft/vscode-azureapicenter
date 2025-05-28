@@ -74,7 +74,17 @@ jobs:
             echo "$test_collection_output"
 
             # Extract test function names from pytest collection output
-            test_collection=$(echo "$test_collection_output" | grep -E "^\s*<TestCaseFunction" | sed -E 's/.*<TestCaseFunction ([^>]+)>.*/\1/' | sort | uniq)
+            # Handle both formats: <TestCaseFunction name> and path::Class::test_name
+            if echo "$test_collection_output" | grep -q "<TestCaseFunction"; then
+              # Format: <TestCaseFunction test_name>
+              test_collection=$(echo "$test_collection_output" | grep -E "^\s*<TestCaseFunction" | sed -E 's/.*<TestCaseFunction ([^>]+)>.*/\1/' | sort | uniq)
+            elif echo "$test_collection_output" | grep -q "::test_"; then
+              # Format: path/file.py::ClassName::test_name
+              test_collection=$(echo "$test_collection_output" | grep -E "::test_" | sed -E 's/.*::([^:]+)$/\1/' | sort | uniq)
+            else
+              # No recognized format found
+              test_collection=""
+            fi
 
             if [ -n "$test_collection" ]; then
               test_count=$(echo "$test_collection" | wc -l)
