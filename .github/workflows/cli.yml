@@ -4,15 +4,123 @@ on:
   schedule:
     - cron: "0 18 * * 0"
   workflow_dispatch:
+    inputs:
+      test-cases:
+        description: 'Specific test cases to run. Example: ["test_integration_create_aws", "test_integration_delete"]. Leave empty to run all test cases'
+        required: false
+        type: string
 
 permissions:
   id-token: write
   contents: read
 
 jobs:
-  apic-extension-live-test:
+  setup:
     runs-on: ubuntu-latest
     environment: engineering
+    outputs:
+      test-cases: ${{ steps.list-cases.outputs.test-cases }}
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.11"
+
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          client-id: ${{secrets.APICEXT_TEST_AZURE_CLIENT_ID}}
+          tenant-id: ${{secrets.APICEXT_TEST_AZURE_TENANT_ID}}
+          subscription-id: ${{secrets.APICEXT_TEST_AZURE_SUBSCRIPTION_ID}}
+          enable-AzPSSession: true
+
+      - name: Clone azure-cli-extensions repository
+        run: |
+          git clone https://github.com/blackchoey/azure-cli-extensions.git
+          cd azure-cli-extensions
+          git checkout main
+
+      - name: Setup development environment
+        run: |
+          cd azure-cli-extensions
+          python -m venv .venv
+          source .venv/bin/activate
+          python -m pip install -U pip
+          pip install azdev
+          azdev setup -r .
+          azdev extension add apic-extension
+
+      - name: Discover test cases
+        id: list-cases
+        run: |
+          # Check if specific test cases are provided via workflow_dispatch
+          inputCases='${{ github.event.inputs.test-cases }}'
+          if [ -n "$inputCases" ] && [ "$inputCases" != "null" ]; then
+            echo "test-cases=$inputCases" >> $GITHUB_OUTPUT
+            echo "Using manually specified test cases: $inputCases"
+          else
+            # Automatically discover test cases from test files
+            cd azure-cli-extensions
+
+            echo "Discovering test cases from test files in src/apic-extension/azext_apic_extension/tests/latest/"
+
+            # Find all test files in the specified directory
+            test_files_dir="src/apic-extension/azext_apic_extension/tests/latest"
+            if [ -d "$test_files_dir" ]; then
+              # Find all Python test files (start with 'test_' and end with '.py')
+              test_files=$(find "$test_files_dir" -name "test_*.py" -type f)
+
+              echo "Found test files:"
+              echo "$test_files"
+
+              # Extract test method names from all test files
+              test_case_names=""
+              for file in $test_files; do
+                if [ -f "$file" ]; then
+                  echo "Scanning file: $file"
+                  # Extract test method names (def test_*)
+                  methods=$(grep -E "^\s*def\s+test_[a-zA-Z0-9_]+" "$file" | sed -E 's/^\s*def\s+(test_[a-zA-Z0-9_]+).*/\1/')
+                  if [ -n "$methods" ]; then
+                    echo "Found methods in $file:"
+                    echo "$methods"
+                    test_case_names="$test_case_names\n$methods"
+                  fi
+                fi
+              done
+
+              if [ -n "$test_case_names" ]; then
+                # Clean up and format the test case names
+                test_case_names=$(echo -e "$test_case_names" | grep -v "^$" | sort | uniq)
+
+                echo "All discovered test cases:"
+                echo "$test_case_names"
+                  # Convert to JSON array format
+                test_cases=$(echo "$test_case_names" | jq -R -s 'split("\n") | map(select(length > 0))')
+                echo "test-cases=$test_cases" >> $GITHUB_OUTPUT
+                echo "Using automatically discovered test cases: $test_cases"
+              else
+                echo "No test methods found in test files"
+                # Don't output test cases - this will trigger the fallback behavior
+                echo "test-cases=[]" >> $GITHUB_OUTPUT
+                echo "No test cases discovered - will run full test suite instead"
+              fi
+            else
+              echo "Test directory not found: $test_files_dir"
+              # Don't output test cases - this will trigger the fallback behavior
+              echo "test-cases=[]" >> $GITHUB_OUTPUT
+              echo "Test directory not found - will run full test suite instead"
+            fi
+          fi
+  execute-test-case:
+    needs: setup
+    runs-on: ubuntu-latest
+    environment: engineering
+    strategy:
+      fail-fast: false
+      matrix:
+        # Use discovered test cases if available, otherwise use a single placeholder
+        test-case: ${{ fromJson(needs.setup.outputs.test-cases != '[]' && needs.setup.outputs.test-cases || '["full-suite"]') }}
+    name: ${{ matrix.test-case == 'full-suite' && 'Run Full Test Suite' || matrix.test-case }}
     steps:
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -47,16 +155,38 @@ jobs:
         run: |
           cd azure-cli-extensions
           source .venv/bin/activate
-          azdev test apic-extension --live
+          if [ "${{ matrix.test-case }}" = "full-suite" ]; then
+            echo "Running full test suite..."
+            azdev test apic-extension --discover --live
+          else
+            echo "Running individual test case: ${{ matrix.test-case }}"
+            azdev test azext_apic-extension ${{ matrix.test-case }} --discover --live
+          fi
         env:
           USERASSIGNED_IDENTITY: ${{ secrets.USERASSIGNED_IDENTITY }}
           AWS_ACCESS_KEY_LINK: ${{ secrets.AWS_ACCESS_KEY_LINK }}
           AWS_SECRET_ACCESS_KEY_LINK: ${{ secrets.AWS_SECRET_ACCESS_KEY_LINK }}
+  rerun:
+    permissions:
+      actions: write
+    needs: execute-test-case
+    if: ${{ failure() && github.run_attempt < 5 }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Rerun workflow
+        run: |
+          curl \
+            -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/${{ github.repository }}/actions/workflows/rerun.yml/dispatches \
+            -d '{"ref":"${{ github.ref_name }}","inputs":{"run_id":"${{ github.run_id }}", "max_attempts":"5"}}'
 
   notify:
-    if: failure()
+    needs: execute-test-case
+    if: ${{ failure() && github.run_attempt >= 5 }}
     runs-on: ubuntu-latest
-    needs: apic-extension-live-test
     environment: engineering
     steps:
       - name: Generate Email Content
