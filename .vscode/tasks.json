@@ -35,6 +35,55 @@
 				"npm: watch-tests"
 			],
 			"problemMatcher": []
+		},
+		{
+			"label": "[hidden]promptfoo eval",
+			"type": "shell",
+			"command": "npx",
+			"hide": true,
+			"args": [
+				"promptfoo",
+				"eval"
+			],
+			"options": {
+				"cwd": "${input:selectDir}"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "evaluate prompt",
+			"type": "shell",
+			"command": "npx",
+			"args": [
+				"promptfoo",
+				"view",
+				"-y"
+			],
+			"options": {
+				"cwd": "${input:selectDir}"
+			},
+			"dependsOn": [
+				"[hidden]promptfoo eval"
+			],
+			"problemMatcher": []
+		}
+	],
+	"inputs": [
+		{
+			"id": "selectDir",
+			"type": "command",
+			"command": "extension.commandvariable.file.pickFile",
+			"args": {
+				"description": "Select Project Folder to Evaluate Prompt",
+				"include": "evalprompt/*/promptfooconfig.yaml",
+				"showDirs": false,
+				"transform": {
+					"text": "${fileDirname}",
+					"find": "\\\\",
+					"replace": "/",
+					"flags": "g"
+				}
+			}
 		}
 	]
 }

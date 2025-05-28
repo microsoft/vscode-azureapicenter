@@ -59,7 +59,6 @@ export class SubscriptionTreeItem extends AzExtParentTreeItem {
         const resourceGraphService = new ResourceGraphService(this.subscription);
 
         const apiCenters = await resourceGraphService.listApiCenters();
-
         return await this.createTreeItemsWithErrorHandling(
             apiCenters,
             'invalidApiCenter',

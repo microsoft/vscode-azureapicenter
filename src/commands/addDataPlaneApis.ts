@@ -5,10 +5,10 @@ import * as vscode from 'vscode';
 import { DataPlaneAccount } from "../azure/ApiCenter/ApiCenterDataPlaneAPIs";
 import { TelemetryClient } from "../common/telemetryClient";
 import { DataPlaneApiFromType, TelemetryEvent, TelemetryProperties } from "../common/telemetryEvent";
+import { DataPlaneAccountsKey } from "../constants";
 import { ext } from "../extensionVariables";
 import { UiStrings } from "../uiStrings";
 export namespace ConnectDataPlaneApi {
-    const dataPlaneApiFromInput = "dataPlaneApiFromInput";
     export async function addDataPlaneApis(context: IActionContext): Promise<any | void> {
         const endpointUrl = await vscode.window.showInputBox({ title: UiStrings.AddDataPlaneRuntimeUrl, ignoreFocusOut: true });
         if (!endpointUrl) {
@@ -23,8 +23,10 @@ export namespace ConnectDataPlaneApi {
             throw new UserCancelledError();
         }
         ConnectDataPlaneApi.sendDataPlaneApiTelemetry(endpointUrl, clientid, tenantid, DataPlaneApiFromType.dataPlaneApiAddFromInput);
-        ConnectDataPlaneApi.setAccountToExt(endpointUrl, clientid, tenantid);
-        ext.dataPlaneTreeItem.refresh(context);
+        if (ConnectDataPlaneApi.setAccountToExt(endpointUrl, clientid, tenantid)) {
+            ext.dataPlaneTreeItem.refresh(context);
+            vscode.window.showInformationMessage(vscode.l10n.t(UiStrings.addDadaPlaneApiSuccess, endpointUrl));
+        }
     }
     export function sendDataPlaneApiTelemetry(runtimeUrl: string, clientId: string, tenantId: string, fromType: DataPlaneApiFromType) {
         const properties: { [key: string]: string; } = {};
@@ -34,14 +36,18 @@ export namespace ConnectDataPlaneApi {
         properties[TelemetryProperties.dataPlaneAddApiSource] = fromType;
         TelemetryClient.sendEvent(TelemetryEvent.addDataPlaneInstance, properties);
     }
-    export function setAccountToExt(domain: string, clientId: string, tenantId: string) {
-        function pushIfNotExist(array: DataPlaneAccount[], element: DataPlaneAccount) {
+    export function setAccountToExt(domain: string, clientId: string, tenantId: string): boolean {
+        function updateAccountsIfNotExist(element: DataPlaneAccount): boolean {
+            let array: DataPlaneAccount[] = ext.context.globalState.get(DataPlaneAccountsKey) || [];
             if (!array.some(item => item.domain === element.domain)) {
                 array.push(element);
+                ext.context.globalState.update(DataPlaneAccountsKey, array);
+                return true;
             } else {
                 vscode.window.showInformationMessage(UiStrings.DatplaneAlreadyAdded);
+                return false;
             }
         }
-        pushIfNotExist(ext.dataPlaneAccounts, { domain: domain, tenantId: tenantId, clientId: clientId });
+        return updateAccountsIfNotExist({ domain: domain, tenantId: tenantId, clientId: clientId });
     }
 }

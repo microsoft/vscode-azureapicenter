@@ -1,0 +1,182 @@
+# yaml-language-server: $schema=https://promptfoo.dev/config-schema.json
+prompts:
+  - id: file://../../src/prompts/generateRuleFromPrompt.ts
+
+providers:
+  - id: azure:chat:gpt-4o
+    config:
+      apiHost: "apicevaluationtestai.openai.azure.com"
+      maxtoken: 15000
+
+tests:
+  - vars:
+      userprompt: "All parameters should have a description."
+    assert:
+      - type: javascript
+        value: file://testcase.mjs
+        config:
+          hits:
+            {
+              "callback-example.yaml": [],
+              "petstore.yaml":
+                [["paths", "/pets", "get", "parameters", "0", "description"]],
+            }
+          score: 1
+
+  - vars:
+      userprompt: "All operations should have operationId"
+    assert:
+      - type: javascript
+        value: file://testcase.mjs
+        config:
+          hits:
+            {
+              "callback-example.yaml":
+                [
+                  ["paths", "/doStreams", "post"],
+                  ["paths", "/stream/{id}", "get"],
+                ],
+              "petstore.yaml":
+                [["paths", "/pets", "get"], ["paths", "/pets", "post"]],
+            }
+          score: 1
+
+  - vars:
+      userprompt: "All resources in a response should have an `id` `created_at` and `updated_at` property"
+    assert:
+      - type: javascript
+        value: file://testcase.mjs
+        config:
+          hits:
+            {
+              "callback-example.yaml":
+                [
+                  [
+                    "paths",
+                    "/doStreams",
+                    "post",
+                    "responses",
+                    "200",
+                    "content",
+                    "application/json",
+                    "schema",
+                    "properties",
+                    "subscriptionId",
+                  ],
+                  [
+                    "paths",
+                    "/stream/{id}",
+                    "get",
+                    "responses",
+                    "200",
+                    "content",
+                    "application/json",
+                    "schema",
+                    "properties",
+                    "timestamp",
+                  ],
+                  [
+                    "paths",
+                    "/stream/{id}",
+                    "get",
+                    "responses",
+                    "200",
+                    "content",
+                    "application/json",
+                    "schema",
+                    "properties",
+                    "userData",
+                  ],
+                ],
+              "petstore.yaml":
+                [
+                  ["components", "schemas", "Pet", "properties", "name"],
+                  ["components", "schemas", "Pet", "properties", "tag"],
+                  ["components", "schemas", "Pet", "properties", "time"],
+                  ["components", "schemas", "Error", "properties", "code"],
+                  ["components", "schemas", "Error", "properties", "message"],
+                ],
+            }
+          score: 1
+  - vars:
+      userprompt: "POST requests should return a 201 or 202 status on success instead of 200."
+    assert:
+      - type: javascript
+        value: file://testcase.mjs
+        config:
+          hits:
+            {
+              "callback-example.yaml":
+                [["paths", "/doStreams", "post", "responses", "200"]],
+              "petstore.yaml": [["paths", "/pets", "post", "responses", "200"]],
+            }
+          score: 1
+
+  - vars:
+      userprompt: "GET requests that have an ID at the end of their path (ie /teams/{teamID}) should define a 404."
+    assert:
+      - type: javascript
+        value: file://testcase.mjs
+        config:
+          hits:
+            {
+              "callback-example.yaml":
+                [["paths", "/stream/{id}", "get", "responses"]],
+              "petstore.yaml":
+                [["paths", "/pets/{pet-id}", "get", "responses"]],
+            }
+          score: 0.5
+
+  - vars:
+      userprompt: "Properties contains `time` should use format: datetime or timestamp"
+    assert:
+      - type: javascript
+        value: file://testcase.mjs
+        config:
+          hits:
+            {
+              "callback-example.yaml":
+                [
+                  [
+                    "paths",
+                    "/doStreams",
+                    "post",
+                    "callbacks",
+                    "onData",
+                    "{$request.query.callbackUrl}/data",
+                    "post",
+                    "requestBody",
+                    "content",
+                    "application/json",
+                    "schema",
+                    "properties",
+                    "timestamp",
+                    "format",
+                  ],
+                  [
+                    "paths",
+                    "/stream/{id}",
+                    "get",
+                    "responses",
+                    "200",
+                    "content",
+                    "application/json",
+                    "schema",
+                    "properties",
+                    "timestamp",
+                    "format",
+                  ],
+                ],
+              "petstore.yaml":
+                [
+                  [
+                    "components",
+                    "schemas",
+                    "Pet",
+                    "properties",
+                    "time",
+                    "format",
+                  ],
+                ],
+            }
+          score: 1

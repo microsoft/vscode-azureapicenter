@@ -1,0 +1,47 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
+const express = require('express');
+const app = express();
+app.use(express.json());
+
+let pets = [
+  { id: 1, name: 'Max', type: 'Dog' },
+  { id: 2, name: 'Lucy', type: 'Cat' },
+];
+app.get('/api/pets', (req, res) => {
+  res.send(pets);
+});
+app.get('/api/pets/:id', (req, res) => {
+  const pet = pets.find(p => p.id === parseInt(req.params.id));
+  if (!pet) return res.status(404).send('The pet with the given ID was not found.');
+  res.send(pet);
+});
+app.post('/api/pets', (req, res) => {
+  const pet = {
+    id: pets.length + 1,
+    name: req.body.name,
+    type: req.body.type
+  };
+  pets.push(pet);
+  res.send(pet);
+});
+app.put('/api/pets/:id', (req, res) => {
+  const pet = pets.find(p => p.id === parseInt(req.params.id));
+  if (!pet) return res.status(404).send('The pet with the given ID was not found.');
+
+  pet.name = req.body.name;
+  pet.type = req.body.type;
+
+  res.send(pet);
+});
+app.delete('/api/pets/:id', (req, res) => {
+  const pet = pets.find(p => p.id === parseInt(req.params.id));
+  if (!pet) return res.status(404).send('The pet with the given ID was not found.');
+
+  const index = pets.indexOf(pet);
+  pets.splice(index, 1);
+
+  res.send(pet);
+});
+const port = process.env.PORT || 3000;
+app.listen(port, () => console.log(`Listening on port ${port}...`));
