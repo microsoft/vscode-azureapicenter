@@ -160,7 +160,7 @@ jobs:
 
   notify:
     needs: [setup, execute-test-case]
-    if: failure() || success()
+    if: always() && !cancelled() && needs.setup.result != 'skipped'
     runs-on: ubuntu-latest
     environment: engineering
     steps:
