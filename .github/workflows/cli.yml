@@ -160,6 +160,7 @@ jobs:
 
   notify:
     needs: [setup, execute-test-case]
+    if: failure() || success()
     runs-on: ubuntu-latest
     environment: engineering
     steps:
