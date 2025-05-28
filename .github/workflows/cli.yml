@@ -160,7 +160,7 @@ jobs:
 
   notify:
     needs: [setup, execute-test-case]
-    if: always() && !cancelled() && needs.setup.result != 'skipped'
+    if: always() && !cancelled() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     environment: engineering
     steps:
