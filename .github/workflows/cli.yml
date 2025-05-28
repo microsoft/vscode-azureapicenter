@@ -93,17 +93,48 @@ jobs:
 
               # Convert to JSON array format (compact, single-line)
               test_cases=$(echo "$test_collection" | jq -R -s -c 'split("\n") | map(select(length > 0))')
-              echo "test-cases=$test_cases" >> $GITHUB_OUTPUT
-              echo "Using pytest discovered test cases: $test_cases"
+              total_tests=$(echo "$test_cases" | jq '. | length')
+              echo "Found $total_tests test cases"
+
+              # Split test cases across 4 Python versions (roughly equal distribution)
+              # Each job should have roughly 124/4 = 31 test cases to stay under 256 limit
+              quarter_size=$((total_tests / 4))
+              remainder=$((total_tests % 4))
+
+              # Calculate sizes for each chunk (distribute remainder across first few chunks)
+              size_py39=$((quarter_size + (remainder > 0 ? 1 : 0)))
+              size_py310=$((quarter_size + (remainder > 1 ? 1 : 0)))
+              size_py311=$((quarter_size + (remainder > 2 ? 1 : 0)))
+              size_py312=$quarter_size
+
+              # Split test cases into chunks
+              test_cases_py39=$(echo "$test_cases" | jq -c ".[0:$size_py39]")
+              test_cases_py310=$(echo "$test_cases" | jq -c ".[$size_py39:$((size_py39 + size_py310))]")
+              test_cases_py311=$(echo "$test_cases" | jq -c ".[$((size_py39 + size_py310)):$((size_py39 + size_py310 + size_py311))]")
+              test_cases_py312=$(echo "$test_cases" | jq -c ".[$((size_py39 + size_py310 + size_py311)):]")
+
+              echo "test-cases-py39=$test_cases_py39" >> $GITHUB_OUTPUT
+              echo "test-cases-py310=$test_cases_py310" >> $GITHUB_OUTPUT
+              echo "test-cases-py311=$test_cases_py311" >> $GITHUB_OUTPUT
+              echo "test-cases-py312=$test_cases_py312" >> $GITHUB_OUTPUT
+
+              echo "Python 3.9: $(echo "$test_cases_py39" | jq '. | length') test cases"
+              echo "Python 3.10: $(echo "$test_cases_py310" | jq '. | length') test cases"
+              echo "Python 3.11: $(echo "$test_cases_py311" | jq '. | length') test cases"
+              echo "Python 3.12: $(echo "$test_cases_py312" | jq '. | length') test cases"
+              echo "Using pytest discovered test cases split across Python versions"
             else
               echo "No test cases found using pytest --collect-only"
               echo "This will trigger full test suite execution instead"
               # Fallback to empty array to trigger full test suite
-              echo "test-cases=[]" >> $GITHUB_OUTPUT
+              echo "test-cases-py39=[]" >> $GITHUB_OUTPUT
+              echo "test-cases-py310=[]" >> $GITHUB_OUTPUT
+              echo "test-cases-py311=[]" >> $GITHUB_OUTPUT
+              echo "test-cases-py312=[]" >> $GITHUB_OUTPUT
             fi
           fi
 
-  execute-test-case:
+  execute-test-case-py39:
     needs: setup
     runs-on: ubuntu-latest
     environment: engineering
@@ -111,14 +142,13 @@ jobs:
       fail-fast: false
       matrix:
         # Use discovered test cases if available, otherwise use a single placeholder
-        test-case: ${{ fromJson(needs.setup.outputs.test-cases != '[]' && needs.setup.outputs.test-cases || '["full-suite"]') }}
-        python-version: ["3.9", "3.10", "3.11", "3.12"]
-    name: ${{ matrix.test-case == 'full-suite' && format('Run Full Test Suite (Python {0})', matrix.python-version) || format('{0} (Python {1})', matrix.test-case, matrix.python-version) }}
+        test-case: ${{ fromJson(needs.setup.outputs.test-cases-py39 != '[]' && needs.setup.outputs.test-cases-py39 || '["full-suite"]') }}
+    name: ${{ matrix.test-case == 'full-suite' && 'Run Full Test Suite (Python 3.9)' || format('{0} (Python 3.9)', matrix.test-case) }}
     steps:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.9"
 
       - name: Azure login
         uses: azure/login@v2
@@ -159,9 +189,173 @@ jobs:
           USERASSIGNED_IDENTITY: ${{ secrets.USERASSIGNED_IDENTITY }}
           AWS_ACCESS_KEY_LINK: ${{ secrets.AWS_ACCESS_KEY_LINK }}
           AWS_SECRET_ACCESS_KEY_LINK: ${{ secrets.AWS_SECRET_ACCESS_KEY_LINK }}
+  execute-test-case-py310:
+    needs: setup
+    runs-on: ubuntu-latest
+    environment: engineering
+    strategy:
+      fail-fast: false
+      matrix:
+        # Use discovered test cases if available, otherwise use a single placeholder
+        test-case: ${{ fromJson(needs.setup.outputs.test-cases-py310 != '[]' && needs.setup.outputs.test-cases-py310 || '["full-suite"]') }}
+    name: ${{ matrix.test-case == 'full-suite' && 'Run Full Test Suite (Python 3.10)' || format('{0} (Python 3.10)', matrix.test-case) }}
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.10"
 
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          client-id: ${{secrets.APICEXT_TEST_AZURE_CLIENT_ID}}
+          tenant-id: ${{secrets.APICEXT_TEST_AZURE_TENANT_ID}}
+          subscription-id: ${{secrets.APICEXT_TEST_AZURE_SUBSCRIPTION_ID}}
+          enable-AzPSSession: true
+
+      - name: Clone azure-cli-extensions repository
+        run: |
+          git clone https://github.com/blackchoey/azure-cli-extensions.git
+          cd azure-cli-extensions
+          git checkout main
+
+      - name: Setup development environment
+        run: |
+          cd azure-cli-extensions
+          python -m venv .venv
+          source .venv/bin/activate
+          python -m pip install -U pip
+          pip install azdev
+          azdev setup -r .
+          azdev extension add apic-extension
+
+      - name: Run tests
+        run: |
+          cd azure-cli-extensions
+          source .venv/bin/activate
+          if [ "${{ matrix.test-case }}" = "full-suite" ]; then
+            echo "Running full test suite..."
+            azdev test apic-extension --discover --live
+          else
+            echo "Running individual test case: ${{ matrix.test-case }}"
+            azdev test azext_apic-extension ${{ matrix.test-case }} --discover --live
+          fi
+        env:
+          USERASSIGNED_IDENTITY: ${{ secrets.USERASSIGNED_IDENTITY }}
+          AWS_ACCESS_KEY_LINK: ${{ secrets.AWS_ACCESS_KEY_LINK }}
+          AWS_SECRET_ACCESS_KEY_LINK: ${{ secrets.AWS_SECRET_ACCESS_KEY_LINK }}
+  execute-test-case-py311:
+    needs: setup
+    runs-on: ubuntu-latest
+    environment: engineering
+    strategy:
+      fail-fast: false
+      matrix:
+        # Use discovered test cases if available, otherwise use a single placeholder
+        test-case: ${{ fromJson(needs.setup.outputs.test-cases-py311 != '[]' && needs.setup.outputs.test-cases-py311 || '["full-suite"]') }}
+    name: ${{ matrix.test-case == 'full-suite' && 'Run Full Test Suite (Python 3.11)' || format('{0} (Python 3.11)', matrix.test-case) }}
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.11"
+
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          client-id: ${{secrets.APICEXT_TEST_AZURE_CLIENT_ID}}
+          tenant-id: ${{secrets.APICEXT_TEST_AZURE_TENANT_ID}}
+          subscription-id: ${{secrets.APICEXT_TEST_AZURE_SUBSCRIPTION_ID}}
+          enable-AzPSSession: true
+
+      - name: Clone azure-cli-extensions repository
+        run: |
+          git clone https://github.com/blackchoey/azure-cli-extensions.git
+          cd azure-cli-extensions
+          git checkout main
+
+      - name: Setup development environment
+        run: |
+          cd azure-cli-extensions
+          python -m venv .venv
+          source .venv/bin/activate
+          python -m pip install -U pip
+          pip install azdev
+          azdev setup -r .
+          azdev extension add apic-extension
+
+      - name: Run tests
+        run: |
+          cd azure-cli-extensions
+          source .venv/bin/activate
+          if [ "${{ matrix.test-case }}" = "full-suite" ]; then
+            echo "Running full test suite..."
+            azdev test apic-extension --discover --live
+          else
+            echo "Running individual test case: ${{ matrix.test-case }}"
+            azdev test azext_apic-extension ${{ matrix.test-case }} --discover --live
+          fi
+        env:
+          USERASSIGNED_IDENTITY: ${{ secrets.USERASSIGNED_IDENTITY }}
+          AWS_ACCESS_KEY_LINK: ${{ secrets.AWS_ACCESS_KEY_LINK }}
+          AWS_SECRET_ACCESS_KEY_LINK: ${{ secrets.AWS_SECRET_ACCESS_KEY_LINK }}
+  execute-test-case-py312:
+    needs: setup
+    runs-on: ubuntu-latest
+    environment: engineering
+    strategy:
+      fail-fast: false
+      matrix:
+        # Use discovered test cases if available, otherwise use a single placeholder
+        test-case: ${{ fromJson(needs.setup.outputs.test-cases-py312 != '[]' && needs.setup.outputs.test-cases-py312 || '["full-suite"]') }}
+    name: ${{ matrix.test-case == 'full-suite' && 'Run Full Test Suite (Python 3.12)' || format('{0} (Python 3.12)', matrix.test-case) }}
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.12"
+
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          client-id: ${{secrets.APICEXT_TEST_AZURE_CLIENT_ID}}
+          tenant-id: ${{secrets.APICEXT_TEST_AZURE_TENANT_ID}}
+          subscription-id: ${{secrets.APICEXT_TEST_AZURE_SUBSCRIPTION_ID}}
+          enable-AzPSSession: true
+
+      - name: Clone azure-cli-extensions repository
+        run: |
+          git clone https://github.com/blackchoey/azure-cli-extensions.git
+          cd azure-cli-extensions
+          git checkout main
+
+      - name: Setup development environment
+        run: |
+          cd azure-cli-extensions
+          python -m venv .venv
+          source .venv/bin/activate
+          python -m pip install -U pip
+          pip install azdev
+          azdev setup -r .
+          azdev extension add apic-extension
+
+      - name: Run tests
+        run: |
+          cd azure-cli-extensions
+          source .venv/bin/activate
+          if [ "${{ matrix.test-case }}" = "full-suite" ]; then
+            echo "Running full test suite..."
+            azdev test apic-extension --discover --live
+          else
+            echo "Running individual test case: ${{ matrix.test-case }}"
+            azdev test azext_apic-extension ${{ matrix.test-case }} --discover --live
+          fi
+        env:
+          USERASSIGNED_IDENTITY: ${{ secrets.USERASSIGNED_IDENTITY }}
+          AWS_ACCESS_KEY_LINK: ${{ secrets.AWS_ACCESS_KEY_LINK }}
+          AWS_SECRET_ACCESS_KEY_LINK: ${{ secrets.AWS_SECRET_ACCESS_KEY_LINK }}
   notify:
-    needs: [setup, execute-test-case]
+    needs: [setup, execute-test-case-py39, execute-test-case-py310, execute-test-case-py311, execute-test-case-py312]
     if: always() && !cancelled() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     environment: engineering
@@ -169,8 +363,11 @@ jobs:
       - name: Generate Email Content
         id: generate-email-content
         run: |
-          # Get the test cases that were executed
-          test_cases='${{ needs.setup.outputs.test-cases }}'
+          # Get the test cases that were executed across all Python versions
+          test_cases_py39='${{ needs.setup.outputs.test-cases-py39 }}'
+          test_cases_py310='${{ needs.setup.outputs.test-cases-py310 }}'
+          test_cases_py311='${{ needs.setup.outputs.test-cases-py311 }}'
+          test_cases_py312='${{ needs.setup.outputs.test-cases-py312 }}'
 
           # Initialize report variables
           total_jobs=0
@@ -197,15 +394,29 @@ jobs:
             page=$((page+1))
           done
 
-          # Get individual job outcomes from the matrix          if [ "$test_cases" = "[]" ]; then
-            # Full suite was run across multiple Python versions
-            python_versions=("3.9" "3.10" "3.11" "3.12")
-            total_jobs=${#python_versions[@]}
+          # Process results for each Python version job
+          declare -A py_test_cases
+          py_test_cases["py39"]="$test_cases_py39"
+          py_test_cases["py310"]="$test_cases_py310"
+          py_test_cases["py311"]="$test_cases_py311"
+          py_test_cases["py312"]="$test_cases_py312"
 
-            for python_version in "${python_versions[@]}"; do
+          declare -A py_versions
+          py_versions["py39"]="3.9"
+          py_versions["py310"]="3.10"
+          py_versions["py311"]="3.11"
+          py_versions["py312"]="3.12"
+
+          for py_key in py39 py310 py311 py312; do
+            test_cases="${py_test_cases[$py_key]}"
+            python_version="${py_versions[$py_key]}"
+
+            if [ "$test_cases" = "[]" ]; then
+              # Full suite was run for this Python version
               job_name="Run Full Test Suite (Python ${python_version})"
               job_result=$(echo "$jobs" | jq -r --arg name "$job_name" '.[] | select(.name == $name) | .conclusion')
 
+              total_jobs=$((total_jobs + 1))
               if [ "$job_result" = "success" ]; then
                 passed_jobs=$((passed_jobs + 1))
                 if [ -z "$passed_tests" ]; then
@@ -221,22 +432,15 @@ jobs:
                   failed_tests="${failed_tests}"$'\n'"${job_name}"
                 fi
               fi
-            doneelse
-            # Individual test cases were run across multiple Python versions
-            test_case_array=$(echo "$test_cases" | jq -r '.[]')
-            python_versions=("3.9" "3.10" "3.11" "3.12")
+            else
+              # Individual test cases were run for this Python version
+              test_case_array=$(echo "$test_cases" | jq -r '.[]')
 
-            for test_case in $test_case_array; do
-              for python_version in "${python_versions[@]}"; do
+              for test_case in $test_case_array; do
                 total_jobs=$((total_jobs + 1))
 
-                # Find job by exact name match (includes Python version now)
-                if [ "$test_case" = "full-suite" ]; then
-                  job_name="Run Full Test Suite (Python ${python_version})"
-                else
-                  job_name="${test_case} (Python ${python_version})"
-                fi
-
+                # Find job by exact name match (includes Python version)
+                job_name="${test_case} (Python ${python_version})"
                 job_result=$(echo "$jobs" | jq -r --arg name "$job_name" '.[] | select(.name == $name) | .conclusion')
 
                 if [ "$job_result" = "success" ]; then
@@ -245,8 +449,7 @@ jobs:
                     passed_tests="$job_name"
                   else
                     passed_tests="${passed_tests}"$'\n'"${job_name}"
-                  fi
-                else
+                  fi                else
                   failed_jobs=$((failed_jobs + 1))
                   if [ -z "$failed_tests" ]; then
                     failed_tests="$job_name"
@@ -255,8 +458,8 @@ jobs:
                   fi
                 fi
               done
-            done
-          fi
+            fi
+          done
 
           # Generate email subject
           if [ $failed_jobs -eq 0 ]; then
