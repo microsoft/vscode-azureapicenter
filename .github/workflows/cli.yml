@@ -59,58 +59,37 @@ jobs:
             echo "test-cases=$inputCases" >> $GITHUB_OUTPUT
             echo "Using manually specified test cases: $inputCases"
           else
-            # Automatically discover test cases from test files
+            # Automatically discover test cases using pytest --collect-only
             cd azure-cli-extensions
+            source .venv/bin/activate
+            cd src/apic-extension
 
-            echo "Discovering test cases from test files in src/apic-extension/azext_apic_extension/tests/latest/"
+            echo "Discovering test cases using pytest --collect-only..."
 
-            # Find all test files in the specified directory
-            test_files_dir="src/apic-extension/azext_apic_extension/tests/latest"
-            if [ -d "$test_files_dir" ]; then
-              # Find all Python test files (start with 'test_' and end with '.py')
-              test_files=$(find "$test_files_dir" -name "test_*.py" -type f)
+            # Use pytest to collect all test cases and extract test function names
+            # Run pytest from the apic-extension directory to ensure proper discovery
+            test_collection_output=$(python -m pytest --collect-only -q 2>/dev/null || true)
 
-              echo "Found test files:"
-              echo "$test_files"
+            echo "Raw pytest output:"
+            echo "$test_collection_output"
 
-              # Extract test method names from all test files
-              test_case_names=""
-              for file in $test_files; do
-                if [ -f "$file" ]; then
-                  echo "Scanning file: $file"
-                  # Extract test method names (def test_*)
-                  methods=$(grep -E "^\s*def\s+test_[a-zA-Z0-9_]+" "$file" | sed -E 's/^\s*def\s+(test_[a-zA-Z0-9_]+).*/\1/')
-                  if [ -n "$methods" ]; then
-                    echo "Found methods in $file:"
-                    echo "$methods"
-                    test_case_names="$test_case_names\n$methods"
-                  fi
-                fi
-              done
+            # Extract test function names from pytest collection output
+            test_collection=$(echo "$test_collection_output" | grep -E "^\s*<TestCaseFunction" | sed -E 's/.*<TestCaseFunction ([^>]+)>.*/\1/' | sort | uniq)
 
-              if [ -n "$test_case_names" ]; then
-                # Clean up and format the test case names
-                test_case_names=$(echo -e "$test_case_names" | grep -v "^$" | sort | uniq)
+            if [ -n "$test_collection" ]; then
+              test_count=$(echo "$test_collection" | wc -l)
+              echo "Discovered $test_count test cases:"
+              echo "$test_collection"
 
-
-                echo "All discovered test cases:"
-                echo "$test_case_names"
-
-                # Convert to JSON array format (compact, single-line)
-                test_cases=$(echo "$test_case_names" | jq -R -s -c 'split("\n") | map(select(length > 0))')
-                echo "test-cases=$test_cases" >> $GITHUB_OUTPUT
-                echo "Using automatically discovered test cases: $test_cases"
-              else
-                echo "No test methods found in test files"
-                # Don't output test cases - this will trigger the fallback behavior
-                echo "test-cases=[]" >> $GITHUB_OUTPUT
-                echo "No test cases discovered - will run full test suite instead"
-              fi
+              # Convert to JSON array format (compact, single-line)
+              test_cases=$(echo "$test_collection" | jq -R -s -c 'split("\n") | map(select(length > 0))')
+              echo "test-cases=$test_cases" >> $GITHUB_OUTPUT
+              echo "Using pytest discovered test cases: $test_cases"
             else
-              echo "Test directory not found: $test_files_dir"
-              # Don't output test cases - this will trigger the fallback behavior
+              echo "No test cases found using pytest --collect-only"
+              echo "This will trigger full test suite execution instead"
+              # Fallback to empty array to trigger full test suite
               echo "test-cases=[]" >> $GITHUB_OUTPUT
-              echo "Test directory not found - will run full test suite instead"
             fi
           fi
   execute-test-case:
@@ -171,7 +150,6 @@ jobs:
 
   notify:
     needs: [setup, execute-test-case]
-    if: always()
     runs-on: ubuntu-latest
     environment: engineering
     steps:
