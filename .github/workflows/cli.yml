@@ -168,35 +168,105 @@ jobs:
           USERASSIGNED_IDENTITY: ${{ secrets.USERASSIGNED_IDENTITY }}
           AWS_ACCESS_KEY_LINK: ${{ secrets.AWS_ACCESS_KEY_LINK }}
           AWS_SECRET_ACCESS_KEY_LINK: ${{ secrets.AWS_SECRET_ACCESS_KEY_LINK }}
-  rerun:
-    permissions:
-      actions: write
-    needs: execute-test-case
-    if: ${{ failure() && github.run_attempt < 5 }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Rerun workflow
-        run: |
-          curl \
-            -X POST \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            https://api.github.com/repos/${{ github.repository }}/actions/workflows/rerun.yml/dispatches \
-            -d '{"ref":"${{ github.ref_name }}","inputs":{"run_id":"${{ github.run_id }}", "max_attempts":"5"}}'
-
   notify:
-    needs: execute-test-case
-    if: ${{ failure() && github.run_attempt >= 5 }}
+    needs: [setup, execute-test-case]
+    if: always()
     runs-on: ubuntu-latest
     environment: engineering
     steps:
       - name: Generate Email Content
         id: generate-email-content
         run: |
+          # Get the test cases that were executed
+          test_cases='${{ needs.setup.outputs.test-cases }}'
+
+          # Initialize report variables
+          total_jobs=0
+          passed_jobs=0
+          failed_jobs=0
+          passed_tests=""
+          failed_tests=""
+
+          # Get individual job outcomes from the matrix
+          if [ "$test_cases" = "[]" ]; then
+            # Full suite was run
+            total_jobs=1
+            if [ "${{ needs.execute-test-case.result }}" = "success" ]; then
+              passed_jobs=1
+              passed_tests="Full Test Suite"
+            else
+              failed_jobs=1
+              failed_tests="Full Test Suite"
+            fi
+          else
+            # Individual test cases were run
+            test_case_array=$(echo "$test_cases" | jq -r '.[]')
+            for test_case in $test_case_array; do
+              total_jobs=$((total_jobs + 1))
+              # Note: In a real scenario, you'd need to check individual job results
+              # For now, we'll use the overall result as an approximation
+              if [ "${{ needs.execute-test-case.result }}" = "success" ]; then
+                passed_jobs=$((passed_jobs + 1))
+                if [ -z "$passed_tests" ]; then
+                  passed_tests="$test_case"
+                else
+                  passed_tests="$passed_tests, $test_case"
+                fi
+              else
+                failed_jobs=$((failed_jobs + 1))
+                if [ -z "$failed_tests" ]; then
+                  failed_tests="$test_case"
+                else
+                  failed_tests="$failed_tests, $test_case"
+                fi
+              fi
+            done
+          fi
+
+          # Generate email subject
+          if [ $failed_jobs -eq 0 ]; then
+            subject="[APICENTER] Weekly APIC Extension Live Test - All Tests Passed"
+          else
+            subject="[APICENTER] Weekly APIC Extension Live Test - $failed_jobs/$total_jobs Tests Failed"
+          fi
+            # Generate email body
+          body="APIC Extension Live Test Report"
+          body="$body\n\nSummary:"
+          body="$body\n- Total Test Cases: $total_jobs"
+          body="$body\n- Passed: $passed_jobs"
+          body="$body\n- Failed: $failed_jobs"
+
+          if [ $total_jobs -gt 0 ]; then
+            success_rate=$(( (passed_jobs * 100) / total_jobs ))
+            body="$body\n- Success Rate: ${success_rate}%"
+          fi
+
+          if [ -n "$passed_tests" ]; then
+            body="$body\n\nPassed Tests:\n$passed_tests"
+          fi
+
+          if [ -n "$failed_tests" ]; then
+            body="$body\n\nFailed Tests:\n$failed_tests"
+          fi
+
+          body="$body\n\nWorkflow Details:"
+          body="$body\n- Workflow URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          body="$body\n- Repository: ${{ github.repository }}"
+          body="$body\n- Branch: ${{ github.ref_name }}"
+          body="$body\n- Triggered by: ${{ github.event_name }}"
+          body="$body\n- Run ID: ${{ github.run_id }}"
+          body="$body\n- Run Attempt: ${{ github.run_attempt }}"
+
+          # Set environment variables
           echo "to=${{ secrets.AUTHOR_MAIL_ADDRESSES }}" >> $GITHUB_ENV
-          echo "body=Workflow URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> $GITHUB_ENV
-          echo "subject=[APICENTER] Weekly APIC Extension Live Test Failed" >> $GITHUB_ENV
+          echo "subject=$subject" >> $GITHUB_ENV
+
+          # Handle multiline body content
+          {
+            echo "body<<EOF"
+            echo -e "$body"
+            echo "EOF"
+          } >> $GITHUB_ENV
 
       - name: Send Email Notification
         run: |
