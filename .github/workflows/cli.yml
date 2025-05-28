@@ -255,16 +255,6 @@ jobs:
           fi
           body="${body}</ul>"
 
-          if [ -n "$passed_tests" ]; then
-            body="${body}<h3>✅ Passed Tests:</h3><ul>"
-            while IFS= read -r test; do
-              if [ -n "$test" ]; then
-                body="${body}<li>${test}</li>"
-              fi
-            done <<< "$passed_tests"
-            body="${body}</ul>"
-          fi
-
           if [ -n "$failed_tests" ]; then
             body="${body}<h3>❌ Failed Tests:</h3><ul>"
             while IFS= read -r test; do
@@ -272,6 +262,16 @@ jobs:
                 body="${body}<li>${test}</li>"
               fi
             done <<< "$failed_tests"
+            body="${body}</ul>"
+          fi
+
+          if [ -n "$passed_tests" ]; then
+            body="${body}<h3>✅ Passed Tests:</h3><ul>"
+            while IFS= read -r test; do
+              if [ -n "$test" ]; then
+                body="${body}<li>${test}</li>"
+              fi
+            done <<< "$passed_tests"
             body="${body}</ul>"
           fi
 
