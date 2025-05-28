@@ -7,7 +7,7 @@
   "icon": "media/api-center-icon.png",
   "license": "MIT",
   "engines": {
-    "vscode": "^1.91.0"
+    "vscode": "^1.99.0"
   },
   "aiKey": "20f6d4af-3678-4602-ae98-f6724f057cd5",
   "repository": {
@@ -84,6 +84,11 @@
         "category": "Azure API Center"
       },
       {
+        "command": "azure-api-center.openInPortal",
+        "title": "%azure-api-center.commands.openInPortal.title%",
+        "category": "Azure API Center"
+      },
+      {
         "command": "azure-api-center.generateHttpFile",
         "title": "%azure-api-center.commands.generateHttpFile.title%",
         "category": "Azure API Center"
@@ -112,6 +117,11 @@
       {
         "command": "azure-api-center.generateApiFromCode",
         "title": "%azure-api-center.commands.generateApiFromCode.title%",
+        "category": "Azure API Center"
+      },
+      {
+        "command": "azure-api-center.generateApiSpecFromCodeProject",
+        "title": "%azure-api-center.commands.generateApiSpecFromCodeProject.title%",
         "category": "Azure API Center"
       },
       {
@@ -161,6 +171,11 @@
         "category": "Azure API Center"
       },
       {
+        "command": "azure-api-center.getCredential",
+        "title": "%azure-api-center.commands.getCredential.title%",
+        "category": "Azure API Center"
+      },
+      {
         "command": "azure-api-center.apiCenterWorkspace.addApis",
         "title": "%azure-api-center.commands.apiCenterWorkspace.addApis.title%",
         "icon": "$(add)",
@@ -185,9 +200,29 @@
         "category": "Azure API Center"
       },
       {
-        "command": "azure-api-center.apiCenterWorkspace.learnApiCatalog",
-        "title": "%azure-api-center.commands.apiCenterWorkspace.learnApiCatalog.title%",
+        "command": "azure-api-center.apiCenterWorkspace.learnApiPortal",
+        "title": "%azure-api-center.commands.apiCenterWorkspace.learnApiPortal.title%",
         "icon": "$(info)",
+        "category": "Azure API Center"
+      },
+      {
+        "command": "azure-api-center.copyDeploymentUrl",
+        "title": "%azure-api-center.commands.copyDeploymentUrl.title%",
+        "category": "Azure API Center"
+      },
+      {
+        "command": "azure-api-center.createDeclarativeAgent",
+        "title": "%azure-api-center.commands.createDeclarativeAgent.title%",
+        "category": "Azure API Center"
+      },
+      {
+        "command": "azure-api-center.createApiCenterService",
+        "title": "%azure-api-center.commands.createApiCenterService.title%",
+        "category": "Azure API Center"
+      },
+      {
+        "command": "azure-api-center.setActiveDataPlaneAccount",
+        "title": "%azure-api-center.commands.setActiveDataPlaneAccount.title%",
         "category": "Azure API Center"
       }
     ],
@@ -223,7 +258,7 @@
           "group": "navigation"
         },
         {
-          "command": "azure-api-center.apiCenterWorkspace.learnApiCatalog",
+          "command": "azure-api-center.apiCenterWorkspace.learnApiPortal",
           "when": "view == apiCenterWorkspace",
           "group": "navigation"
         },
@@ -324,15 +359,42 @@
           "group": "function@1"
         },
         {
+          "command": "azure-api-center.getCredential",
+          "when": "view == apiCenterTreeView && viewItem == azureApiCenterApiAccess"
+        },
+        {
           "command": "azure-api-center.apiCenterWorkspace.removeApi",
           "when": "view == apiCenterWorkspace && viewItem == azureApiCenterDataPlane",
           "group": "inline@0"
+        },
+        {
+          "command": "azure-api-center.createDeclarativeAgent",
+          "when": "(view == apiCenterTreeView && viewItem == azureApiCenterApiVersionDefinitionTreeItem-openapi)"
+        },
+        {
+          "command": "azure-api-center.copyDeploymentUrl",
+          "when": "view == apiCenterTreeView && viewItem == azureApiCenterApiDeployment"
+        },
+        {
+          "command": "azure-api-center.openInPortal",
+          "when": "view == apiCenterTreeView && (viewItem == azureApiCenter || viewItem == azureApiCenterAzureSubscription )",
+          "group": "1@1"
+        },
+        {
+          "command": "azure-api-center.createApiCenterService",
+          "when": "(view == apiCenterTreeView && viewItem == azureApiCenterAzureSubscription)",
+          "group": "2@1"
         }
       ],
       "copilot": [
         {
           "command": "azure-api-center.generateApiFromCode",
           "when": "github.copilot-chat.activated && resourceScheme == 'file'",
+          "group": "apiCenter"
+        },
+        {
+          "command": "azure-api-center.generateApiSpecFromCodeProject",
+          "when": "github.copilot-chat.activated && workspaceFolderCount >= 1",
           "group": "apiCenter"
         }
       ],
@@ -412,9 +474,149 @@
         {
           "command": "azure-api-center.apiCenterWorkspace.collapse",
           "when": "never"
+        },
+        {
+          "command": "azure-api-center.openInPortal",
+          "when": "never"
+        },
+        {
+          "command": "azure-api-center.getCredential",
+          "when": "never"
+        },
+        {
+          "command": "azure-api-center.copyDeploymentUrl",
+          "when": "never"
+        },
+        {
+          "command": "azure-api-center.generateApiSpecFromCodeProject",
+          "when": "workspaceFolderCount >= 1"
         }
       ]
     },
+    "languageModelTools": [
+      {
+        "name": "azure-api-center_getSpectralRules",
+        "tags": [
+          "azure-api-center"
+        ],
+        "displayName": "%azure-api-center.lmTool.getSpectralRules.displayName%",
+        "canBeReferencedInPrompt": true,
+        "toolReferenceName": "getSpectralRules",
+        "icon": "$(tools)",
+        "userDescription": "%azure-api-center.lmTool.getSpectralRules.userDescription%",
+        "modelDescription": "Get Spectral rules from active API style guide which makes OpenAPI spec compliant with the API style guide. Whenever user wants to generate or update OpenAPI spec, this tool will be used to fetch the rules.",
+        "inputSchema": {}
+      },
+      {
+        "name": "azure-api-center_searchApis",
+        "tags": [
+          "azure-api-center"
+        ],
+        "displayName": "%azure-api-center.lmTool.searchApis.displayName%",
+        "canBeReferencedInPrompt": true,
+        "toolReferenceName": "searchApis",
+        "icon": "$(tools)",
+        "userDescription": "%azure-api-center.lmTool.searchApis.userDescription%",
+        "modelDescription": "Search APIs from Azure API Center.",
+        "inputSchema": {}
+      },
+      {
+        "name": "azure-api-center_searchApiVersions",
+        "tags": [
+          "azure-api-center"
+        ],
+        "displayName": "%azure-api-center.lmTool.searchApiVersions.displayName%",
+        "canBeReferencedInPrompt": true,
+        "toolReferenceName": "searchApiVersions",
+        "icon": "$(tools)",
+        "userDescription": "%azure-api-center.lmTool.searchApiVersions.userDescription%",
+        "modelDescription": "Search API versions from Azure API Center.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "apiName": {
+              "type": "string",
+              "description": "API name"
+            }
+          }
+        }
+      },
+      {
+        "name": "azure-api-center_searchApiDefinitions",
+        "tags": [
+          "azure-api-center"
+        ],
+        "displayName": "%azure-api-center.lmTool.searchApiDefinitions.displayName%",
+        "canBeReferencedInPrompt": true,
+        "toolReferenceName": "searchApiDefinitions",
+        "icon": "$(tools)",
+        "userDescription": "%azure-api-center.lmTool.searchApiDefinitions.userDescription%",
+        "modelDescription": "Search API definitions from Azure API Center.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "apiName": {
+              "type": "string",
+              "description": "API name"
+            },
+            "apiVersionName": {
+              "type": "string",
+              "description": "API version name"
+            }
+          }
+        }
+      },
+      {
+        "name": "azure-api-center_exportApiSpecification",
+        "tags": [
+          "azure-api-center"
+        ],
+        "displayName": "%azure-api-center.lmTool.exportApiSpecification.displayName%",
+        "canBeReferencedInPrompt": true,
+        "toolReferenceName": "exportApiSpecification",
+        "icon": "$(tools)",
+        "userDescription": "%azure-api-center.lmTool.exportApiSpecification.userDescription%",
+        "modelDescription": "Export API specification from Azure API Center.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "apiName": {
+              "type": "string",
+              "description": "API name"
+            },
+            "apiVersionName": {
+              "type": "string",
+              "description": "API version name"
+            },
+            "apiDefinitionName": {
+              "type": "string",
+              "description": "API definition name"
+            }
+          }
+        }
+      },
+      {
+        "name": "azure-api-center_searchApiDeployments",
+        "tags": [
+          "azure-api-center"
+        ],
+        "displayName": "%azure-api-center.lmTool.searchApiDeployments.displayName%",
+        "canBeReferencedInPrompt": true,
+        "toolReferenceName": "searchApiDeployments",
+        "icon": "$(tools)",
+        "userDescription": "%azure-api-center.lmTool.searchApiDeployments.userDescription%",
+        "modelDescription": "Search API deployments under an API from Azure API Center.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "apiName": {
+              "type": "string",
+              "description": "API name"
+            }
+          }
+        }
+      }
+    ],
     "problemMatchers": [
       {
         "name": "optic",
@@ -480,49 +682,57 @@
     "precommit": "lint-staged"
   },
   "devDependencies": {
+    "@azure/openai": "^2.0.0",
     "@playwright/test": "^1.42.1",
+    "@stoplight/spectral-core": "^1.19.4",
+    "@stoplight/spectral-formats": "^1.8.2",
+    "@stoplight/spectral-functions": "^1.9.3",
+    "@stoplight/spectral-ruleset-bundler": "^1.6.1",
     "@types/archiver": "^6.0.2",
     "@types/express": "^4.17.20",
     "@types/fs-extra": "^11.0.2",
     "@types/js-yaml": "^4.0.8",
     "@types/mocha": "^10.0.2",
     "@types/node": "18.x",
+    "@types/proxyquire": "^1.3.31",
     "@types/sinon": "^17.0.3",
     "@types/swagger2openapi": "^7.0.4",
     "@types/unzipper": "^0.10.9",
-    "@types/vscode": "^1.90.0",
+    "@types/vscode": "^1.99.0",
     "@typescript-eslint/eslint-plugin": "^6.7.3",
     "@typescript-eslint/parser": "^6.7.3",
     "@vscode/test-cli": "^0.0.6",
     "@vscode/test-electron": "^2.3.9",
     "copy-webpack-plugin": "^12.0.2",
     "copyfiles": "^2.4.1",
-    "crypto-js": "^3.1.2",
+    "crypto-js": "^4.2.0",
     "dotenv": "^16.4.5",
     "eslint": "^8.50.0",
     "eslint-plugin-header": "^3.1.1",
     "glob": "^10.3.3",
     "husky": "^8.0.0",
+    "js-yaml": "^4.1.0",
     "lint-staged": "^15.2.0",
-    "mocha": "^10.2.0",
-    "semver": "^7.6.0",
+    "mocha": "^11.1.0",
+    "openai": "^4.77.3",
+    "promptfoo": "^0.103.3",
+    "proxyquire": "^2.1.3",
     "sinon": "^17.0.1",
     "sqlite3": "^5.1.7",
     "terser-webpack-plugin": "^5.3.9",
     "ts-loader": "^9.4.4",
     "typescript": "^5.2.2",
-    "webpack": "^5.88.2",
+    "webpack": "^5.94.0",
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
     "@apidevtools/swagger-parser": "^10.1.0",
-    "@azure/arm-apicenter": "^1.0.0-beta.1",
     "@azure/arm-resourcegraph": "^4.2.1",
     "@azure/arm-resources-subscriptions": "^2.1.0",
     "@azure/arm-subscriptions": "^5.1.0",
     "@azure/core-auth": "^1.7.2",
     "@azure/core-paging": "^1.6.2",
-    "@azure/identity": "^3.4.2",
+    "@azure/identity": "^4.0.0",
     "@azure/ms-rest-azure-env": "^2.0.0",
     "@azure/ms-rest-js": "^2.7.0",
     "@azure/ms-rest-nodeauth": "^3.1.1",
@@ -530,7 +740,7 @@
     "@microsoft/vscode-azext-azureutils": "^2.0.0",
     "@microsoft/vscode-azext-utils": "^2.5.1",
     "@vscode/extension-telemetry": "^0.6.2",
-    "ajv": "^8.12.0",
+    "ajv": "^8.17.0",
     "archiver": "^7.0.1",
     "axios": "^1.7.4",
     "express": "^4.21.1",
@@ -538,6 +748,7 @@
     "get-port": "^7.0.0",
     "json-schema-faker": "^0.5.8",
     "openapi-types": "^12.1.3",
+    "semver": "^7.7.1",
     "swagger2openapi": "^7.0.8",
     "unzipper": "^0.12.1",
     "vscode-nls": "^5.2.0",

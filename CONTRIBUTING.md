@@ -24,7 +24,7 @@ Follow the official documents to install the required softwares:
 ### Build the project
 
 1. Clone this repo locally. (`git clone https://github.com/Microsoft/vscode-azureapicenter.git`)
-1. Open a terminal and build locally. (`npm install && npm run package`)
+1. Open a terminal and build locally. (`npm install && npm run watch`)
 
 ### Debug the project
 

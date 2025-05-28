@@ -1,0 +1,17 @@
+@url = https://plugin51f723.azurewebsites.net/api
+@assignedTo =\s
+
+GET {{url}}/repairs\?assignedTo={{assignedTo}}&x-api-key-2=mysecretvalue2 HTTP/1.1
+x-api-key: mysecretvalue
+Cookie: x-api-key-4=mysecretvalue4; x-api-key-5=mysecretvalue5
+
+###
+
+DELETE {{url}}/repairs HTTP/1.1
+x-api-key: mysecretvalue
+Cookie: x-api-key-4=mysecretvalue4
+Content-Type: application/json
+
+{
+  "id": .*
+}

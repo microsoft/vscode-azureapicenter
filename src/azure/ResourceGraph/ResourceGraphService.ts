@@ -18,6 +18,11 @@ export class ResourceGraphService {
     return await this.runQuery(query);
   }
 
+  public async queryApiCenterByName(name: string): Promise<ApiCenter[]> {
+    const query = `resources | where type =~ 'microsoft.apicenter/services' | where name =~ '${name}'`;
+    return await this.runQuery(query);
+  }
+
   public async runQuery(query: string): Promise<any> {
     const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
     const client = new ResourceGraphClient(creds, clientOptions);
