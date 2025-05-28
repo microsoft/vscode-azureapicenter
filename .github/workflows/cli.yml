@@ -168,6 +168,7 @@ jobs:
           USERASSIGNED_IDENTITY: ${{ secrets.USERASSIGNED_IDENTITY }}
           AWS_ACCESS_KEY_LINK: ${{ secrets.AWS_ACCESS_KEY_LINK }}
           AWS_SECRET_ACCESS_KEY_LINK: ${{ secrets.AWS_SECRET_ACCESS_KEY_LINK }}
+
   notify:
     needs: [setup, execute-test-case]
     if: always()
@@ -187,11 +188,30 @@ jobs:
           passed_tests=""
           failed_tests=""
 
+          # Fetch individual job results using GitHub API
+          page=1
+          jobs="[]"
+
+          while :
+          do
+            url="https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/attempts/${{ github.run_attempt }}/jobs?per_page=100&page=$page"
+            resp=$(curl -H "Accept: application/vnd.github.v3+json" -u:${{ secrets.GITHUB_TOKEN }} "$url")
+            new_jobs=$(echo "$resp" | jq -cr '.jobs')
+            jobs=$(jq -cr --slurp 'add' <(echo "$jobs") <(echo "$new_jobs"))
+
+            has_next=$(curl -I -H "Accept: application/vnd.github.v3+json" -u:${{ secrets.GITHUB_TOKEN }} "$url" | grep -Fi "link:" | grep "rel=\"last\"" || true)
+            if [ -z "$has_next" ]; then
+              break
+            fi
+            page=$((page+1))
+          done
+
           # Get individual job outcomes from the matrix
           if [ "$test_cases" = "[]" ]; then
             # Full suite was run
             total_jobs=1
-            if [ "${{ needs.execute-test-case.result }}" = "success" ]; then
+              job_result=$(echo "$jobs" | jq -r '.[] | select(.name == "Run Full Test Suite") | .conclusion')
+            if [ "$job_result" = "success" ]; then
               passed_jobs=1
               passed_tests="Full Test Suite"
             else
@@ -203,21 +223,22 @@ jobs:
             test_case_array=$(echo "$test_cases" | jq -r '.[]')
             for test_case in $test_case_array; do
               total_jobs=$((total_jobs + 1))
-              # Note: In a real scenario, you'd need to check individual job results
-              # For now, we'll use the overall result as an approximation
-              if [ "${{ needs.execute-test-case.result }}" = "success" ]; then
+              # Find job by exact name match
+              job_result=$(echo "$jobs" | jq -r --arg case "$test_case" '.[] | select(.name == $case) | .conclusion')
+
+              if [ "$job_result" = "success" ]; then
                 passed_jobs=$((passed_jobs + 1))
                 if [ -z "$passed_tests" ]; then
                   passed_tests="$test_case"
                 else
-                  passed_tests="$passed_tests, $test_case"
+                  passed_tests="${passed_tests}"$'\n'"${test_case}"
                 fi
               else
                 failed_jobs=$((failed_jobs + 1))
                 if [ -z "$failed_tests" ]; then
                   failed_tests="$test_case"
                 else
-                  failed_tests="$failed_tests, $test_case"
+                  failed_tests="${failed_tests}"$'\n'"${test_case}"
                 fi
               fi
             done
@@ -225,48 +246,61 @@ jobs:
 
           # Generate email subject
           if [ $failed_jobs -eq 0 ]; then
-            subject="[APICENTER] Weekly APIC Extension Live Test - All Tests Passed"
+            subject="[APICENTER] Weekly APIC Extension Live Test - All Tests Passed ✅"
           else
-            subject="[APICENTER] Weekly APIC Extension Live Test - $failed_jobs/$total_jobs Tests Failed"
+            subject="[APICENTER] Weekly APIC Extension Live Test - $failed_jobs/$total_jobs Tests Failed ❌"
           fi
-            # Generate email body
-          body="APIC Extension Live Test Report"
-          body="$body\n\nSummary:"
-          body="$body\n- Total Test Cases: $total_jobs"
-          body="$body\n- Passed: $passed_jobs"
-          body="$body\n- Failed: $failed_jobs"
+
+          # Generate HTML email body with proper formatting
+          body="<html><body>"
+          body="${body}<h2>APIC Extension Live Test Report</h2>"
+          body="${body}<h3>📊 Summary:</h3>"
+          body="${body}<ul>"
+          body="${body}<li><strong>Total Test Cases:</strong> $total_jobs</li>"
+          body="${body}<li><strong>Passed:</strong> $passed_jobs</li>"
+          body="${body}<li><strong>Failed:</strong> $failed_jobs</li>"
 
           if [ $total_jobs -gt 0 ]; then
             success_rate=$(( (passed_jobs * 100) / total_jobs ))
-            body="$body\n- Success Rate: ${success_rate}%"
+            body="${body}<li><strong>Success Rate:</strong> ${success_rate}%</li>"
           fi
+          body="${body}</ul>"
 
           if [ -n "$passed_tests" ]; then
-            body="$body\n\nPassed Tests:\n$passed_tests"
+            body="${body}<h3>✅ Passed Tests:</h3><ul>"
+            while IFS= read -r test; do
+              if [ -n "$test" ]; then
+                body="${body}<li>${test}</li>"
+              fi
+            done <<< "$passed_tests"
+            body="${body}</ul>"
           fi
 
           if [ -n "$failed_tests" ]; then
-            body="$body\n\nFailed Tests:\n$failed_tests"
+            body="${body}<h3>❌ Failed Tests:</h3><ul>"
+            while IFS= read -r test; do
+              if [ -n "$test" ]; then
+                body="${body}<li>${test}</li>"
+              fi
+            done <<< "$failed_tests"
+            body="${body}</ul>"
           fi
 
-          body="$body\n\nWorkflow Details:"
-          body="$body\n- Workflow URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          body="$body\n- Repository: ${{ github.repository }}"
-          body="$body\n- Branch: ${{ github.ref_name }}"
-          body="$body\n- Triggered by: ${{ github.event_name }}"
-          body="$body\n- Run ID: ${{ github.run_id }}"
-          body="$body\n- Run Attempt: ${{ github.run_attempt }}"
+          body="${body}<h3>🔗 Workflow Details:</h3>"
+          body="${body}<ul>"
+          body="${body}<li><strong>Workflow URL:</strong> <a href=\"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\">View Workflow Run</a></li>"
+          body="${body}<li><strong>Repository:</strong> ${{ github.repository }}</li>"
+          body="${body}<li><strong>Branch:</strong> ${{ github.ref_name }}</li>"
+          body="${body}<li><strong>Triggered by:</strong> ${{ github.event_name }}</li>"
+          body="${body}<li><strong>Run ID:</strong> ${{ github.run_id }}</li>"
+          body="${body}<li><strong>Run Attempt:</strong> ${{ github.run_attempt }}</li>"
+          body="${body}</ul>"
+          body="${body}</body></html>"
 
-          # Set environment variables
+          # Set environment variables for outputs
           echo "to=${{ secrets.AUTHOR_MAIL_ADDRESSES }}" >> $GITHUB_ENV
           echo "subject=$subject" >> $GITHUB_ENV
-
-          # Handle multiline body content
-          {
-            echo "body<<EOF"
-            echo -e "$body"
-            echo "EOF"
-          } >> $GITHUB_ENV
+          echo "body=$body" >> $GITHUB_ENV
 
       - name: Send Email Notification
         run: |
