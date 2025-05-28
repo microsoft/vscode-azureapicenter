@@ -102,6 +102,7 @@ jobs:
               echo "test-cases=[]" >> $GITHUB_OUTPUT
             fi
           fi
+
   execute-test-case:
     needs: setup
     runs-on: ubuntu-latest
@@ -111,12 +112,13 @@ jobs:
       matrix:
         # Use discovered test cases if available, otherwise use a single placeholder
         test-case: ${{ fromJson(needs.setup.outputs.test-cases != '[]' && needs.setup.outputs.test-cases || '["full-suite"]') }}
-    name: ${{ matrix.test-case == 'full-suite' && 'Run Full Test Suite' || matrix.test-case }}
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
+    name: ${{ matrix.test-case == 'full-suite' && format('Run Full Test Suite (Python {0})', matrix.python-version) || format('{0} (Python {1})', matrix.test-case, matrix.python-version) }}
     steps:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: "3.11"
+          python-version: ${{ matrix.python-version }}
 
       - name: Azure login
         uses: azure/login@v2
@@ -195,41 +197,64 @@ jobs:
             page=$((page+1))
           done
 
-          # Get individual job outcomes from the matrix
-          if [ "$test_cases" = "[]" ]; then
-            # Full suite was run
-            total_jobs=1
-              job_result=$(echo "$jobs" | jq -r '.[] | select(.name == "Run Full Test Suite") | .conclusion')
-            if [ "$job_result" = "success" ]; then
-              passed_jobs=1
-              passed_tests="Full Test Suite"
-            else
-              failed_jobs=1
-              failed_tests="Full Test Suite"
-            fi
-          else
-            # Individual test cases were run
-            test_case_array=$(echo "$test_cases" | jq -r '.[]')
-            for test_case in $test_case_array; do
-              total_jobs=$((total_jobs + 1))
-              # Find job by exact name match
-              job_result=$(echo "$jobs" | jq -r --arg case "$test_case" '.[] | select(.name == $case) | .conclusion')
+          # Get individual job outcomes from the matrix          if [ "$test_cases" = "[]" ]; then
+            # Full suite was run across multiple Python versions
+            python_versions=("3.9" "3.10" "3.11" "3.12")
+            total_jobs=${#python_versions[@]}
+
+            for python_version in "${python_versions[@]}"; do
+              job_name="Run Full Test Suite (Python ${python_version})"
+              job_result=$(echo "$jobs" | jq -r --arg name "$job_name" '.[] | select(.name == $name) | .conclusion')
 
               if [ "$job_result" = "success" ]; then
                 passed_jobs=$((passed_jobs + 1))
                 if [ -z "$passed_tests" ]; then
-                  passed_tests="$test_case"
+                  passed_tests="$job_name"
                 else
-                  passed_tests="${passed_tests}"$'\n'"${test_case}"
+                  passed_tests="${passed_tests}"$'\n'"${job_name}"
                 fi
               else
                 failed_jobs=$((failed_jobs + 1))
                 if [ -z "$failed_tests" ]; then
-                  failed_tests="$test_case"
+                  failed_tests="$job_name"
                 else
-                  failed_tests="${failed_tests}"$'\n'"${test_case}"
+                  failed_tests="${failed_tests}"$'\n'"${job_name}"
                 fi
               fi
+            doneelse
+            # Individual test cases were run across multiple Python versions
+            test_case_array=$(echo "$test_cases" | jq -r '.[]')
+            python_versions=("3.9" "3.10" "3.11" "3.12")
+
+            for test_case in $test_case_array; do
+              for python_version in "${python_versions[@]}"; do
+                total_jobs=$((total_jobs + 1))
+
+                # Find job by exact name match (includes Python version now)
+                if [ "$test_case" = "full-suite" ]; then
+                  job_name="Run Full Test Suite (Python ${python_version})"
+                else
+                  job_name="${test_case} (Python ${python_version})"
+                fi
+
+                job_result=$(echo "$jobs" | jq -r --arg name "$job_name" '.[] | select(.name == $name) | .conclusion')
+
+                if [ "$job_result" = "success" ]; then
+                  passed_jobs=$((passed_jobs + 1))
+                  if [ -z "$passed_tests" ]; then
+                    passed_tests="$job_name"
+                  else
+                    passed_tests="${passed_tests}"$'\n'"${job_name}"
+                  fi
+                else
+                  failed_jobs=$((failed_jobs + 1))
+                  if [ -z "$failed_tests" ]; then
+                    failed_tests="$job_name"
+                  else
+                    failed_tests="${failed_tests}"$'\n'"${job_name}"
+                  fi
+                fi
+              done
             done
           fi
 
