@@ -92,10 +92,12 @@ jobs:
                 # Clean up and format the test case names
                 test_case_names=$(echo -e "$test_case_names" | grep -v "^$" | sort | uniq)
 
+
                 echo "All discovered test cases:"
                 echo "$test_case_names"
-                  # Convert to JSON array format
-                test_cases=$(echo "$test_case_names" | jq -R -s 'split("\n") | map(select(length > 0))')
+
+                # Convert to JSON array format (compact, single-line)
+                test_cases=$(echo "$test_case_names" | jq -R -s -c 'split("\n") | map(select(length > 0))')
                 echo "test-cases=$test_cases" >> $GITHUB_OUTPUT
                 echo "Using automatically discovered test cases: $test_cases"
               else
