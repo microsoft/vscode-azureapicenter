@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: engineering
     outputs:
-      test-cases: ${{ steps.list-cases.outputs.test-cases }}
+      matrix-configs: ${{ steps.create-matrix.outputs.matrix-configs }}
     steps:
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -50,14 +50,15 @@ jobs:
           azdev setup -r .
           azdev extension add apic-extension
 
-      - name: Discover test cases
-        id: list-cases
+      - name: Create intelligent matrix configuration
+        id: create-matrix
         run: |
           # Check if specific test cases are provided via workflow_dispatch
           inputCases='${{ github.event.inputs.test-cases }}'
           if [ -n "$inputCases" ] && [ "$inputCases" != "null" ]; then
-            echo "test-cases=$inputCases" >> $GITHUB_OUTPUT
             echo "Using manually specified test cases: $inputCases"
+            test_cases="$inputCases"
+            total_tests=$(echo "$test_cases" | jq '. | length')
           else
             # Automatically discover test cases using pytest --collect-only
             cd azure-cli-extensions
@@ -65,244 +66,91 @@ jobs:
             cd src/apic-extension
 
             echo "Discovering test cases using pytest --collect-only..."
-
-            # Use pytest to collect all test cases and extract test function names
-            # Run pytest from the apic-extension directory to ensure proper discovery
             test_collection_output=$(python -m pytest --collect-only -q 2>/dev/null || true)
 
-            echo "Raw pytest output:"
-            echo "$test_collection_output"
-
             # Extract test function names from pytest collection output
-            # Handle both formats: <TestCaseFunction name> and path::Class::test_name
             if echo "$test_collection_output" | grep -q "<TestCaseFunction"; then
-              # Format: <TestCaseFunction test_name>
               test_collection=$(echo "$test_collection_output" | grep -E "^\s*<TestCaseFunction" | sed -E 's/.*<TestCaseFunction ([^>]+)>.*/\1/' | sort | uniq)
             elif echo "$test_collection_output" | grep -q "::test_"; then
-              # Format: path/file.py::ClassName::test_name
               test_collection=$(echo "$test_collection_output" | grep -E "::test_" | sed -E 's/.*::([^:]+)$/\1/' | sort | uniq)
             else
-              # No recognized format found
               test_collection=""
             fi
 
             if [ -n "$test_collection" ]; then
               test_count=$(echo "$test_collection" | wc -l)
-              echo "Discovered $test_count test cases:"
-              echo "$test_collection"
-              # Convert to JSON array format (compact, single-line)
+              echo "Discovered $test_count test cases"
               test_cases=$(echo "$test_collection" | jq -R -s -c 'split("\n") | map(select(length > 0))')
               total_tests=$(echo "$test_cases" | jq '. | length')
-              echo "Found $total_tests test cases"
-
-              # Since we have 4 Python versions and need to stay under 256 limit per job,
-              max_cases_per_job=256
-
-              if [ "$total_tests" -le "$max_cases_per_job" ]; then
-                # All test cases can fit in one batch for each Python version
-                echo "test-cases=$test_cases" >> $GITHUB_OUTPUT
-                echo "Using all $total_tests test cases for each Python version"
-              else
-                # Too many test cases, need to use full test suite approach
-                echo "Too many test cases ($total_tests > $max_cases_per_job), using full test suite"
-                echo "test-cases=[]" >> $GITHUB_OUTPUT
-              fi
+              echo "Found $total_tests test cases total"
             else
-              echo "No test cases found using pytest --collect-only"
-              echo "This will trigger full test suite execution instead"
-              # Fallback to empty array to trigger full test suite
-              echo "test-cases=[]" >> $GITHUB_OUTPUT
+              echo "No test cases found, using full-suite approach"
+              test_cases='["full-suite"]'
+              total_tests=1
             fi
           fi
 
-  execute-test-case-py39:
-    needs: setup
-    runs-on: ubuntu-latest
-    environment: engineering
-    strategy:
-      fail-fast: false
-      matrix:
-        # Use discovered test cases if available, otherwise use a single placeholder
-        test-case: ${{ fromJson(needs.setup.outputs.test-cases != '[]' && needs.setup.outputs.test-cases || '["full-suite"]') }}
-    name: ${{ matrix.test-case == 'full-suite' && 'Run Full Test Suite (Python 3.9)' || format('{0} (Python 3.9)', matrix.test-case) }}
-    steps:
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: "3.9"
+          # Create matrix configurations that respect the 256 limit
+          # Strategy: Create combinations of (python-version, test-chunk) where each chunk has max 60 tests
+          # This gives us 4 python versions × 60 tests = 240 combinations max per chunk
 
-      - name: Azure login
-        uses: azure/login@v2
-        with:
-          client-id: ${{secrets.APICEXT_TEST_AZURE_CLIENT_ID}}
-          tenant-id: ${{secrets.APICEXT_TEST_AZURE_TENANT_ID}}
-          subscription-id: ${{secrets.APICEXT_TEST_AZURE_SUBSCRIPTION_ID}}
-          enable-AzPSSession: true
+          python_versions='["3.9", "3.10", "3.11", "3.12"]'
+          max_tests_per_chunk=60
 
-      - name: Clone azure-cli-extensions repository
-        run: |
-          git clone https://github.com/blackchoey/azure-cli-extensions.git
-          cd azure-cli-extensions
-          git checkout main
-
-      - name: Setup development environment
-        run: |
-          cd azure-cli-extensions
-          python -m venv .venv
-          source .venv/bin/activate
-          python -m pip install -U pip
-          pip install azdev
-          azdev setup -r .
-          azdev extension add apic-extension
-
-      - name: Run tests
-        run: |
-          cd azure-cli-extensions
-          source .venv/bin/activate
-          if [ "${{ matrix.test-case }}" = "full-suite" ]; then
-            echo "Running full test suite..."
-            azdev test apic-extension --discover --live
+          if [ "$total_tests" -le "$max_tests_per_chunk" ]; then
+            # All tests fit in one chunk - create simple matrix
+            echo "All $total_tests tests fit in one chunk"
+            matrix_configs=$(jq -n --argjson tests "$test_cases" --argjson pythons "$python_versions" '
+              [($pythons[] as $py | $tests[] as $test | {"python-version": $py, "test-case": $test})]
+            ')
           else
-            echo "Running individual test case: ${{ matrix.test-case }}"
-            azdev test azext_apic-extension ${{ matrix.test-case }} --discover --live
+            # Split tests into chunks and create matrix configurations
+            echo "Splitting $total_tests tests into chunks of $max_tests_per_chunk"
+            matrix_configs=$(echo "$test_cases" | jq --argjson chunk_size "$max_tests_per_chunk" --argjson pythons "$python_versions" '
+              # Split tests into chunks
+              [range(0; length; $chunk_size) as $i | .[$i:$i+$chunk_size]] as $chunks |
+              # Create matrix entries for each python version and test chunk
+              [($chunks | to_entries[] as $chunk_entry | $pythons[] as $py | $chunk_entry.value[] as $test |
+                {"python-version": $py, "test-case": $test, "chunk": $chunk_entry.key})]
+            ')
           fi
-        env:
-          USERASSIGNED_IDENTITY: ${{ secrets.USERASSIGNED_IDENTITY }}
-          AWS_ACCESS_KEY_LINK: ${{ secrets.AWS_ACCESS_KEY_LINK }}
-          AWS_SECRET_ACCESS_KEY_LINK: ${{ secrets.AWS_SECRET_ACCESS_KEY_LINK }}
-  execute-test-case-py310:
+
+          total_combinations=$(echo "$matrix_configs" | jq '. | length')
+          echo "Created $total_combinations total matrix combinations"
+
+          if [ "$total_combinations" -gt 256 ]; then
+            echo "ERROR: Matrix has $total_combinations combinations, exceeding GitHub's 256 limit!"
+            echo "Falling back to full-suite approach per Python version"
+            matrix_configs=$(echo "$python_versions" | jq '
+              [.[] as $py | {"python-version": $py, "test-case": "full-suite"}]
+            ')
+          fi
+
+          echo "matrix-configs=$matrix_configs" >> $GITHUB_OUTPUT
+          echo "Final matrix configuration:"
+          echo "$matrix_configs" | jq '.'
+
+  execute-tests:
     needs: setup
     runs-on: ubuntu-latest
     environment: engineering
     strategy:
       fail-fast: false
       matrix:
-        # Use discovered test cases if available, otherwise use a single placeholder
-        test-case: ${{ fromJson(needs.setup.outputs.test-cases != '[]' && needs.setup.outputs.test-cases || '["full-suite"]') }}
-    name: ${{ matrix.test-case == 'full-suite' && 'Run Full Test Suite (Python 3.10)' || format('{0} (Python 3.10)', matrix.test-case) }}
+        include: ${{ fromJson(needs.setup.outputs.matrix-configs) }}
+    name: ${{ matrix.test-case == 'full-suite' && format('Run Full Test Suite (Python {0})', matrix.python-version) || format('{0} (Python {1})', matrix.test-case, matrix.python-version) }}
     steps:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: "3.10"
+          python-version: ${{ matrix.python-version }}
 
       - name: Azure login
         uses: azure/login@v2
         with:
-          client-id: ${{secrets.APICEXT_TEST_AZURE_CLIENT_ID}}
-          tenant-id: ${{secrets.APICEXT_TEST_AZURE_TENANT_ID}}
-          subscription-id: ${{secrets.APICEXT_TEST_AZURE_SUBSCRIPTION_ID}}
-          enable-AzPSSession: true
-
-      - name: Clone azure-cli-extensions repository
-        run: |
-          git clone https://github.com/blackchoey/azure-cli-extensions.git
-          cd azure-cli-extensions
-          git checkout main
-
-      - name: Setup development environment
-        run: |
-          cd azure-cli-extensions
-          python -m venv .venv
-          source .venv/bin/activate
-          python -m pip install -U pip
-          pip install azdev
-          azdev setup -r .
-          azdev extension add apic-extension
-
-      - name: Run tests
-        run: |
-          cd azure-cli-extensions
-          source .venv/bin/activate
-          if [ "${{ matrix.test-case }}" = "full-suite" ]; then
-            echo "Running full test suite..."
-            azdev test apic-extension --discover --live
-          else
-            echo "Running individual test case: ${{ matrix.test-case }}"
-            azdev test azext_apic-extension ${{ matrix.test-case }} --discover --live
-          fi
-        env:
-          USERASSIGNED_IDENTITY: ${{ secrets.USERASSIGNED_IDENTITY }}
-          AWS_ACCESS_KEY_LINK: ${{ secrets.AWS_ACCESS_KEY_LINK }}
-          AWS_SECRET_ACCESS_KEY_LINK: ${{ secrets.AWS_SECRET_ACCESS_KEY_LINK }}
-  execute-test-case-py311:
-    needs: setup
-    runs-on: ubuntu-latest
-    environment: engineering
-    strategy:
-      fail-fast: false
-      matrix:
-        # Use discovered test cases if available, otherwise use a single placeholder
-        test-case: ${{ fromJson(needs.setup.outputs.test-cases != '[]' && needs.setup.outputs.test-cases || '["full-suite"]') }}
-    name: ${{ matrix.test-case == 'full-suite' && 'Run Full Test Suite (Python 3.11)' || format('{0} (Python 3.11)', matrix.test-case) }}
-    steps:
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: "3.11"
-
-      - name: Azure login
-        uses: azure/login@v2
-        with:
-          client-id: ${{secrets.APICEXT_TEST_AZURE_CLIENT_ID}}
-          tenant-id: ${{secrets.APICEXT_TEST_AZURE_TENANT_ID}}
-          subscription-id: ${{secrets.APICEXT_TEST_AZURE_SUBSCRIPTION_ID}}
-          enable-AzPSSession: true
-
-      - name: Clone azure-cli-extensions repository
-        run: |
-          git clone https://github.com/blackchoey/azure-cli-extensions.git
-          cd azure-cli-extensions
-          git checkout main
-
-      - name: Setup development environment
-        run: |
-          cd azure-cli-extensions
-          python -m venv .venv
-          source .venv/bin/activate
-          python -m pip install -U pip
-          pip install azdev
-          azdev setup -r .
-          azdev extension add apic-extension
-
-      - name: Run tests
-        run: |
-          cd azure-cli-extensions
-          source .venv/bin/activate
-          if [ "${{ matrix.test-case }}" = "full-suite" ]; then
-            echo "Running full test suite..."
-            azdev test apic-extension --discover --live
-          else
-            echo "Running individual test case: ${{ matrix.test-case }}"
-            azdev test azext_apic-extension ${{ matrix.test-case }} --discover --live
-          fi
-        env:
-          USERASSIGNED_IDENTITY: ${{ secrets.USERASSIGNED_IDENTITY }}
-          AWS_ACCESS_KEY_LINK: ${{ secrets.AWS_ACCESS_KEY_LINK }}
-          AWS_SECRET_ACCESS_KEY_LINK: ${{ secrets.AWS_SECRET_ACCESS_KEY_LINK }}
-
-  execute-test-case-py312:
-    needs: setup
-    runs-on: ubuntu-latest
-    environment: engineering
-    strategy:
-      fail-fast: false
-      matrix:
-        # Use discovered test cases if available, otherwise use a single placeholder
-        test-case: ${{ fromJson(needs.setup.outputs.test-cases != '[]' && needs.setup.outputs.test-cases || '["full-suite"]') }}
-    name: ${{ matrix.test-case == 'full-suite' && 'Run Full Test Suite (Python 3.12)' || format('{0} (Python 3.12)', matrix.test-case) }}
-    steps:
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: "3.12"
-
-      - name: Azure login
-        uses: azure/login@v2
-        with:
-          client-id: ${{secrets.APICEXT_TEST_AZURE_CLIENT_ID}}
-          tenant-id: ${{secrets.APICEXT_TEST_AZURE_TENANT_ID}}
-          subscription-id: ${{secrets.APICEXT_TEST_AZURE_SUBSCRIPTION_ID}}
+          client-id: ${{ secrets.APICEXT_TEST_AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.APICEXT_TEST_AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.APICEXT_TEST_AZURE_SUBSCRIPTION_ID }}
           enable-AzPSSession: true
 
       - name: Clone azure-cli-extensions repository
@@ -338,16 +186,15 @@ jobs:
           AWS_SECRET_ACCESS_KEY_LINK: ${{ secrets.AWS_SECRET_ACCESS_KEY_LINK }}
 
   notify:
-    needs: [setup, execute-test-case-py39, execute-test-case-py310, execute-test-case-py311, execute-test-case-py312]
+    needs: [setup, execute-tests]
     if: always() && !cancelled() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     environment: engineering
     steps:
       - name: Generate Email Content
         id: generate-email-content
-        run: |
-          # Get the test cases that were executed across all Python versions
-          test_cases='${{ needs.setup.outputs.test-cases }}'
+        run: |          # Get the matrix configurations that were executed
+          matrix_configs='${{ needs.setup.outputs.matrix-configs }}'
 
           # Initialize report variables
           total_jobs=0
@@ -476,7 +323,7 @@ jobs:
           body="${body}</body></html>"
 
           # Set environment variables for outputs
-          echo "to=${{ secrets.AUTHOR_MAIL_ADDRESSES }}" >> $GITHUB_ENV
+          echo "to=frankqian@microsoft.com" >> $GITHUB_ENV
           echo "subject=$subject" >> $GITHUB_ENV
           echo "body=$body" >> $GITHUB_ENV
 
