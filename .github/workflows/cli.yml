@@ -112,8 +112,7 @@ jobs:
             ')
             total_chunks=$(echo "$chunks" | jq 'length')
           fi
-
-          echo "chunks=$chunks" >> $GITHUB_OUTPUT
+          echo "chunks=$(echo "$chunks" | jq -c '.')" >> $GITHUB_OUTPUT
           echo "python-versions=$python_versions" >> $GITHUB_OUTPUT
           echo "total-chunks=$total_chunks" >> $GITHUB_OUTPUT
 
