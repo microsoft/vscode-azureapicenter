@@ -19,8 +19,8 @@ jobs:
     runs-on: ubuntu-latest
     environment: engineering
     outputs:
-      job-configs: ${{ steps.create-matrix.outputs.job-configs }}
-      total-chunks: ${{ steps.create-matrix.outputs.total-chunks }}
+      chunks: ${{ steps.create-matrix.outputs.chunks }}
+      python-versions: ${{ steps.create-matrix.outputs.python-versions }}
       test-cases: ${{ steps.create-matrix.outputs.test-cases }}
     steps:
       - name: Set up Python
@@ -93,44 +93,31 @@ jobs:
           fi
 
           # Store test cases for notify job
-          echo "test-cases=$test_cases" >> $GITHUB_OUTPUT
-
-          # Create job configurations for chunked execution
+          echo "test-cases=$test_cases" >> $GITHUB_OUTPUT          # Create job configurations for chunked execution
           python_versions='["3.9", "3.10", "3.11", "3.12"]'
-          max_tests_per_chunk=60  # 60 tests × 4 Python versions = 240 combinations per job
+          max_tests_per_chunk=60  # Stay well under 256 limit when combined with 4 Python versions
 
           if [ "$total_tests" -le "$max_tests_per_chunk" ]; then
-            # All tests fit in one job - create single job config
-            echo "All $total_tests tests fit in one job"
-            job_configs=$(jq -n --argjson tests "$test_cases" --argjson pythons "$python_versions" '
-              [{
-                "chunk-id": 0,
-                "matrix": [($pythons[] as $py | $tests[] as $test |
-                  {"python-version": $py, "test-case": $test})]
-              }]
-            ')
+            # All tests fit in one chunk
+            echo "All $total_tests tests fit in one chunk"
+            chunks=$(jq -n --argjson tests "$test_cases" '[{"chunk-id": 0, "test-cases": $tests}]')
             total_chunks=1
           else
-            # Split tests into chunks for separate jobs
-            echo "Splitting $total_tests tests into chunks of $max_tests_per_chunk for separate jobs"
-            job_configs=$(echo "$test_cases" | jq --argjson chunk_size "$max_tests_per_chunk" --argjson pythons "$python_versions" '
-              # Split tests into chunks
-              [range(0; length; $chunk_size) as $i | .[$i:$i+$chunk_size]] as $chunks |
-              # Create job configurations with matrix for each chunk
-              [$chunks | to_entries[] | {
-                "chunk-id": .key,
-                "matrix": [($pythons[] as $py | .value[] as $test |
-                  {"python-version": $py, "test-case": $test})]
-              }]
+            # Split tests into chunks
+            echo "Splitting $total_tests tests into chunks of $max_tests_per_chunk"
+            chunks=$(echo "$test_cases" | jq --argjson chunk_size "$max_tests_per_chunk" '
+              [range(0; length; $chunk_size) as $i |
+                {"chunk-id": (i / $chunk_size), "test-cases": .[$i:$i+$chunk_size]}]
             ')
-            total_chunks=$(echo "$job_configs" | jq 'length')
+            total_chunks=$(echo "$chunks" | jq 'length')
           fi
 
-          echo "job-configs=$job_configs" >> $GITHUB_OUTPUT
+          echo "chunks=$chunks" >> $GITHUB_OUTPUT
+          echo "python-versions=$python_versions" >> $GITHUB_OUTPUT
           echo "total-chunks=$total_chunks" >> $GITHUB_OUTPUT
-            echo "Created $total_chunks job configurations:"
-          echo "$job_configs" | jq '.'
 
+          echo "Created $total_chunks chunks:"
+          echo "$chunks" | jq '.'
   execute-tests:
     needs: setup
     runs-on: ubuntu-latest
@@ -138,13 +125,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        chunk-config: ${{ fromJson(needs.setup.outputs.job-configs) }}
-    name: Execute Tests - Chunk ${{ matrix.chunk-config.chunk-id }}
+        chunk: ${{ fromJson(needs.setup.outputs.chunks) }}
+        python-version: ${{ fromJson(needs.setup.outputs.python-versions) }}
+    name: Execute Tests - Chunk ${{ matrix.chunk.chunk-id }} (Python ${{ matrix.python-version }})
     steps:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: "3.11"
+          python-version: ${{ matrix.python-version }}
 
       - name: Azure login
         uses: azure/login@v2
@@ -172,41 +160,29 @@ jobs:
 
       - name: Execute chunk tests
         run: |
-          # Get the matrix for this chunk
-          chunk_matrix='${{ toJson(matrix.chunk-config.matrix) }}'
-          echo "Processing chunk ${{ matrix.chunk-config.chunk-id }} with $(echo "$chunk_matrix" | jq 'length') test combinations"
+          # Get the test cases for this chunk
+          test_cases='${{ toJson(matrix.chunk.test-cases) }}'
+          echo "Processing chunk ${{ matrix.chunk.chunk-id }} with $(echo "$test_cases" | jq 'length') test cases for Python ${{ matrix.python-version }}"
 
           cd azure-cli-extensions
+          source .venv/bin/activate
 
-          # Process each test case × python version combination in this chunk
-          echo "$chunk_matrix" | jq -c '.[]' | while read -r combination; do
-            python_version=$(echo "$combination" | jq -r '.["python-version"]')
-            test_case=$(echo "$combination" | jq -r '.["test-case"]')
-
+          # Process each test case in this chunk
+          echo "$test_cases" | jq -r '.[]' | while read -r test_case; do
             echo "=========================================="
-            echo "Running: $test_case (Python $python_version)"
+            echo "Running: $test_case (Python ${{ matrix.python-version }})"
             echo "=========================================="
-
-            # Set up Python environment for this specific version
-            python -m venv ".venv-${python_version}"
-            source ".venv-${python_version}/bin/activate"
-            python -m pip install -U pip
-            pip install azdev
-            azdev setup -r .
-            azdev extension add apic-extension
 
             # Run the test
             if [ "$test_case" = "full-suite" ]; then
               echo "Running full test suite..."
-              azdev test apic-extension --discover --live || echo "Test failed: $test_case (Python $python_version)"
+              azdev test apic-extension --discover --live || echo "Test failed: $test_case (Python ${{ matrix.python-version }})"
             else
               echo "Running individual test case: $test_case"
-              azdev test azext_apic-extension $test_case --discover --live || echo "Test failed: $test_case (Python $python_version)"
+              azdev test azext_apic-extension $test_case --discover --live || echo "Test failed: $test_case (Python ${{ matrix.python-version }})"
             fi
 
-            # Deactivate this environment
-            deactivate
-            echo "Completed: $test_case (Python $python_version)"
+            echo "Completed: $test_case (Python ${{ matrix.python-version }})"
             echo ""
           done
         env:
