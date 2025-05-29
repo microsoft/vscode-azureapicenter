@@ -93,7 +93,8 @@ jobs:
           fi
 
           # Store test cases for notify job
-          echo "test-cases=$test_cases" >> $GITHUB_OUTPUT          # Create job configurations for chunked execution
+          echo "test-cases=$test_cases" >> $GITHUB_OUTPUT
+          # Create job configurations for chunked execution
           python_versions='["3.9", "3.10", "3.11", "3.12"]'
           max_tests_per_chunk=60  # Stay well under 256 limit when combined with 4 Python versions
 
@@ -107,7 +108,7 @@ jobs:
             echo "Splitting $total_tests tests into chunks of $max_tests_per_chunk"
             chunks=$(echo "$test_cases" | jq --argjson chunk_size "$max_tests_per_chunk" '
               [range(0; length; $chunk_size) as $i |
-                {"chunk-id": (i / $chunk_size), "test-cases": .[$i:$i+$chunk_size]}]
+                {"chunk-id": ($i / $chunk_size), "test-cases": .[$i:$i+$chunk_size]}]
             ')
             total_chunks=$(echo "$chunks" | jq 'length')
           fi
