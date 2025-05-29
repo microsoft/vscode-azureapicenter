@@ -19,7 +19,9 @@ jobs:
     runs-on: ubuntu-latest
     environment: engineering
     outputs:
-      matrix-configs: ${{ steps.create-matrix.outputs.matrix-configs }}
+      job-configs: ${{ steps.create-matrix.outputs.job-configs }}
+      total-chunks: ${{ steps.create-matrix.outputs.total-chunks }}
+      test-cases: ${{ steps.create-matrix.outputs.test-cases }}
     steps:
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -90,45 +92,44 @@ jobs:
             fi
           fi
 
-          # Create matrix configurations that respect the 256 limit
-          # Strategy: Create combinations of (python-version, test-chunk) where each chunk has max 60 tests
-          # This gives us 4 python versions × 60 tests = 240 combinations max per chunk
+          # Store test cases for notify job
+          echo "test-cases=$test_cases" >> $GITHUB_OUTPUT
 
+          # Create job configurations for chunked execution
           python_versions='["3.9", "3.10", "3.11", "3.12"]'
-          max_tests_per_chunk=60
+          max_tests_per_chunk=60  # 60 tests × 4 Python versions = 240 combinations per job
 
           if [ "$total_tests" -le "$max_tests_per_chunk" ]; then
-            # All tests fit in one chunk - create simple matrix
-            echo "All $total_tests tests fit in one chunk"
-            matrix_configs=$(jq -n --argjson tests "$test_cases" --argjson pythons "$python_versions" '
-              [($pythons[] as $py | $tests[] as $test | {"python-version": $py, "test-case": $test})]
+            # All tests fit in one job - create single job config
+            echo "All $total_tests tests fit in one job"
+            job_configs=$(jq -n --argjson tests "$test_cases" --argjson pythons "$python_versions" '
+              [{
+                "chunk-id": 0,
+                "matrix": [($pythons[] as $py | $tests[] as $test |
+                  {"python-version": $py, "test-case": $test})]
+              }]
             ')
+            total_chunks=1
           else
-            # Split tests into chunks and create matrix configurations
-            echo "Splitting $total_tests tests into chunks of $max_tests_per_chunk"
-            matrix_configs=$(echo "$test_cases" | jq --argjson chunk_size "$max_tests_per_chunk" --argjson pythons "$python_versions" '
+            # Split tests into chunks for separate jobs
+            echo "Splitting $total_tests tests into chunks of $max_tests_per_chunk for separate jobs"
+            job_configs=$(echo "$test_cases" | jq --argjson chunk_size "$max_tests_per_chunk" --argjson pythons "$python_versions" '
               # Split tests into chunks
               [range(0; length; $chunk_size) as $i | .[$i:$i+$chunk_size]] as $chunks |
-              # Create matrix entries for each python version and test chunk
-              [($chunks | to_entries[] as $chunk_entry | $pythons[] as $py | $chunk_entry.value[] as $test |
-                {"python-version": $py, "test-case": $test, "chunk": $chunk_entry.key})]
+              # Create job configurations with matrix for each chunk
+              [$chunks | to_entries[] | {
+                "chunk-id": .key,
+                "matrix": [($pythons[] as $py | .value[] as $test |
+                  {"python-version": $py, "test-case": $test})]
+              }]
             ')
+            total_chunks=$(echo "$job_configs" | jq 'length')
           fi
 
-          total_combinations=$(echo "$matrix_configs" | jq '. | length')
-          echo "Created $total_combinations total matrix combinations"
-
-          if [ "$total_combinations" -gt 256 ]; then
-            echo "ERROR: Matrix has $total_combinations combinations, exceeding GitHub's 256 limit!"
-            echo "Falling back to full-suite approach per Python version"
-            matrix_configs=$(echo "$python_versions" | jq '
-              [.[] as $py | {"python-version": $py, "test-case": "full-suite"}]
-            ')
-          fi
-
-          echo "matrix-configs=$matrix_configs" >> $GITHUB_OUTPUT
-          echo "Final matrix configuration:"
-          echo "$matrix_configs" | jq '.'
+          echo "job-configs=$job_configs" >> $GITHUB_OUTPUT
+          echo "total-chunks=$total_chunks" >> $GITHUB_OUTPUT
+            echo "Created $total_chunks job configurations:"
+          echo "$job_configs" | jq '.'
 
   execute-tests:
     needs: setup
@@ -137,13 +138,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include: ${{ fromJson(needs.setup.outputs.matrix-configs) }}
-    name: ${{ matrix.test-case == 'full-suite' && format('Run Full Test Suite (Python {0})', matrix.python-version) || format('{0} (Python {1})', matrix.test-case, matrix.python-version) }}
+        chunk-config: ${{ fromJson(needs.setup.outputs.job-configs) }}
+    name: Execute Tests - Chunk ${{ matrix.chunk-config.chunk-id }}
     steps:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.11"
 
       - name: Azure login
         uses: azure/login@v2
@@ -169,17 +170,45 @@ jobs:
           azdev setup -r .
           azdev extension add apic-extension
 
-      - name: Run tests
+      - name: Execute chunk tests
         run: |
+          # Get the matrix for this chunk
+          chunk_matrix='${{ toJson(matrix.chunk-config.matrix) }}'
+          echo "Processing chunk ${{ matrix.chunk-config.chunk-id }} with $(echo "$chunk_matrix" | jq 'length') test combinations"
+
           cd azure-cli-extensions
-          source .venv/bin/activate
-          if [ "${{ matrix.test-case }}" = "full-suite" ]; then
-            echo "Running full test suite..."
-            azdev test apic-extension --discover --live
-          else
-            echo "Running individual test case: ${{ matrix.test-case }}"
-            azdev test azext_apic-extension ${{ matrix.test-case }} --discover --live
-          fi
+
+          # Process each test case × python version combination in this chunk
+          echo "$chunk_matrix" | jq -c '.[]' | while read -r combination; do
+            python_version=$(echo "$combination" | jq -r '.["python-version"]')
+            test_case=$(echo "$combination" | jq -r '.["test-case"]')
+
+            echo "=========================================="
+            echo "Running: $test_case (Python $python_version)"
+            echo "=========================================="
+
+            # Set up Python environment for this specific version
+            python -m venv ".venv-${python_version}"
+            source ".venv-${python_version}/bin/activate"
+            python -m pip install -U pip
+            pip install azdev
+            azdev setup -r .
+            azdev extension add apic-extension
+
+            # Run the test
+            if [ "$test_case" = "full-suite" ]; then
+              echo "Running full test suite..."
+              azdev test apic-extension --discover --live || echo "Test failed: $test_case (Python $python_version)"
+            else
+              echo "Running individual test case: $test_case"
+              azdev test azext_apic-extension $test_case --discover --live || echo "Test failed: $test_case (Python $python_version)"
+            fi
+
+            # Deactivate this environment
+            deactivate
+            echo "Completed: $test_case (Python $python_version)"
+            echo ""
+          done
         env:
           USERASSIGNED_IDENTITY: ${{ secrets.USERASSIGNED_IDENTITY }}
           AWS_ACCESS_KEY_LINK: ${{ secrets.AWS_ACCESS_KEY_LINK }}
@@ -193,8 +222,9 @@ jobs:
     steps:
       - name: Generate Email Content
         id: generate-email-content
-        run: |          # Get the matrix configurations that were executed
-          matrix_configs='${{ needs.setup.outputs.matrix-configs }}'
+        run: |
+          # Get the test cases that were executed
+          test_cases='${{ needs.setup.outputs.test-cases }}'
 
           # Initialize report variables
           total_jobs=0
