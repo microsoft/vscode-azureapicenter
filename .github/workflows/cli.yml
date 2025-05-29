@@ -464,16 +464,6 @@ jobs:
             body="${body}</ul>"
           fi
 
-          if [ -n "$passed_tests" ]; then
-            body="${body}<h3>✅ Passed Tests:</h3><ul>"
-            while IFS= read -r test; do
-              if [ -n "$test" ]; then
-                body="${body}<li>${test}</li>"
-              fi
-            done <<< "$passed_tests"
-            body="${body}</ul>"
-          fi
-
           body="${body}<h3>🔗 Workflow Details:</h3>"
           body="${body}<ul>"
           body="${body}<li><strong>Workflow URL:</strong> <a href=\"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\">View Workflow Run</a></li>"
