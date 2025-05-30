@@ -19,9 +19,10 @@ jobs:
     runs-on: ubuntu-latest
     environment: engineering
     outputs:
-      chunks: ${{ steps.create-matrix.outputs.chunks }}
+      chunk-matrix: ${{ steps.create-matrix.outputs.chunk-matrix }}
       python-versions: ${{ steps.create-matrix.outputs.python-versions }}
       test-cases: ${{ steps.create-matrix.outputs.test-cases }}
+      total-chunks: ${{ steps.create-matrix.outputs.total-chunks }}
     steps:
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -90,48 +91,43 @@ jobs:
               test_cases='["full-suite"]'
               total_tests=1
             fi
-          fi          # Store test cases for notify job
-          echo "test-cases=$test_cases" >> $GITHUB_OUTPUT
-          # Create individual test case jobs with chunking to manage job count
-          python_versions='["3.9", "3.10", "3.11", "3.12"]'
-          max_chunk_size=20  # Reduce chunk size to create fewer concurrent jobs
-
-          # Calculate total combinations that would be created
-          total_combinations=$((total_tests * 4))
-          echo "Total test combinations: $total_combinations (tests: $total_tests × python versions: 4)"
-
-          # Always create individual test case objects, but chunk if we have too many tests
-          if [ "$total_tests" -le "$max_chunk_size" ]; then
-            # All tests fit in one chunk
-            echo "All $total_tests tests fit in one chunk (total combinations: $total_combinations)"
-            chunks=$(echo "$test_cases" | jq '[.[] | {chunk_id: 0, test_case: .}]')
-            total_chunks=1
-          else
-            # Split into chunks to manage job count
-            echo "Splitting $total_tests tests into chunks of $max_chunk_size to manage concurrent job count"
-            chunks=$(echo "$test_cases" | jq --argjson chunk_size "$max_chunk_size" '
-              [range(0; length; $chunk_size) as $i |
-                .[$i:$i+$chunk_size] | to_entries | map({
-                  chunk_id: ($i / $chunk_size | floor),
-                  test_case: .value
-                })
-              ] | flatten
-            ')
-            total_chunks=$(echo "$chunks" | jq 'map(.chunk_id) | unique | length')
           fi
-          echo "chunks=$(echo "$chunks" | jq -c '.')" >> $GITHUB_OUTPUT
+
+          # Store test cases for notify job
+          echo "test-cases=$test_cases" >> $GITHUB_OUTPUT
+
+          # Create chunked test groups to stay within GitHub's 256 matrix limit
+          python_versions='["3.9", "3.10", "3.11", "3.12"]'
+          max_tests_per_chunk=60  # 60 tests × 4 python versions = 240 matrix combinations (under 256 limit)
+
+          # Calculate chunks
+          if [ "$total_tests" -le "$max_tests_per_chunk" ]; then
+            # All tests fit in one chunk
+            echo "All $total_tests tests fit in one chunk"
+            total_chunks=1
+            chunk_matrix=$(jq -n --argjson tests "$test_cases" '[{chunk_id: 0, test_cases: $tests}]')
+          else
+            # Split into multiple chunks
+            total_chunks=$(( (total_tests + max_tests_per_chunk - 1) / max_tests_per_chunk ))
+            echo "Splitting $total_tests tests into $total_chunks chunks of up to $max_tests_per_chunk tests each"
+
+            chunk_matrix=$(echo "$test_cases" | jq --argjson chunk_size "$max_tests_per_chunk" '
+              [range(0; length; $chunk_size) as $i | {
+                chunk_id: ($i / $chunk_size | floor),
+                test_cases: .[$i:$i+$chunk_size]
+              }]
+            ')
+          fi
+
+          echo "chunk-matrix=$(echo "$chunk_matrix" | jq -c '.')" >> $GITHUB_OUTPUT
           echo "python-versions=$python_versions" >> $GITHUB_OUTPUT
           echo "total-chunks=$total_chunks" >> $GITHUB_OUTPUT
 
-          # Debug: Show the actual chunks JSON structure
-          echo "DEBUG: Chunks JSON structure:"
-          echo "$chunks" | jq '.'
-          echo "DEBUG: Number of individual chunk objects: $(echo "$chunks" | jq 'length')"
-          echo "DEBUG: First few chunk objects:"
-          echo "$chunks" | jq '.[0:3]'
-            echo "Created $total_chunks chunks with individual test case jobs:"
-          echo "$chunks" | jq -r 'group_by(.chunk_id) | .[] | "  Chunk \(.[0].chunk_id): \(length) test cases"'
-
+          # Debug output
+          echo "DEBUG: Created $total_chunks chunks:"
+          echo "$chunk_matrix" | jq -r '.[] | "  Chunk \(.chunk_id): \(.test_cases | length) test cases"'
+          echo "DEBUG: First chunk test cases preview:"
+          echo "$chunk_matrix" | jq -r '.[0].test_cases[:3][] // empty'
   execute-tests:
     needs: setup
     runs-on: ubuntu-latest
@@ -140,9 +136,9 @@ jobs:
       fail-fast: false
       max-parallel: 10  # Limit concurrent jobs to avoid overwhelming GitHub Actions
       matrix:
-        chunk: ${{ fromJson(needs.setup.outputs.chunks) }}
+        chunk: ${{ fromJson(needs.setup.outputs.chunk-matrix) }}
         python-version: ${{ fromJson(needs.setup.outputs.python-versions) }}
-    name: Chunk ${{ matrix.chunk.chunk_id }} - ${{ matrix.chunk.test_case }} (Python ${{ matrix.python-version }})
+    name: Chunk ${{ matrix.chunk.chunk_id }} (Python ${{ matrix.python-version }})
     steps:
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -173,32 +169,94 @@ jobs:
           azdev setup -r .
           azdev extension add apic-extension
 
-      - name: Execute test case
+      - name: Execute test cases for chunk
         run: |
-          # Get the individual test case for this job
-          test_case='${{ matrix.chunk.test_case }}'
+          # Get the test cases for this chunk
+          test_cases='${{ toJson(matrix.chunk.test_cases) }}'
           chunk_id='${{ matrix.chunk.chunk_id }}'
           python_version='${{ matrix.python-version }}'
 
-          echo "Running test case: $test_case (Chunk $chunk_id, Python $python_version)"
+          echo "Running chunk $chunk_id test cases (Python $python_version)"
+          echo "Test cases: $test_cases"
 
           cd azure-cli-extensions
           source .venv/bin/activate
 
-          echo "=========================================="
-          echo "Running: $test_case (Python $python_version)"
-          echo "=========================================="
+          # Initialize result tracking
+          passed_tests=""
+          failed_tests=""
+          total_tests=0
+          passed_count=0
+          failed_count=0
 
-          # Run the specific test case
-          if [ "$test_case" = "full-suite" ]; then
-            echo "Running full test suite..."
-            azdev test apic-extension --discover --live || echo "Test failed: $test_case (Python $python_version)"
-          else
-            echo "Running individual test case: $test_case"
-            azdev test azext_apic-extension $test_case --discover --live || echo "Test failed: $test_case (Python $python_version)"
+          # Parse test cases JSON array and run each test
+          echo "$test_cases" | jq -r '.[]' | while read test_case; do
+            echo "=========================================="
+            echo "Running: $test_case (Python $python_version)"
+            echo "=========================================="
+
+            total_tests=$((total_tests + 1))
+
+            # Run the specific test case and capture exit code
+            if [ "$test_case" = "full-suite" ]; then
+              echo "Running full test suite..."
+              if azdev test apic-extension --discover --live; then
+                echo "✅ PASSED: $test_case (Python $python_version)"
+                passed_count=$((passed_count + 1))
+                if [ -z "$passed_tests" ]; then
+                  passed_tests="$test_case"
+                else
+                  passed_tests="$passed_tests,$test_case"
+                fi
+              else
+                echo "❌ FAILED: $test_case (Python $python_version)"
+                failed_count=$((failed_count + 1))
+                if [ -z "$failed_tests" ]; then
+                  failed_tests="$test_case"
+                else
+                  failed_tests="$failed_tests,$test_case"
+                fi
+              fi
+            else
+              echo "Running individual test case: $test_case"
+              if azdev test azext_apic-extension $test_case --discover --live; then
+                echo "✅ PASSED: $test_case (Python $python_version)"
+                passed_count=$((passed_count + 1))
+                if [ -z "$passed_tests" ]; then
+                  passed_tests="$test_case"
+                else
+                  passed_tests="$passed_tests,$test_case"
+                fi
+              else
+                echo "❌ FAILED: $test_case (Python $python_version)"
+                failed_count=$((failed_count + 1))
+                if [ -z "$failed_tests" ]; then
+                  failed_tests="$test_case"
+                else
+                  failed_tests="$failed_tests,$test_case"
+                fi
+              fi
+            fi
+
+            echo "Completed: $test_case (Python $python_version)"
+            echo ""
+          done          # Output summary for this chunk
+          echo "=========================================="
+          echo "CHUNK $chunk_id (Python $python_version) SUMMARY:"
+          echo "Total: $total_tests, Passed: $passed_count, Failed: $failed_count"
+          if [ -n "$passed_tests" ]; then
+            echo "Passed tests: $passed_tests"
           fi
+          if [ -n "$failed_tests" ]; then
+            echo "Failed tests: $failed_tests"
+          fi
+          echo "=========================================="
 
-          echo "Completed: $test_case (Python $python_version)"
+          # Fail the job if any test failed (preserve original behavior)
+          if [ $failed_count -gt 0 ]; then
+            echo "Job failed because $failed_count test(s) failed"
+            exit 1
+          fi
         env:
           USERASSIGNED_IDENTITY: ${{ secrets.USERASSIGNED_IDENTITY }}
           AWS_ACCESS_KEY_LINK: ${{ secrets.AWS_ACCESS_KEY_LINK }}
@@ -243,62 +301,106 @@ jobs:
 
           # Define Python versions
           declare -a python_versions=("3.9" "3.10" "3.11" "3.12")
-
           # Process results for each Python version job
           if [ "$test_cases" = "[]" ]; then
             # Full suite was run for each Python version
             for python_version in "${python_versions[@]}"; do
-              job_name="Run Full Test Suite (Python ${python_version})"
+              job_name="Chunk 0 (Python ${python_version})"
               job_result=$(echo "$jobs" | jq -r --arg name "$job_name" '.[] | select(.name == $name) | .conclusion')
 
               total_jobs=$((total_jobs + 1))
               if [ "$job_result" = "success" ]; then
                 passed_jobs=$((passed_jobs + 1))
                 if [ -z "$passed_tests" ]; then
-                  passed_tests="$job_name"
+                  passed_tests="Full Test Suite (Python ${python_version})"
                 else
-                  passed_tests="${passed_tests}"$'\n'"${job_name}"
+                  passed_tests="${passed_tests}"$'\n'"Full Test Suite (Python ${python_version})"
                 fi
               else
                 failed_jobs=$((failed_jobs + 1))
                 if [ -z "$failed_tests" ]; then
-                  failed_tests="$job_name"
+                  failed_tests="Full Test Suite (Python ${python_version})"
                 else
-                  failed_tests="${failed_tests}"$'\n'"${job_name}"
+                  failed_tests="${failed_tests}"$'\n'"Full Test Suite (Python ${python_version})"
                 fi
               fi
             done
           else
-            # Individual test cases were run for each Python version
-            test_case_array=$(echo "$test_cases" | jq -r '.[]')
-
+            # Individual test cases were run in chunked jobs - extract individual test results from job logs
+            # Get the total number of chunks from setup job
+            total_chunks='${{ needs.setup.outputs.total-chunks }}'
 
             for python_version in "${python_versions[@]}"; do
-              for test_case in $test_case_array; do
-                total_jobs=$((total_jobs + 1))
+              for chunk_id in $(seq 0 $((total_chunks - 1))); do
+                # Find job by exact chunk job name
+                job_name="Chunk ${chunk_id} (Python ${python_version})"
+                job_data=$(echo "$jobs" | jq -r --arg name "$job_name" '.[] | select(.name == $name)')
+                job_result=$(echo "$job_data" | jq -r '.conclusion')
+                job_id=$(echo "$job_data" | jq -r '.id')
 
-                # Find job by pattern match (includes chunk ID in job name)
-                # Job names are: "Chunk X - test_case (Python Y.Z)"
-                job_pattern="Chunk [0-9]+ - ${test_case} \\(Python ${python_version}\\)"
-                job_result=$(echo "$jobs" | jq -r --arg pattern "$job_pattern" '.[] | select(.name | test($pattern)) | .conclusion')
+                if [ -n "$job_id" ] && [ "$job_id" != "null" ]; then
+                  # Fetch job logs to extract individual test case results
+                  log_url="https://api.github.com/repos/${{ github.repository }}/actions/jobs/$job_id/logs"
+                  job_logs=$(curl -L -H "Accept: application/vnd.github.v3+json" -u:${{ secrets.GITHUB_TOKEN }} "$log_url" 2>/dev/null || echo "")
 
-                if [ "$job_result" = "success" ]; then
-                  passed_jobs=$((passed_jobs + 1))
-                  # Use a cleaner job name for reporting (without chunk ID)
-                  clean_job_name="${test_case} (Python ${python_version})"
-                  if [ -z "$passed_tests" ]; then
-                    passed_tests="$clean_job_name"
+                  if [ -n "$job_logs" ]; then
+                    # Extract individual test results from logs
+                    passed_test_cases=$(echo "$job_logs" | grep -o "✅ PASSED: [^(]*" | sed 's/✅ PASSED: //' | tr '\n' ',' | sed 's/,$//')
+                    failed_test_cases=$(echo "$job_logs" | grep -o "❌ FAILED: [^(]*" | sed 's/❌ FAILED: //' | tr '\n' ',' | sed 's/,$//')
+
+                    # Count total test cases for this chunk
+                    chunk_total=$(echo "$job_logs" | grep -c "Running: .* (Python ${python_version})" || echo "0")
+                    chunk_passed=$(echo "$passed_test_cases" | tr ',' '\n' | grep -v '^$' | wc -l || echo "0")
+                    chunk_failed=$(echo "$failed_test_cases" | tr ',' '\n' | grep -v '^$' | wc -l || echo "0")
+
+                    # Add individual test case results to report
+                    if [ -n "$passed_test_cases" ] && [ "$passed_test_cases" != "" ]; then
+                      IFS=',' read -ra PASSED_ARRAY <<< "$passed_test_cases"
+                      for test_case in "${PASSED_ARRAY[@]}"; do
+                        if [ -n "$test_case" ]; then
+                          if [ -z "$passed_tests" ]; then
+                            passed_tests="${test_case} (Python ${python_version})"
+                          else
+                            passed_tests="${passed_tests}"$'\n'"${test_case} (Python ${python_version})"
+                          fi
+                          passed_jobs=$((passed_jobs + 1))
+                        fi
+                      done
+                    fi
+
+                    if [ -n "$failed_test_cases" ] && [ "$failed_test_cases" != "" ]; then
+                      IFS=',' read -ra FAILED_ARRAY <<< "$failed_test_cases"
+                      for test_case in "${FAILED_ARRAY[@]}"; do
+                        if [ -n "$test_case" ]; then
+                          if [ -z "$failed_tests" ]; then
+                            failed_tests="${test_case} (Python ${python_version})"
+                          else
+                            failed_tests="${failed_tests}"$'\n'"${test_case} (Python ${python_version})"
+                          fi
+                          failed_jobs=$((failed_jobs + 1))
+                        fi
+                      done
+                    fi
+
+                    total_jobs=$((total_jobs + chunk_total))
                   else
-                    passed_tests="${passed_tests}"$'\n'"${clean_job_name}"
-                  fi
-                else
-                  failed_jobs=$((failed_jobs + 1))
-                  # Use a cleaner job name for reporting (without chunk ID)
-                  clean_job_name="${test_case} (Python ${python_version})"
-                  if [ -z "$failed_tests" ]; then
-                    failed_tests="$clean_job_name"
-                  else
-                    failed_tests="${failed_tests}"$'\n'"${clean_job_name}"
+                    # Fallback: If we can't get logs, report at chunk level
+                    total_jobs=$((total_jobs + 1))
+                    if [ "$job_result" = "success" ]; then
+                      passed_jobs=$((passed_jobs + 1))
+                      if [ -z "$passed_tests" ]; then
+                        passed_tests="$job_name"
+                      else
+                        passed_tests="${passed_tests}"$'\n'"$job_name"
+                      fi
+                    else
+                      failed_jobs=$((failed_jobs + 1))
+                      if [ -z "$failed_tests" ]; then
+                        failed_tests="$job_name"
+                      else
+                        failed_tests="${failed_tests}"$'\n'"$job_name"
+                      fi
+                    fi
                   fi
                 fi
               done
