@@ -92,24 +92,24 @@ jobs:
             fi
           fi          # Store test cases for notify job
           echo "test-cases=$test_cases" >> $GITHUB_OUTPUT
-
-          # Create individual test case jobs with chunking to avoid 256-item matrix limit
+          # Create individual test case jobs with chunking to manage job count
           python_versions='["3.9", "3.10", "3.11", "3.12"]'
-          max_matrix_items=64  # GitHub limit is 256, so 64 test cases × 4 Python versions = 256 (exactly at limit)
+          max_chunk_size=20  # Reduce chunk size to create fewer concurrent jobs
 
           # Calculate total combinations that would be created
           total_combinations=$((total_tests * 4))
           echo "Total test combinations: $total_combinations (tests: $total_tests × python versions: 4)"
 
-          if [ "$total_combinations" -le 256 ]; then
-            # All tests fit in one matrix without chunking
-            echo "All $total_tests tests fit in one matrix (total combinations: $total_combinations)"
-            chunks=$(echo "$test_cases" | jq --argjson chunk_id 0 '[.[] | {chunk_id: $chunk_id, test_case: .}]' | jq -s '.[0]')
+          # Always create individual test case objects, but chunk if we have too many tests
+          if [ "$total_tests" -le "$max_chunk_size" ]; then
+            # All tests fit in one chunk
+            echo "All $total_tests tests fit in one chunk (total combinations: $total_combinations)"
+            chunks=$(echo "$test_cases" | jq '[.[] | {chunk_id: 0, test_case: .}]')
             total_chunks=1
           else
-            # Split into chunks to stay under 256 limit per matrix
-            echo "Splitting $total_tests tests into chunks of $max_matrix_items to stay under 256 limit"
-            chunks=$(echo "$test_cases" | jq --argjson chunk_size "$max_matrix_items" '
+            # Split into chunks to manage job count
+            echo "Splitting $total_tests tests into chunks of $max_chunk_size to manage concurrent job count"
+            chunks=$(echo "$test_cases" | jq --argjson chunk_size "$max_chunk_size" '
               [range(0; length; $chunk_size) as $i |
                 .[$i:$i+$chunk_size] | to_entries | map({
                   chunk_id: ($i / $chunk_size | floor),
@@ -119,10 +119,16 @@ jobs:
             ')
             total_chunks=$(echo "$chunks" | jq 'map(.chunk_id) | unique | length')
           fi
-
           echo "chunks=$(echo "$chunks" | jq -c '.')" >> $GITHUB_OUTPUT
           echo "python-versions=$python_versions" >> $GITHUB_OUTPUT
           echo "total-chunks=$total_chunks" >> $GITHUB_OUTPUT
+
+          # Debug: Show the actual chunks JSON structure
+          echo "DEBUG: Chunks JSON structure:"
+          echo "$chunks" | jq '.'
+          echo "DEBUG: Number of individual chunk objects: $(echo "$chunks" | jq 'length')"
+          echo "DEBUG: First few chunk objects:"
+          echo "$chunks" | jq '.[0:3]'
             echo "Created $total_chunks chunks with individual test case jobs:"
           echo "$chunks" | jq -r 'group_by(.chunk_id) | .[] | "  Chunk \(.[0].chunk_id): \(length) test cases"'
 
@@ -132,6 +138,7 @@ jobs:
     environment: engineering
     strategy:
       fail-fast: false
+      max-parallel: 10  # Limit concurrent jobs to avoid overwhelming GitHub Actions
       matrix:
         chunk: ${{ fromJson(needs.setup.outputs.chunks) }}
         python-version: ${{ fromJson(needs.setup.outputs.python-versions) }}
