@@ -4,15 +4,25 @@ on:
   schedule:
     - cron: "0 18 * * 0"
   workflow_dispatch:
+    inputs:
+      test-cases:
+        description: 'Specific test cases to run. Example: ["test_integration_create_aws", "test_integration_delete"]. Leave empty to run all test cases'
+        required: false
+        type: string
 
 permissions:
   id-token: write
   contents: read
 
 jobs:
-  apic-extension-live-test:
+  setup:
     runs-on: ubuntu-latest
     environment: engineering
+    outputs:
+      chunk-matrix: ${{ steps.create-matrix.outputs.chunk-matrix }}
+      python-versions: ${{ steps.create-matrix.outputs.python-versions }}
+      test-cases: ${{ steps.create-matrix.outputs.test-cases }}
+      total-chunks: ${{ steps.create-matrix.outputs.total-chunks }}
     steps:
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -43,28 +53,410 @@ jobs:
           azdev setup -r .
           azdev extension add apic-extension
 
-      - name: Run tests
+      - name: Create intelligent matrix configuration
+        id: create-matrix
+        run: |
+          # Check if specific test cases are provided via workflow_dispatch
+          inputCases='${{ github.event.inputs.test-cases }}'
+          if [ -n "$inputCases" ] && [ "$inputCases" != "null" ]; then
+            echo "Using manually specified test cases: $inputCases"
+            test_cases="$inputCases"
+            total_tests=$(echo "$test_cases" | jq '. | length')
+          else
+            # Automatically discover test cases using pytest --collect-only
+            cd azure-cli-extensions
+            source .venv/bin/activate
+            cd src/apic-extension
+
+            echo "Discovering test cases using pytest --collect-only..."
+            test_collection_output=$(python -m pytest --collect-only -q 2>/dev/null || true)
+
+            # Extract test function names from pytest collection output
+            if echo "$test_collection_output" | grep -q "<TestCaseFunction"; then
+              test_collection=$(echo "$test_collection_output" | grep -E "^\s*<TestCaseFunction" | sed -E 's/.*<TestCaseFunction ([^>]+)>.*/\1/' | sort | uniq)
+            elif echo "$test_collection_output" | grep -q "::test_"; then
+              test_collection=$(echo "$test_collection_output" | grep -E "::test_" | sed -E 's/.*::([^:]+)$/\1/' | sort | uniq)
+            else
+              test_collection=""
+            fi
+
+            if [ -n "$test_collection" ]; then
+              test_count=$(echo "$test_collection" | wc -l)
+              echo "Discovered $test_count test cases"
+              test_cases=$(echo "$test_collection" | jq -R -s -c 'split("\n") | map(select(length > 0))')
+              total_tests=$(echo "$test_cases" | jq '. | length')
+              echo "Found $total_tests test cases total"
+            else
+              echo "No test cases found, using full-suite approach"
+              test_cases='["full-suite"]'
+              total_tests=1
+            fi
+          fi
+
+          # Store test cases for notify job
+          echo "test-cases=$test_cases" >> $GITHUB_OUTPUT
+
+          # Create chunked test groups to stay within GitHub's 256 matrix limit
+          python_versions='["3.9", "3.10", "3.11", "3.12"]'
+          max_tests_per_chunk=60  # 60 tests × 4 python versions = 240 matrix combinations (under 256 limit)
+
+          # Calculate chunks
+          if [ "$total_tests" -le "$max_tests_per_chunk" ]; then
+            # All tests fit in one chunk
+            echo "All $total_tests tests fit in one chunk"
+            total_chunks=1
+            chunk_matrix=$(jq -n --argjson tests "$test_cases" '[{chunk_id: 0, test_cases: $tests}]')
+          else
+            # Split into multiple chunks
+            total_chunks=$(( (total_tests + max_tests_per_chunk - 1) / max_tests_per_chunk ))
+            echo "Splitting $total_tests tests into $total_chunks chunks of up to $max_tests_per_chunk tests each"
+
+            chunk_matrix=$(echo "$test_cases" | jq --argjson chunk_size "$max_tests_per_chunk" '
+              [range(0; length; $chunk_size) as $i | {
+                chunk_id: ($i / $chunk_size | floor),
+                test_cases: .[$i:$i+$chunk_size]
+              }]
+            ')
+          fi
+
+          echo "chunk-matrix=$(echo "$chunk_matrix" | jq -c '.')" >> $GITHUB_OUTPUT
+          echo "python-versions=$python_versions" >> $GITHUB_OUTPUT
+          echo "total-chunks=$total_chunks" >> $GITHUB_OUTPUT
+
+          # Debug output
+          echo "DEBUG: Created $total_chunks chunks:"
+          echo "$chunk_matrix" | jq -r '.[] | "  Chunk \(.chunk_id): \(.test_cases | length) test cases"'
+          echo "DEBUG: First chunk test cases preview:"
+          echo "$chunk_matrix" | jq -r '.[0].test_cases[:3][] // empty'
+  execute-tests:
+    needs: setup
+    runs-on: ubuntu-latest
+    environment: engineering
+    strategy:
+      fail-fast: false
+      matrix:
+        chunk: ${{ fromJson(needs.setup.outputs.chunk-matrix) }}
+        python-version: ${{ fromJson(needs.setup.outputs.python-versions) }}
+    name: Chunk ${{ matrix.chunk.chunk_id }} (Python ${{ matrix.python-version }})
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.APICEXT_TEST_AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.APICEXT_TEST_AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.APICEXT_TEST_AZURE_SUBSCRIPTION_ID }}
+          enable-AzPSSession: true
+
+      - name: Clone azure-cli-extensions repository
+        run: |
+          git clone https://github.com/blackchoey/azure-cli-extensions.git
+          cd azure-cli-extensions
+          git checkout main
+
+      - name: Setup development environment
         run: |
           cd azure-cli-extensions
+          python -m venv .venv
           source .venv/bin/activate
-          azdev test apic-extension --live
+          python -m pip install -U pip
+          pip install azdev
+          azdev setup -r .
+          azdev extension add apic-extension
+
+      - name: Execute test cases for chunk
+        run: |
+          # Get the test cases for this chunk
+          test_cases='${{ toJson(matrix.chunk.test_cases) }}'
+          chunk_id='${{ matrix.chunk.chunk_id }}'
+          python_version='${{ matrix.python-version }}'
+
+          echo "Running chunk $chunk_id test cases (Python $python_version)"
+          echo "Test cases: $test_cases"
+
+          cd azure-cli-extensions
+          source .venv/bin/activate
+
+          # Initialize result tracking
+          passed_tests=""
+          failed_tests=""
+          total_tests=0
+          passed_count=0
+          failed_count=0
+
+          # Parse test cases JSON array into bash array to avoid subshell variable scope issues
+          mapfile -t test_case_array < <(echo "$test_cases" | jq -r '.[]')
+
+          # Run each test case
+          for test_case in "${test_case_array[@]}"; do
+            echo "=========================================="
+            echo "Running: $test_case (Python $python_version)"
+            echo "=========================================="
+
+            total_tests=$((total_tests + 1))
+
+            # Run the specific test case and capture exit code
+            if [ "$test_case" = "full-suite" ]; then
+              echo "Running full test suite..."
+              if azdev test apic-extension --discover --live; then
+                echo "✅ PASSED: $test_case (Python $python_version)"
+                passed_count=$((passed_count + 1))
+                if [ -z "$passed_tests" ]; then
+                  passed_tests="$test_case"
+                else
+                  passed_tests="$passed_tests,$test_case"
+                fi
+              else
+                echo "❌ FAILED: $test_case (Python $python_version)"
+                failed_count=$((failed_count + 1))
+                if [ -z "$failed_tests" ]; then
+                  failed_tests="$test_case"
+                else
+                  failed_tests="$failed_tests,$test_case"
+                fi
+              fi
+            else
+              echo "Running individual test case: $test_case"
+              if azdev test azext_apic-extension $test_case --discover --live; then
+                echo "✅ PASSED: $test_case (Python $python_version)"
+                passed_count=$((passed_count + 1))
+                if [ -z "$passed_tests" ]; then
+                  passed_tests="$test_case"
+                else
+                  passed_tests="$passed_tests,$test_case"
+                fi
+              else
+                echo "❌ FAILED: $test_case (Python $python_version)"
+                failed_count=$((failed_count + 1))
+                if [ -z "$failed_tests" ]; then
+                  failed_tests="$test_case"
+                else
+                  failed_tests="$failed_tests,$test_case"
+                fi
+              fi
+            fi
+
+            echo "Completed: $test_case (Python $python_version)"
+            echo ""
+          done
+
+          # Output summary for this chunk
+          echo "=========================================="
+          echo "CHUNK $chunk_id (Python $python_version) SUMMARY:"
+          echo "Total: $total_tests, Passed: $passed_count, Failed: $failed_count"
+          if [ -n "$passed_tests" ]; then
+            echo "Passed tests: $passed_tests"
+          fi
+          if [ -n "$failed_tests" ]; then
+            echo "Failed tests: $failed_tests"
+          fi
+          echo "=========================================="
+
+          # Fail the job if any test failed (preserve original behavior)
+          if [ $failed_count -gt 0 ]; then
+            echo "Job failed because $failed_count test(s) failed"
+            exit 1
+          fi
         env:
           USERASSIGNED_IDENTITY: ${{ secrets.USERASSIGNED_IDENTITY }}
           AWS_ACCESS_KEY_LINK: ${{ secrets.AWS_ACCESS_KEY_LINK }}
           AWS_SECRET_ACCESS_KEY_LINK: ${{ secrets.AWS_SECRET_ACCESS_KEY_LINK }}
 
   notify:
-    if: failure()
+    needs: [setup, execute-tests]
+    if: (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && !cancelled()
     runs-on: ubuntu-latest
-    needs: apic-extension-live-test
     environment: engineering
     steps:
       - name: Generate Email Content
         id: generate-email-content
         run: |
-          echo "to=${{ secrets.AUTHOR_MAIL_ADDRESSES }}" >> $GITHUB_ENV
-          echo "body=Workflow URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> $GITHUB_ENV
-          echo "subject=[APICENTER] Weekly APIC Extension Live Test Failed" >> $GITHUB_ENV
+          # Get the test cases that were executed
+          test_cases='${{ needs.setup.outputs.test-cases }}'
+
+          # Initialize report variables
+          total_test_cases=0
+          passed_test_cases=0
+          failed_test_cases=0
+          passed_tests=""
+          failed_tests=""
+
+          # Fetch individual job results using GitHub API
+          page=1
+          jobs="[]"
+
+          while :
+          do
+            url="https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/attempts/${{ github.run_attempt }}/jobs?per_page=100&page=$page"
+            resp=$(curl -H "Accept: application/vnd.github.v3+json" -u:${{ secrets.GITHUB_TOKEN }} "$url")
+            new_jobs=$(echo "$resp" | jq -cr '.jobs')
+            jobs=$(jq -cr --slurp 'add' <(echo "$jobs") <(echo "$new_jobs"))
+
+            has_next=$(curl -I -H "Accept: application/vnd.github.v3+json" -u:${{ secrets.GITHUB_TOKEN }} "$url" | grep -Fi "link:" | grep "rel=\"last\"" || true)
+            if [ -z "$has_next" ]; then
+              break
+            fi
+            page=$((page+1))
+          done
+
+          # Define Python versions
+          declare -a python_versions=("3.9" "3.10" "3.11" "3.12")
+
+          # Process results for each Python version job
+          if [ "$test_cases" = "[]" ]; then
+            # Full suite was run for each Python version
+            for python_version in "${python_versions[@]}"; do
+              job_name="Chunk 0 (Python ${python_version})"
+              job_result=$(echo "$jobs" | jq -r --arg name "$job_name" '.[] | select(.name == $name) | .conclusion')
+
+              total_test_cases=$((total_test_cases + 1))
+              if [ "$job_result" = "success" ]; then
+                passed_test_cases=$((passed_test_cases + 1))
+                if [ -z "$passed_tests" ]; then
+                  passed_tests="Full Test Suite (Python ${python_version})"
+                else
+                  passed_tests="${passed_tests}"$'\n'"Full Test Suite (Python ${python_version})"
+                fi
+              else
+                failed_test_cases=$((failed_test_cases + 1))
+                if [ -z "$failed_tests" ]; then
+                  failed_tests="Full Test Suite (Python ${python_version})"
+                else
+                  failed_tests="${failed_tests}"$'\n'"Full Test Suite (Python ${python_version})"
+                fi
+              fi
+            done
+          else
+            # Individual test cases were run in chunked jobs - extract individual test results from job logs
+            # Get the total number of chunks from setup job
+            total_chunks='${{ needs.setup.outputs.total-chunks }}'
+
+            for python_version in "${python_versions[@]}"; do
+              for chunk_id in $(seq 0 $((total_chunks - 1))); do
+                # Find job by exact chunk job name
+                job_name="Chunk ${chunk_id} (Python ${python_version})"
+                job_data=$(echo "$jobs" | jq -r --arg name "$job_name" '.[] | select(.name == $name)')
+                job_result=$(echo "$job_data" | jq -r '.conclusion')
+                job_id=$(echo "$job_data" | jq -r '.id')
+
+                if [ -n "$job_id" ] && [ "$job_id" != "null" ]; then
+                  # Fetch job logs to extract individual test case results
+                  log_url="https://api.github.com/repos/${{ github.repository }}/actions/jobs/$job_id/logs"
+                  job_logs=$(curl -L -H "Accept: application/vnd.github.v3+json" -u:${{ secrets.GITHUB_TOKEN }} "$log_url" 2>/dev/null || echo "")
+
+                  if [ -n "$job_logs" ]; then
+                    # Extract individual test results from logs with proper parsing
+                    # Match pattern: "✅ PASSED: test_case_name (Python version)"
+                    passed_test_list=$(echo "$job_logs" | grep "✅ PASSED:" | sed 's/✅ PASSED: \(.*\) (Python [0-9.]*)/\1/' | grep -v '^$')
+                    failed_test_list=$(echo "$job_logs" | grep "❌ FAILED:" | sed 's/❌ FAILED: \(.*\) (Python [0-9.]*)/\1/' | grep -v '^$')
+
+                    # Process passed tests
+                    if [ -n "$passed_test_list" ]; then
+                      while IFS= read -r test_case; do
+                        if [ -n "$test_case" ] && [ "$test_case" != "" ]; then
+                          if [ -z "$passed_tests" ]; then
+                            passed_tests="${test_case} (Python ${python_version})"
+                          else
+                            passed_tests="${passed_tests}"$'\n'"${test_case} (Python ${python_version})"
+                          fi
+                          passed_test_cases=$((passed_test_cases + 1))
+                          total_test_cases=$((total_test_cases + 1))
+                        fi
+                      done <<< "$passed_test_list"
+                    fi
+
+                    # Process failed tests
+                    if [ -n "$failed_test_list" ]; then
+                      while IFS= read -r test_case; do
+                        if [ -n "$test_case" ] && [ "$test_case" != "" ]; then
+                          if [ -z "$failed_tests" ]; then
+                            failed_tests="${test_case} (Python ${python_version})"
+                          else
+                            failed_tests="${failed_tests}"$'\n'"${test_case} (Python ${python_version})"
+                          fi
+                          failed_test_cases=$((failed_test_cases + 1))
+                          total_test_cases=$((total_test_cases + 1))
+                        fi
+                      done <<< "$failed_test_list"
+                    fi
+
+                  else
+                    # Fallback: If we can't get logs, report at chunk level
+                    # This should rarely happen, but provides a safety net
+                    if [ "$job_result" = "success" ]; then
+                      passed_test_cases=$((passed_test_cases + 1))
+                      total_test_cases=$((total_test_cases + 1))
+                      if [ -z "$passed_tests" ]; then
+                        passed_tests="$job_name (log unavailable)"
+                      else
+                        passed_tests="${passed_tests}"$'\n'"$job_name (log unavailable)"
+                      fi
+                    else
+                      failed_test_cases=$((failed_test_cases + 1))
+                      total_test_cases=$((total_test_cases + 1))
+                      if [ -z "$failed_tests" ]; then
+                        failed_tests="$job_name (log unavailable)"
+                      else
+                        failed_tests="${failed_tests}"$'\n'"$job_name (log unavailable)"
+                      fi
+                    fi
+                  fi
+                fi
+              done
+            done
+          fi
+
+          # Generate email subject
+          if [ $failed_test_cases -eq 0 ]; then
+            subject="[APICENTER] Weekly APIC Extension Live Test - All Tests Passed ✅"
+          else
+            subject="[APICENTER] Weekly APIC Extension Live Test - $failed_test_cases/$total_test_cases Tests Failed ❌"
+          fi
+
+          # Generate HTML email body with proper formatting
+          body="<html><body>"
+          body="${body}<h2>APIC Extension Live Test Report</h2>"
+          body="${body}<h3>📊 Summary:</h3>"
+          body="${body}<ul>"
+          body="${body}<li><strong>Total Test Cases:</strong> $total_test_cases</li>"
+          body="${body}<li><strong>Passed:</strong> $passed_test_cases</li>"
+          body="${body}<li><strong>Failed:</strong> $failed_test_cases</li>"
+
+          if [ $total_test_cases -gt 0 ]; then
+            success_rate=$(( (passed_test_cases * 100) / total_test_cases ))
+            body="${body}<li><strong>Success Rate:</strong> ${success_rate}%</li>"
+          fi
+          body="${body}</ul>"
+
+          if [ -n "$failed_tests" ]; then
+            body="${body}<h3>❌ Failed Tests:</h3><ul>"
+            while IFS= read -r test; do
+              if [ -n "$test" ]; then
+                body="${body}<li>${test}</li>"
+              fi
+            done <<< "$failed_tests"
+            body="${body}</ul>"
+          fi
+
+          body="${body}<h3>🔗 Workflow Details:</h3>"
+          body="${body}<ul>"
+          body="${body}<li><strong>Workflow URL:</strong> <a href=\"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\">View Workflow Run</a></li>"
+          body="${body}<li><strong>Repository:</strong> ${{ github.repository }}</li>"
+          body="${body}<li><strong>Branch:</strong> ${{ github.ref_name }}</li>"
+          body="${body}<li><strong>Triggered by:</strong> ${{ github.event_name }}</li>"
+          body="${body}<li><strong>Run ID:</strong> ${{ github.run_id }}</li>"
+          body="${body}<li><strong>Run Attempt:</strong> ${{ github.run_attempt }}</li>"
+          body="${body}</ul>"
+          body="${body}</body></html>"
+
+          # Set environment variables for outputs
+          echo "to=frankqian@microsoft.com" >> $GITHUB_ENV
+          echo "subject=$subject" >> $GITHUB_ENV
+          echo "body=$body" >> $GITHUB_ENV
 
       - name: Send Email Notification
         run: |
