@@ -319,11 +319,20 @@ jobs:
                   echo "  Fetching logs for job ID: $job_id"
                   # Get job logs
                   job_logs=$(curl -s -L -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-                    "https://api.github.com/repos/${{ github.repository }}/actions/jobs/$job_id/logs" 2>/dev/null || echo "")
-                  if [ -n "$job_logs" ]; then
+                    "https://api.github.com/repos/${{ github.repository }}/actions/jobs/$job_id/logs" 2>/dev/null || echo "")                  if [ -n "$job_logs" ]; then
+                    echo "    Processing job logs for Python $python_version, chunk $chunk_id..."
+
                     # Extract passed tests - write directly to avoid subshell issues
                     echo "$job_logs" | grep -E "✅ PASSED:" | sed -E 's/.*✅ PASSED: ([a-zA-Z0-9_][a-zA-Z0-9_.-]*).*/\1/' | \
                       grep -E '^[a-zA-Z0-9_][a-zA-Z0-9_.-]*$' | sort -u > /tmp/temp_passed_${python_version}_${chunk_id}.txt
+
+                    # Debug: Show what we extracted
+                    temp_passed_count=$(wc -l < /tmp/temp_passed_${python_version}_${chunk_id}.txt 2>/dev/null || echo "0")
+                    echo "    Found $temp_passed_count passed tests in logs"
+                    if [ "$temp_passed_count" -gt 0 ]; then
+                      echo "    Sample passed tests:"
+                      head -3 /tmp/temp_passed_${python_version}_${chunk_id}.txt
+                    fi
 
                     # Add Python version suffix to each test name
                     if [ -f "/tmp/temp_passed_${python_version}_${chunk_id}.txt" ]; then
@@ -338,6 +347,14 @@ jobs:
                     # Extract failed tests - write directly to avoid subshell issues
                     echo "$job_logs" | grep -E "❌ FAILED:" | sed -E 's/.*❌ FAILED: ([a-zA-Z0-9_][a-zA-Z0-9_.-]*).*/\1/' | \
                       grep -E '^[a-zA-Z0-9_][a-zA-Z0-9_.-]*$' | sort -u > /tmp/temp_failed_${python_version}_${chunk_id}.txt
+
+                    # Debug: Show what we extracted
+                    temp_failed_count=$(wc -l < /tmp/temp_failed_${python_version}_${chunk_id}.txt 2>/dev/null || echo "0")
+                    echo "    Found $temp_failed_count failed tests in logs"
+                    if [ "$temp_failed_count" -gt 0 ]; then
+                      echo "    Sample failed tests:"
+                      head -3 /tmp/temp_failed_${python_version}_${chunk_id}.txt
+                    fi
 
                     # Add Python version suffix to each test name
                     if [ -f "/tmp/temp_failed_${python_version}_${chunk_id}.txt" ]; then
@@ -370,14 +387,22 @@ jobs:
           echo "Test results summary:"
           echo "  Total: $total_test_cases"
           echo "  Passed: $passed_test_cases"
-          echo "  Failed: $failed_test_cases"
-
-          # Debug: Show what's actually in the result files
+          echo "  Failed: $failed_test_cases"          # Debug: Show what's actually in the result files
           echo "=== Debug: Content of result files ==="
+          echo "Passed tests file size: $(wc -l < /tmp/test_results/passed.txt 2>/dev/null || echo '0') lines"
+          echo "Failed tests file size: $(wc -l < /tmp/test_results/failed.txt 2>/dev/null || echo '0') lines"
           echo "Passed tests (first 10 lines):"
-          head -10 /tmp/test_results/passed.txt || echo "No passed.txt file"
+          if [ -f "/tmp/test_results/passed.txt" ]; then
+            head -10 /tmp/test_results/passed.txt
+          else
+            echo "No passed.txt file"
+          fi
           echo "Failed tests (first 10 lines):"
-          head -10 /tmp/test_results/failed.txt || echo "No failed.txt file"
+          if [ -f "/tmp/test_results/failed.txt" ]; then
+            head -10 /tmp/test_results/failed.txt
+          else
+            echo "No failed.txt file"
+          fi
           echo "=== End Debug ==="
 
           # Calculate per-Python version statistics
@@ -385,27 +410,59 @@ jobs:
           for python_version in "${python_versions[@]}"; do
             echo "Processing statistics for Python $python_version..."
 
-            # Use explicit grep patterns and show what we're searching for
+            # Try different grep patterns to see what works
             echo "  Searching for pattern: 'Python ${python_version}'"
+            echo "  Trying exact pattern match..."
             passed_count=$(grep -c "Python ${python_version}" /tmp/test_results/passed.txt 2>/dev/null || echo "0")
             failed_count=$(grep -c "Python ${python_version}" /tmp/test_results/failed.txt 2>/dev/null || echo "0")
 
-            # Debug: Show the actual matches
-            echo "  Passed matches:"
-            grep "Python ${python_version}" /tmp/test_results/passed.txt 2>/dev/null | head -3 || echo "    No matches"
-            echo "  Failed matches:"
-            grep "Python ${python_version}" /tmp/test_results/failed.txt 2>/dev/null | head -3 || echo "    No matches"
+            echo "  Results with exact pattern - Passed: $passed_count, Failed: $failed_count"
 
-            total_count=$((passed_count + failed_count))
+            # Try case-insensitive match
+            echo "  Trying case-insensitive match..."
+            passed_count_ci=$(grep -ci "python ${python_version}" /tmp/test_results/passed.txt 2>/dev/null || echo "0")
+            failed_count_ci=$(grep -ci "python ${python_version}" /tmp/test_results/failed.txt 2>/dev/null || echo "0")
+
+            echo "  Results with case-insensitive - Passed: $passed_count_ci, Failed: $failed_count_ci"
+
+            # Try partial match on version only
+            echo "  Trying version-only match..."
+            passed_count_v=$(grep -c "${python_version}" /tmp/test_results/passed.txt 2>/dev/null || echo "0")
+            failed_count_v=$(grep -c "${python_version}" /tmp/test_results/failed.txt 2>/dev/null || echo "0")
+
+            echo "  Results with version-only - Passed: $passed_count_v, Failed: $failed_count_v"
+
+            # Debug: Show the actual matches
+            echo "  Sample matches with exact pattern:"
+            grep "Python ${python_version}" /tmp/test_results/passed.txt 2>/dev/null | head -3 || echo "    No exact matches"
+            echo "  Sample matches with case-insensitive:"
+            grep -i "python ${python_version}" /tmp/test_results/passed.txt 2>/dev/null | head -3 || echo "    No case-insensitive matches"
+            echo "  Sample matches with version-only:"
+            grep "${python_version}" /tmp/test_results/passed.txt 2>/dev/null | head -3 || echo "    No version-only matches"
+
+            # Use the best match (prefer exact, then case-insensitive, then version-only)
+            if [ "$passed_count" -gt 0 ] || [ "$failed_count" -gt 0 ]; then
+              echo "  Using exact pattern results"
+              final_passed=$passed_count
+              final_failed=$failed_count
+            elif [ "$passed_count_ci" -gt 0 ] || [ "$failed_count_ci" -gt 0 ]; then
+              echo "  Using case-insensitive results"
+              final_passed=$passed_count_ci
+              final_failed=$failed_count_ci
+            else
+              echo "  Using version-only results"
+              final_passed=$passed_count_v
+              final_failed=$failed_count_v
+            fi            total_count=$((final_passed + final_failed))
 
             # Calculate success rate for this version
             version_success_rate=0
             if [ $total_count -gt 0 ]; then
-              version_success_rate=$(( (passed_count * 100) / total_count ))
+              version_success_rate=$(( (final_passed * 100) / total_count ))
             fi
 
-            echo "$total_count,$passed_count,$failed_count,$version_success_rate" > "/tmp/version_stats/python_${python_version}.txt"
-            echo "Python $python_version: Total=$total_count, Passed=$passed_count, Failed=$failed_count, Success=$version_success_rate%"
+            echo "$total_count,$final_passed,$final_failed,$version_success_rate" > "/tmp/version_stats/python_${python_version}.txt"
+            echo "Python $python_version FINAL: Total=$total_count, Passed=$final_passed, Failed=$final_failed, Success=$version_success_rate%"
           done
 
           # Generate email subject
