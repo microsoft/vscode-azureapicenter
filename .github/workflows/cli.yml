@@ -128,6 +128,7 @@ jobs:
           echo "$chunk_matrix" | jq -r '.[] | "  Chunk \(.chunk_id): \(.test_cases | length) test cases"'
           echo "DEBUG: First chunk test cases preview:"
           echo "$chunk_matrix" | jq -r '.[0].test_cases[:3][] // empty'
+
   execute-tests:
     needs: setup
     runs-on: ubuntu-latest
@@ -350,14 +351,14 @@ jobs:
 
                   if [ -n "$job_logs" ]; then
                     # Extract individual test results from logs with proper parsing
-                    # Match pattern: "✅ PASSED: test_case_name (Python version)"
-                    passed_test_list=$(echo "$job_logs" | grep "✅ PASSED:" | sed 's/✅ PASSED: \(.*\) (Python [0-9.]*)/\1/' | grep -v '^$')
-                    failed_test_list=$(echo "$job_logs" | grep "❌ FAILED:" | sed 's/❌ FAILED: \(.*\) (Python [0-9.]*)/\1/' | grep -v '^$')
-
-                    # Process passed tests
+                    # Filter out debug echo statements and timestamps, only capture actual test results
+                    # Match pattern: "✅ PASSED: test_case_name (Python version)" but not echo statements
+                    passed_test_list=$(echo "$job_logs" | grep "✅ PASSED:" | grep -v "echo" | grep -v "^\s*[0-9T:-]*Z" | sed 's/.*✅ PASSED: \(.*\) (Python [0-9.]*).*/\1/' | grep -v '^$' | grep -v '\$')
+                    failed_test_list=$(echo "$job_logs" | grep "❌ FAILED:" | grep -v "echo" | grep -v "^\s*[0-9T:-]*Z" | sed 's/.*❌ FAILED: \(.*\) (Python [0-9.]*).*/\1/' | grep -v '^$' | grep -v '\$')                    # Process passed tests
                     if [ -n "$passed_test_list" ]; then
                       while IFS= read -r test_case; do
-                        if [ -n "$test_case" ] && [ "$test_case" != "" ]; then
+                        # Additional filtering to ensure we have valid test case names
+                        if [ -n "$test_case" ] && [ "$test_case" != "" ] && [[ "$test_case" =~ ^[a-zA-Z0-9_][a-zA-Z0-9_.-]*$ ]]; then
                           if [ -z "$passed_tests" ]; then
                             passed_tests="${test_case} (Python ${python_version})"
                           else
@@ -372,7 +373,8 @@ jobs:
                     # Process failed tests
                     if [ -n "$failed_test_list" ]; then
                       while IFS= read -r test_case; do
-                        if [ -n "$test_case" ] && [ "$test_case" != "" ]; then
+                        # Additional filtering to ensure we have valid test case names
+                        if [ -n "$test_case" ] && [ "$test_case" != "" ] && [[ "$test_case" =~ ^[a-zA-Z0-9_][a-zA-Z0-9_.-]*$ ]]; then
                           if [ -z "$failed_tests" ]; then
                             failed_tests="${test_case} (Python ${python_version})"
                           else
@@ -451,12 +453,14 @@ jobs:
           body="${body}<li><strong>Run ID:</strong> ${{ github.run_id }}</li>"
           body="${body}<li><strong>Run Attempt:</strong> ${{ github.run_attempt }}</li>"
           body="${body}</ul>"
-          body="${body}</body></html>"
-
-          # Set environment variables for outputs
+          body="${body}</body></html>"          # Set environment variables for outputs with proper escaping
           echo "to=frankqian@microsoft.com" >> $GITHUB_ENV
-          echo "subject=$subject" >> $GITHUB_ENV
-          echo "body=$body" >> $GITHUB_ENV
+          echo "subject<<EOF" >> $GITHUB_ENV
+          echo "$subject" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+          echo "body<<EOF" >> $GITHUB_ENV
+          echo "$body" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
 
       - name: Send Email Notification
         run: |
@@ -465,13 +469,19 @@ jobs:
             --header "Content-Type: application/x-www-form-urlencoded" \
             --data "grant_type=client_credentials&client_id=${{ secrets.MAIL_CLIENT_ID }}&client_secret=${{ secrets.MAIL_CLIENT_SECRET }}&resource=https://management.core.windows.net" \
             "https://login.microsoftonline.com/${{ secrets.MAIL_TENANT_ID }}/oauth2/token")
+            access_token=$(echo $response | jq -r '. | select(.access_token) | .access_token')
 
-          access_token=$(echo $response | jq -r '. | select(.access_token) | .access_token')
+          # Create JSON payload using jq to properly escape special characters
+          json_payload=$(jq -n \
+            --arg to "${{ env.to }}" \
+            --arg subject "${{ env.subject }}" \
+            --arg body "${{ env.body }}" \
+            '{to: $to, subject: $subject, body: $body}')
 
           curl \
             --request POST \
             --header "Content-Type: application/json" \
             --header "Authorization: Bearer $access_token" \
-            --data "{\"to\": \"${{ env.to }}\", \"body\": \"${{ env.body }}\", \"subject\": \"${{ env.subject }}\"}" \
+            --data "$json_payload" \
             'https://prod-18.northcentralus.logic.azure.com:443/workflows/b33d7861bfc64832a6f62cc8f2213988/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0'
         shell: bash
