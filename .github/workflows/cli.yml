@@ -134,7 +134,6 @@ jobs:
     environment: engineering
     strategy:
       fail-fast: false
-      max-parallel: 10  # Limit concurrent jobs to avoid overwhelming GitHub Actions
       matrix:
         chunk: ${{ fromJson(needs.setup.outputs.chunk-matrix) }}
         python-version: ${{ fromJson(needs.setup.outputs.python-versions) }}
@@ -189,8 +188,11 @@ jobs:
           passed_count=0
           failed_count=0
 
-          # Parse test cases JSON array and run each test
-          echo "$test_cases" | jq -r '.[]' | while read test_case; do
+          # Parse test cases JSON array into bash array to avoid subshell variable scope issues
+          mapfile -t test_case_array < <(echo "$test_cases" | jq -r '.[]')
+
+          # Run each test case
+          for test_case in "${test_case_array[@]}"; do
             echo "=========================================="
             echo "Running: $test_case (Python $python_version)"
             echo "=========================================="
@@ -240,7 +242,9 @@ jobs:
 
             echo "Completed: $test_case (Python $python_version)"
             echo ""
-          done          # Output summary for this chunk
+          done
+
+          # Output summary for this chunk
           echo "=========================================="
           echo "CHUNK $chunk_id (Python $python_version) SUMMARY:"
           echo "Total: $total_tests, Passed: $passed_count, Failed: $failed_count"
