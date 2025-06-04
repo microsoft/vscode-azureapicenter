@@ -451,17 +451,24 @@ jobs:
 
           # Replace per-version placeholders
           for python_version in "${python_versions[@]}"; do
+            # Convert version to placeholder format (3.9 -> 39, 3.10 -> 310, etc.)
+            version_placeholder=$(echo "$python_version" | sed 's/\.//g')
+
             if [ -f "/tmp/version_stats/python_${python_version}.txt" ]; then
               IFS=',' read -r total_count passed_count failed_count version_success_rate < "/tmp/version_stats/python_${python_version}.txt"
-
-              # Convert version to placeholder format (3.9 -> 39, 3.10 -> 310, etc.)
-              version_placeholder=$(echo "$python_version" | sed 's/\.//g')
-
-              sed -i "s/TOTAL_${version_placeholder}_PLACEHOLDER/$total_count/g" /tmp/email_body.html
-              sed -i "s/PASSED_${version_placeholder}_PLACEHOLDER/$passed_count/g" /tmp/email_body.html
-              sed -i "s/FAILED_${version_placeholder}_PLACEHOLDER/$failed_count/g" /tmp/email_body.html
-              sed -i "s/SUCCESS_RATE_${version_placeholder}_PLACEHOLDER/$version_success_rate/g" /tmp/email_body.html
+              echo "Replacing placeholders for Python $python_version: total=$total_count, passed=$passed_count, failed=$failed_count, rate=$version_success_rate%"
+            else
+              echo "No stats file found for Python $python_version, using zeros"
+              total_count=0
+              passed_count=0
+              failed_count=0
+              version_success_rate=0
             fi
+
+            sed -i "s/TOTAL_${version_placeholder}_PLACEHOLDER/$total_count/g" /tmp/email_body.html
+            sed -i "s/PASSED_${version_placeholder}_PLACEHOLDER/$passed_count/g" /tmp/email_body.html
+            sed -i "s/FAILED_${version_placeholder}_PLACEHOLDER/$failed_count/g" /tmp/email_body.html
+            sed -i "s/SUCCESS_RATE_${version_placeholder}_PLACEHOLDER/$version_success_rate/g" /tmp/email_body.html
           done
 
           # Add failed tests section if any
@@ -491,16 +498,20 @@ jobs:
           </html>
           EOF
 
-          # Set environment variables using heredoc format
-          echo "to=frankqian@microsoft.com" >> $GITHUB_ENV
+          # Set environment variables for notification step
+          {
+            echo "EMAIL_TO=frankqian@microsoft.com"
+            echo "EMAIL_SUBJECT<<EOF"
+            echo "$subject"
+            echo "EOF"
+            echo "EMAIL_BODY<<EOF"
+            cat /tmp/email_body.html
+            echo "EOF"
+          } >> $GITHUB_ENV
 
-          echo "subject<<SUBJECT_EOF" >> $GITHUB_ENV
-          echo "$subject" >> $GITHUB_ENV
-          echo "SUBJECT_EOF" >> $GITHUB_ENV
-
-          echo "body<<BODY_EOF" >> $GITHUB_ENV
-          cat /tmp/email_body.html >> $GITHUB_ENV
-          echo "BODY_EOF" >> $GITHUB_ENV
+          # Debug: Show first few lines of email body
+          echo "Email body preview (first 10 lines):"
+          head -10 /tmp/email_body.html
 
           # Clean up
           rm -rf /tmp/test_results /tmp/version_stats /tmp/email_body.html
@@ -526,9 +537,9 @@ jobs:
 
           # Create JSON payload using jq to properly escape special characters
           json_payload=$(jq -n \
-            --arg to "${{ env.to }}" \
-            --arg subject "${{ env.subject }}" \
-            --arg body "${{ env.body }}" \
+            --arg to "$EMAIL_TO" \
+            --arg subject "$EMAIL_SUBJECT" \
+            --arg body "$EMAIL_BODY" \
             '{to: $to, subject: $subject, body: $body}')
 
           # Send email
