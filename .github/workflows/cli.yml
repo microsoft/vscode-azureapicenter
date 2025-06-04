@@ -320,23 +320,34 @@ jobs:
                   # Get job logs
                   job_logs=$(curl -s -L -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
                     "https://api.github.com/repos/${{ github.repository }}/actions/jobs/$job_id/logs" 2>/dev/null || echo "")
-
                   if [ -n "$job_logs" ]; then
-                    # Extract passed tests
+                    # Extract passed tests - write directly to avoid subshell issues
                     echo "$job_logs" | grep -E "✅ PASSED:" | sed -E 's/.*✅ PASSED: ([a-zA-Z0-9_][a-zA-Z0-9_.-]*).*/\1/' | \
-                      grep -E '^[a-zA-Z0-9_][a-zA-Z0-9_.-]*$' | sort -u | while read -r test_name; do
-                      if [ -n "$test_name" ]; then
-                        echo "${test_name} (Python ${python_version})" >> /tmp/test_results/passed.txt
-                      fi
-                    done
+                      grep -E '^[a-zA-Z0-9_][a-zA-Z0-9_.-]*$' | sort -u > /tmp/temp_passed_${python_version}_${chunk_id}.txt
 
-                    # Extract failed tests
+                    # Add Python version suffix to each test name
+                    if [ -f "/tmp/temp_passed_${python_version}_${chunk_id}.txt" ]; then
+                      while IFS= read -r test_name; do
+                        if [ -n "$test_name" ]; then
+                          echo "${test_name} (Python ${python_version})" >> /tmp/test_results/passed.txt
+                        fi
+                      done < /tmp/temp_passed_${python_version}_${chunk_id}.txt
+                      rm -f "/tmp/temp_passed_${python_version}_${chunk_id}.txt"
+                    fi
+
+                    # Extract failed tests - write directly to avoid subshell issues
                     echo "$job_logs" | grep -E "❌ FAILED:" | sed -E 's/.*❌ FAILED: ([a-zA-Z0-9_][a-zA-Z0-9_.-]*).*/\1/' | \
-                      grep -E '^[a-zA-Z0-9_][a-zA-Z0-9_.-]*$' | sort -u | while read -r test_name; do
-                      if [ -n "$test_name" ]; then
-                        echo "${test_name} (Python ${python_version})" >> /tmp/test_results/failed.txt
-                      fi
-                    done
+                      grep -E '^[a-zA-Z0-9_][a-zA-Z0-9_.-]*$' | sort -u > /tmp/temp_failed_${python_version}_${chunk_id}.txt
+
+                    # Add Python version suffix to each test name
+                    if [ -f "/tmp/temp_failed_${python_version}_${chunk_id}.txt" ]; then
+                      while IFS= read -r test_name; do
+                        if [ -n "$test_name" ]; then
+                          echo "${test_name} (Python ${python_version})" >> /tmp/test_results/failed.txt
+                        fi
+                      done < /tmp/temp_failed_${python_version}_${chunk_id}.txt
+                      rm -f "/tmp/temp_failed_${python_version}_${chunk_id}.txt"
+                    fi
                   else
                     echo "  No logs available, using job conclusion: $job_conclusion"
                     # Fallback: Use job-level results if logs aren't available
@@ -351,8 +362,6 @@ jobs:
             done
           done
 
-
-
           # Count results from files
           passed_test_cases=$(wc -l < /tmp/test_results/passed.txt || echo "0")
           failed_test_cases=$(wc -l < /tmp/test_results/failed.txt || echo "0")
@@ -363,11 +372,30 @@ jobs:
           echo "  Passed: $passed_test_cases"
           echo "  Failed: $failed_test_cases"
 
+          # Debug: Show what's actually in the result files
+          echo "=== Debug: Content of result files ==="
+          echo "Passed tests (first 10 lines):"
+          head -10 /tmp/test_results/passed.txt || echo "No passed.txt file"
+          echo "Failed tests (first 10 lines):"
+          head -10 /tmp/test_results/failed.txt || echo "No failed.txt file"
+          echo "=== End Debug ==="
+
           # Calculate per-Python version statistics
           mkdir -p /tmp/version_stats
           for python_version in "${python_versions[@]}"; do
+            echo "Processing statistics for Python $python_version..."
+
+            # Use explicit grep patterns and show what we're searching for
+            echo "  Searching for pattern: 'Python ${python_version}'"
             passed_count=$(grep -c "Python ${python_version}" /tmp/test_results/passed.txt 2>/dev/null || echo "0")
             failed_count=$(grep -c "Python ${python_version}" /tmp/test_results/failed.txt 2>/dev/null || echo "0")
+
+            # Debug: Show the actual matches
+            echo "  Passed matches:"
+            grep "Python ${python_version}" /tmp/test_results/passed.txt 2>/dev/null | head -3 || echo "    No matches"
+            echo "  Failed matches:"
+            grep "Python ${python_version}" /tmp/test_results/failed.txt 2>/dev/null | head -3 || echo "    No matches"
+
             total_count=$((passed_count + failed_count))
 
             # Calculate success rate for this version
@@ -514,7 +542,7 @@ jobs:
           head -10 /tmp/email_body.html
 
           # Clean up
-          rm -rf /tmp/test_results /tmp/version_stats /tmp/email_body.html
+          rm -rf /tmp/test_results /tmp/version_stats /tmp/email_body.html /tmp/temp_passed_*.txt /tmp/temp_failed_*.txt
 
       - name: Send Email Notification
         run: |
