@@ -268,7 +268,7 @@ jobs:
 
   notify:
     needs: [setup, execute-tests]
-    if: always() && !cancelled() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
+    if: (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && !cancelled()
     runs-on: ubuntu-latest
     environment: engineering
     steps:
@@ -296,12 +296,13 @@ jobs:
             new_jobs=$(echo "$resp" | jq -cr '.jobs')
             jobs=$(jq -cr --slurp 'add' <(echo "$jobs") <(echo "$new_jobs"))
 
-            has_next=$(curl -I -H "Accept: application/vnd.github.v3+json" -u:${{ secrets.GITHUB_TOKEN }} "$url" | grep -Fi "link:" | grep "rel=\"last\"" || true)
-            if [ -z "$has_next" ]; then
+            has_next=$(curl -I -H "Accept: application/vnd.github.v3+json" -u:${{ secrets.GITHUB_TOKEN }} "$url" | grep -Fi "link:" | grep "rel=\"last\"" || true)            if [ -z "$has_next" ]; then
               break
             fi
             page=$((page+1))
-          done          # Define Python versions
+          done
+
+          # Define Python versions
           declare -a python_versions=("3.9" "3.10" "3.11" "3.12")
 
           # Process results for each Python version job
