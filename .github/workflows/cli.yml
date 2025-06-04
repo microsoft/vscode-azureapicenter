@@ -279,9 +279,9 @@ jobs:
           test_cases='${{ needs.setup.outputs.test-cases }}'
 
           # Initialize report variables
-          total_jobs=0
-          passed_jobs=0
-          failed_jobs=0
+          total_test_cases=0
+          passed_test_cases=0
+          failed_test_cases=0
           passed_tests=""
           failed_tests=""
 
@@ -301,10 +301,9 @@ jobs:
               break
             fi
             page=$((page+1))
-          done
-
-          # Define Python versions
+          done          # Define Python versions
           declare -a python_versions=("3.9" "3.10" "3.11" "3.12")
+
           # Process results for each Python version job
           if [ "$test_cases" = "[]" ]; then
             # Full suite was run for each Python version
@@ -312,16 +311,16 @@ jobs:
               job_name="Chunk 0 (Python ${python_version})"
               job_result=$(echo "$jobs" | jq -r --arg name "$job_name" '.[] | select(.name == $name) | .conclusion')
 
-              total_jobs=$((total_jobs + 1))
+              total_test_cases=$((total_test_cases + 1))
               if [ "$job_result" = "success" ]; then
-                passed_jobs=$((passed_jobs + 1))
+                passed_test_cases=$((passed_test_cases + 1))
                 if [ -z "$passed_tests" ]; then
                   passed_tests="Full Test Suite (Python ${python_version})"
                 else
                   passed_tests="${passed_tests}"$'\n'"Full Test Suite (Python ${python_version})"
                 fi
               else
-                failed_jobs=$((failed_jobs + 1))
+                failed_test_cases=$((failed_test_cases + 1))
                 if [ -z "$failed_tests" ]; then
                   failed_tests="Full Test Suite (Python ${python_version})"
                 else
@@ -348,61 +347,59 @@ jobs:
                   job_logs=$(curl -L -H "Accept: application/vnd.github.v3+json" -u:${{ secrets.GITHUB_TOKEN }} "$log_url" 2>/dev/null || echo "")
 
                   if [ -n "$job_logs" ]; then
-                    # Extract individual test results from logs
-                    passed_test_cases=$(echo "$job_logs" | grep -o "✅ PASSED: [^(]*" | sed 's/✅ PASSED: //' | tr '\n' ',' | sed 's/,$//')
-                    failed_test_cases=$(echo "$job_logs" | grep -o "❌ FAILED: [^(]*" | sed 's/❌ FAILED: //' | tr '\n' ',' | sed 's/,$//')
+                    # Extract individual test results from logs with proper parsing
+                    # Match pattern: "✅ PASSED: test_case_name (Python version)"
+                    passed_test_list=$(echo "$job_logs" | grep "✅ PASSED:" | sed 's/✅ PASSED: \(.*\) (Python [0-9.]*)/\1/' | grep -v '^$')
+                    failed_test_list=$(echo "$job_logs" | grep "❌ FAILED:" | sed 's/❌ FAILED: \(.*\) (Python [0-9.]*)/\1/' | grep -v '^$')
 
-                    # Count total test cases for this chunk
-                    chunk_total=$(echo "$job_logs" | grep -c "Running: .* (Python ${python_version})" || echo "0")
-                    chunk_passed=$(echo "$passed_test_cases" | tr ',' '\n' | grep -v '^$' | wc -l || echo "0")
-                    chunk_failed=$(echo "$failed_test_cases" | tr ',' '\n' | grep -v '^$' | wc -l || echo "0")
-
-                    # Add individual test case results to report
-                    if [ -n "$passed_test_cases" ] && [ "$passed_test_cases" != "" ]; then
-                      IFS=',' read -ra PASSED_ARRAY <<< "$passed_test_cases"
-                      for test_case in "${PASSED_ARRAY[@]}"; do
-                        if [ -n "$test_case" ]; then
+                    # Process passed tests
+                    if [ -n "$passed_test_list" ]; then
+                      while IFS= read -r test_case; do
+                        if [ -n "$test_case" ] && [ "$test_case" != "" ]; then
                           if [ -z "$passed_tests" ]; then
                             passed_tests="${test_case} (Python ${python_version})"
                           else
                             passed_tests="${passed_tests}"$'\n'"${test_case} (Python ${python_version})"
                           fi
-                          passed_jobs=$((passed_jobs + 1))
+                          passed_test_cases=$((passed_test_cases + 1))
+                          total_test_cases=$((total_test_cases + 1))
                         fi
-                      done
+                      done <<< "$passed_test_list"
                     fi
 
-                    if [ -n "$failed_test_cases" ] && [ "$failed_test_cases" != "" ]; then
-                      IFS=',' read -ra FAILED_ARRAY <<< "$failed_test_cases"
-                      for test_case in "${FAILED_ARRAY[@]}"; do
-                        if [ -n "$test_case" ]; then
+                    # Process failed tests
+                    if [ -n "$failed_test_list" ]; then
+                      while IFS= read -r test_case; do
+                        if [ -n "$test_case" ] && [ "$test_case" != "" ]; then
                           if [ -z "$failed_tests" ]; then
                             failed_tests="${test_case} (Python ${python_version})"
                           else
                             failed_tests="${failed_tests}"$'\n'"${test_case} (Python ${python_version})"
                           fi
-                          failed_jobs=$((failed_jobs + 1))
+                          failed_test_cases=$((failed_test_cases + 1))
+                          total_test_cases=$((total_test_cases + 1))
                         fi
-                      done
+                      done <<< "$failed_test_list"
                     fi
 
-                    total_jobs=$((total_jobs + chunk_total))
                   else
                     # Fallback: If we can't get logs, report at chunk level
-                    total_jobs=$((total_jobs + 1))
+                    # This should rarely happen, but provides a safety net
                     if [ "$job_result" = "success" ]; then
-                      passed_jobs=$((passed_jobs + 1))
+                      passed_test_cases=$((passed_test_cases + 1))
+                      total_test_cases=$((total_test_cases + 1))
                       if [ -z "$passed_tests" ]; then
-                        passed_tests="$job_name"
+                        passed_tests="$job_name (log unavailable)"
                       else
-                        passed_tests="${passed_tests}"$'\n'"$job_name"
+                        passed_tests="${passed_tests}"$'\n'"$job_name (log unavailable)"
                       fi
                     else
-                      failed_jobs=$((failed_jobs + 1))
+                      failed_test_cases=$((failed_test_cases + 1))
+                      total_test_cases=$((total_test_cases + 1))
                       if [ -z "$failed_tests" ]; then
-                        failed_tests="$job_name"
+                        failed_tests="$job_name (log unavailable)"
                       else
-                        failed_tests="${failed_tests}"$'\n'"$job_name"
+                        failed_tests="${failed_tests}"$'\n'"$job_name (log unavailable)"
                       fi
                     fi
                   fi
@@ -412,10 +409,10 @@ jobs:
           fi
 
           # Generate email subject
-          if [ $failed_jobs -eq 0 ]; then
+          if [ $failed_test_cases -eq 0 ]; then
             subject="[APICENTER] Weekly APIC Extension Live Test - All Tests Passed ✅"
           else
-            subject="[APICENTER] Weekly APIC Extension Live Test - $failed_jobs/$total_jobs Tests Failed ❌"
+            subject="[APICENTER] Weekly APIC Extension Live Test - $failed_test_cases/$total_test_cases Tests Failed ❌"
           fi
 
           # Generate HTML email body with proper formatting
@@ -423,12 +420,12 @@ jobs:
           body="${body}<h2>APIC Extension Live Test Report</h2>"
           body="${body}<h3>📊 Summary:</h3>"
           body="${body}<ul>"
-          body="${body}<li><strong>Total Test Cases:</strong> $total_jobs</li>"
-          body="${body}<li><strong>Passed:</strong> $passed_jobs</li>"
-          body="${body}<li><strong>Failed:</strong> $failed_jobs</li>"
+          body="${body}<li><strong>Total Test Cases:</strong> $total_test_cases</li>"
+          body="${body}<li><strong>Passed:</strong> $passed_test_cases</li>"
+          body="${body}<li><strong>Failed:</strong> $failed_test_cases</li>"
 
-          if [ $total_jobs -gt 0 ]; then
-            success_rate=$(( (passed_jobs * 100) / total_jobs ))
+          if [ $total_test_cases -gt 0 ]; then
+            success_rate=$(( (passed_test_cases * 100) / total_test_cases ))
             body="${body}<li><strong>Success Rate:</strong> ${success_rate}%</li>"
           fi
           body="${body}</ul>"
