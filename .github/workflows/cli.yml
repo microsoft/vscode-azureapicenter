@@ -1,4 +1,4 @@
-name: CLI weekly live test
+﻿name: CLI weekly live test
 
 on:
   schedule:
@@ -266,7 +266,6 @@ jobs:
           USERASSIGNED_IDENTITY: ${{ secrets.USERASSIGNED_IDENTITY }}
           AWS_ACCESS_KEY_LINK: ${{ secrets.AWS_ACCESS_KEY_LINK }}
           AWS_SECRET_ACCESS_KEY_LINK: ${{ secrets.AWS_SECRET_ACCESS_KEY_LINK }}
-
   notify:
     needs: [setup, execute-tests]
     if: (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && !cancelled()
@@ -278,142 +277,84 @@ jobs:
         run: |
           # Get the test cases that were executed
           test_cases='${{ needs.setup.outputs.test-cases }}'
+          total_chunks='${{ needs.setup.outputs.total-chunks }}'
 
-          # Initialize report variables
+          # Initialize counters
           total_test_cases=0
           passed_test_cases=0
           failed_test_cases=0
-          passed_tests=""
-          failed_tests=""
 
-          # Fetch individual job results using GitHub API
-          page=1
-          jobs="[]"
+          # Initialize temporary files for collecting results
+          mkdir -p /tmp/test_results
+          > /tmp/test_results/passed.txt
+          > /tmp/test_results/failed.txt
 
-          while :
-          do
-            url="https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/attempts/${{ github.run_attempt }}/jobs?per_page=100&page=$page"
-            resp=$(curl -H "Accept: application/vnd.github.v3+json" -u:${{ secrets.GITHUB_TOKEN }} "$url")
-            new_jobs=$(echo "$resp" | jq -cr '.jobs')
-            jobs=$(jq -cr --slurp 'add' <(echo "$jobs") <(echo "$new_jobs"))
+          echo "Analyzing test results for notification..."
 
-            has_next=$(curl -I -H "Accept: application/vnd.github.v3+json" -u:${{ secrets.GITHUB_TOKEN }} "$url" | grep -Fi "link:" | grep "rel=\"last\"" || true)
-            if [ -z "$has_next" ]; then
-              break
-            fi
-            page=$((page+1))
-          done
+          # Fetch all jobs from the workflow run
+          jobs_response=$(curl -s -H "Accept: application/vnd.github.v3+json" \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs")
 
-          # Define Python versions
-          declare -a python_versions=("3.9" "3.10" "3.11" "3.12")
+          python_versions=("3.9" "3.10" "3.11" "3.12")
 
-          # Process results for each Python version job
-          if [ "$test_cases" = "[]" ]; then
-            # Full suite was run for each Python version
-            for python_version in "${python_versions[@]}"; do
-              job_name="Chunk 0 (Python ${python_version})"
-              job_result=$(echo "$jobs" | jq -r --arg name "$job_name" '.[] | select(.name == $name) | .conclusion')
+          # Process each job to extract individual test results
+          for python_version in "${python_versions[@]}"; do
+            for chunk_id in $(seq 0 $((total_chunks - 1))); do
+              job_name="Chunk ${chunk_id} (Python ${python_version})"
+              echo "Processing job: $job_name"
 
-              total_test_cases=$((total_test_cases + 1))
-              if [ "$job_result" = "success" ]; then
-                passed_test_cases=$((passed_test_cases + 1))
-                if [ -z "$passed_tests" ]; then
-                  passed_tests="Full Test Suite (Python ${python_version})"
-                else
-                  passed_tests="${passed_tests}"$'\n'"Full Test Suite (Python ${python_version})"
-                fi
-              else
-                failed_test_cases=$((failed_test_cases + 1))
-                if [ -z "$failed_tests" ]; then
-                  failed_tests="Full Test Suite (Python ${python_version})"
-                else
-                  failed_tests="${failed_tests}"$'\n'"Full Test Suite (Python ${python_version})"
-                fi
-              fi
-            done
-          else
-            # Individual test cases were run in chunked jobs - extract individual test results from job logs
-            # Get the total number of chunks from setup job
-            total_chunks='${{ needs.setup.outputs.total-chunks }}'
+              job_info=$(echo "$jobs_response" | jq -r --arg name "$job_name" '.jobs[] | select(.name == $name) | {id: .id, conclusion: .conclusion}')
 
-            for python_version in "${python_versions[@]}"; do
-              for chunk_id in $(seq 0 $((total_chunks - 1))); do
-                # Find job by exact chunk job name
-                job_name="Chunk ${chunk_id} (Python ${python_version})"
-                job_data=$(echo "$jobs" | jq -r --arg name "$job_name" '.[] | select(.name == $name)')
-                job_result=$(echo "$job_data" | jq -r '.conclusion')
-                job_id=$(echo "$job_data" | jq -r '.id')
+              if [ "$job_info" != "null" ] && [ -n "$job_info" ]; then
+                job_id=$(echo "$job_info" | jq -r '.id')
+                job_conclusion=$(echo "$job_info" | jq -r '.conclusion')
 
-                if [ -n "$job_id" ] && [ "$job_id" != "null" ]; then
-                  # Fetch job logs to extract individual test case results
-                  log_url="https://api.github.com/repos/${{ github.repository }}/actions/jobs/$job_id/logs"
-                  job_logs=$(curl -L -H "Accept: application/vnd.github.v3+json" -u:${{ secrets.GITHUB_TOKEN }} "$log_url" 2>/dev/null || echo "")
+                if [ "$job_id" != "null" ] && [ -n "$job_id" ]; then
+                  echo "  Fetching logs for job ID: $job_id"
+                  # Get job logs
+                  job_logs=$(curl -s -L -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                    "https://api.github.com/repos/${{ github.repository }}/actions/jobs/$job_id/logs" 2>/dev/null || echo "")
 
                   if [ -n "$job_logs" ]; then
-                    # Extract individual test results from logs with proper parsing
-                    # Filter out debug echo statements and timestamps, only capture actual test results
-                    # Match pattern: "✅ PASSED: test_case_name (Python version)" but not echo statements
+                    # Extract passed tests
+                    echo "$job_logs" | grep -E "✅ PASSED:" | sed -E 's/.*✅ PASSED: ([a-zA-Z0-9_][a-zA-Z0-9_.-]*).*/\1/' | \
+                      grep -E '^[a-zA-Z0-9_][a-zA-Z0-9_.-]*$' | sort -u | while read -r test_name; do
+                      if [ -n "$test_name" ]; then
+                        echo "${test_name} (Python ${python_version})" >> /tmp/test_results/passed.txt
+                      fi
+                    done
 
-                    passed_test_list=$(echo "$job_logs" | grep "✅ PASSED:" | grep -v "echo" | grep -v "^\s*[0-9T:-]*Z" | sed 's/.*✅ PASSED: \(.*\) (Python [0-9.]*).*/\1/' | grep -v '^$' | grep -v '\$')
-                    failed_test_list=$(echo "$job_logs" | grep "❌ FAILED:" | grep -v "echo" | grep -v "^\s*[0-9T:-]*Z" | sed 's/.*❌ FAILED: \(.*\) (Python [0-9.]*).*/\1/' | grep -v '^$' | grep -v '\$')
-
-                    # Process passed tests
-                    if [ -n "$passed_test_list" ]; then
-                      while IFS= read -r test_case; do
-                        # Additional filtering to ensure we have valid test case names
-                        if [ -n "$test_case" ] && [ "$test_case" != "" ] && [[ "$test_case" =~ ^[a-zA-Z0-9_][a-zA-Z0-9_.-]*$ ]]; then
-                          if [ -z "$passed_tests" ]; then
-                            passed_tests="${test_case} (Python ${python_version})"
-                          else
-                            passed_tests="${passed_tests}"$'\n'"${test_case} (Python ${python_version})"
-                          fi
-                          passed_test_cases=$((passed_test_cases + 1))
-                          total_test_cases=$((total_test_cases + 1))
-                        fi
-                      done <<< "$passed_test_list"
-                    fi
-
-                    # Process failed tests
-                    if [ -n "$failed_test_list" ]; then
-                      while IFS= read -r test_case; do
-                        # Additional filtering to ensure we have valid test case names
-                        if [ -n "$test_case" ] && [ "$test_case" != "" ] && [[ "$test_case" =~ ^[a-zA-Z0-9_][a-zA-Z0-9_.-]*$ ]]; then
-                          if [ -z "$failed_tests" ]; then
-                            failed_tests="${test_case} (Python ${python_version})"
-                          else
-                            failed_tests="${failed_tests}"$'\n'"${test_case} (Python ${python_version})"
-                          fi
-                          failed_test_cases=$((failed_test_cases + 1))
-                          total_test_cases=$((total_test_cases + 1))
-                        fi
-                      done <<< "$failed_test_list"
-                    fi
-
+                    # Extract failed tests
+                    echo "$job_logs" | grep -E "❌ FAILED:" | sed -E 's/.*❌ FAILED: ([a-zA-Z0-9_][a-zA-Z0-9_.-]*).*/\1/' | \
+                      grep -E '^[a-zA-Z0-9_][a-zA-Z0-9_.-]*$' | sort -u | while read -r test_name; do
+                      if [ -n "$test_name" ]; then
+                        echo "${test_name} (Python ${python_version})" >> /tmp/test_results/failed.txt
+                      fi
+                    done
                   else
-                    # Fallback: If we can't get logs, report at chunk level
-                    # This should rarely happen, but provides a safety net
-                    if [ "$job_result" = "success" ]; then
-                      passed_test_cases=$((passed_test_cases + 1))
-                      total_test_cases=$((total_test_cases + 1))
-                      if [ -z "$passed_tests" ]; then
-                        passed_tests="$job_name (log unavailable)"
-                      else
-                        passed_tests="${passed_tests}"$'\n'"$job_name (log unavailable)"
-                      fi
+                    echo "  No logs available, using job conclusion: $job_conclusion"
+                    # Fallback: Use job-level results if logs aren't available
+                    if [ "$job_conclusion" = "success" ]; then
+                      echo "$job_name (logs unavailable)" >> /tmp/test_results/passed.txt
                     else
-                      failed_test_cases=$((failed_test_cases + 1))
-                      total_test_cases=$((total_test_cases + 1))
-                      if [ -z "$failed_tests" ]; then
-                        failed_tests="$job_name (log unavailable)"
-                      else
-                        failed_tests="${failed_tests}"$'\n'"$job_name (log unavailable)"
-                      fi
+                      echo "$job_name (logs unavailable)" >> /tmp/test_results/failed.txt
                     fi
                   fi
                 fi
-              done
+              fi
             done
-          fi
+          done
+
+          # Count results from files
+          passed_test_cases=$(wc -l < /tmp/test_results/passed.txt || echo "0")
+          failed_test_cases=$(wc -l < /tmp/test_results/failed.txt || echo "0")
+          total_test_cases=$((passed_test_cases + failed_test_cases))
+
+          echo "Test results summary:"
+          echo "  Total: $total_test_cases"
+          echo "  Passed: $passed_test_cases"
+          echo "  Failed: $failed_test_cases"
 
           # Generate email subject
           if [ $failed_test_cases -eq 0 ]; then
@@ -422,60 +363,91 @@ jobs:
             subject="[APICENTER] Weekly APIC Extension Live Test - $failed_test_cases/$total_test_cases Tests Failed ❌"
           fi
 
-          # Generate HTML email body with proper formatting
-          body="<html><body>"
-          body="${body}<h2>APIC Extension Live Test Report</h2>"
-          body="${body}<h3>📊 Summary:</h3>"
-          body="${body}<ul>"
-          body="${body}<li><strong>Total Test Cases:</strong> $total_test_cases</li>"
-          body="${body}<li><strong>Passed:</strong> $passed_test_cases</li>"
-          body="${body}<li><strong>Failed:</strong> $failed_test_cases</li>"
-
+          # Calculate success rate
+          success_rate=0
           if [ $total_test_cases -gt 0 ]; then
             success_rate=$(( (passed_test_cases * 100) / total_test_cases ))
-            body="${body}<li><strong>Success Rate:</strong> ${success_rate}%</li>"
           fi
-          body="${body}</ul>"
 
-          if [ -n "$failed_tests" ]; then
-            body="${body}<h3>❌ Failed Tests:</h3><ul>"
+          # Generate HTML email body
+          cat > /tmp/email_body.html << 'EOF'
+          <html>
+          <body>
+            <h2>APIC Extension Live Test Report</h2>
+            <h3>📊 Summary:</h3>
+            <ul>
+              <li><strong>Total Test Cases:</strong> TOTAL_PLACEHOLDER</li>
+              <li><strong>Passed:</strong> PASSED_PLACEHOLDER</li>
+              <li><strong>Failed:</strong> FAILED_PLACEHOLDER</li>
+              <li><strong>Success Rate:</strong> SUCCESS_RATE_PLACEHOLDER%</li>
+            </ul>
+          EOF
+
+          # Replace placeholders
+          sed -i "s/TOTAL_PLACEHOLDER/$total_test_cases/g" /tmp/email_body.html
+          sed -i "s/PASSED_PLACEHOLDER/$passed_test_cases/g" /tmp/email_body.html
+          sed -i "s/FAILED_PLACEHOLDER/$failed_test_cases/g" /tmp/email_body.html
+          sed -i "s/SUCCESS_RATE_PLACEHOLDER/$success_rate/g" /tmp/email_body.html
+
+          # Add failed tests section if any
+          if [ $failed_test_cases -gt 0 ] && [ -s /tmp/test_results/failed.txt ]; then
+            echo "    <h3>❌ Failed Tests:</h3>" >> /tmp/email_body.html
+            echo "    <ul>" >> /tmp/email_body.html
             while IFS= read -r test; do
               if [ -n "$test" ]; then
-                body="${body}<li>${test}</li>"
+                echo "      <li>${test}</li>" >> /tmp/email_body.html
               fi
-            done <<< "$failed_tests"
-            body="${body}</ul>"
+            done < /tmp/test_results/failed.txt
+            echo "    </ul>" >> /tmp/email_body.html
           fi
 
-          body="${body}<h3>🔗 Workflow Details:</h3>"
-          body="${body}<ul>"
-          body="${body}<li><strong>Workflow URL:</strong> <a href=\"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\">View Workflow Run</a></li>"
-          body="${body}<li><strong>Repository:</strong> ${{ github.repository }}</li>"
-          body="${body}<li><strong>Branch:</strong> ${{ github.ref_name }}</li>"
-          body="${body}<li><strong>Triggered by:</strong> ${{ github.event_name }}</li>"
-          body="${body}<li><strong>Run ID:</strong> ${{ github.run_id }}</li>"
-          body="${body}<li><strong>Run Attempt:</strong> ${{ github.run_attempt }}</li>"
-          body="${body}</ul>"
-          body="${body}</body></html>"
+          # Add workflow details
+          cat >> /tmp/email_body.html << 'EOF'
+            <h3>🔗 Workflow Details:</h3>
+            <ul>
+              <li><strong>Workflow URL:</strong> <a href="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}">View Workflow Run</a></li>
+              <li><strong>Repository:</strong> ${{ github.repository }}</li>
+              <li><strong>Branch:</strong> ${{ github.ref_name }}</li>
+              <li><strong>Triggered by:</strong> ${{ github.event_name }}</li>
+              <li><strong>Run ID:</strong> ${{ github.run_id }}</li>
+              <li><strong>Run Attempt:</strong> ${{ github.run_attempt }}</li>
+            </ul>
+          </body>
+          </html>
+          EOF
 
-          # Set environment variables for outputs with proper escaping
+          # Set environment variables using heredoc format
           echo "to=frankqian@microsoft.com" >> $GITHUB_ENV
-          echo "subject<<EOF" >> $GITHUB_ENV
+
+          echo "subject<<SUBJECT_EOF" >> $GITHUB_ENV
           echo "$subject" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
-          echo "body<<EOF" >> $GITHUB_ENV
-          echo "$body" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
+          echo "SUBJECT_EOF" >> $GITHUB_ENV
+
+          echo "body<<BODY_EOF" >> $GITHUB_ENV
+          cat /tmp/email_body.html >> $GITHUB_ENV
+          echo "BODY_EOF" >> $GITHUB_ENV
+
+          # Clean up
+          rm -rf /tmp/test_results /tmp/email_body.html
 
       - name: Send Email Notification
         run: |
-          response=$(curl \
+          echo "Sending email notification..."
+
+          # Get access token
+          response=$(curl -s \
             --request POST \
             --header "Content-Type: application/x-www-form-urlencoded" \
             --data "grant_type=client_credentials&client_id=${{ secrets.MAIL_CLIENT_ID }}&client_secret=${{ secrets.MAIL_CLIENT_SECRET }}&resource=https://management.core.windows.net" \
             "https://login.microsoftonline.com/${{ secrets.MAIL_TENANT_ID }}/oauth2/token")
 
-          access_token=$(echo $response | jq -r '. | select(.access_token) | .access_token')
+          access_token=$(echo $response | jq -r '.access_token // empty')
+
+          if [ -z "$access_token" ]; then
+            echo "Failed to get access token"
+            echo "Response: $response"
+            exit 1
+          fi
 
           # Create JSON payload using jq to properly escape special characters
           json_payload=$(jq -n \
@@ -484,10 +456,21 @@ jobs:
             --arg body "${{ env.body }}" \
             '{to: $to, subject: $subject, body: $body}')
 
-          curl \
+          # Send email
+          curl_response=$(curl -s -w "HTTP_STATUS:%{http_code}" \
             --request POST \
             --header "Content-Type: application/json" \
             --header "Authorization: Bearer $access_token" \
             --data "$json_payload" \
-            'https://prod-18.northcentralus.logic.azure.com:443/workflows/b33d7861bfc64832a6f62cc8f2213988/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0'
-        shell: bash
+            'https://prod-18.northcentralus.logic.azure.com:443/workflows/b33d7861bfc64832a6f62cc8f2213988/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0')
+
+          http_status=$(echo "$curl_response" | grep -o "HTTP_STATUS:[0-9]*" | cut -d: -f2)
+          response_body=$(echo "$curl_response" | sed 's/HTTP_STATUS:[0-9]*$//')
+
+          echo "Email sending status: $http_status"
+          if [ "$http_status" != "200" ] && [ "$http_status" != "202" ]; then
+            echo "Failed to send email. Response: $response_body"
+            exit 1
+          else
+            echo "Email sent successfully"
+          fi
