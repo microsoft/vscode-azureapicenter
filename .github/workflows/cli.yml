@@ -417,12 +417,18 @@ jobs:
             passed_count=$(grep -c "Python ${python_version}" /tmp/test_results/passed.txt 2>/dev/null || echo "0")
             failed_count=$(grep -c "Python ${python_version}" /tmp/test_results/failed.txt 2>/dev/null || echo "0")
 
+            # Debug: Show raw values
+            echo "  Debug: Raw passed_count='$passed_count', Raw failed_count='$failed_count'"
+
             echo "  Results with exact pattern - Passed: $passed_count, Failed: $failed_count"
 
             # Try case-insensitive match
             echo "  Trying case-insensitive match..."
             passed_count_ci=$(grep -ci "python ${python_version}" /tmp/test_results/passed.txt 2>/dev/null || echo "0")
             failed_count_ci=$(grep -ci "python ${python_version}" /tmp/test_results/failed.txt 2>/dev/null || echo "0")
+
+            # Debug: Show raw values
+            echo "  Debug: Raw passed_count_ci='$passed_count_ci', Raw failed_count_ci='$failed_count_ci'"
 
             echo "  Results with case-insensitive - Passed: $passed_count_ci, Failed: $failed_count_ci"
 
@@ -431,30 +437,52 @@ jobs:
             passed_count_v=$(grep -c "${python_version}" /tmp/test_results/passed.txt 2>/dev/null || echo "0")
             failed_count_v=$(grep -c "${python_version}" /tmp/test_results/failed.txt 2>/dev/null || echo "0")
 
-            echo "  Results with version-only - Passed: $passed_count_v, Failed: $failed_count_v"
+            # Debug: Show raw values
+            echo "  Debug: Raw passed_count_v='$passed_count_v', Raw failed_count_v='$failed_count_v'"
 
-            # Debug: Show the actual matches
+            echo "  Results with version-only - Passed: $passed_count_v, Failed: $failed_count_v"# Debug: Show the actual matches
             echo "  Sample matches with exact pattern:"
-            grep "Python ${python_version}" /tmp/test_results/passed.txt 2>/dev/null | head -3 || echo "    No exact matches"
+            if grep -q "Python ${python_version}" /tmp/test_results/passed.txt 2>/dev/null; then
+              grep "Python ${python_version}" /tmp/test_results/passed.txt 2>/dev/null | head -3
+            else
+              echo "    No exact matches"
+            fi
             echo "  Sample matches with case-insensitive:"
-            grep -i "python ${python_version}" /tmp/test_results/passed.txt 2>/dev/null | head -3 || echo "    No case-insensitive matches"
+            if grep -qi "python ${python_version}" /tmp/test_results/passed.txt 2>/dev/null; then
+              grep -i "python ${python_version}" /tmp/test_results/passed.txt 2>/dev/null | head -3
+            else
+              echo "    No case-insensitive matches"
+            fi
             echo "  Sample matches with version-only:"
-            grep "${python_version}" /tmp/test_results/passed.txt 2>/dev/null | head -3 || echo "    No version-only matches"
-
-            # Use the best match (prefer exact, then case-insensitive, then version-only)
+            if grep -q "${python_version}" /tmp/test_results/passed.txt 2>/dev/null; then
+              grep "${python_version}" /tmp/test_results/passed.txt 2>/dev/null | head -3
+            else
+              echo "    No version-only matches"
+            fi            # Use the best match (prefer exact, then case-insensitive, then version-only)
             if [ "$passed_count" -gt 0 ] || [ "$failed_count" -gt 0 ]; then
               echo "  Using exact pattern results"
-              final_passed=$passed_count
-              final_failed=$failed_count
+              final_passed="${passed_count:-0}"
+              final_failed="${failed_count:-0}"
             elif [ "$passed_count_ci" -gt 0 ] || [ "$failed_count_ci" -gt 0 ]; then
               echo "  Using case-insensitive results"
-              final_passed=$passed_count_ci
-              final_failed=$failed_count_ci
+              final_passed="${passed_count_ci:-0}"
+              final_failed="${failed_count_ci:-0}"
             else
               echo "  Using version-only results"
-              final_passed=$passed_count_v
-              final_failed=$failed_count_v
+              final_passed="${passed_count_v:-0}"
+              final_failed="${failed_count_v:-0}"
             fi
+            # Ensure variables are numeric (remove any whitespace)
+            final_passed=$(echo "$final_passed" | tr -d ' \t\n\r')
+            final_failed=$(echo "$final_failed" | tr -d ' \t\n\r')
+
+            # Set defaults if empty
+            final_passed="${final_passed:-0}"
+            final_failed="${final_failed:-0}"
+
+            # Debug: Show cleaned values before arithmetic
+            echo "  Debug: Cleaned final_passed='$final_passed', final_failed='$final_failed'"
+
             total_count=$((final_passed + final_failed))
 
             # Calculate success rate for this version
