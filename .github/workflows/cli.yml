@@ -47,7 +47,7 @@ jobs:
           python -m venv .venv
           source .venv/bin/activate
           python -m pip install -U pip
-          pip install azdev
+          pip install azdev pytest
           azdev setup -r .
           azdev extension add apic-extension
 
@@ -56,6 +56,7 @@ jobs:
         run: |
           cd azure-cli-extensions
           source .venv/bin/activate
+          cd src/apic-extension
 
           # Check if specific test cases are provided
           test_input='${{ inputs.test-cases }}'
@@ -63,46 +64,70 @@ jobs:
             echo "Using specific test cases from input: $test_input"
             test_cases="$test_input"
           else
-            echo "Discovering all test cases..."
+            echo "Discovering all test cases using pytest..."
 
-            # Debug: Check azdev and extension status
-            echo "Debug: Checking azdev status..."
-            azdev --version || echo "azdev version check failed"
-            azdev extension list || echo "azdev extension list failed"
+            # Find test files and collect test cases
+            test_files=$(find . -name "test_*.py" -type f | head -10)
+            echo "Debug: Found test files:"
+            echo "$test_files"
 
-            # Debug: Try test discovery with error output visible
-            echo "Debug: Running test discovery with full output..."
-            azdev test azext_apic-extension --discover 2>&1 | head -20 || echo "Test discovery command failed"
-
-            # Get all test cases by discovering them
-            echo "Debug: Attempting to capture test cases..."
-            test_collection=$(azdev test azext_apic-extension --discover 2>&1 | grep -E '^test_' | sort | uniq || true)
-
-            echo "Debug: Raw test collection output:"
-            echo "$test_collection"
-            echo "Debug: Test collection length: ${#test_collection}"
-
-            if [ -z "$test_collection" ]; then
-              echo "❌ No individual test cases found, using full-suite approach"
-              echo "This could indicate:"
-              echo "  - Test discovery command failed"
-              echo "  - Extension not properly loaded"
-              echo "  - Test files not found or malformed"
+            if [ -z "$test_files" ]; then
+              echo "❌ No test files found"
               test_cases='["full-suite"]'
             else
-              test_count=$(echo "$test_collection" | wc -l)
-              echo "✅ Successfully discovered $test_count test cases"
-              test_cases=$(echo "$test_collection" | jq -R -s -c 'split("\n") | map(select(length > 0))')
-              total_tests=$(echo "$test_cases" | jq '. | length')
-              echo "Found $total_tests test cases total"
+              # Use pytest to collect all test cases
+              echo "Debug: Collecting test cases with pytest..."
+
+              # Collect test node IDs and extract just the test function names
+              test_collection=$(python -m pytest --collect-only -q 2>/dev/null | \
+                grep "::test_" | \
+                sed 's/.*::\(test_[^[]*\).*/\1/' | \
+                sort | uniq || true)
+
+              echo "Debug: Raw test collection output:"
+              echo "$test_collection"
+
+              if [ -z "$test_collection" ]; then
+                echo "❌ No test cases found with pytest, trying alternative approach..."
+
+                # Fallback: Parse test files directly for test function definitions
+                test_collection=$(grep -h "^def test_" $(find . -name "test_*.py") | \
+                  sed 's/def \(test_[^(]*\).*/\1/' | \
+                  sort | uniq || true)
+
+                echo "Debug: Fallback test collection:"
+                echo "$test_collection"
+              fi
+
+              if [ -z "$test_collection" ]; then
+                echo "❌ No individual test cases found, using full-suite approach"
+                test_cases='["full-suite"]'
+              else
+                test_count=$(echo "$test_collection" | wc -l)
+                echo "✅ Successfully discovered $test_count test cases"
+
+                # Convert to JSON array
+                test_cases=$(echo "$test_collection" | jq -R -s -c 'split("\n") | map(select(length > 0))')
+                total_tests=$(echo "$test_cases" | jq '. | length')
+                echo "Found $total_tests test cases total"
+
+                # Validate JSON format
+                if ! echo "$test_cases" | jq empty 2>/dev/null; then
+                  echo "❌ Invalid JSON format, falling back to full-suite"
+                  test_cases='["full-suite"]'
+                fi
+              fi
             fi
           fi
 
+          echo "Final test cases: $test_cases"
           echo "test-cases=$test_cases" >> $GITHUB_OUTPUT
 
           # Python versions to test against
           python_versions='["3.9", "3.10", "3.11", "3.12"]'
-          echo "python-versions=$python_versions" >> $GITHUB_OUTPUT  # Execute tests using matrix strategy for all Python versions
+          echo "python-versions=$python_versions" >> $GITHUB_OUTPUT
+
+  # Execute tests using matrix strategy for all Python versions
   # This replaces the previous 4 duplicate jobs (test-python-39, test-python-310, etc.)
   # Matrix strategy automatically creates jobs: test (3.9), test (3.10), test (3.11), test (3.12)
   test:
