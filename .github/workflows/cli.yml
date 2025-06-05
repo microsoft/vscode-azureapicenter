@@ -271,6 +271,7 @@ jobs:
           USERASSIGNED_IDENTITY: ${{ secrets.USERASSIGNED_IDENTITY }}
           AWS_ACCESS_KEY_LINK: ${{ secrets.AWS_ACCESS_KEY_LINK }}
           AWS_SECRET_ACCESS_KEY_LINK: ${{ secrets.AWS_SECRET_ACCESS_KEY_LINK }}
+
   notify:
     needs: [setup, execute-tests]
     if: (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && !cancelled()
@@ -491,6 +492,14 @@ jobs:
               version_success_rate=$(( (final_passed * 100) / total_count ))
             fi
 
+            # Ensure single-digit format for zero values (prevent "00" format)
+            if [ "$final_failed" = "00" ]; then
+              final_failed="0"
+            fi
+            if [ "$final_passed" = "00" ]; then
+              final_passed="0"
+            fi
+
             echo "$total_count,$final_passed,$final_failed,$version_success_rate" > "/tmp/version_stats/python_${python_version}.txt"
             echo "Python $python_version FINAL: Total=$total_count, Passed=$final_passed, Failed=$final_failed, Success=$version_success_rate%"
           done
@@ -571,6 +580,15 @@ jobs:
 
             if [ -f "/tmp/version_stats/python_${python_version}.txt" ]; then
               IFS=',' read -r total_count passed_count failed_count version_success_rate < "/tmp/version_stats/python_${python_version}.txt"
+
+              # Ensure proper formatting of zero values (prevent "00" display)
+              if [ "$failed_count" = "00" ]; then
+                failed_count="0"
+              fi
+              if [ "$passed_count" = "00" ]; then
+                passed_count="0"
+              fi
+
               echo "Replacing placeholders for Python $python_version: total=$total_count, passed=$passed_count, failed=$failed_count, rate=$version_success_rate%"
             else
               echo "No stats file found for Python $python_version, using zeros"
@@ -615,7 +633,7 @@ jobs:
 
           # Set environment variables for notification step
           {
-            echo "EMAIL_TO=frankqian@microsoft.com"
+            echo "EMAIL_TO=${{ secrets.AUTHOR_MAIL_ADDRESSES }}"
             echo "EMAIL_SUBJECT<<EOF"
             echo "$subject"
             echo "EOF"
