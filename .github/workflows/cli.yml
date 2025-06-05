@@ -174,62 +174,153 @@ jobs:
           mapfile -t python_versions < <(echo "$python_versions_input" | jq -r '.[]')
 
           echo "Processing results for Python versions: ${python_versions[@]}"
-
           # Fetch all jobs from the workflow run
           jobs_response=$(curl -s -H "Accept: application/vnd.github.v3+json" \
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs")
+          echo "DEBUG: All jobs in this workflow run:"
+          echo "$jobs_response" | jq -r '.jobs[] | "ID: \(.id), Name: \(.name), Conclusion: \(.conclusion), Status: \(.status)"'
 
-          # Process each test case across all Python versions
-          echo "$test_cases" | jq -r '.[]' | while IFS= read -r test_case; do
-            if [ -n "$test_case" ]; then
-              echo "Processing test case: $test_case"
+          # PRIMARY APPROACH: Get results directly from the test matrix jobs
+          # The main workflow has matrix jobs named like "test (3.9)", "test (3.10)", etc.
+          # Each of these calls the reusable workflow which runs all test cases for that Python version
+          echo "=== PRIMARY APPROACH: Analyzing test matrix job results ==="
 
-              for python_version in "${python_versions[@]}"; do
-                job_name="${test_case} (Python ${python_version})"
-                echo "  Looking for job: $job_name"
+          # Get all test matrix jobs (should be named like "test (3.9)", "test (3.10)", etc.)
+          test_matrix_jobs=$(echo "$jobs_response" | jq -r '.jobs[] | select(.name | startswith("test (")) | {name: .name, conclusion: .conclusion, id: .id}')
 
-                job_info=$(echo "$jobs_response" | jq -r --arg name "$job_name" '.jobs[] | select(.name == $name) | {id: .id, conclusion: .conclusion}')
+          if [ -n "$test_matrix_jobs" ]; then
+            echo "Found test matrix jobs:"
+            echo "$test_matrix_jobs" | jq -c '.'
+              # For each test matrix job, check its conclusion
+            # Use a subshell with process substitution to ensure file writes work correctly
+            while IFS= read -r job_data; do
+              if [ -n "$job_data" ] && [ "$job_data" != "null" ]; then
+                job_name=$(echo "$job_data" | jq -r '.name')
+                job_conclusion=$(echo "$job_data" | jq -r '.conclusion')
 
-                if [ "$job_info" != "null" ] && [ -n "$job_info" ]; then
-                  job_id=$(echo "$job_info" | jq -r '.id')
-                  job_conclusion=$(echo "$job_info" | jq -r '.conclusion')
+                # Extract python version from job name like "test (3.9)"
+                python_version=$(echo "$job_name" | sed -n 's/test (\(.*\))/\1/p')
 
-                  echo "    Found job ID: $job_id, conclusion: $job_conclusion"
+                echo "Processing matrix job: $job_name (Python $python_version) -> $job_conclusion"
 
-                  if [ "$job_id" != "null" ] && [ -n "$job_id" ]; then
-                    # Get job logs for detailed analysis
-                    job_logs=$(curl -s -L -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-                      "https://api.github.com/repos/${{ github.repository }}/actions/jobs/$job_id/logs" 2>/dev/null || echo "")
+                # Count test cases for this Python version based on job conclusion
+                test_case_count=$(echo "$test_cases" | jq '. | length')
 
-                    if [ -n "$job_logs" ]; then
-                      # Check for pass/fail in logs
-                      if echo "$job_logs" | grep -q "✅ PASSED: $test_case (Python $python_version)"; then
-                        echo "$test_case (Python $python_version)" >> /tmp/test_results/passed.txt
-                        echo "    ✅ Test passed based on logs"
-                      elif echo "$job_logs" | grep -q "❌ FAILED: $test_case (Python $python_version)"; then
-                        echo "$test_case (Python $python_version)" >> /tmp/test_results/failed.txt
-                        echo "    ❌ Test failed based on logs"
+                if [ "$job_conclusion" = "success" ]; then
+                  # All test cases for this Python version passed
+                  echo "$test_cases" | jq -r '.[]' | while IFS= read -r test_case; do
+                    if [ -n "$test_case" ]; then
+                      echo "$test_case (Python $python_version)" >> /tmp/test_results/passed.txt
+                    fi
+                  done
+                  echo "  ✅ All $test_case_count test cases passed for Python $python_version"
+                else
+                  # All test cases for this Python version failed
+                  echo "$test_cases" | jq -r '.[]' | while IFS= read -r test_case; do
+                    if [ -n "$test_case" ]; then
+                      echo "$test_case (Python $python_version)" >> /tmp/test_results/failed.txt
+                    fi
+                  done
+                  echo "  ❌ All $test_case_count test cases failed for Python $python_version (conclusion: $job_conclusion)"
+                fi
+              fi
+            done < <(echo "$test_matrix_jobs" | jq -c '.')
+              # Skip the detailed individual job matching since we have the matrix results
+            echo "Matrix job analysis complete. Skipping individual job matching."
+          else
+            echo "No test matrix jobs found, falling back to individual job matching..."
+
+            # Process each test case across all Python versions
+            echo "$test_cases" | jq -r '.[]' | while IFS= read -r test_case; do
+              if [ -n "$test_case" ]; then
+                echo "Processing test case: $test_case"
+
+                for python_version in "${python_versions[@]}"; do
+                  # Try multiple job name patterns since reusable workflows can have different naming
+                  job_name_patterns=(
+                    "${test_case} (Python ${python_version})"
+                    "test-all-cases / ${test_case} (Python ${python_version})"
+                    "${test_case}"
+                  )
+
+                  job_found=false
+
+                  for job_name in "${job_name_patterns[@]}"; do
+                    echo "  Looking for job: $job_name"
+
+                    job_info=$(echo "$jobs_response" | jq -r --arg name "$job_name" '.jobs[] | select(.name == $name) | {id: .id, conclusion: .conclusion}')
+
+                    if [ "$job_info" != "null" ] && [ -n "$job_info" ]; then
+                      job_id=$(echo "$job_info" | jq -r '.id')
+                      job_conclusion=$(echo "$job_info" | jq -r '.conclusion')
+
+                      echo "    Found job ID: $job_id, conclusion: $job_conclusion"
+                      job_found=true
+
+                      if [ "$job_id" != "null" ] && [ -n "$job_id" ]; then
+                      # Get job logs for detailed analysis
+                      job_logs=$(curl -s -L -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                        "https://api.github.com/repos/${{ github.repository }}/actions/jobs/$job_id/logs" 2>/dev/null || echo "")                      if [ -n "$job_logs" ]; then
+                        # Check for pass/fail in logs
+                        if echo "$job_logs" | grep -q "✅ PASSED: $test_case (Python $python_version)"; then
+                          echo "$test_case (Python $python_version)" >> /tmp/test_results/passed.txt
+                          echo "    ✅ Test passed based on logs"
+                        elif echo "$job_logs" | grep -q "❌ FAILED: $test_case (Python $python_version)"; then
+                          echo "$test_case (Python $python_version)" >> /tmp/test_results/failed.txt
+                          echo "    ❌ Test failed based on logs"
+                        else
+                          # Fallback to job conclusion if no specific log markers found
+                          if [ "$job_conclusion" = "success" ]; then
+                            echo "$test_case (Python $python_version)" >> /tmp/test_results/passed.txt
+                            echo "    ✅ Test passed based on job conclusion (no log marker found)"
+                          else
+                            echo "$test_case (Python $python_version)" >> /tmp/test_results/failed.txt
+                            echo "    ❌ Test failed based on job conclusion (no log marker found)"
+                          fi
+                        fi
+                      else
+                        # Fallback to job conclusion if logs aren't available
+                        if [ "$job_conclusion" = "success" ]; then
+                          echo "$test_case (Python $python_version)" >> /tmp/test_results/passed.txt
+                          echo "    ✅ Test passed based on job conclusion"
+                        else
+                          echo "$test_case (Python $python_version)" >> /tmp/test_results/failed.txt
+                          echo "    ❌ Test failed based on job conclusion"
+                        fi
                       fi
+                      fi
+                      break # Exit the job_name_patterns loop since we found a match
                     else
-                      # Fallback to job conclusion if logs aren't available
+                      echo "    Job found but no valid ID: $job_name"
+                    fi
+                  done
+
+                  if [ "$job_found" = false ]; then
+                    echo "    Job not found with any naming pattern for: $test_case (Python $python_version)"
+                    # Try to find any job that contains both test_case and python_version in the name
+                    matching_job=$(echo "$jobs_response" | jq -r --arg test "$test_case" --arg version "$python_version" \
+                      '.jobs[] | select(.name | (contains($test) and contains($version))) | {id: .id, name: .name, conclusion: .conclusion}' | head -1)
+
+                    if [ "$matching_job" != "" ] && [ "$matching_job" != "null" ]; then
+                      echo "    Found partial match: $matching_job"
+                      job_conclusion=$(echo "$matching_job" | jq -r '.conclusion')
                       if [ "$job_conclusion" = "success" ]; then
                         echo "$test_case (Python $python_version)" >> /tmp/test_results/passed.txt
-                        echo "    ✅ Test passed based on job conclusion"
+                        echo "    ✅ Test passed based on partial match job conclusion"
                       else
                         echo "$test_case (Python $python_version)" >> /tmp/test_results/failed.txt
-                        echo "    ❌ Test failed based on job conclusion"
+                        echo "    ❌ Test failed based on partial match job conclusion"
                       fi
+                    else
+                      echo "    No matching job found, assuming failed"
+                      echo "$test_case (Python $python_version)" >> /tmp/test_results/failed.txt
                     fi
                   fi
-                else
-                  echo "    Job not found: $job_name"
-                  # Assume failed if job not found
-                  echo "$test_case (Python $python_version)" >> /tmp/test_results/failed.txt
-                fi
-              done
-            fi
-          done
+                done
+              fi
+            done
+          fi
 
           # Count results from files
           passed_test_cases=$(wc -l < /tmp/test_results/passed.txt || echo "0")
