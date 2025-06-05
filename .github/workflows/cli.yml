@@ -61,18 +61,36 @@ jobs:
           test_input='${{ inputs.test-cases }}'
           if [ -n "$test_input" ] && [ "$test_input" != "null" ] && [ "$test_input" != "" ]; then
             echo "Using specific test cases from input: $test_input"
-            test_cases="$test_input"
-          else
+            test_cases="$test_input"          else
             echo "Discovering all test cases..."
+
+            # Debug: Check azdev and extension status
+            echo "Debug: Checking azdev status..."
+            azdev --version || echo "azdev version check failed"
+            azdev extension list || echo "azdev extension list failed"
+
+            # Debug: Try test discovery with error output visible
+            echo "Debug: Running test discovery with full output..."
+            azdev test azext_apic-extension --discover 2>&1 | head -20 || echo "Test discovery command failed"
+
             # Get all test cases by discovering them
-            test_collection=$(azdev test azext_apic-extension --discover 2>/dev/null | grep -E '^test_' | sort | uniq || true)
+            echo "Debug: Attempting to capture test cases..."
+            test_collection=$(azdev test azext_apic-extension --discover 2>&1 | grep -E '^test_' | sort | uniq || true)
+
+            echo "Debug: Raw test collection output:"
+            echo "$test_collection"
+            echo "Debug: Test collection length: ${#test_collection}"
 
             if [ -z "$test_collection" ]; then
-              echo "No individual test cases found, using full-suite approach"
+              echo "❌ No individual test cases found, using full-suite approach"
+              echo "This could indicate:"
+              echo "  - Test discovery command failed"
+              echo "  - Extension not properly loaded"
+              echo "  - Test files not found or malformed"
               test_cases='["full-suite"]'
             else
               test_count=$(echo "$test_collection" | wc -l)
-              echo "Discovered $test_count test cases"
+              echo "✅ Successfully discovered $test_count test cases"
               test_cases=$(echo "$test_collection" | jq -R -s -c 'split("\n") | map(select(length > 0))')
               total_tests=$(echo "$test_cases" | jq '. | length')
               echo "Found $total_tests test cases total"
@@ -83,56 +101,18 @@ jobs:
 
           # Python versions to test against
           python_versions='["3.9", "3.10", "3.11", "3.12"]'
-          echo "python-versions=$python_versions" >> $GITHUB_OUTPUT  # Execute tests for each Python version using reusable workflow
-
-  test-python-39:
+          echo "python-versions=$python_versions" >> $GITHUB_OUTPUT  # Execute tests using matrix strategy for all Python versions
+  # This replaces the previous 4 duplicate jobs (test-python-39, test-python-310, etc.)
+  # Matrix strategy automatically creates jobs: test (3.9), test (3.10), test (3.11), test (3.12)
+  test:
     needs: setup
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
     uses: ./.github/workflows/test-execution-all.yml
     with:
       test-cases: ${{ needs.setup.outputs.test-cases }}
-      python-version: "3.9"
-    secrets:
-      APICEXT_TEST_AZURE_CLIENT_ID: ${{ secrets.APICEXT_TEST_AZURE_CLIENT_ID }}
-      APICEXT_TEST_AZURE_TENANT_ID: ${{ secrets.APICEXT_TEST_AZURE_TENANT_ID }}
-      APICEXT_TEST_AZURE_SUBSCRIPTION_ID: ${{ secrets.APICEXT_TEST_AZURE_SUBSCRIPTION_ID }}
-      USERASSIGNED_IDENTITY: ${{ secrets.USERASSIGNED_IDENTITY }}
-      AWS_ACCESS_KEY_LINK: ${{ secrets.AWS_ACCESS_KEY_LINK }}
-      AWS_SECRET_ACCESS_KEY_LINK: ${{ secrets.AWS_SECRET_ACCESS_KEY_LINK }}
-
-  test-python-310:
-    needs: setup
-    uses: ./.github/workflows/test-execution-all.yml
-    with:
-      test-cases: ${{ needs.setup.outputs.test-cases }}
-      python-version: "3.10"
-    secrets:
-      APICEXT_TEST_AZURE_CLIENT_ID: ${{ secrets.APICEXT_TEST_AZURE_CLIENT_ID }}
-      APICEXT_TEST_AZURE_TENANT_ID: ${{ secrets.APICEXT_TEST_AZURE_TENANT_ID }}
-      APICEXT_TEST_AZURE_SUBSCRIPTION_ID: ${{ secrets.APICEXT_TEST_AZURE_SUBSCRIPTION_ID }}
-      USERASSIGNED_IDENTITY: ${{ secrets.USERASSIGNED_IDENTITY }}
-      AWS_ACCESS_KEY_LINK: ${{ secrets.AWS_ACCESS_KEY_LINK }}
-      AWS_SECRET_ACCESS_KEY_LINK: ${{ secrets.AWS_SECRET_ACCESS_KEY_LINK }}
-
-  test-python-311:
-    needs: setup
-    uses: ./.github/workflows/test-execution-all.yml
-    with:
-      test-cases: ${{ needs.setup.outputs.test-cases }}
-      python-version: "3.11"
-    secrets:
-      APICEXT_TEST_AZURE_CLIENT_ID: ${{ secrets.APICEXT_TEST_AZURE_CLIENT_ID }}
-      APICEXT_TEST_AZURE_TENANT_ID: ${{ secrets.APICEXT_TEST_AZURE_TENANT_ID }}
-      APICEXT_TEST_AZURE_SUBSCRIPTION_ID: ${{ secrets.APICEXT_TEST_AZURE_SUBSCRIPTION_ID }}
-      USERASSIGNED_IDENTITY: ${{ secrets.USERASSIGNED_IDENTITY }}
-      AWS_ACCESS_KEY_LINK: ${{ secrets.AWS_ACCESS_KEY_LINK }}
-      AWS_SECRET_ACCESS_KEY_LINK: ${{ secrets.AWS_SECRET_ACCESS_KEY_LINK }}
-
-  test-python-312:
-    needs: setup
-    uses: ./.github/workflows/test-execution-all.yml
-    with:
-      test-cases: ${{ needs.setup.outputs.test-cases }}
-      python-version: "3.12"
+      python-version: ${{ matrix.python-version }}
     secrets:
       APICEXT_TEST_AZURE_CLIENT_ID: ${{ secrets.APICEXT_TEST_AZURE_CLIENT_ID }}
       APICEXT_TEST_AZURE_TENANT_ID: ${{ secrets.APICEXT_TEST_AZURE_TENANT_ID }}
@@ -145,7 +125,7 @@ jobs:
   notify:
     runs-on: ubuntu-latest
     environment: engineering
-    needs: [setup, test-python-39, test-python-310, test-python-311, test-python-312]
+    needs: [setup, test]
     if: (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && !cancelled()
     steps:
       - name: Generate Email Content
