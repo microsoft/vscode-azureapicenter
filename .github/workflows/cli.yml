@@ -206,13 +206,18 @@ jobs:
               # Process each matrix job individually to avoid subshell issues
               for python_version in "${python_versions[@]}"; do
                 echo "Looking for jobs for Python version: $python_version"
-
                 # The actual job names include test case details: "test (3.9) / test_case_name (Python 3.9)"
                 # We need to find jobs that match the pattern "test (X.Y) / ..." for this Python version
 
                 # Find all jobs for this Python version - they may have different test case names
-                version_jobs=$(echo "$jobs_response" | jq -r --arg version "$python_version" \
-                  '.jobs[] | select(.name | (startswith("test (\($version))") and contains("Python \($version)"))) | {name: .name, conclusion: .conclusion, id: .id}')
+                # Use a more robust pattern that handles parentheses correctly
+                test_prefix="test ($python_version)"
+                python_suffix="Python $python_version"
+
+                echo "  Looking for jobs starting with: '$test_prefix' and containing: '$python_suffix'"
+
+                version_jobs=$(echo "$jobs_response" | jq -r --arg prefix "$test_prefix" --arg suffix "$python_suffix" \
+                  '.jobs[] | select(.name | (startswith($prefix) and contains($suffix))) | {name: .name, conclusion: .conclusion, id: .id}')
 
                 if [ -n "$version_jobs" ] && [ "$version_jobs" != "" ] && [ "$version_jobs" != "null" ]; then
                   echo "Found jobs for Python $python_version:"
