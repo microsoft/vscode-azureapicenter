@@ -87,7 +87,7 @@ jobs:
 
   test-python-39:
     needs: setup
-    uses: ./.github/workflows/apic-cli/test-execution-all.yml
+    uses: ./.github/workflows/test-execution-all.yml
     with:
       test-cases: ${{ needs.setup.outputs.test-cases }}
       python-version: "3.9"
@@ -101,7 +101,7 @@ jobs:
 
   test-python-310:
     needs: setup
-    uses: ./.github/workflows/apic-cli/test-execution-all.yml
+    uses: ./.github/workflows/test-execution-all.yml
     with:
       test-cases: ${{ needs.setup.outputs.test-cases }}
       python-version: "3.10"
@@ -115,7 +115,7 @@ jobs:
 
   test-python-311:
     needs: setup
-    uses: ./.github/workflows/apic-cli/test-execution-all.yml
+    uses: ./.github/workflows/test-execution-all.yml
     with:
       test-cases: ${{ needs.setup.outputs.test-cases }}
       python-version: "3.11"
@@ -129,7 +129,7 @@ jobs:
 
   test-python-312:
     needs: setup
-    uses: ./.github/workflows/apic-cli/test-execution-all.yml
+    uses: ./.github/workflows/test-execution-all.yml
     with:
       test-cases: ${{ needs.setup.outputs.test-cases }}
       python-version: "3.12"
@@ -145,7 +145,7 @@ jobs:
   notify:
     needs: [setup, test-python-39, test-python-310, test-python-311, test-python-312]
     if: (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && !cancelled()
-    uses: ./.github/workflows/apic-cli/notification.yml
+    uses: ./.github/workflows/notification.yml
     with:
       test-cases: ${{ needs.setup.outputs.test-cases }}
       python-versions: ${{ needs.setup.outputs.python-versions }}
