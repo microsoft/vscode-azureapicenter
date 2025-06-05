@@ -454,7 +454,8 @@ jobs:
               echo "  Using version-only results"
               final_passed=$passed_count_v
               final_failed=$failed_count_v
-            fi            total_count=$((final_passed + final_failed))
+            fi
+            total_count=$((final_passed + final_failed))
 
             # Calculate success rate for this version
             version_success_rate=0
