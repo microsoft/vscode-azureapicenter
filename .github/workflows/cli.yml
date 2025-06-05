@@ -319,7 +319,8 @@ jobs:
                   echo "  Fetching logs for job ID: $job_id"
                   # Get job logs
                   job_logs=$(curl -s -L -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-                    "https://api.github.com/repos/${{ github.repository }}/actions/jobs/$job_id/logs" 2>/dev/null || echo "")                  if [ -n "$job_logs" ]; then
+                    "https://api.github.com/repos/${{ github.repository }}/actions/jobs/$job_id/logs" 2>/dev/null || echo "")
+                  if [ -n "$job_logs" ]; then
                     echo "    Processing job logs for Python $python_version, chunk $chunk_id..."
 
                     # Extract passed tests - write directly to avoid subshell issues
