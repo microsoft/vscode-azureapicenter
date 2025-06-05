@@ -61,7 +61,8 @@ jobs:
           test_input='${{ inputs.test-cases }}'
           if [ -n "$test_input" ] && [ "$test_input" != "null" ] && [ "$test_input" != "" ]; then
             echo "Using specific test cases from input: $test_input"
-            test_cases="$test_input"          else
+            test_cases="$test_input"
+          else
             echo "Discovering all test cases..."
 
             # Debug: Check azdev and extension status
