@@ -1,0 +1,357 @@
+name: Send Notification (Reusable)
+
+on:
+  workflow_call:
+    inputs:
+      test-cases:
+        description: 'JSON array of test cases that were executed'
+        required: true
+        type: string
+      python-versions:
+        description: 'JSON array of Python versions tested'
+        required: true
+        type: string
+      workflow-run-id:
+        description: 'Main workflow run ID to analyze'
+        required: true
+        type: string
+      repository:
+        description: 'Repository name'
+        required: true
+        type: string
+      server-url:
+        description: 'GitHub server URL'
+        required: true
+        type: string
+      ref-name:
+        description: 'Git reference name'
+        required: true
+        type: string
+      event-name:
+        description: 'Event that triggered the workflow'
+        required: true
+        type: string
+      run-attempt:
+        description: 'Run attempt number'
+        required: true
+        type: string
+    secrets:
+      GITHUB_TOKEN:
+        required: true
+      AUTHOR_MAIL_ADDRESSES:
+        required: true
+      MAIL_CLIENT_ID:
+        required: true
+      MAIL_CLIENT_SECRET:
+        required: true
+      MAIL_TENANT_ID:
+        required: true
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    environment: engineering
+    steps:
+      - name: Generate Email Content
+        id: generate-email-content
+        run: |
+          # Get the test cases that were executed
+          test_cases='${{ inputs.test-cases }}'
+          python_versions_input='${{ inputs.python-versions }}'
+
+          echo "Analyzing test results for notification..."
+          echo "Test cases: $test_cases"
+          echo "Python versions: $python_versions_input"
+
+          # Initialize temporary files for collecting results
+          mkdir -p /tmp/test_results
+          > /tmp/test_results/passed.txt
+          > /tmp/test_results/failed.txt
+
+          # Parse Python versions from JSON
+          mapfile -t python_versions < <(echo "$python_versions_input" | jq -r '.[]')
+
+          echo "Processing results for Python versions: ${python_versions[@]}"
+
+          # Fetch all jobs from the workflow run
+          jobs_response=$(curl -s -H "Accept: application/vnd.github.v3+json" \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ inputs.repository }}/actions/runs/${{ inputs.workflow-run-id }}/jobs")
+
+          # Process each test case across all Python versions
+          echo "$test_cases" | jq -r '.[]' | while IFS= read -r test_case; do
+            if [ -n "$test_case" ]; then
+              echo "Processing test case: $test_case"
+
+              for python_version in "${python_versions[@]}"; do
+                job_name="${test_case} (Python ${python_version})"
+                echo "  Looking for job: $job_name"
+
+                job_info=$(echo "$jobs_response" | jq -r --arg name "$job_name" '.jobs[] | select(.name == $name) | {id: .id, conclusion: .conclusion}')
+
+                if [ "$job_info" != "null" ] && [ -n "$job_info" ]; then
+                  job_id=$(echo "$job_info" | jq -r '.id')
+                  job_conclusion=$(echo "$job_info" | jq -r '.conclusion')
+
+                  echo "    Found job ID: $job_id, conclusion: $job_conclusion"
+
+                  if [ "$job_id" != "null" ] && [ -n "$job_id" ]; then
+                    # Get job logs for detailed analysis
+                    job_logs=$(curl -s -L -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                      "https://api.github.com/repos/${{ inputs.repository }}/actions/jobs/$job_id/logs" 2>/dev/null || echo "")
+
+                    if [ -n "$job_logs" ]; then
+                      # Check for pass/fail in logs
+                      if echo "$job_logs" | grep -q "✅ PASSED: $test_case (Python $python_version)"; then
+                        echo "$test_case (Python $python_version)" >> /tmp/test_results/passed.txt
+                        echo "    ✅ Test passed based on logs"
+                      elif echo "$job_logs" | grep -q "❌ FAILED: $test_case (Python $python_version)"; then
+                        echo "$test_case (Python $python_version)" >> /tmp/test_results/failed.txt
+                        echo "    ❌ Test failed based on logs"
+                      fi
+                    else
+                      # Fallback to job conclusion if logs aren't available
+                      if [ "$job_conclusion" = "success" ]; then
+                        echo "$test_case (Python $python_version)" >> /tmp/test_results/passed.txt
+                        echo "    ✅ Test passed based on job conclusion"
+                      else
+                        echo "$test_case (Python $python_version)" >> /tmp/test_results/failed.txt
+                        echo "    ❌ Test failed based on job conclusion"
+                      fi
+                    fi
+                  fi
+                else
+                  echo "    Job not found: $job_name"
+                  # Assume failed if job not found
+                  echo "$test_case (Python $python_version)" >> /tmp/test_results/failed.txt
+                fi
+              done
+            fi
+          done
+
+          # Count results from files
+          passed_test_cases=$(wc -l < /tmp/test_results/passed.txt || echo "0")
+          failed_test_cases=$(wc -l < /tmp/test_results/failed.txt || echo "0")
+          total_test_cases=$((passed_test_cases + failed_test_cases))
+
+          echo "Test results summary:"
+          echo "  Total: $total_test_cases"
+          echo "  Passed: $passed_test_cases"
+          echo "  Failed: $failed_test_cases"
+
+          # Calculate per-Python version statistics
+          mkdir -p /tmp/version_stats
+          for python_version in "${python_versions[@]}"; do
+            echo "Processing statistics for Python $python_version..."
+
+            passed_count=$(grep -c "Python ${python_version}" /tmp/test_results/passed.txt 2>/dev/null || echo "0")
+            failed_count=$(grep -c "Python ${python_version}" /tmp/test_results/failed.txt 2>/dev/null || echo "0")
+
+            # Ensure variables are numeric
+            passed_count=$(echo "$passed_count" | tr -d ' \t\n\r')
+            failed_count=$(echo "$failed_count" | tr -d ' \t\n\r')
+            passed_count="${passed_count:-0}"
+            failed_count="${failed_count:-0}"
+
+            total_count=$((passed_count + failed_count))
+
+            # Calculate success rate for this version
+            version_success_rate=0
+            if [ $total_count -gt 0 ]; then
+              version_success_rate=$(( (passed_count * 100) / total_count ))
+            fi
+
+            # Ensure proper formatting (prevent "00" display)
+            if [ "$failed_count" = "00" ]; then
+              failed_count="0"
+            fi
+            if [ "$passed_count" = "00" ]; then
+              passed_count="0"
+            fi
+
+            echo "$total_count,$passed_count,$failed_count,$version_success_rate" > "/tmp/version_stats/python_${python_version}.txt"
+            echo "Python $python_version FINAL: Total=$total_count, Passed=$passed_count, Failed=$failed_count, Success=$version_success_rate%"
+          done
+
+          # Generate email subject
+          if [ $failed_test_cases -eq 0 ]; then
+            subject="[APICENTER] Weekly APIC Extension Live Test - All Tests Passed ✅"
+          else
+            subject="[APICENTER] Weekly APIC Extension Live Test - $failed_test_cases/$total_test_cases Tests Failed ❌"
+          fi
+
+          # Calculate overall success rate
+          success_rate=0
+          if [ $total_test_cases -gt 0 ]; then
+            success_rate=$(( (passed_test_cases * 100) / total_test_cases ))
+          fi
+
+          # Generate HTML email body with Python version breakdown
+          cat > /tmp/email_body.html << 'EOF'
+          <html>
+          <body>
+            <h2>APIC Extension Live Test Report</h2>
+            <h3>📊 Overall Summary:</h3>
+            <table border="1" cellpadding="5" cellspacing="0" style="border-collapse: collapse;">
+              <tr>
+                <th>Metric</th>
+                <th>Total</th>
+                <th>Python 3.9</th>
+                <th>Python 3.10</th>
+                <th>Python 3.11</th>
+                <th>Python 3.12</th>
+              </tr>
+              <tr>
+                <td><strong>Total Test Cases</strong></td>
+                <td>TOTAL_PLACEHOLDER</td>
+                <td>TOTAL_39_PLACEHOLDER</td>
+                <td>TOTAL_310_PLACEHOLDER</td>
+                <td>TOTAL_311_PLACEHOLDER</td>
+                <td>TOTAL_312_PLACEHOLDER</td>
+              </tr>
+              <tr>
+                <td><strong>Passed</strong></td>
+                <td>PASSED_PLACEHOLDER</td>
+                <td>PASSED_39_PLACEHOLDER</td>
+                <td>PASSED_310_PLACEHOLDER</td>
+                <td>PASSED_311_PLACEHOLDER</td>
+                <td>PASSED_312_PLACEHOLDER</td>
+              </tr>
+              <tr>
+                <td><strong>Failed</strong></td>
+                <td>FAILED_PLACEHOLDER</td>
+                <td>FAILED_39_PLACEHOLDER</td>
+                <td>FAILED_310_PLACEHOLDER</td>
+                <td>FAILED_311_PLACEHOLDER</td>
+                <td>FAILED_312_PLACEHOLDER</td>
+              </tr>
+              <tr>
+                <td><strong>Success Rate</strong></td>
+                <td>SUCCESS_RATE_PLACEHOLDER%</td>
+                <td>SUCCESS_RATE_39_PLACEHOLDER%</td>
+                <td>SUCCESS_RATE_310_PLACEHOLDER%</td>
+                <td>SUCCESS_RATE_311_PLACEHOLDER%</td>
+                <td>SUCCESS_RATE_312_PLACEHOLDER%</td>
+              </tr>
+            </table>
+          EOF
+
+          # Replace overall placeholders
+          sed -i "s/TOTAL_PLACEHOLDER/$total_test_cases/g" /tmp/email_body.html
+          sed -i "s/PASSED_PLACEHOLDER/$passed_test_cases/g" /tmp/email_body.html
+          sed -i "s/FAILED_PLACEHOLDER/$failed_test_cases/g" /tmp/email_body.html
+          sed -i "s/SUCCESS_RATE_PLACEHOLDER/$success_rate/g" /tmp/email_body.html
+
+          # Replace per-version placeholders
+          for python_version in "${python_versions[@]}"; do
+            # Convert version to placeholder format (3.9 -> 39, 3.10 -> 310, etc.)
+            version_placeholder=$(echo "$python_version" | sed 's/\.//g')
+
+            if [ -f "/tmp/version_stats/python_${python_version}.txt" ]; then
+              IFS=',' read -r total_count passed_count failed_count version_success_rate < "/tmp/version_stats/python_${python_version}.txt"
+
+              # Ensure proper formatting of zero values
+              if [ "$failed_count" = "00" ]; then
+                failed_count="0"
+              fi
+              if [ "$passed_count" = "00" ]; then
+                passed_count="0"
+              fi
+            else
+              total_count=0
+              passed_count=0
+              failed_count=0
+              version_success_rate=0
+            fi
+
+            sed -i "s/TOTAL_${version_placeholder}_PLACEHOLDER/$total_count/g" /tmp/email_body.html
+            sed -i "s/PASSED_${version_placeholder}_PLACEHOLDER/$passed_count/g" /tmp/email_body.html
+            sed -i "s/FAILED_${version_placeholder}_PLACEHOLDER/$failed_count/g" /tmp/email_body.html
+            sed -i "s/SUCCESS_RATE_${version_placeholder}_PLACEHOLDER/$version_success_rate/g" /tmp/email_body.html
+          done
+
+          # Add failed tests section if any
+          if [ $failed_test_cases -gt 0 ] && [ -s /tmp/test_results/failed.txt ]; then
+            echo "    <h3>❌ Failed Tests:</h3>" >> /tmp/email_body.html
+            echo "    <ul>" >> /tmp/email_body.html
+            while IFS= read -r test; do
+              if [ -n "$test" ]; then
+                echo "      <li>${test}</li>" >> /tmp/email_body.html
+              fi
+            done < /tmp/test_results/failed.txt
+            echo "    </ul>" >> /tmp/email_body.html
+          fi
+
+          # Add workflow details
+          cat >> /tmp/email_body.html << EOF
+            <h3>🔗 Workflow Details:</h3>
+            <ul>
+              <li><strong>Workflow URL:</strong> <a href="${{ inputs.server-url }}/${{ inputs.repository }}/actions/runs/${{ inputs.workflow-run-id }}">View Workflow Run</a></li>
+              <li><strong>Repository:</strong> ${{ inputs.repository }}</li>
+              <li><strong>Branch:</strong> ${{ inputs.ref-name }}</li>
+              <li><strong>Triggered by:</strong> ${{ inputs.event-name }}</li>
+              <li><strong>Run ID:</strong> ${{ inputs.workflow-run-id }}</li>
+              <li><strong>Run Attempt:</strong> ${{ inputs.run-attempt }}</li>
+            </ul>
+          </body>
+          </html>
+          EOF
+
+          # Set environment variables for notification step
+          {
+            echo "EMAIL_TO=${{ secrets.AUTHOR_MAIL_ADDRESSES }}"
+            echo "EMAIL_SUBJECT<<EOF"
+            echo "$subject"
+            echo "EOF"
+            echo "EMAIL_BODY<<EOF"
+            cat /tmp/email_body.html
+            echo "EOF"
+          } >> $GITHUB_ENV
+
+          # Clean up
+          rm -rf /tmp/test_results /tmp/version_stats /tmp/email_body.html
+
+      - name: Send Email Notification
+        run: |
+          echo "Sending email notification..."
+
+          # Get access token
+          response=$(curl -s \
+            --request POST \
+            --header "Content-Type: application/x-www-form-urlencoded" \
+            --data "grant_type=client_credentials&client_id=${{ secrets.MAIL_CLIENT_ID }}&client_secret=${{ secrets.MAIL_CLIENT_SECRET }}&resource=https://management.core.windows.net" \
+            "https://login.microsoftonline.com/${{ secrets.MAIL_TENANT_ID }}/oauth2/token")
+
+          access_token=$(echo $response | jq -r '.access_token // empty')
+
+          if [ -z "$access_token" ]; then
+            echo "Failed to get access token"
+            echo "Response: $response"
+            exit 1
+          fi
+
+          # Create JSON payload using jq to properly escape special characters
+          json_payload=$(jq -n \
+            --arg to "$EMAIL_TO" \
+            --arg subject "$EMAIL_SUBJECT" \
+            --arg body "$EMAIL_BODY" \
+            '{to: $to, subject: $subject, body: $body}')
+
+          # Send email
+          curl_response=$(curl -s -w "HTTP_STATUS:%{http_code}" \
+            --request POST \
+            --header "Content-Type: application/json" \
+            --header "Authorization: Bearer $access_token" \
+            --data "$json_payload" \
+            'https://prod-18.northcentralus.logic.azure.com:443/workflows/b33d7861bfc64832a6f62cc8f2213988/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0')
+
+          http_status=$(echo "$curl_response" | grep -o "HTTP_STATUS:[0-9]*" | cut -d: -f2)
+          response_body=$(echo "$curl_response" | sed 's/HTTP_STATUS:[0-9]*$//')
+
+          echo "Email sending status: $http_status"
+          if [ "$http_status" != "200" ] && [ "$http_status" != "202" ]; then
+            echo "Failed to send email. Response: $response_body"
+            exit 1
+          else
+            echo "Email sent successfully"
+          fi

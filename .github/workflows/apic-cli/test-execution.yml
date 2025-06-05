@@ -1,0 +1,134 @@
+name: Test Execution (Reusable)
+
+on:
+  workflow_call:
+    inputs:
+      test-case:
+        description: 'Single test case to run'
+        required: true
+        type: string
+      python-versions:
+        description: 'JSON array of Python versions to test'
+        required: true
+        type: string
+      chunk-id:
+        description: 'Chunk identifier for organization'
+        required: true
+        type: number
+      max-retries:
+        description: 'Maximum number of retry attempts'
+        required: false
+        type: number
+        default: 0
+    secrets:
+      APICEXT_TEST_AZURE_CLIENT_ID:
+        required: true
+      APICEXT_TEST_AZURE_TENANT_ID:
+        required: true
+      APICEXT_TEST_AZURE_SUBSCRIPTION_ID:
+        required: true
+      USERASSIGNED_IDENTITY:
+        required: true
+      AWS_ACCESS_KEY_LINK:
+        required: true
+      AWS_SECRET_ACCESS_KEY_LINK:
+        required: true
+
+jobs:
+  test-single-case:
+    runs-on: ubuntu-latest
+    environment: engineering
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ${{ fromJson(inputs.python-versions) }}
+    name: ${{ inputs.test-case }} (Python ${{ matrix.python-version }})
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.APICEXT_TEST_AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.APICEXT_TEST_AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.APICEXT_TEST_AZURE_SUBSCRIPTION_ID }}
+          enable-AzPSSession: true
+
+      - name: Clone azure-cli-extensions repository
+        run: |
+          git clone https://github.com/blackchoey/azure-cli-extensions.git
+          cd azure-cli-extensions
+          git checkout main
+
+      - name: Setup development environment
+        run: |
+          cd azure-cli-extensions
+          python -m venv .venv
+
+          source .venv/bin/activate
+          python -m pip install -U pip
+          pip install azdev
+          azdev setup -r .
+          azdev extension add apic-extension
+
+      - name: Execute test case with retry logic
+        run: |
+          test_case='${{ inputs.test-case }}'
+          python_version='${{ matrix.python-version }}'
+          max_retries='${{ inputs.max-retries }}'
+          chunk_id='${{ inputs.chunk-id }}'
+
+          echo "=========================================="
+          echo "Running: $test_case (Python $python_version)"
+          echo "Chunk: $chunk_id"
+          echo "=========================================="
+
+          cd azure-cli-extensions
+          source .venv/bin/activate
+
+          test_passed=false
+
+          # Run the specific test case with retry logic
+          for attempt in $(seq 1 $max_retries); do
+            echo "Attempt $attempt/$max_retries for $test_case"
+
+            if [ "$test_case" = "full-suite" ]; then
+              echo "Running full test suite..."
+              if azdev test apic-extension --discover --live; then
+                test_passed=true
+                break
+              fi
+            else
+              echo "Running individual test case: $test_case"
+              if azdev test azext_apic-extension $test_case --discover --live; then
+                test_passed=true
+                break
+              fi
+            fi
+
+            if [ $attempt -lt $max_retries ]; then
+              echo "❌ Attempt $attempt failed, retrying in 10 seconds..."
+              sleep 10
+            fi
+          done
+
+          # Record final result
+          if [ "$test_passed" = true ]; then
+            echo "✅ PASSED: $test_case (Python $python_version)"
+          else
+            echo "❌ FAILED: $test_case (Python $python_version) after $max_retries attempts"
+            exit 1
+          fi
+
+          echo "Completed: $test_case (Python $python_version)"
+        env:
+          USERASSIGNED_IDENTITY: ${{ secrets.USERASSIGNED_IDENTITY }}
+          AWS_ACCESS_KEY_LINK: ${{ secrets.AWS_ACCESS_KEY_LINK }}
+          AWS_SECRET_ACCESS_KEY_LINK: ${{ secrets.AWS_SECRET_ACCESS_KEY_LINK }}
+
+    outputs:
+      test-case: ${{ inputs.test-case }}
+      chunk-id: ${{ inputs.chunk-id }}
