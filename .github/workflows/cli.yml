@@ -192,7 +192,7 @@ jobs:
           if [ -n "$test_matrix_jobs" ]; then
             echo "Found test matrix jobs:"
             echo "$test_matrix_jobs" | jq -c '.'
-              # For each test matrix job, check its conclusion
+            # For each test matrix job, check its conclusion
             # Use a subshell with process substitution to ensure file writes work correctly
             while IFS= read -r job_data; do
               if [ -n "$job_data" ] && [ "$job_data" != "null" ]; then
@@ -261,7 +261,8 @@ jobs:
                       if [ "$job_id" != "null" ] && [ -n "$job_id" ]; then
                       # Get job logs for detailed analysis
                       job_logs=$(curl -s -L -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-                        "https://api.github.com/repos/${{ github.repository }}/actions/jobs/$job_id/logs" 2>/dev/null || echo "")                      if [ -n "$job_logs" ]; then
+                        "https://api.github.com/repos/${{ github.repository }}/actions/jobs/$job_id/logs" 2>/dev/null || echo "")
+                      if [ -n "$job_logs" ]; then
                         # Check for pass/fail in logs
                         if echo "$job_logs" | grep -q "✅ PASSED: $test_case (Python $python_version)"; then
                           echo "$test_case (Python $python_version)" >> /tmp/test_results/passed.txt
