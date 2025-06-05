@@ -164,8 +164,8 @@ jobs:
           echo "Analyzing test results for notification..."
           echo "Test cases: $test_cases"
           echo "Python versions: $python_versions_input"
-
-          # Initialize temporary files for collecting results
+          # Initialize temporary files for collecting results - ensure clean start
+          rm -rf /tmp/test_results /tmp/current_test_cases.txt 2>/dev/null || true
           mkdir -p /tmp/test_results
           > /tmp/test_results/passed.txt
           > /tmp/test_results/failed.txt
@@ -189,45 +189,80 @@ jobs:
           # Get all test matrix jobs (should be named like "test (3.9)", "test (3.10)", etc.)
           test_matrix_jobs=$(echo "$jobs_response" | jq -r '.jobs[] | select(.name | startswith("test (")) | {name: .name, conclusion: .conclusion, id: .id}')
 
-          if [ -n "$test_matrix_jobs" ]; then
+          matrix_jobs_found=false
+          if [ -n "$test_matrix_jobs" ] && [ "$test_matrix_jobs" != "" ]; then
             echo "Found test matrix jobs:"
             echo "$test_matrix_jobs" | jq -c '.'
-            # For each test matrix job, check its conclusion
-            # Use a subshell with process substitution to ensure file writes work correctly
-            while IFS= read -r job_data; do
-              if [ -n "$job_data" ] && [ "$job_data" != "null" ]; then
-                job_name=$(echo "$job_data" | jq -r '.name')
-                job_conclusion=$(echo "$job_data" | jq -r '.conclusion')
 
-                # Extract python version from job name like "test (3.9)"
-                python_version=$(echo "$job_name" | sed -n 's/test (\(.*\))/\1/p')
+            # Count how many valid matrix jobs we found
+            matrix_job_count=$(echo "$test_matrix_jobs" | jq -s 'length')
+            echo "Found $matrix_job_count matrix jobs"
 
-                echo "Processing matrix job: $job_name (Python $python_version) -> $job_conclusion"
+            if [ "$matrix_job_count" -gt 0 ]; then
+              matrix_jobs_found=true
+              echo "Using matrix job results (primary approach)"
 
-                # Count test cases for this Python version based on job conclusion
-                test_case_count=$(echo "$test_cases" | jq '. | length')
+              # Process each matrix job individually to avoid subshell issues
+              for python_version in "${python_versions[@]}"; do
+                job_name="test ($python_version)"
+                echo "Looking for matrix job: $job_name"
 
-                if [ "$job_conclusion" = "success" ]; then
-                  # All test cases for this Python version passed
-                  echo "$test_cases" | jq -r '.[]' | while IFS= read -r test_case; do
-                    if [ -n "$test_case" ]; then
-                      echo "$test_case (Python $python_version)" >> /tmp/test_results/passed.txt
-                    fi
-                  done
-                  echo "  ✅ All $test_case_count test cases passed for Python $python_version"
+                job_info=$(echo "$jobs_response" | jq -r --arg name "$job_name" '.jobs[] | select(.name == $name) | {name: .name, conclusion: .conclusion, id: .id}')
+
+                if [ -n "$job_info" ] && [ "$job_info" != "null" ] && [ "$job_info" != "" ]; then
+                  job_conclusion=$(echo "$job_info" | jq -r '.conclusion')
+                  echo "Processing matrix job: $job_name -> $job_conclusion"
+
+                  # Count test cases for this Python version based on job conclusion
+                  test_case_count=$(echo "$test_cases" | jq '. | length')
+                  echo "  Will process $test_case_count test cases for Python $python_version"
+
+                  if [ "$job_conclusion" = "success" ]; then
+                    # All test cases for this Python version passed - use temp file to avoid subshell
+                    echo "$test_cases" | jq -r '.[]' > "/tmp/current_test_cases.txt"
+                    while IFS= read -r test_case; do
+                      if [ -n "$test_case" ]; then
+                        echo "$test_case (Python $python_version)" >> /tmp/test_results/passed.txt
+                        echo "    ✅ Added to passed: $test_case (Python $python_version)"
+                      fi
+                    done < "/tmp/current_test_cases.txt"
+                    echo "  ✅ All $test_case_count test cases passed for Python $python_version"
+                  else
+                    # All test cases for this Python version failed - use temp file to avoid subshell
+                    echo "$test_cases" | jq -r '.[]' > "/tmp/current_test_cases.txt"
+                    while IFS= read -r test_case; do
+                      if [ -n "$test_case" ]; then
+                        echo "$test_case (Python $python_version)" >> /tmp/test_results/failed.txt
+                        echo "    ❌ Added to failed: $test_case (Python $python_version)"
+                      fi
+                    done < "/tmp/current_test_cases.txt"
+                    echo "  ❌ All $test_case_count test cases failed for Python $python_version (conclusion: $job_conclusion)"
+                  fi
                 else
-                  # All test cases for this Python version failed
-                  echo "$test_cases" | jq -r '.[]' | while IFS= read -r test_case; do
+                  echo "Matrix job not found: $job_name"
+                  # If matrix job not found, mark all test cases as failed for this Python version
+                  echo "$test_cases" | jq -r '.[]' > "/tmp/current_test_cases.txt"
+                  while IFS= read -r test_case; do
                     if [ -n "$test_case" ]; then
                       echo "$test_case (Python $python_version)" >> /tmp/test_results/failed.txt
                     fi
-                  done
-                  echo "  ❌ All $test_case_count test cases failed for Python $python_version (conclusion: $job_conclusion)"
+                  done < "/tmp/current_test_cases.txt"
                 fi
-              fi
-            done < <(echo "$test_matrix_jobs" | jq -c '.')
-              # Skip the detailed individual job matching since we have the matrix results
+              done
+            fi
+          fi
+
+          if [ "$matrix_jobs_found" = true ]; then
+            # Skip the detailed individual job matching since we have the matrix results
             echo "Matrix job analysis complete. Skipping individual job matching."
+
+            # Debug: Show what was written to result files
+            echo "=== DEBUG: Final result files content ==="
+            echo "Passed tests (first 10 lines):"
+            head -10 /tmp/test_results/passed.txt 2>/dev/null || echo "No passed tests file"
+            echo "Failed tests (first 10 lines):"
+            head -10 /tmp/test_results/failed.txt 2>/dev/null || echo "No failed tests file"
+            echo "=== END DEBUG ==="
           else
             echo "No test matrix jobs found, falling back to individual job matching..."
 
@@ -321,17 +356,27 @@ jobs:
                 done
               fi
             done
-          fi
-
-          # Count results from files
-          passed_test_cases=$(wc -l < /tmp/test_results/passed.txt || echo "0")
-          failed_test_cases=$(wc -l < /tmp/test_results/failed.txt || echo "0")
+          fi          # Count results from files - ensure we count each line exactly once
+          passed_test_cases=$(cat /tmp/test_results/passed.txt 2>/dev/null | wc -l || echo "0")
+          failed_test_cases=$(cat /tmp/test_results/failed.txt 2>/dev/null | wc -l || echo "0")
           total_test_cases=$((passed_test_cases + failed_test_cases))
 
           echo "Test results summary:"
           echo "  Total: $total_test_cases"
           echo "  Passed: $passed_test_cases"
           echo "  Failed: $failed_test_cases"
+
+          # Validate expected counts
+          expected_test_case_count=$(echo "$test_cases" | jq '. | length')
+          expected_total=$(( expected_test_case_count * ${#python_versions[@]} ))
+          echo "Expected total test cases: $expected_total (${expected_test_case_count} test cases × ${#python_versions[@]} Python versions)"
+
+          if [ "$total_test_cases" -ne "$expected_total" ]; then
+            echo "⚠️  WARNING: Actual total ($total_test_cases) doesn't match expected total ($expected_total)"
+            echo "This suggests counting logic issues or missing jobs."
+          else
+            echo "✅ Total test case count matches expected value"
+          fi
 
           # Calculate per-Python version statistics
           mkdir -p /tmp/version_stats
@@ -502,8 +547,8 @@ jobs:
             echo "EOF"
           } >> $GITHUB_ENV
 
-          # Clean up
-          rm -rf /tmp/test_results /tmp/version_stats /tmp/email_body.html
+          # Clean up temporary files
+          rm -rf /tmp/test_results /tmp/version_stats /tmp/email_body.html /tmp/current_test_cases.txt 2>/dev/null || true
 
       - name: Send Email Notification
         run: |
