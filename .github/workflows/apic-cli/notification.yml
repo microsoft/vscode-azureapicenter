@@ -299,7 +299,7 @@ jobs:
 
           # Set environment variables for notification step
           {
-            echo "EMAIL_TO=${{ secrets.AUTHOR_MAIL_ADDRESSES }}"
+            echo "EMAIL_TO=frankqian@microsoft.com"
             echo "EMAIL_SUBJECT<<EOF"
             echo "$subject"
             echo "EOF"
