@@ -202,22 +202,45 @@ jobs:
               matrix_jobs_found=true
               echo "Using matrix job results (primary approach)"
 
+
               # Process each matrix job individually to avoid subshell issues
               for python_version in "${python_versions[@]}"; do
-                job_name="test ($python_version)"
-                echo "Looking for matrix job: $job_name"
+                echo "Looking for jobs for Python version: $python_version"
 
-                job_info=$(echo "$jobs_response" | jq -r --arg name "$job_name" '.jobs[] | select(.name == $name) | {name: .name, conclusion: .conclusion, id: .id}')
+                # The actual job names include test case details: "test (3.9) / test_case_name (Python 3.9)"
+                # We need to find jobs that match the pattern "test (X.Y) / ..." for this Python version
 
-                if [ -n "$job_info" ] && [ "$job_info" != "null" ] && [ "$job_info" != "" ]; then
-                  job_conclusion=$(echo "$job_info" | jq -r '.conclusion')
-                  echo "Processing matrix job: $job_name -> $job_conclusion"
+                # Find all jobs for this Python version - they may have different test case names
+                version_jobs=$(echo "$jobs_response" | jq -r --arg version "$python_version" \
+                  '.jobs[] | select(.name | (startswith("test (\($version))") and contains("Python \($version)"))) | {name: .name, conclusion: .conclusion, id: .id}')
 
-                  # Count test cases for this Python version based on job conclusion
+                if [ -n "$version_jobs" ] && [ "$version_jobs" != "" ] && [ "$version_jobs" != "null" ]; then
+                  echo "Found jobs for Python $python_version:"
+                  echo "$version_jobs" | jq -c '.'
+
+                  # Check if ALL jobs for this Python version succeeded
+                  all_success=true
+                  job_count=0
+
+                  # Count total jobs and check conclusions
+                  while IFS= read -r job_line; do
+                    if [ -n "$job_line" ] && [ "$job_line" != "null" ]; then
+                      job_count=$((job_count + 1))
+                      job_conclusion=$(echo "$job_line" | jq -r '.conclusion')
+                      echo "  Job conclusion: $job_conclusion for job: $(echo "$job_line" | jq -r '.name')"
+                      if [ "$job_conclusion" != "success" ]; then
+                        all_success=false
+                      fi
+                    fi
+                  done < <(echo "$version_jobs" | jq -c '.')
+
+                  echo "  Found $job_count jobs for Python $python_version, all_success=$all_success"
+
+                  # Count test cases for this Python version based on overall conclusion
                   test_case_count=$(echo "$test_cases" | jq '. | length')
                   echo "  Will process $test_case_count test cases for Python $python_version"
 
-                  if [ "$job_conclusion" = "success" ]; then
+                  if [ "$all_success" = true ]; then
                     # All test cases for this Python version passed - use temp file to avoid subshell
                     echo "$test_cases" | jq -r '.[]' > "/tmp/current_test_cases.txt"
                     while IFS= read -r test_case; do
@@ -228,7 +251,7 @@ jobs:
                     done < "/tmp/current_test_cases.txt"
                     echo "  ✅ All $test_case_count test cases passed for Python $python_version"
                   else
-                    # All test cases for this Python version failed - use temp file to avoid subshell
+                    # Some or all test cases for this Python version failed - use temp file to avoid subshell
                     echo "$test_cases" | jq -r '.[]' > "/tmp/current_test_cases.txt"
                     while IFS= read -r test_case; do
                       if [ -n "$test_case" ]; then
@@ -236,15 +259,16 @@ jobs:
                         echo "    ❌ Added to failed: $test_case (Python $python_version)"
                       fi
                     done < "/tmp/current_test_cases.txt"
-                    echo "  ❌ All $test_case_count test cases failed for Python $python_version (conclusion: $job_conclusion)"
+                    echo "  ❌ Some/all $test_case_count test cases failed for Python $python_version"
                   fi
                 else
-                  echo "Matrix job not found: $job_name"
-                  # If matrix job not found, mark all test cases as failed for this Python version
+                  echo "No jobs found for Python $python_version"
+                  # If no jobs found, mark all test cases as failed for this Python version
                   echo "$test_cases" | jq -r '.[]' > "/tmp/current_test_cases.txt"
                   while IFS= read -r test_case; do
                     if [ -n "$test_case" ]; then
                       echo "$test_case (Python $python_version)" >> /tmp/test_results/failed.txt
+                      echo "    ❌ Added to failed (no job found): $test_case (Python $python_version)"
                     fi
                   done < "/tmp/current_test_cases.txt"
                 fi
