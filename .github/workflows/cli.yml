@@ -1,4 +1,4 @@
-﻿name: CLI weekly live test (Reusable Architecture)
+﻿name: CLI weekly live test (Simplified Architecture)
 
 on:
   schedule:
@@ -19,10 +19,8 @@ jobs:
     runs-on: ubuntu-latest
     environment: engineering
     outputs:
-      test-case-chunks: ${{ steps.create-chunks.outputs.test-case-chunks }}
-      python-versions: ${{ steps.create-chunks.outputs.python-versions }}
-      test-cases: ${{ steps.create-chunks.outputs.test-cases }}
-      total-chunks: ${{ steps.create-chunks.outputs.total-chunks }}
+      test-cases: ${{ steps.discover-tests.outputs.test-cases }}
+      python-versions: ${{ steps.discover-tests.outputs.python-versions }}
     steps:
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -53,98 +51,88 @@ jobs:
           azdev setup -r .
           azdev extension add apic-extension
 
-      - name: Create test case chunks for reusable workflows
-        id: create-chunks
+      - name: Discover test cases and set outputs
+        id: discover-tests
         run: |
-          # Check if specific test cases are provided via workflow_dispatch
-          inputCases='${{ github.event.inputs.test-cases }}'
-          if [ -n "$inputCases" ] && [ "$inputCases" != "null" ]; then
-            echo "Using manually specified test cases: $inputCases"
-            test_cases="$inputCases"
-            total_tests=$(echo "$test_cases" | jq '. | length')
+          cd azure-cli-extensions
+          source .venv/bin/activate
+
+          # Check if specific test cases are provided
+          test_input='${{ inputs.test-cases }}'
+          if [ -n "$test_input" ] && [ "$test_input" != "null" ] && [ "$test_input" != "" ]; then
+            echo "Using specific test cases from input: $test_input"
+            test_cases="$test_input"
           else
-            # Automatically discover test cases using pytest --collect-only
-            cd azure-cli-extensions
-            source .venv/bin/activate
-            cd src/apic-extension
+            echo "Discovering all test cases..."
+            # Get all test cases by discovering them
+            test_collection=$(azdev test azext_apic-extension --discover 2>/dev/null | grep -E '^test_' | sort | uniq || true)
 
-            echo "Discovering test cases using pytest --collect-only..."
-            test_collection_output=$(python -m pytest --collect-only -q 2>/dev/null || true)
-
-            # Extract test function names from pytest collection output
-            if echo "$test_collection_output" | grep -q "<TestCaseFunction"; then
-              test_collection=$(echo "$test_collection_output" | grep -E "^\s*<TestCaseFunction" | sed -E 's/.*<TestCaseFunction ([^>]+)>.*/\1/' | sort | uniq)
-            elif echo "$test_collection_output" | grep -q "::test_"; then
-              test_collection=$(echo "$test_collection_output" | grep -E "::test_" | sed -E 's/.*::([^:]+)$/\1/' | sort | uniq)
+            if [ -z "$test_collection" ]; then
+              echo "No individual test cases found, using full-suite approach"
+              test_cases='["full-suite"]'
             else
-              test_collection=""
-            fi
-
-            if [ -n "$test_collection" ]; then
               test_count=$(echo "$test_collection" | wc -l)
               echo "Discovered $test_count test cases"
               test_cases=$(echo "$test_collection" | jq -R -s -c 'split("\n") | map(select(length > 0))')
               total_tests=$(echo "$test_cases" | jq '. | length')
               echo "Found $total_tests test cases total"
-            else
-              echo "No test cases found, using full-suite approach"
-              test_cases='["full-suite"]'
-              total_tests=1
             fi
           fi
 
-          # Store test cases for notification job
           echo "test-cases=$test_cases" >> $GITHUB_OUTPUT
 
           # Python versions to test against
           python_versions='["3.9", "3.10", "3.11", "3.12"]'
-          echo "python-versions=$python_versions" >> $GITHUB_OUTPUT
+          echo "python-versions=$python_versions" >> $GITHUB_OUTPUT  # Execute tests for each Python version using reusable workflow
 
-          # For reusable workflows, we need to chunk test cases to stay under matrix limits
-          # GitHub has a 256 matrix combination limit per job
-          # Since we have 4 Python versions per test case, max test cases per chunk = 60
-          max_tests_per_chunk=60
-
-          echo "Creating chunks for $total_tests test cases..."
-
-          if [ "$total_tests" -le "$max_tests_per_chunk" ]; then
-            # All tests fit in one chunk
-            echo "All $total_tests tests fit in one chunk"
-            total_chunks=1
-            chunk_matrix=$(jq -n --argjson tests "$test_cases" '[{chunk_id: 0, test_cases: $tests}]')
-          else
-            # Split into multiple chunks
-            total_chunks=$(( (total_tests + max_tests_per_chunk - 1) / max_tests_per_chunk ))
-            echo "Splitting $total_tests tests into $total_chunks chunks of up to $max_tests_per_chunk tests each"
-
-            chunk_matrix=$(echo "$test_cases" | jq --argjson chunk_size "$max_tests_per_chunk" '
-              [range(0; length; $chunk_size) as $i | {
-                chunk_id: ($i / $chunk_size | floor),
-                test_cases: .[$i:$i+$chunk_size]
-              }]
-            ')
-          fi
-
-          echo "test-case-chunks=$(echo "$chunk_matrix" | jq -c '.')" >> $GITHUB_OUTPUT
-          echo "total-chunks=$total_chunks" >> $GITHUB_OUTPUT
-
-          # Debug output
-          echo "DEBUG: Created $total_chunks chunks:"
-          echo "$chunk_matrix" | jq -r '.[] | "  Chunk \(.chunk_id): \(.test_cases | length) test cases"'  # Execute all test cases using reusable workflow with dynamic chunking
-
-  execute-tests:
+  test-python-39:
     needs: setup
-    strategy:
-      fail-fast: false
-      matrix:
-        chunk: ${{ fromJson(needs.setup.outputs.test-case-chunks) }}
-        include: ${{ fromJson(needs.setup.outputs.test-case-chunks) }}
-    name: Execute Chunk ${{ matrix.chunk.chunk_id }}
-    uses: ./.github/workflows/apic-cli/test-execution-chunk.yml
+    uses: ./.github/workflows/apic-cli/test-execution-all.yml
     with:
-      test-cases: ${{ toJson(matrix.chunk.test_cases) }}
-      python-versions: ${{ needs.setup.outputs.python-versions }}
-      chunk-id: ${{ matrix.chunk.chunk_id }}
+      test-cases: ${{ needs.setup.outputs.test-cases }}
+      python-version: "3.9"
+    secrets:
+      APICEXT_TEST_AZURE_CLIENT_ID: ${{ secrets.APICEXT_TEST_AZURE_CLIENT_ID }}
+      APICEXT_TEST_AZURE_TENANT_ID: ${{ secrets.APICEXT_TEST_AZURE_TENANT_ID }}
+      APICEXT_TEST_AZURE_SUBSCRIPTION_ID: ${{ secrets.APICEXT_TEST_AZURE_SUBSCRIPTION_ID }}
+      USERASSIGNED_IDENTITY: ${{ secrets.USERASSIGNED_IDENTITY }}
+      AWS_ACCESS_KEY_LINK: ${{ secrets.AWS_ACCESS_KEY_LINK }}
+      AWS_SECRET_ACCESS_KEY_LINK: ${{ secrets.AWS_SECRET_ACCESS_KEY_LINK }}
+
+  test-python-310:
+    needs: setup
+    uses: ./.github/workflows/apic-cli/test-execution-all.yml
+    with:
+      test-cases: ${{ needs.setup.outputs.test-cases }}
+      python-version: "3.10"
+    secrets:
+      APICEXT_TEST_AZURE_CLIENT_ID: ${{ secrets.APICEXT_TEST_AZURE_CLIENT_ID }}
+      APICEXT_TEST_AZURE_TENANT_ID: ${{ secrets.APICEXT_TEST_AZURE_TENANT_ID }}
+      APICEXT_TEST_AZURE_SUBSCRIPTION_ID: ${{ secrets.APICEXT_TEST_AZURE_SUBSCRIPTION_ID }}
+      USERASSIGNED_IDENTITY: ${{ secrets.USERASSIGNED_IDENTITY }}
+      AWS_ACCESS_KEY_LINK: ${{ secrets.AWS_ACCESS_KEY_LINK }}
+      AWS_SECRET_ACCESS_KEY_LINK: ${{ secrets.AWS_SECRET_ACCESS_KEY_LINK }}
+
+  test-python-311:
+    needs: setup
+    uses: ./.github/workflows/apic-cli/test-execution-all.yml
+    with:
+      test-cases: ${{ needs.setup.outputs.test-cases }}
+      python-version: "3.11"
+    secrets:
+      APICEXT_TEST_AZURE_CLIENT_ID: ${{ secrets.APICEXT_TEST_AZURE_CLIENT_ID }}
+      APICEXT_TEST_AZURE_TENANT_ID: ${{ secrets.APICEXT_TEST_AZURE_TENANT_ID }}
+      APICEXT_TEST_AZURE_SUBSCRIPTION_ID: ${{ secrets.APICEXT_TEST_AZURE_SUBSCRIPTION_ID }}
+      USERASSIGNED_IDENTITY: ${{ secrets.USERASSIGNED_IDENTITY }}
+      AWS_ACCESS_KEY_LINK: ${{ secrets.AWS_ACCESS_KEY_LINK }}
+      AWS_SECRET_ACCESS_KEY_LINK: ${{ secrets.AWS_SECRET_ACCESS_KEY_LINK }}
+
+  test-python-312:
+    needs: setup
+    uses: ./.github/workflows/apic-cli/test-execution-all.yml
+    with:
+      test-cases: ${{ needs.setup.outputs.test-cases }}
+      python-version: "3.12"
     secrets:
       APICEXT_TEST_AZURE_CLIENT_ID: ${{ secrets.APICEXT_TEST_AZURE_CLIENT_ID }}
       APICEXT_TEST_AZURE_TENANT_ID: ${{ secrets.APICEXT_TEST_AZURE_TENANT_ID }}
@@ -155,7 +143,7 @@ jobs:
 
   # Send notification using reusable workflow
   notify:
-    needs: [setup, execute-tests]
+    needs: [setup, test-python-39, test-python-310, test-python-311, test-python-312]
     if: (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && !cancelled()
     uses: ./.github/workflows/apic-cli/notification.yml
     with:

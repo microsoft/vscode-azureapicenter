@@ -1,20 +1,16 @@
-name: Test Execution Chunk (Reusable)
+name: Test Execution All Cases (Reusable)
 
 on:
   workflow_call:
     inputs:
       test-cases:
-        description: 'JSON array of test cases to run in this chunk'
+        description: 'JSON array of all test cases to run'
         required: true
         type: string
-      python-versions:
-        description: 'JSON array of Python versions to test'
+      python-version:
+        description: 'Single Python version to test with'
         required: true
         type: string
-      chunk-id:
-        description: 'Chunk identifier for organization'
-        required: true
-        type: number
     secrets:
       APICEXT_TEST_AZURE_CLIENT_ID:
         required: true
@@ -30,20 +26,19 @@ on:
         required: true
 
 jobs:
-  test-chunk:
+  test-all-cases:
     runs-on: ubuntu-latest
     environment: engineering
     strategy:
       fail-fast: false
       matrix:
         test-case: ${{ fromJson(inputs.test-cases) }}
-        python-version: ${{ fromJson(inputs.python-versions) }}
-    name: ${{ matrix.test-case }} (Python ${{ matrix.python-version }})
+    name: ${{ matrix.test-case }} (Python ${{ inputs.python-version }})
     steps:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: ${{ inputs.python-version }}
 
       - name: Azure login
         uses: azure/login@v2
@@ -72,12 +67,10 @@ jobs:
       - name: Execute test case
         run: |
           test_case='${{ matrix.test-case }}'
-          python_version='${{ matrix.python-version }}'
-          chunk_id='${{ inputs.chunk-id }}'
+          python_version='${{ inputs.python-version }}'
 
           echo "=========================================="
           echo "Running: $test_case (Python $python_version)"
-          echo "Chunk: $chunk_id"
           echo "=========================================="
 
           cd azure-cli-extensions
@@ -86,24 +79,19 @@ jobs:
           # Run the specific test case
           if [ "$test_case" = "full-suite" ]; then
             echo "Running full test suite..."
-            if azdev test apic-extension --discover --live; then
-              echo "✅ PASSED: $test_case (Python $python_version)"
-            else
-              echo "❌ FAILED: $test_case (Python $python_version)"
-              exit 1
-            fi
+            azdev test apic-extension --discover --live
           else
             echo "Running individual test case: $test_case"
-            if azdev test azext_apic-extension $test_case --discover --live; then
-              echo "✅ PASSED: $test_case (Python $python_version)"
-            else
-              echo "❌ FAILED: $test_case (Python $python_version)"
-              exit 1
-            fi
+            azdev test azext_apic-extension $test_case --discover --live
           fi
 
+          echo "✅ PASSED: $test_case (Python $python_version)"
           echo "Completed: $test_case (Python $python_version)"
         env:
           USERASSIGNED_IDENTITY: ${{ secrets.USERASSIGNED_IDENTITY }}
           AWS_ACCESS_KEY_LINK: ${{ secrets.AWS_ACCESS_KEY_LINK }}
           AWS_SECRET_ACCESS_KEY_LINK: ${{ secrets.AWS_SECRET_ACCESS_KEY_LINK }}
+
+    outputs:
+      test-case: ${{ matrix.test-case }}
+      python-version: ${{ inputs.python-version }}
