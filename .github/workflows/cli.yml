@@ -360,7 +360,7 @@ jobs:
 
           # Set environment variables for the email sending step
           echo "EMAIL_SUBJECT=$email_subject" >> $GITHUB_ENV
-          echo "EMAIL_TO=your-team@company.com" >> $GITHUB_ENV  # TODO: Replace with actual email
+          echo "EMAIL_TO=frankqian@microsoft.com" >> $GITHUB_ENV  # TODO: Replace with actual email
 
           # Handle multi-line email body properly
           {
