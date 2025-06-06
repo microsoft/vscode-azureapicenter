@@ -182,22 +182,18 @@ jobs:
 
           # Calculate totals across all Python versions (4 versions)
           total_cases=$((cases_per_version * 4))
-
           echo "Cases per version: $cases_per_version"
           echo "Total cases across all versions: $total_cases"
-
-          # Create summary table header
+          # Create summary table header - using ASCII characters for better compatibility
           email_body="CLI Weekly Test Results Summary
           ==========================================
 
           Test Execution Date: $(date '+%Y-%m-%d %H:%M:%S UTC')
           Repository: azure-cli-extensions (apic-extension)
-          Test Cases per Python Version: $cases_per_version
-
-          Overall Summary:
-          ┌─────────────────┬──────────────┬──────────────┬──────────────┬──────────────┐
-          │ Python Version  │ Total Cases  │ Successful   │ Failed       │ Success Rate │
-          ├─────────────────┼──────────────┼──────────────┼──────────────┼──────────────┤"
+          Test Cases per Python Version: $cases_per_version          Overall Summary:
+          +---------------+--------------+--------------+--------------+--------------+
+          | Python Version| Total Cases  | Successful   | Failed       | Success Rate |
+          +---------------+--------------+--------------+--------------+--------------+"
 
           # Check the overall result of the test job
           # In GitHub Actions, if any matrix job fails, the overall job fails
@@ -265,17 +261,16 @@ jobs:
                 failed_cases="$failed_cases\nPython $version: $failed_cases_list"
               fi
             fi
-
             # Format numbers with proper padding for table alignment
-            printf -v version_padded "%-15s" "Python $version"
+            printf -v version_padded "%-13s" "Python $version"
             printf -v total_padded "%-12s" "$cases_per_version"
             printf -v success_padded "%-12s" "$successful_cases"
             printf -v failed_padded "%-12s" "$failed_cases_count"
             printf -v rate_padded "%-12s" "$success_rate%"
 
-            # Add row to table
+            # Add row to table - ensure consistent indentation
             email_body="$email_body
-          │ $version_padded │ $total_padded │ $success_padded │ $failed_padded │ $rate_padded │"
+          | $version_padded | $total_padded | $success_padded | $failed_padded | $rate_padded |"
           done
 
           # Calculate overall success rate
@@ -284,32 +279,31 @@ jobs:
           else
             overall_success_rate=$(( (total_success * 100) / total_cases ))
           fi
-
           # Format totals with proper padding
           printf -v total_cases_padded "%-12s" "$total_cases"
           printf -v total_success_padded "%-12s" "$total_success"
           printf -v total_failed_padded "%-12s" "$total_failed"
           printf -v overall_rate_padded "%-12s" "$overall_success_rate%"
-
           # Add total row and close table
           email_body="$email_body
-          ├─────────────────┼──────────────┼──────────────┼──────────────┼──────────────┤
-          │ TOTAL           │ $total_cases_padded │ $total_success_padded │ $total_failed_padded │ $overall_rate_padded │
-          └─────────────────┴──────────────┴──────────────┴──────────────┴──────────────┘"
-
+          +---------------+--------------+--------------+--------------+--------------+
+          | TOTAL         | $total_cases_padded | $total_success_padded | $total_failed_padded | $overall_rate_padded |
+          +---------------+--------------+--------------+--------------+--------------+"
           # Add failed cases section if any
           if [ -n "$failed_cases" ]; then
             email_body="$email_body
 
           ❌ Failed Test Cases:
           ==================="
-            # Format the failed cases nicely
-            echo -e "$failed_cases" | while IFS= read -r line; do
+            # Format the failed cases nicely - avoid subshell issue
+            IFS=$'\n'
+            for line in $(echo -e "$failed_cases"); do
               if [ -n "$line" ]; then
                 email_body="$email_body
           • $line"
               fi
             done
+            unset IFS
           else
             email_body="$email_body
 
@@ -362,11 +356,13 @@ jobs:
           echo "EMAIL_SUBJECT=$email_subject" >> $GITHUB_ENV
           echo "EMAIL_TO=frankqian@microsoft.com" >> $GITHUB_ENV  # TODO: Replace with actual email
 
-          # Handle multi-line email body properly
+          # Handle multi-line email body properly - ensure proper formatting is preserved
+          # Use a delimiter that won't appear in the content
+          delimiter="EMAIL_BODY_EOF_$(date +%s)"
           {
-            echo "EMAIL_BODY<<EOF"
-            echo "$email_body"
-            echo "EOF"
+            echo "EMAIL_BODY<<$delimiter"
+            printf "%s\n" "$email_body"
+            echo "$delimiter"
           } >> $GITHUB_ENV
 
           echo "✅ Email content generated successfully"
