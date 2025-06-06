@@ -295,9 +295,12 @@ jobs:
                   echo "$test_case (Python $python_version)" >> /tmp/test_results/failed.txt
                   echo "    ❌ NOT FOUND: $test_case (Python $python_version) - no matching job found"
                 fi
-              done
+
+                done
             fi
-          done# Count results and calculate statistics
+          done
+
+          # Count results and calculate statistics
           passed_test_cases=$(cat /tmp/test_results/passed.txt 2>/dev/null | wc -l || echo "0")
           failed_test_cases=$(cat /tmp/test_results/failed.txt 2>/dev/null | wc -l || echo "0")
           total_test_cases=$((passed_test_cases + failed_test_cases))
