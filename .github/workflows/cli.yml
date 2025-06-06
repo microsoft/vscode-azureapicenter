@@ -146,7 +146,6 @@ jobs:
       USERASSIGNED_IDENTITY: ${{ secrets.USERASSIGNED_IDENTITY }}
       AWS_ACCESS_KEY_LINK: ${{ secrets.AWS_ACCESS_KEY_LINK }}
       AWS_SECRET_ACCESS_KEY_LINK: ${{ secrets.AWS_SECRET_ACCESS_KEY_LINK }}
-
   # Send notification with inline logic (no reusable workflow)
   notify:
     runs-on: ubuntu-latest
@@ -175,34 +174,50 @@ jobs:
           mapfile -t python_versions < <(echo "$python_versions_input" | jq -r '.[]')
 
           echo "Processing results for Python versions: ${python_versions[@]}"
-          # Fetch all jobs from the workflow run
-          jobs_response=$(curl -s -H "Accept: application/vnd.github.v3+json" \
+          # Fetch all jobs from the main workflow run
+          main_jobs_response=$(curl -s -H "Accept: application/vnd.github.v3+json" \
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs")
-          echo "DEBUG: All jobs in this workflow run:"
-          echo "$jobs_response" | jq -r '.jobs[] | "Name: \(.name) | Conclusion: \(.conclusion // "null") | Status: \(.status)"'
 
-          echo "DEBUG: Job name patterns to look for:"
-          echo "$test_cases" | jq -r '.[]' | head -3 | while IFS= read -r test_case; do
-            if [ -n "$test_case" ]; then
-              for python_version in "${python_versions[@]}"; do
-                # Pattern 1: Direct job name from reusable workflow
-                pattern1="${test_case} (Python ${python_version})"
-                # Pattern 2: Main job name (if sub-jobs are not exposed)
-                pattern2="test (${python_version})"
-                # Pattern 3: Possible hierarchical naming
-                pattern3="test (${python_version}) / ${test_case} (Python ${python_version})"
-                echo "  Expected patterns for ${test_case} on Python ${python_version}:"
-                echo "    - $pattern1"
-                echo "    - $pattern2"
-                echo "    - $pattern3"
-                break
-              done
-              break
+          echo "DEBUG: Main workflow jobs found:"
+          echo "$main_jobs_response" | jq -r '.jobs[] | "Name: \(.name) | Conclusion: \(.conclusion // "null") | Status: \(.status)"'
+
+          # Get all reusable workflow run IDs that were triggered by this main workflow
+          echo "Fetching reusable workflow runs to get individual test case results..."
+
+          # Get all workflow runs that were triggered around the same time as this run
+          workflow_runs_response=$(curl -s -H "Accept: application/vnd.github.v3+json" \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/runs?per_page=50")
+
+          # Find reusable workflow runs that match our timeframe (within last hour)
+          current_time=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          one_hour_ago=$(date -u -d '1 hour ago' +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || date -u -v-1H +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || echo "")
+
+          echo "Looking for reusable workflow runs created after: $one_hour_ago"
+
+          reusable_run_ids=$(echo "$workflow_runs_response" | jq -r --arg after "$one_hour_ago" \
+            '.workflow_runs[] | select(.name == "Test Execution All Cases (Reusable)" and .created_at > $after) | .id')
+
+          echo "Found reusable workflow run IDs: $reusable_run_ids"
+
+          # Collect all jobs from reusable workflows
+          > /tmp/test_results/all_reusable_jobs.json
+          for run_id in $reusable_run_ids; do
+            if [ -n "$run_id" ]; then
+              echo "Fetching jobs from reusable workflow run: $run_id"
+              reusable_jobs=$(curl -s -H "Accept: application/vnd.github.v3+json" \
+                -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                "https://api.github.com/repos/${{ github.repository }}/actions/runs/$run_id/jobs")
+
+              echo "$reusable_jobs" | jq -r '.jobs[]' >> /tmp/test_results/all_reusable_jobs.json
             fi
-          done          # Process each test case for each Python version individually
-          # The job structure is: main jobs "test (X.Y)" contain sub-jobs from reusable workflow
-          # We need to check both the individual test jobs and the main matrix jobs
+          done
+
+          echo "DEBUG: All reusable workflow jobs found:"
+          cat /tmp/test_results/all_reusable_jobs.json | jq -r '"Name: \(.name) | Conclusion: \(.conclusion // "null") | Status: \(.status)"'
+
+          # Process each test case for each Python version
           echo "$test_cases" | jq -r '.[]' | while IFS= read -r test_case; do
             if [ -n "$test_case" ]; then
               echo "Processing test case: $test_case"
@@ -210,93 +225,63 @@ jobs:
               for python_version in "${python_versions[@]}"; do
                 echo "  Checking Python $python_version"
 
-                # Try multiple job name patterns in order of preference
-                job_patterns=(
-                  "${test_case} (Python ${python_version})"                           # Direct from reusable workflow
-                  "test (${python_version}) / ${test_case} (Python ${python_version})" # Hierarchical naming
-                  "test (${python_version})"                                          # Main matrix job
-                )
+                # Look for the individual test case job in reusable workflow runs
+                individual_job_name="${test_case} (Python ${python_version})"
+                echo "    Looking for individual job: $individual_job_name"
 
-                job_found=false
-                job_conclusion="null"
-                job_status="null"
+                individual_job_info=$(cat /tmp/test_results/all_reusable_jobs.json | jq -r --arg name "$individual_job_name" \
+                  'select(.name == $name) | {id: .id, conclusion: .conclusion, status: .status}' | head -n1)
 
-                for job_name in "${job_patterns[@]}"; do
-                  echo "    Trying job pattern: $job_name"
+                if [ "$individual_job_info" != "" ] && [ "$individual_job_info" != "null" ]; then
+                  job_conclusion=$(echo "$individual_job_info" | jq -r '.conclusion // "null"')
+                  job_status=$(echo "$individual_job_info" | jq -r '.status // "null"')
 
-                  job_info=$(echo "$jobs_response" | jq -r --arg name "$job_name" \
-                    '.jobs[] | select(.name == $name) | {id: .id, conclusion: .conclusion, status: .status}')
+                  echo "    Found individual job - Conclusion: $job_conclusion, Status: $job_status"
 
-                  if [ "$job_info" != "" ] && [ "$job_info" != "null" ]; then
-                    job_conclusion=$(echo "$job_info" | jq -r '.conclusion // "null"')
-                    job_status=$(echo "$job_info" | jq -r '.status // "null"')
-                    echo "    Found job - Conclusion: $job_conclusion, Status: $job_status"
-                    job_found=true
-                    break
-                  fi
-                done                # If we found a main matrix job but not individual test job,
-                # we need to check the job steps or use the workflow runs API for reusable workflows
-                if [ "$job_found" = true ] && [[ "$job_name" == "test ("*")" ]]; then
-                  echo "    Found matrix job: $job_name"
-
-                  # Get detailed job information including steps
-                  matrix_job_id=$(echo "$job_info" | jq -r '.id')
-                  job_details=$(curl -s -H "Accept: application/vnd.github.v3+json" \
-                    -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-                    "https://api.github.com/repos/${{ github.repository }}/actions/jobs/$matrix_job_id")
-
-                  echo "    Analyzing matrix job steps for test case: $test_case"
-
-                  # Check if the matrix job overall succeeded or failed
-                  if [ "$job_conclusion" = "success" ]; then
-                    # If matrix job succeeded, all test cases in it should be successful
-                    echo "$test_case (Python $python_version)" >> /tmp/test_results/passed.txt
-                    echo "    ✅ PASSED (matrix job success): $test_case (Python $python_version)"
-                  elif [ "$job_conclusion" = "failure" ]; then
-                    # Matrix job failed - check if this specific test case caused the failure
-                    # Look through job steps to find test execution step
-                    test_step_conclusion=$(echo "$job_details" | jq -r --arg test_case "$test_case" \
-                      '.steps[] | select(.name | contains($test_case) or contains("Execute test case")) | .conclusion // "null"')
-
-                    if [ "$test_step_conclusion" = "success" ]; then
-                      echo "$test_case (Python $python_version)" >> /tmp/test_results/passed.txt
-                      echo "    ✅ PASSED (test step success): $test_case (Python $python_version)"
-                    else
-                      echo "$test_case (Python $python_version)" >> /tmp/test_results/failed.txt
-                      echo "    ❌ FAILED (matrix job failed): $test_case (Python $python_version) - Step conclusion: $test_step_conclusion"
-                    fi
-                  else
-                    # Other conclusions (cancelled, skipped, etc.)
-                    echo "$test_case (Python $python_version)" >> /tmp/test_results/failed.txt
-                    echo "    ❌ FAILED (matrix job non-success): $test_case (Python $python_version) - Conclusion: $job_conclusion"
-                  fi
-                elif [ "$job_found" = true ]; then
-                  # Individual test job found
-                  echo "    Found individual test job: $job_name"
-
+                  # Use the individual job result
                   if [ "$job_conclusion" = "success" ]; then
                     echo "$test_case (Python $python_version)" >> /tmp/test_results/passed.txt
                     echo "    ✅ PASSED: $test_case (Python $python_version)"
-                  elif [ "$job_conclusion" = "failure" ] || [ "$job_conclusion" = "cancelled" ] || [ "$job_conclusion" = "timed_out" ]; then
+                  elif [ "$job_conclusion" = "failure" ]; then
                     echo "$test_case (Python $python_version)" >> /tmp/test_results/failed.txt
-                    echo "    ❌ FAILED: $test_case (Python $python_version) - Conclusion: $job_conclusion"
+                    echo "    ❌ FAILED: $test_case (Python $python_version)"
+                  elif [ "$job_conclusion" = "cancelled" ]; then
+                    echo "$test_case (Python $python_version)" >> /tmp/test_results/failed.txt
+                    echo "    🚫 CANCELLED: $test_case (Python $python_version)"
                   elif [ "$job_conclusion" = "skipped" ]; then
                     echo "$test_case (Python $python_version)" >> /tmp/test_results/failed.txt
-                    echo "    ⏭️  SKIPPED: $test_case (Python $python_version) - treating as failed"
-                  elif [ "$job_conclusion" = "null" ] && [ "$job_status" = "in_progress" ]; then
+                    echo "    ⏭️  SKIPPED: $test_case (Python $python_version)"
+                  elif [ "$job_status" = "in_progress" ] || [ "$job_status" = "queued" ]; then
                     echo "$test_case (Python $python_version)" >> /tmp/test_results/failed.txt
                     echo "    ⏳ IN_PROGRESS: $test_case (Python $python_version) - treating as failed"
                   else
                     echo "$test_case (Python $python_version)" >> /tmp/test_results/failed.txt
-                    echo "    ❓ UNKNOWN: $test_case (Python $python_version) - Conclusion: $job_conclusion - treating as failed"
+                    echo "    ❓ UNKNOWN: $test_case (Python $python_version) - Conclusion: $job_conclusion, Status: $job_status"
                   fi
                 else
-                  # No job found at all
-                  echo "$test_case (Python $python_version)" >> /tmp/test_results/failed.txt
-                  echo "    ❌ NOT FOUND: $test_case (Python $python_version) - no matching job found"
-                fi
+                  # Fallback: Use matrix job status if individual job not found
+                  echo "    Individual job not found, falling back to matrix job status"
+                  matrix_job_name="test (${python_version})"
+                  matrix_job_info=$(echo "$main_jobs_response" | jq -r --arg name "$matrix_job_name" \
+                    '.jobs[] | select(.name == $name) | {id: .id, conclusion: .conclusion, status: .status}')
 
-                done
+                  if [ "$matrix_job_info" != "" ] && [ "$matrix_job_info" != "null" ]; then
+                    job_conclusion=$(echo "$matrix_job_info" | jq -r '.conclusion // "null"')
+                    echo "    Using matrix job conclusion: $job_conclusion"
+
+                    if [ "$job_conclusion" = "success" ]; then
+                      echo "$test_case (Python $python_version)" >> /tmp/test_results/passed.txt
+                      echo "    ✅ PASSED (from matrix): $test_case (Python $python_version)"
+                    else
+                      echo "$test_case (Python $python_version)" >> /tmp/test_results/failed.txt
+                      echo "    ❌ FAILED (from matrix): $test_case (Python $python_version)"
+                    fi
+                  else
+                    echo "$test_case (Python $python_version)" >> /tmp/test_results/failed.txt
+                    echo "    ❌ NOT FOUND: $test_case (Python $python_version) - no job found"
+                  fi
+                fi
+              done
             fi
           done
 
