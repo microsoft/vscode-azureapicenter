@@ -122,10 +122,12 @@ jobs:
 
           echo "Final test cases: $test_cases"
           echo "test-cases=$test_cases" >> $GITHUB_OUTPUT
+
           # Python versions to test against - CONFIGURE HERE
           # To change Python versions, modify this line only:
           python_versions='["3.9", "3.10", "3.11", "3.12"]'
           echo "python-versions=$python_versions" >> $GITHUB_OUTPUT
+
   # Execute tests using matrix strategy for all Python versions
   # This replaces the previous 4 duplicate jobs (test-python-39, test-python-310, etc.)
   # Matrix strategy automatically creates jobs dynamically based on setup output
