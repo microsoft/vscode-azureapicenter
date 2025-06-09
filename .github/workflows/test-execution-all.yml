@@ -65,6 +65,7 @@ jobs:
           azdev extension add apic-extension
 
       - name: Execute test case
+        id: execute-test
         run: |
           test_case='${{ matrix.test-case }}'
           python_version='${{ inputs.python-version }}'
@@ -76,22 +77,62 @@ jobs:
           cd azure-cli-extensions
           source .venv/bin/activate
 
+          # Initialize result status
+          test_result="success"
+
           # Run the specific test case
           if [ "$test_case" = "full-suite" ]; then
             echo "Running full test suite..."
-            azdev test apic-extension --discover --live
+            if ! azdev test apic-extension --discover --live; then
+              test_result="failure"
+              echo "❌ FAILED: $test_case (Python $python_version)"
+            else
+              echo "✅ PASSED: $test_case (Python $python_version)"
+            fi
           else
             echo "Running individual test case: $test_case"
-            azdev test azext_apic-extension $test_case --discover --live
+            if ! azdev test azext_apic-extension $test_case --discover --live; then
+              test_result="failure"
+              echo "❌ FAILED: $test_case (Python $python_version)"
+            else
+              echo "✅ PASSED: $test_case (Python $python_version)"
+            fi
           fi
 
-          echo "✅ PASSED: $test_case (Python $python_version)"
-          echo "Completed: $test_case (Python $python_version)"
+          echo "Completed: $test_case (Python $python_version) - Result: $test_result"
+          echo "test-result=$test_result" >> $GITHUB_OUTPUT
+
         env:
           USERASSIGNED_IDENTITY: ${{ secrets.USERASSIGNED_IDENTITY }}
           AWS_ACCESS_KEY_LINK: ${{ secrets.AWS_ACCESS_KEY_LINK }}
           AWS_SECRET_ACCESS_KEY_LINK: ${{ secrets.AWS_SECRET_ACCESS_KEY_LINK }}
 
+  collect-results:
+    needs: test-all-cases
+    runs-on: ubuntu-latest
+    if: always()
     outputs:
-      test-case: ${{ matrix.test-case }}
-      python-version: ${{ inputs.python-version }}
+      all-results: ${{ steps.collect.outputs.all-results }}
+      summary: ${{ steps.collect.outputs.summary }}
+    steps:
+      - name: Collect all test results
+        id: collect
+        run: |
+          echo "Collecting test results from matrix jobs..."
+
+          # Create results summary
+          all_results=""
+          failed_count=0
+          passed_count=0
+
+          # Note: In matrix jobs, we can't directly access outputs, so we'll use job names and conclusion
+          # The notify job will need to parse the API to get detailed results
+
+          # For now, create a placeholder that the notify job can parse
+          echo "all-results=placeholder-for-api-parsing" >> $GITHUB_OUTPUT
+          echo "summary=Results collected via API parsing" >> $GITHUB_OUTPUT # Note: In matrix jobs, we can't directly access outputs, so we'll use job names and conclusion
+          # The notify job will need to parse the API to get detailed results
+
+          # For now, create a placeholder that the notify job can parse
+          echo "all-results=placeholder-for-api-parsing" >> $GITHUB_OUTPUT
+          echo "summary=Results collected via API parsing" >> $GITHUB_OUTPUT

@@ -220,138 +220,75 @@ jobs:
           # Check the overall result of the test job
           test_job_result='${{ needs.test.result }}'
           echo "Test job result: $test_job_result"
-          # Fetch actual failed test cases from GitHub API
-          echo "Fetching test results from GitHub API..."
-          echo "Workflow Run ID: ${{ github.run_id }}"
-          echo "Repository: ${{ github.repository }}"
-
-          # Get the current workflow run ID and job details
+          # Fetch detailed test results from GitHub API (simple approach)
+          echo "Fetching individual test case results..."
           WORKFLOW_RUN_ID="${{ github.run_id }}"
           REPO="${{ github.repository }}"
 
-          # Fetch job details from GitHub API
-          jobs_response=$(curl -s -H "Authorization: token ${{ github.token }}" \
+          # Get all jobs for this workflow run
+          jobs_json=$(curl -s -H "Authorization: token ${{ github.token }}" \
             "https://api.github.com/repos/$REPO/actions/runs/$WORKFLOW_RUN_ID/jobs")
 
-          # Check if API response is valid
-          if [ -z "$jobs_response" ] || ! echo "$jobs_response" | jq empty 2>/dev/null; then
-            echo "❌ Failed to fetch jobs from GitHub API or invalid JSON response"
-            echo "Response: $jobs_response"
-            # Fall back to using the overall test job result
-            jobs_response='{"jobs": []}'
-          else
-            echo "✅ Jobs API response received and parsed successfully"
-            # Debug: Show available job names
-            echo "Available jobs:"
-            echo "$jobs_response" | jq -r '.jobs[] | "- " + .name + " (" + .conclusion + ")"'
-          fi
+          echo "Raw jobs response (first 500 chars):"
+          echo "$jobs_json" | head -c 500
+          echo "..."
 
-          # Process results for each Python version dynamically
+          # Process results for each Python version
           while IFS= read -r version; do
             echo "Processing Python $version results..."
 
-            # Find the matrix job for this Python version
-            # Matrix jobs have names like "test (3.9)" based on the matrix strategy
-            version_job=$(echo "$jobs_response" | jq -r --arg version "$version" '
+            # Extract job results for this Python version using simple grep and jq
+            successful_cases=0
+            failed_cases_count=0
+            failed_cases_list=""
+
+            # Get all jobs that match the pattern "(Python {version})"
+            version_jobs=$(echo "$jobs_json" | jq -r --arg version "$version" '
               .jobs[] |
-              select(.name == ("test (" + $version + ")")) |
-              {id: .id, conclusion: .conclusion, name: .name}
+              select(.name | test("\\(Python " + $version + "\\)$")) |
+              "\(.name)|\(.conclusion)"
             ')
 
-            job_id=$(echo "$version_job" | jq -r '.id // empty')
-            job_conclusion=$(echo "$version_job" | jq -r '.conclusion // "unknown"')
+            echo "Jobs for Python $version:"
+            echo "$version_jobs"
 
-            echo "Python $version job: ID=$job_id, conclusion=$job_conclusion"
+            # Count results
+            if [ -n "$version_jobs" ]; then
+              while IFS='|' read -r job_name job_conclusion; do
+                if [ -n "$job_name" ] && [ -n "$job_conclusion" ]; then
+                  # Extract test case name (remove the Python version suffix)
+                  test_case_name=$(echo "$job_name" | sed "s/ (Python $version)\$//")
 
-            if [ "$job_conclusion" = "success" ]; then
-              # All tests passed for this version
-              successful_cases=$cases_per_version
-              failed_cases_count=0
-              failed_cases_list=""
-            elif [ "$job_conclusion" = "failure" ] && [ -n "$job_id" ]; then
-              # Fetch the job logs to extract actual failed test cases
-              echo "Fetching logs for failed job ID: $job_id"
+                  if [ "$job_conclusion" = "success" ]; then
+                    successful_cases=$((successful_cases + 1))
+                    echo "✅ $test_case_name"
+                  else
+                    failed_cases_count=$((failed_cases_count + 1))
+                    echo "❌ $test_case_name ($job_conclusion)"
 
-              job_logs=$(curl -s -H "Authorization: token ${{ github.token }}" \
-                "https://api.github.com/repos/$REPO/actions/jobs/$job_id/logs")
-
-              # Check if we got valid logs
-              if [ -z "$job_logs" ]; then
-                echo "❌ Failed to fetch job logs for Python $version"
-                failed_cases_count=1
-                failed_cases_list="Failed to fetch job logs (API error)"
-                successful_cases=$((cases_per_version - 1))
-              else
-                echo "✅ Job logs fetched successfully, parsing for test failures..."
-                # Parse pytest output to extract failed test cases
-              # Look for FAILED test cases in the logs using multiple patterns
-              failed_test_names=""
-
-              # Pattern 1: Standard pytest FAILED output
-              pattern1=$(echo "$job_logs" | grep -oE "FAILED [^:]+::[^[:space:]]+" | \
-                sed 's/FAILED [^:]*:://g' | \
-                sed 's/\[[^]]*\]//g' | \
-                sort | uniq)
-
-              # Pattern 2: Alternative pytest failure format
-              pattern2=$(echo "$job_logs" | grep -oE "::test_[^[:space:]]+ FAILED" | \
-                sed 's/.*::\(test_[^[:space:]]*\) FAILED/\1/g' | \
-                sort | uniq)
-
-              # Pattern 3: Short test summary info format
-              pattern3=$(echo "$job_logs" | grep -A 1000 "short test summary info" | \
-                grep -oE "FAILED [^[:space:]]+" | \
-                sed 's/FAILED //g' | \
-                sed 's/.*:://g' | \
-                sed 's/\[[^]]*\]//g' | \
-                sort | uniq)
-
-              # Pattern 4: Error collection format
-              pattern4=$(echo "$job_logs" | grep -oE "ERROR [^:]+::[^[:space:]]+" | \
-                sed 's/ERROR [^:]*:://g' | \
-                sed 's/\[[^]]*\]//g' | \
-                sort | uniq)
-
-              # Combine all patterns and deduplicate
-              failed_test_names=$(printf "%s\n%s\n%s\n%s\n" "$pattern1" "$pattern2" "$pattern3" "$pattern4" | \
-                grep -v '^$' | sort | uniq | head -20)  # Limit to first 20 failures
-
-              if [ -n "$failed_test_names" ]; then
-                failed_cases_count=$(echo "$failed_test_names" | wc -l)
-                failed_cases_list=$(echo "$failed_test_names" | tr '\n' ', ' | sed 's/, $//')
-                echo "Found $failed_cases_count failed test cases for Python $version"
-                echo "Failed tests: $failed_cases_list"
-              else
-                # Final fallback: Look for any mention of test failures in exit codes or summary
-                failure_summary=$(echo "$job_logs" | grep -i "failed\|error" | grep -E "[0-9]+ failed" | head -3)
-
-                if [ -n "$failure_summary" ]; then
-                  failed_cases_count=1
-                  failed_cases_list="Test execution failed ($(echo "$failure_summary" | tr '\n' '; ' | sed 's/; $//'))"
-                  echo "Found general test failure indication for Python $version"
-                else
-                  # If we can't parse any failures, assume the whole job failed
-                  failed_cases_count=1
-                  failed_cases_list="Job execution failed (see logs for details)"
-                  echo "Could not parse specific test failures, marking job as failed"
+                    if [ -z "$failed_cases_list" ]; then
+                      failed_cases_list="$test_case_name"
+                    else
+                      failed_cases_list="$failed_cases_list, $test_case_name"
+                    fi
+                  fi
                 fi
-              fi
+              done <<< "$version_jobs"
 
-              successful_cases=$((cases_per_version - failed_cases_count))
-
-              # Ensure we don't have negative successful cases
-              if [ $successful_cases -lt 0 ]; then
-                successful_cases=0
-                failed_cases_count=$cases_per_version
+              # Update cases_per_version based on actual results
+              actual_cases_for_version=$((successful_cases + failed_cases_count))
+              if [ $actual_cases_for_version -gt 0 ]; then
+                cases_per_version=$actual_cases_for_version
               fi
-            fi
             else
-              # Job is in unknown state (skipped, cancelled, etc.)
-              echo "Job conclusion: $job_conclusion - treating as partial failure"
+              # No individual job results found - this shouldn't happen but handle gracefully
+              echo "⚠️ No individual test case results found for Python $version"
               successful_cases=0
-              failed_cases_count=$cases_per_version
-              failed_cases_list="Job $job_conclusion (see workflow run for details)"
+              failed_cases_count=1
+              failed_cases_list="No test results found"
             fi
+
+            echo "Python $version summary: Success=$successful_cases, Failed=$failed_cases_count"
 
             # Calculate success rate for this version
             if [ $cases_per_version -eq 0 ]; then
