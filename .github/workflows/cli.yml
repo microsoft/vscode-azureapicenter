@@ -294,34 +294,6 @@ jobs:
           echo "  - FAILURE: Test case fails in ANY Python version"
           echo ""
 
-          # Note: Due to GitHub Actions limitations with matrix job outputs,
-          # we currently use the overall matrix result to infer individual test results.
-          # For more granular per-case, per-version tracking, the reusable workflow
-          # would need to be restructured to collect results differently.
-
-          # =================================================================================
-          # IMPORTANT NOTE ABOUT MATRIX JOB OUTPUT LIMITATIONS:
-          # =================================================================================
-          #
-          # GitHub Actions matrix jobs don't easily expose individual matrix instance outputs
-          # to dependent jobs. When we call test-execution-all.yml 4 times (for 4 Python versions),
-          # each instance produces its own test-results output, but we can't directly access
-          # them as separate outputs in the needs.test.outputs context.
-          #
-          # CURRENT BEHAVIOR:
-          # - If ALL matrix jobs succeed → All test cases marked as success
-          # - If ANY matrix job fails → All test cases marked as failure
-          #
-          # FUTURE ENHANCEMENT:
-          # To get true per-case, per-version granularity, we could:
-          # 1. Modify test-execution-all.yml to upload results to artifacts
-          # 2. Download and parse artifacts in this collect-results job
-          # 3. Or restructure to use job outputs differently
-          #
-          # For now, this provides accurate pass/fail reporting at the test case level
-          # while acknowledging the cross-version aggregation limitation.
-          # =================================================================================
-
           echo "all-results=$all_results" >> $GITHUB_OUTPUT
           echo "summary=Total: $total_unique_cases, Success: $total_success, Failed: $total_failed" >> $GITHUB_OUTPUT
           echo "total-success=$total_success" >> $GITHUB_OUTPUT
@@ -330,6 +302,7 @@ jobs:
           echo "Aggregated results: $all_results"
           echo "Summary: Success=$total_success, Failed=$total_failed out of $total_unique_cases"
           echo "Failed cases: $failed_cases_details"
+
   # Send notification with inline logic (no reusable workflow)
   notify:
     runs-on: ubuntu-latest
@@ -606,7 +579,9 @@ jobs:
             echo "EMAIL_BODY<<$delimiter"
             printf "%s\n" "$email_body"
             echo "$delimiter"
-          } >> $GITHUB_ENV          echo "✅ Email content generated successfully"
+          } >> $GITHUB_ENV
+
+          echo "✅ Email content generated successfully"
           echo "📧 Subject: $email_subject"
           echo "📊 Total Cases: $total_cases, Success: $total_success_int, Failed: $total_failed_int, Success Rate: $overall_success_rate%"
           echo "📋 Test Job Result: $test_job_result"
