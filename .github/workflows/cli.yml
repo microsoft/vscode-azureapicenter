@@ -380,8 +380,6 @@ jobs:
           <strong>Test Cases per Python Version:</strong> $cases_per_version<br>
           <strong>Python Versions Tested:</strong> $(echo "$python_versions" | jq -r 'join(", ")')</p>
 
-          <p><em><strong>Note:</strong> The table below shows results per Python version. The TOTAL row shows aggregated results where a test case is considered successful only if it passes in ALL Python versions, and failed if it fails in ANY Python version.</em></p>
-
           <h3>Overall Summary:</h3>
           <table border='1' cellpadding='8' cellspacing='0' style='border-collapse: collapse; font-family: monospace;'>
             <thead style='background-color: #f0f0f0;'>
@@ -530,21 +528,14 @@ jobs:
 
           <h3>📊 Workflow Details:</h3>
           <div style='background-color: #f8f9fa; padding: 15px; border-radius: 5px; font-family: monospace;'>
-            <p><strong>Workflow Run:</strong> #${{ github.run_number }}</p>
-            <p><strong>Commit SHA:</strong> <code>${{ github.sha }}</code></p>
+            <p><strong>Workflow URL:</strong> <a href='${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'>#${{ github.run_number }}</a></p>
             <p><strong>Branch:</strong> ${{ github.ref_name }}</p>
             <p><strong>Triggered by:</strong> ${{ github.event_name }}</p>
             <p><strong>Test Job Status:</strong> <span style='color: $([ "$test_job_result" = "success" ] && echo "#2e7d32" || echo "#d32f2f"); font-weight: bold;'>$test_job_result</span></p>
           </div>
 
-          <h3>🔗 Links:</h3>
-          <ul>
-            <li><a href='${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'>View full results</a></li>
-            <li><a href='${{ github.server_url }}/${{ github.repository }}/blob/${{ github.ref_name }}/.github/workflows/cli.yml'>View workflow file</a></li>
-          </ul>
-
           <div style='background-color: #e3f2fd; padding: 10px; border-radius: 5px; margin-top: 20px;'>
-            <p style='margin: 0; color: #1565c0;'><strong>ℹ️ Note:</strong> This is an automated notification from the CLI weekly test workflow. Results are collected from matrix job outputs without using GitHub API calls.</p>
+            <p style='margin: 0; color: #1565c0;'><strong>ℹ️ Note:</strong> This is an automated notification from the CLI weekly test workflow. </p>
           </div>"          # Determine email subject based on results
           if [ $total_failed_int -eq 0 ]; then
             email_subject="✅ CLI Weekly Tests PASSED - All $total_success_int tests successful"
