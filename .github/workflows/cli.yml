@@ -185,7 +185,9 @@ jobs:
           # Calculate totals across all Python versions (4 versions)
           total_cases=$((cases_per_version * 4))
           echo "Cases per version: $cases_per_version"
-          echo "Total cases across all versions: $total_cases"          # Create summary table header - using HTML for polished formatting
+          echo "Total cases across all versions: $total_cases"
+
+          # Create summary table header - using HTML for polished formatting
           email_body="<h2>📊 CLI Weekly Test Results Summary</h2>
           <p><strong>Test Execution Date:</strong> $(date '+%Y-%m-%d %H:%M:%S UTC')<br>
           <strong>Repository:</strong> azure-cli-extensions (apic-extension)<br>
@@ -268,7 +270,8 @@ jobs:
                 failed_cases="Python $version: $failed_cases_list"
               else
                 failed_cases="$failed_cases\nPython $version: $failed_cases_list"
-              fi            fi
+              fi
+            fi
 
             # Add row to table using HTML formatting
             row_color=""
