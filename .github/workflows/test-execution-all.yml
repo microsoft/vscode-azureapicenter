@@ -11,6 +11,10 @@ on:
         description: 'Single Python version to test with'
         required: true
         type: string
+    outputs:
+      test-results:
+        description: 'Test results in format "case1-result,case2-result"'
+        value: ${{ jobs.collect-results.outputs.all-results }}
     secrets:
       APICEXT_TEST_AZURE_CLIENT_ID:
         required: true
@@ -101,7 +105,6 @@ jobs:
 
           echo "Completed: $test_case (Python $python_version) - Result: $test_result"
           echo "test-result=$test_result" >> $GITHUB_OUTPUT
-
         env:
           USERASSIGNED_IDENTITY: ${{ secrets.USERASSIGNED_IDENTITY }}
           AWS_ACCESS_KEY_LINK: ${{ secrets.AWS_ACCESS_KEY_LINK }}
@@ -113,26 +116,86 @@ jobs:
     if: always()
     outputs:
       all-results: ${{ steps.collect.outputs.all-results }}
-      summary: ${{ steps.collect.outputs.summary }}
     steps:
       - name: Collect all test results
         id: collect
         run: |
           echo "Collecting test results from matrix jobs..."
 
-          # Create results summary
+          # Get test cases and python version from inputs
+          test_cases='${{ inputs.test-cases }}'
+          python_version='${{ inputs.python-version }}'
+
+          echo "Test cases: $test_cases"
+          echo "Python version: $python_version"
+
+          # Convert test cases JSON to array
+          test_cases_array=$(echo "$test_cases" | jq -r '.[]')
+
+          # Build results string in format "test_case_name-result"
           all_results=""
           failed_count=0
           passed_count=0
 
-          # Note: In matrix jobs, we can't directly access outputs, so we'll use job names and conclusion
-          # The notify job will need to parse the API to get detailed results
+          # Get the results from the matrix job needs context
+          matrix_results='${{ toJson(needs.test-all-cases.result) }}'
+          matrix_outputs='${{ toJson(needs.test-all-cases.outputs) }}'
 
-          # For now, create a placeholder that the notify job can parse
-          echo "all-results=placeholder-for-api-parsing" >> $GITHUB_OUTPUT
-          echo "summary=Results collected via API parsing" >> $GITHUB_OUTPUT # Note: In matrix jobs, we can't directly access outputs, so we'll use job names and conclusion
-          # The notify job will need to parse the API to get detailed results
+          echo "Matrix job result: $matrix_results"
+          echo "Matrix outputs available: $matrix_outputs"
 
-          # For now, create a placeholder that the notify job can parse
-          echo "all-results=placeholder-for-api-parsing" >> $GITHUB_OUTPUT
-          echo "summary=Results collected via API parsing" >> $GITHUB_OUTPUT
+          # Parse matrix outputs to get individual test results
+          # Matrix outputs structure: needs.test-all-cases.outputs.*
+          # Each matrix job should have an output with the test result
+
+          # Process each test case and try to get its individual result
+          while IFS= read -r test_case; do
+            if [ -n "$test_case" ]; then
+              echo "Processing test case: $test_case"
+
+              # Try to get individual test result from matrix outputs
+              # The outputs are keyed by the matrix values, but GitHub Actions
+              # flattens them in a complex way. For now, use the overall result
+              # but in the future, this could be enhanced to parse individual results
+
+              individual_result=""
+
+              # Check if we can extract individual results from the matrix outputs
+              # This is complex because matrix outputs are not easily accessible
+              # For now, we'll use the overall matrix job result as a fallback
+
+              if [ "$matrix_results" = '"success"' ]; then
+                # All matrix jobs succeeded, so this test case passed
+                result="success"
+                passed_count=$((passed_count + 1))
+                echo "✅ $test_case (Python $python_version): success"
+              elif [ "$matrix_results" = '"failure"' ]; then
+                # Some matrix jobs failed, but we can't determine which specific ones
+                # For accurate reporting, we should mark this as failed
+                result="failure"
+                failed_count=$((failed_count + 1))
+                echo "❌ $test_case (Python $python_version): failure"
+              elif [ "$matrix_results" = '"cancelled"' ]; then
+                result="cancelled"
+                failed_count=$((failed_count + 1))
+                echo "⚠️ $test_case (Python $python_version): cancelled"
+              else
+                # Unknown result, treat as failure
+                result="failure"
+                failed_count=$((failed_count + 1))
+                echo "❓ $test_case (Python $python_version): unknown ($matrix_results)"
+              fi
+
+              # Build result string: "test_case-result"
+              if [ -z "$all_results" ]; then
+                all_results="${test_case}-${result}"
+              else
+                all_results="${all_results},${test_case}-${result}"
+              fi
+            fi
+          done <<< "$test_cases_array"
+
+          echo "all-results=$all_results" >> $GITHUB_OUTPUT
+
+          echo "Final results for Python $python_version: $all_results"
+          echo "Summary: Passed=$passed_count, Failed=$failed_count"
