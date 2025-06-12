@@ -144,8 +144,8 @@ export class UiStrings {
     static readonly GenerateOpenApiSetRuleButton = vscode.l10n.t("Set active API style guide");
     static readonly GenerateOpenApiRegenerateDesc = vscode.l10n.t("\n\nAfter your API style guide is set, you could regenerate the API specification again.");
     static readonly GenerateOpenApiRegenerateButton = vscode.l10n.t("Regenerate API specification");
-    static readonly NoTeamsToolkitExtension = vscode.l10n.t("Please install the Teams Toolkit extension with minimum version '{0}'.");
-    static readonly ActivatingTeamsToolkit = vscode.l10n.t("Activating Teams Toolkit");
+    static readonly NoTeamsToolkitExtension = vscode.l10n.t("Please install the Microsoft 365 Agents Toolkit extension with minimum version '{0}'.");
+    static readonly ActivatingTeamsToolkit = vscode.l10n.t("Activating Microsoft 365 Agents Toolkit");
     static readonly ExportingApiDefinition = vscode.l10n.t("Exporting API Definition");
     static readonly GeneratingHttpFile = vscode.l10n.t("Generating HTTP File");
     static readonly ContinueWithoutSelecting = vscode.l10n.t("Continue without selecting");
