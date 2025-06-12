@@ -1,18 +1,26 @@
-name: CLI weekly live test
+﻿name: CLI weekly live test
 
 on:
   schedule:
     - cron: "0 18 * * 0"
   workflow_dispatch:
+    inputs:
+      test-cases:
+        description: 'Specific test cases to run. Example: ["test_integration_create_aws", "test_integration_delete"]. Leave empty to run all test cases'
+        required: false
+        type: string
 
 permissions:
   id-token: write
   contents: read
 
 jobs:
-  apic-extension-live-test:
+  setup:
     runs-on: ubuntu-latest
     environment: engineering
+    outputs:
+      test-cases: ${{ steps.discover-tests.outputs.test-cases }}
+      python-versions: ${{ steps.discover-tests.outputs.python-versions }}
     steps:
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -39,47 +47,568 @@ jobs:
           python -m venv .venv
           source .venv/bin/activate
           python -m pip install -U pip
-          pip install azdev
+          pip install azdev pytest
           azdev setup -r .
           azdev extension add apic-extension
 
-      - name: Run tests
+      - name: Discover test cases and set outputs
+        id: discover-tests
         run: |
           cd azure-cli-extensions
           source .venv/bin/activate
-          azdev test apic-extension --live
-        env:
-          USERASSIGNED_IDENTITY: ${{ secrets.USERASSIGNED_IDENTITY }}
-          AWS_ACCESS_KEY_LINK: ${{ secrets.AWS_ACCESS_KEY_LINK }}
-          AWS_SECRET_ACCESS_KEY_LINK: ${{ secrets.AWS_SECRET_ACCESS_KEY_LINK }}
+          cd src/apic-extension
 
-  notify:
-    if: failure()
+          # Check if specific test cases are provided
+          test_input='${{ inputs.test-cases }}'
+          if [ -n "$test_input" ] && [ "$test_input" != "null" ] && [ "$test_input" != "" ]; then
+            echo "Using specific test cases from input: $test_input"
+            test_cases="$test_input"
+          else
+            echo "Discovering all test cases using pytest..."
+
+            # Use pytest to collect all test cases
+            echo "Debug: Collecting test cases with pytest..."
+
+            # Collect test node IDs and extract just the test function names
+            test_collection=$(python -m pytest --collect-only -q 2>/dev/null | \
+              grep "::test_" | \
+              sed 's/.*::\(test_[^[]*\).*/\1/' | \
+              sort | uniq || true)
+
+            echo "Debug: Raw test collection output:"
+            echo "$test_collection"
+
+            if [ -z "$test_collection" ]; then
+              echo "❌ No test cases found with pytest, trying alternative approach..."
+
+              # Fallback: Parse test files directly for test function definitions
+              test_collection=$(grep -h "^def test_" $(find . -name "test_*.py") | \
+                sed 's/def \(test_[^(]*\).*/\1/' | \
+                sort | uniq || true)
+
+              echo "Debug: Fallback test collection:"
+              echo "$test_collection"
+            fi
+
+            if [ -z "$test_collection" ]; then
+              echo "❌ No individual test cases found, using full-suite approach"
+              test_cases='["full-suite"]'
+            else
+              test_count=$(echo "$test_collection" | wc -l)
+              echo "✅ Successfully discovered $test_count test cases"
+
+              # Convert to JSON array
+              test_cases=$(echo "$test_collection" | jq -R -s -c 'split("\n") | map(select(length > 0))')
+              total_tests=$(echo "$test_cases" | jq '. | length')
+              echo "Found $total_tests test cases total"
+
+              # Validate JSON format
+              if ! echo "$test_cases" | jq empty 2>/dev/null; then
+                echo "❌ Invalid JSON format, falling back to full-suite"
+                test_cases='["full-suite"]'
+              fi
+            fi
+          fi
+
+          echo "Final test cases: $test_cases"
+          echo "test-cases=$test_cases" >> $GITHUB_OUTPUT
+
+          # Python versions to test against - CONFIGURE HERE
+          # To change Python versions, modify this line only:
+          python_versions='["3.9", "3.10", "3.11", "3.12"]'
+          echo "python-versions=$python_versions" >> $GITHUB_OUTPUT
+  # Execute tests using matrix strategy for all Python versions
+  test:
+    needs: setup
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ${{ fromJson(needs.setup.outputs.python-versions) }}
+    uses: ./.github/workflows/test-execution-all.yml
+    with:
+      test-cases: ${{ needs.setup.outputs.test-cases }}
+      python-version: ${{ matrix.python-version }}
+    secrets:
+      APICEXT_TEST_AZURE_CLIENT_ID: ${{ secrets.APICEXT_TEST_AZURE_CLIENT_ID }}
+      APICEXT_TEST_AZURE_TENANT_ID: ${{ secrets.APICEXT_TEST_AZURE_TENANT_ID }}
+      APICEXT_TEST_AZURE_SUBSCRIPTION_ID: ${{ secrets.APICEXT_TEST_AZURE_SUBSCRIPTION_ID }}
+      USERASSIGNED_IDENTITY: ${{ secrets.USERASSIGNED_IDENTITY }}
+      AWS_ACCESS_KEY_LINK: ${{ secrets.AWS_ACCESS_KEY_LINK }}
+      AWS_SECRET_ACCESS_KEY_LINK: ${{ secrets.AWS_SECRET_ACCESS_KEY_LINK }}
+  # Collect all results from matrix jobs
+  collect-results:
+    needs: [setup, test]
     runs-on: ubuntu-latest
-    needs: apic-extension-live-test
+    if: always()
+    outputs:
+      all-results: ${{ steps.aggregate.outputs.all-results }}
+      summary: ${{ steps.aggregate.outputs.summary }}
+      total-success: ${{ steps.aggregate.outputs.total-success }}
+      total-failed: ${{ steps.aggregate.outputs.total-failed }}
+    steps:
+      - name: Aggregate test results from all Python versions
+        id: aggregate
+        run: |
+          echo "Aggregating test results from all matrix jobs..."
+
+          # Get inputs
+          test_cases='${{ needs.setup.outputs.test-cases }}'
+          python_versions='${{ needs.setup.outputs.python-versions }}'
+
+          echo "Test cases: $test_cases"
+          echo "Python versions: $python_versions"
+
+          # Parse Python versions and test cases
+          python_versions_array=$(echo "$python_versions" | jq -r '.[]')
+          test_cases_array=$(echo "$test_cases" | jq -r '.[]')
+
+          # Count test cases
+          if [ "$test_cases" = '["full-suite"]' ]; then
+            total_unique_cases=124
+          else
+            total_unique_cases=$(echo "$test_cases" | jq '. | length')
+          fi
+
+          echo "Total unique test cases: $total_unique_cases"
+          echo "Python versions to process: $(echo "$python_versions" | jq '. | length')"
+          # CRITICAL FIX: The test job is a matrix job that runs 4 times (one per Python version)
+          # We need to collect outputs from ALL matrix instances, not just treat it as one job
+
+          # Get all matrix job results and outputs
+          all_matrix_results='${{ toJson(needs.test.result) }}'
+          all_matrix_outputs='${{ toJson(needs.test.outputs) }}'
+
+          echo "All matrix job results: $all_matrix_results"
+          echo "All matrix job outputs: $all_matrix_outputs"
+
+          # Initialize counters for aggregated results
+          total_success=0
+          total_failed=0
+          all_results=""
+          failed_cases_details=""
+
+          # Track results per test case across all Python versions
+          # Format: test_case_name -> "success_count:fail_count:total_versions"
+          declare -A test_case_results
+
+          # Initialize test case tracking
+          while IFS= read -r test_case; do
+            if [ -n "$test_case" ]; then
+              test_case_results["$test_case"]="0:0:0"
+            fi
+          done <<< "$test_cases_array"
+
+          python_version_count=$(echo "$python_versions" | jq '. | length')
+          echo "Expected Python versions: $python_version_count"
+
+          # Since matrix outputs are complex to parse directly, we need to check
+          # if the matrix job succeeded overall, then infer individual results
+
+          if [ "$all_matrix_results" = '"success"' ]; then
+            echo "✅ All matrix jobs (Python versions) succeeded"
+
+            # All test cases passed in all Python versions
+            while IFS= read -r test_case; do
+              if [ -n "$test_case" ]; then
+                test_case_results["$test_case"]="$python_version_count:0:$python_version_count"
+                total_success=$((total_success + 1))
+
+                # Build result string: "test_case-result"
+                if [ -z "$all_results" ]; then
+                  all_results="${test_case}-success"
+                else
+                  all_results="${all_results},${test_case}-success"
+                fi
+              fi
+            done <<< "$test_cases_array"
+
+          elif [ "$all_matrix_results" = '"failure"' ]; then
+            echo "❌ Some matrix jobs (Python versions) failed"
+
+            # Since we can't easily determine which specific test cases failed in which versions
+            # from matrix outputs, we conservatively mark all test cases as failed
+            # This is a limitation of the current GitHub Actions matrix job output handling
+
+            while IFS= read -r test_case; do
+              if [ -n "$test_case" ]; then
+                test_case_results["$test_case"]="0:$python_version_count:$python_version_count"
+                total_failed=$((total_failed + 1))
+
+                if [ -z "$failed_cases_details" ]; then
+                  failed_cases_details="$test_case (matrix job failed)"
+                else
+                  failed_cases_details="$failed_cases_details, $test_case (matrix job failed)"
+                fi
+
+                # Build result string: "test_case-result"
+                if [ -z "$all_results" ]; then
+                  all_results="${test_case}-failure"
+                else
+                  all_results="${all_results},${test_case}-failure"
+                fi
+              fi
+            done <<< "$test_cases_array"
+
+          else
+            echo "⚠️ Matrix jobs had mixed or unknown results: $all_matrix_results"
+
+            # Handle cancelled, skipped, or other states
+            while IFS= read -r test_case; do
+              if [ -n "$test_case" ]; then
+                test_case_results["$test_case"]="0:$python_version_count:$python_version_count"
+                total_failed=$((total_failed + 1))
+
+                if [ -z "$failed_cases_details" ]; then
+                  failed_cases_details="$test_case (cancelled/unknown)"
+                else
+                  failed_cases_details="$failed_cases_details, $test_case (cancelled/unknown)"
+                fi
+
+                # Build result string: "test_case-result"
+                if [ -z "$all_results" ]; then
+                  all_results="${test_case}-cancelled"
+                else
+                  all_results="${all_results},${test_case}-cancelled"
+                fi
+              fi
+            done <<< "$test_cases_array"
+          fi
+
+          echo ""
+          echo "=== AGGREGATION SUMMARY ==="
+          echo "Matrix job result: $all_matrix_results"
+          echo "Python versions tested: $python_version_count"
+          echo "Unique test cases: $total_unique_cases"
+          echo "Cross-version aggregation logic:"
+          echo "  - SUCCESS: Test case passes in ALL Python versions"
+          echo "  - FAILURE: Test case fails in ANY Python version"
+          echo ""
+
+          echo "all-results=$all_results" >> $GITHUB_OUTPUT
+          echo "summary=Total: $total_unique_cases, Success: $total_success, Failed: $total_failed" >> $GITHUB_OUTPUT
+          echo "total-success=$total_success" >> $GITHUB_OUTPUT
+          echo "total-failed=$total_failed" >> $GITHUB_OUTPUT
+
+          echo "Aggregated results: $all_results"
+          echo "Summary: Success=$total_success, Failed=$total_failed out of $total_unique_cases"
+          echo "Failed cases: $failed_cases_details"
+
+  # Send notification with inline logic (no reusable workflow)
+  notify:
+    runs-on: ubuntu-latest
     environment: engineering
+    needs: [setup, test, collect-results]
+    if: (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && !cancelled()
     steps:
       - name: Generate Email Content
         id: generate-email-content
         run: |
-          echo "to=${{ secrets.AUTHOR_MAIL_ADDRESSES }}" >> $GITHUB_ENV
-          echo "body=Workflow URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> $GITHUB_ENV
-          echo "subject=[APICENTER] Weekly APIC Extension Live Test Failed" >> $GITHUB_ENV
+          echo "Generating email content based on collected test results..."
+
+          # Get test cases that were run
+          test_cases='${{ needs.setup.outputs.test-cases }}'
+          python_versions='${{ needs.setup.outputs.python-versions }}'
+
+          # Get aggregated results from collect-results job
+          all_results='${{ needs.collect-results.outputs.all-results }}'
+          results_summary='${{ needs.collect-results.outputs.summary }}'
+          total_success='${{ needs.collect-results.outputs.total-success }}'
+          total_failed='${{ needs.collect-results.outputs.total-failed }}'
+
+          echo "Test cases: $test_cases"
+          echo "Python versions: $python_versions"
+          echo "All results: $all_results"
+          echo "Results summary: $results_summary"
+          echo "Total success: $total_success"
+          echo "Total failed: $total_failed"
+
+          # Parse Python versions from JSON array
+          python_versions_array=$(echo "$python_versions" | jq -r '.[]')
+          python_versions_count=$(echo "$python_versions" | jq '. | length')
+
+          echo "Parsed Python versions:"
+          echo "$python_versions_array"
+          echo "Number of Python versions: $python_versions_count"
+
+          # Count total test cases
+          if [ "$test_cases" = '["full-suite"]' ]; then
+            cases_per_version=124
+          else
+            cases_per_version=$(echo "$test_cases" | jq '. | length')
+          fi
+
+          total_cases=$cases_per_version
+          echo "Cases per version: $cases_per_version"
+          echo "Total unique test cases: $total_cases"
+
+          # Use the aggregated results from collect-results job
+          total_success_int=${total_success:-0}
+          total_failed_int=${total_failed:-0}
+
+          # Parse failed cases from the results
+          failed_cases=""
+          if [ -n "$all_results" ] && [ "$all_results" != "null" ]; then
+            # Parse the results string "case1-result,case2-result,..."
+            IFS=',' read -ra RESULT_ARRAY <<< "$all_results"
+            for result_pair in "${RESULT_ARRAY[@]}"; do
+              if [[ $result_pair == *"-failure" ]] || [[ $result_pair == *"-cancelled" ]]; then
+                test_case_name=$(echo "$result_pair" | sed 's/-\(failure\|cancelled\)$//')
+                if [ -z "$failed_cases" ]; then
+                  failed_cases="$test_case_name"
+                else
+                  failed_cases="$failed_cases, $test_case_name"
+                fi
+              fi
+            done
+          fi
+
+          echo "Parsed results: Success=$total_success_int, Failed=$total_failed_int"
+          echo "Failed cases: $failed_cases"          # Create summary table header
+          email_body="<h2>📊 CLI Weekly Test Results Summary</h2>
+          <p><strong>Test Execution Date:</strong> $(date '+%Y-%m-%d %H:%M:%S UTC')<br>
+          <strong>Repository:</strong> azure-cli-extensions (apic-extension)<br>
+          <strong>Test Cases per Python Version:</strong> $cases_per_version<br>
+          <strong>Python Versions Tested:</strong> $(echo "$python_versions" | jq -r 'join(", ")')</p>
+
+          <h3>Overall Summary:</h3>
+          <table border='1' cellpadding='8' cellspacing='0' style='border-collapse: collapse; font-family: monospace;'>
+            <thead style='background-color: #f0f0f0;'>
+              <tr>
+                <th style='text-align: left; padding: 8px;'>Python Version</th>
+                <th style='text-align: center; padding: 8px;'>Total Cases</th>
+                <th style='text-align: center; padding: 8px;'>Successful</th>
+                <th style='text-align: center; padding: 8px;'>Failed</th>
+                <th style='text-align: center; padding: 8px;'>Success Rate</th>
+              </tr>
+            </thead>
+            <tbody>"
+
+          # Process results for each Python version
+          version_results=""
+          while IFS= read -r version; do
+            echo "Processing Python $version results..."
+
+            # Get the test results for this Python version from matrix outputs
+            # Since we're using reusable workflows, we get aggregated results
+            successful_cases=0
+            failed_cases_count=0
+            failed_cases_list=""
+
+            # Get overall test job result for this version
+            test_job_result='${{ needs.test.result }}'
+            echo "Overall test job result: $test_job_result"
+
+            if [ "$test_job_result" = "success" ]; then
+              # All test cases passed for this version
+              successful_cases=$cases_per_version
+              failed_cases_count=0
+              echo "✅ Python $version: All $cases_per_version test cases passed"
+            else
+              # Some or all test cases failed for this version
+              successful_cases=0
+              failed_cases_count=$cases_per_version
+              failed_cases_list="Test execution failed for Python $version"
+              echo "❌ Python $version: Test execution failed"
+            fi
+
+            echo "Python $version summary: Success=$successful_cases, Failed=$failed_cases_count"
+
+            # Calculate success rate for this version
+            if [ $cases_per_version -eq 0 ]; then
+              success_rate=0
+            else
+              success_rate=$(( (successful_cases * 100) / cases_per_version ))
+            fi
+
+            # Store version results for cross-version analysis
+            version_results="${version_results}${version}:${successful_cases}:${failed_cases_count}\n"
+
+            # Add row to table
+            row_color=""
+            if [ $failed_cases_count -gt 0 ]; then
+              row_color=" style='background-color: #ffe6e6;'"  # Light red for failures
+            else
+              row_color=" style='background-color: #e6ffe6;'"  # Light green for success
+            fi
+
+            email_body="$email_body
+              <tr$row_color>
+                <td style='padding: 8px; text-align: left;'>Python $version</td>
+                <td style='padding: 8px; text-align: center;'>$cases_per_version</td>
+                <td style='padding: 8px; text-align: center;'>$successful_cases</td>
+                <td style='padding: 8px; text-align: center;'>$failed_cases_count</td>
+                <td style='padding: 8px; text-align: center;'>$success_rate%</td>
+              </tr>"
+          done <<< "$python_versions_array"
+
+          # Use the aggregated success/failure from collect-results job
+          echo "Using aggregated results from collect-results job..."
+          echo "Aggregated results: Success=$total_success_int, Failed=$total_failed_int out of $total_cases total test cases"
+
+          # Calculate overall success rate
+          if [ $total_cases -eq 0 ]; then
+            overall_success_rate=0
+          else
+            overall_success_rate=$(( (total_success_int * 100) / total_cases ))
+          fi
+
+          # Add total row and close HTML table
+          total_row_color=""
+          if [ $total_failed -gt 0 ]; then
+            total_row_color=" style='background-color: #ffcccc; font-weight: bold;'"  # Red for failures
+          else
+            total_row_color=" style='background-color: #ccffcc; font-weight: bold;'"  # Green for all success
+          fi
+
+          email_body="$email_body
+            </tbody>
+            <tfoot>
+              <tr$total_row_color>
+                <td style='padding: 8px; text-align: left; font-weight: bold;'>TOTAL (Aggregated)</td>
+                <td style='padding: 8px; text-align: center; font-weight: bold;'>$total_cases</td>
+                <td style='padding: 8px; text-align: center; font-weight: bold;'>$total_success_int</td>
+                <td style='padding: 8px; text-align: center; font-weight: bold;'>$total_failed_int</td>
+                <td style='padding: 8px; text-align: center; font-weight: bold;'>$overall_success_rate%</td>
+              </tr>
+            </tfoot>
+          </table>
+
+          <div style='background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0; border-left: 4px solid #007bff;'>
+            <h4 style='margin-top: 0; color: #0056b3;'>📊 How Results Are Calculated:</h4>
+            <ul style='margin-bottom: 0;'>
+              <li><strong>Per Python Version:</strong> Shows individual test results for each Python version</li>
+              <li><strong>Aggregated Total:</strong> A test case is marked as:
+                <ul>
+                  <li><span style='color: #28a745;'>✅ Successful</span> - Passes in ALL Python versions</li>
+                  <li><span style='color: #dc3545;'>❌ Failed</span> - Fails in ANY Python version</li>
+                </ul>
+              </li>
+              <li><strong>Total Cases:</strong> $total_cases unique test cases (not multiplied by Python versions)</li>
+            </ul>
+          </div>"
+
+          # Add failed cases section if any
+          if [ -n "$failed_cases" ]; then
+            email_body="$email_body
+
+          <h3>❌ Failed Test Cases:</h3>
+          <ul style='font-family: monospace; background-color: #fff5f5; padding: 10px; border-left: 4px solid #ff6b6b;'>"
+            # Format the failed cases nicely
+            IFS=$'\n'
+            for line in $(echo -e "$failed_cases"); do
+              if [ -n "$line" ]; then
+                email_body="$email_body
+            <li style='margin: 4px 0;'>$line</li>"
+              fi
+            done
+            unset IFS
+            email_body="$email_body
+          </ul>"
+          else
+            email_body="$email_body
+
+          <div style='background-color: #f0fff0; padding: 15px; border-left: 4px solid #4caf50; margin: 10px 0;'>
+            <h3 style='color: #2e7d32; margin: 0;'>🎉 All test cases passed successfully across all Python versions!</h3>
+          </div>"
+          fi
+
+          # Add workflow context and links
+          test_job_result='${{ needs.test.result }}'
+          email_body="$email_body
+
+          <h3>📊 Workflow Details:</h3>
+          <div style='background-color: #f8f9fa; padding: 15px; border-radius: 5px; font-family: monospace;'>
+            <p><strong>Workflow URL:</strong> <a href='${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'>#${{ github.run_number }}</a></p>
+            <p><strong>Branch:</strong> ${{ github.ref_name }}</p>
+            <p><strong>Triggered by:</strong> ${{ github.event_name }}</p>
+            <p><strong>Test Job Status:</strong> <span style='color: $([ "$test_job_result" = "success" ] && echo "#2e7d32" || echo "#d32f2f"); font-weight: bold;'>$test_job_result</span></p>
+          </div>
+
+          <div style='background-color: #e3f2fd; padding: 10px; border-radius: 5px; margin-top: 20px;'>
+            <p style='margin: 0; color: #1565c0;'><strong>ℹ️ Note:</strong> This is an automated notification from the CLI weekly test workflow. </p>
+          </div>"          # Determine email subject based on results
+          if [ $total_failed_int -eq 0 ]; then
+            email_subject="✅ CLI Weekly Tests PASSED - All $total_success_int tests successful"
+          else
+            email_subject="❌ CLI Weekly Tests FAILED - $total_failed_int/$total_cases tests failed"
+          fi
+
+          # Add build status emoji based on overall result
+          if [ "$test_job_result" = "success" ]; then
+            status_emoji="✅"
+            status_text="SUCCESS"
+          elif [ "$test_job_result" = "failure" ]; then
+            status_emoji="❌"
+            status_text="FAILURE"
+          elif [ "$test_job_result" = "cancelled" ]; then
+            status_emoji="⚠️"
+            status_text="CANCELLED"
+          else
+            status_emoji="❓"
+            status_text="UNKNOWN"
+          fi
+
+          email_subject="$status_emoji CLI Weekly Tests $status_text ($total_success_int/$total_cases passed)"
+
+          # Set environment variables for the email sending step
+          echo "EMAIL_SUBJECT=$email_subject" >> $GITHUB_ENV
+          echo "EMAIL_TO=${{secrets.AUTHOR_MAIL_ADDRESSES}}" >> $GITHUB_ENV
+
+          # Handle multi-line email body properly
+          delimiter="EMAIL_BODY_EOF_$(date +%s)"
+          {
+            echo "EMAIL_BODY<<$delimiter"
+            printf "%s\n" "$email_body"
+            echo "$delimiter"
+          } >> $GITHUB_ENV
+
+          echo "✅ Email content generated successfully"
+          echo "📧 Subject: $email_subject"
+          echo "📊 Total Cases: $total_cases, Success: $total_success_int, Failed: $total_failed_int, Success Rate: $overall_success_rate%"
+          echo "📋 Test Job Result: $test_job_result"
+
 
       - name: Send Email Notification
         run: |
-          response=$(curl \
+          echo "Sending email notification..."
+
+          # Get access token
+          response=$(curl -s \
             --request POST \
             --header "Content-Type: application/x-www-form-urlencoded" \
             --data "grant_type=client_credentials&client_id=${{ secrets.MAIL_CLIENT_ID }}&client_secret=${{ secrets.MAIL_CLIENT_SECRET }}&resource=https://management.core.windows.net" \
             "https://login.microsoftonline.com/${{ secrets.MAIL_TENANT_ID }}/oauth2/token")
 
-          access_token=$(echo $response | jq -r '. | select(.access_token) | .access_token')
+          access_token=$(echo $response | jq -r '.access_token // empty')
 
-          curl \
+          if [ -z "$access_token" ]; then
+            echo "Failed to get access token"
+            echo "Response: $response"
+            exit 1
+          fi
+
+          # Create JSON payload using jq to properly escape special characters
+          json_payload=$(jq -n \
+            --arg to "$EMAIL_TO" \
+            --arg subject "$EMAIL_SUBJECT" \
+            --arg body "$EMAIL_BODY" \
+            '{to: $to, subject: $subject, body: $body}')
+
+          # Send email
+          curl_response=$(curl -s -w "HTTP_STATUS:%{http_code}" \
             --request POST \
             --header "Content-Type: application/json" \
             --header "Authorization: Bearer $access_token" \
-            --data "{\"to\": \"${{ env.to }}\", \"body\": \"${{ env.body }}\", \"subject\": \"${{ env.subject }}\"}" \
-            'https://prod-18.northcentralus.logic.azure.com:443/workflows/b33d7861bfc64832a6f62cc8f2213988/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0'
-        shell: bash
+            --data "$json_payload" \
+            'https://prod-18.northcentralus.logic.azure.com:443/workflows/b33d7861bfc64832a6f62cc8f2213988/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0')
+
+          http_status=$(echo "$curl_response" | grep -o "HTTP_STATUS:[0-9]*" | cut -d: -f2)
+          response_body=$(echo "$curl_response" | sed 's/HTTP_STATUS:[0-9]*$//')
+
+          echo "Email sending status: $http_status"
+          if [ "$http_status" != "200" ] && [ "$http_status" != "202" ]; then
+            echo "Failed to send email. Response: $response_body"
+            exit 1
+          else
+            echo "Email sent successfully"
+          fi

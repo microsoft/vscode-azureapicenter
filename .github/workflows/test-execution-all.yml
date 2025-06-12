@@ -1,0 +1,201 @@
+name: Test Execution All Cases (Reusable)
+
+on:
+  workflow_call:
+    inputs:
+      test-cases:
+        description: 'JSON array of all test cases to run'
+        required: true
+        type: string
+      python-version:
+        description: 'Single Python version to test with'
+        required: true
+        type: string
+    outputs:
+      test-results:
+        description: 'Test results in format "case1-result,case2-result"'
+        value: ${{ jobs.collect-results.outputs.all-results }}
+    secrets:
+      APICEXT_TEST_AZURE_CLIENT_ID:
+        required: true
+      APICEXT_TEST_AZURE_TENANT_ID:
+        required: true
+      APICEXT_TEST_AZURE_SUBSCRIPTION_ID:
+        required: true
+      USERASSIGNED_IDENTITY:
+        required: true
+      AWS_ACCESS_KEY_LINK:
+        required: true
+      AWS_SECRET_ACCESS_KEY_LINK:
+        required: true
+
+jobs:
+  test-all-cases:
+    runs-on: ubuntu-latest
+    environment: engineering
+    strategy:
+      fail-fast: false
+      matrix:
+        test-case: ${{ fromJson(inputs.test-cases) }}
+    name: ${{ matrix.test-case }} (Python ${{ inputs.python-version }})
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ inputs.python-version }}
+
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.APICEXT_TEST_AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.APICEXT_TEST_AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.APICEXT_TEST_AZURE_SUBSCRIPTION_ID }}
+          enable-AzPSSession: true
+
+      - name: Clone azure-cli-extensions repository
+        run: |
+          git clone https://github.com/blackchoey/azure-cli-extensions.git
+          cd azure-cli-extensions
+          git checkout main
+
+      - name: Setup development environment
+        run: |
+          cd azure-cli-extensions
+          python -m venv .venv
+          source .venv/bin/activate
+          python -m pip install -U pip
+          pip install azdev
+          azdev setup -r .
+          azdev extension add apic-extension
+
+      - name: Execute test case
+        id: execute-test
+        run: |
+          test_case='${{ matrix.test-case }}'
+          python_version='${{ inputs.python-version }}'
+
+          echo "=========================================="
+          echo "Running: $test_case (Python $python_version)"
+          echo "=========================================="
+
+          cd azure-cli-extensions
+          source .venv/bin/activate
+
+          # Initialize result status
+          test_result="success"
+
+          # Run the specific test case
+          if [ "$test_case" = "full-suite" ]; then
+            echo "Running full test suite..."
+            if ! azdev test apic-extension --discover --live; then
+              test_result="failure"
+              echo "❌ FAILED: $test_case (Python $python_version)"
+            else
+              echo "✅ PASSED: $test_case (Python $python_version)"
+            fi
+          else
+            echo "Running individual test case: $test_case"
+            if ! azdev test azext_apic-extension $test_case --discover --live; then
+              test_result="failure"
+              echo "❌ FAILED: $test_case (Python $python_version)"
+            else
+              echo "✅ PASSED: $test_case (Python $python_version)"
+            fi
+          fi
+
+          echo "Completed: $test_case (Python $python_version) - Result: $test_result"
+          echo "test-result=$test_result" >> $GITHUB_OUTPUT
+        env:
+          USERASSIGNED_IDENTITY: ${{ secrets.USERASSIGNED_IDENTITY }}
+          AWS_ACCESS_KEY_LINK: ${{ secrets.AWS_ACCESS_KEY_LINK }}
+          AWS_SECRET_ACCESS_KEY_LINK: ${{ secrets.AWS_SECRET_ACCESS_KEY_LINK }}
+
+  collect-results:
+    needs: test-all-cases
+    runs-on: ubuntu-latest
+    if: always()
+    outputs:
+      all-results: ${{ steps.collect.outputs.all-results }}
+    steps:
+      - name: Collect all test results
+        id: collect
+        run: |
+          echo "Collecting test results from matrix jobs..."
+
+          # Get test cases and python version from inputs
+          test_cases='${{ inputs.test-cases }}'
+          python_version='${{ inputs.python-version }}'
+
+          echo "Test cases: $test_cases"
+          echo "Python version: $python_version"
+
+          # Convert test cases JSON to array
+          test_cases_array=$(echo "$test_cases" | jq -r '.[]')
+
+          # Build results string in format "test_case_name-result"
+          all_results=""
+          failed_count=0
+          passed_count=0
+
+          # Get the results from the matrix job needs context
+          matrix_results='${{ toJson(needs.test-all-cases.result) }}'
+          matrix_outputs='${{ toJson(needs.test-all-cases.outputs) }}'
+
+          echo "Matrix job result: $matrix_results"
+          echo "Matrix outputs available: $matrix_outputs"
+
+          # Parse matrix outputs to get individual test results
+          # Matrix outputs structure: needs.test-all-cases.outputs.*
+          # Each matrix job should have an output with the test result
+
+          # Process each test case and try to get its individual result
+          while IFS= read -r test_case; do
+            if [ -n "$test_case" ]; then
+              echo "Processing test case: $test_case"
+
+              # Try to get individual test result from matrix outputs
+              # The outputs are keyed by the matrix values, but GitHub Actions
+              # flattens them in a complex way. For now, use the overall result
+              # but in the future, this could be enhanced to parse individual results
+
+              individual_result=""
+
+              # Check if we can extract individual results from the matrix outputs
+              # This is complex because matrix outputs are not easily accessible
+              # For now, we'll use the overall matrix job result as a fallback
+
+              if [ "$matrix_results" = '"success"' ]; then
+                # All matrix jobs succeeded, so this test case passed
+                result="success"
+                passed_count=$((passed_count + 1))
+                echo "✅ $test_case (Python $python_version): success"
+              elif [ "$matrix_results" = '"failure"' ]; then
+                # Some matrix jobs failed, but we can't determine which specific ones
+                # For accurate reporting, we should mark this as failed
+                result="failure"
+                failed_count=$((failed_count + 1))
+                echo "❌ $test_case (Python $python_version): failure"
+              elif [ "$matrix_results" = '"cancelled"' ]; then
+                result="cancelled"
+                failed_count=$((failed_count + 1))
+                echo "⚠️ $test_case (Python $python_version): cancelled"
+              else
+                # Unknown result, treat as failure
+                result="failure"
+                failed_count=$((failed_count + 1))
+                echo "❓ $test_case (Python $python_version): unknown ($matrix_results)"
+              fi
+
+              # Build result string: "test_case-result"
+              if [ -z "$all_results" ]; then
+                all_results="${test_case}-${result}"
+              else
+                all_results="${all_results},${test_case}-${result}"
+              fi
+            fi
+          done <<< "$test_cases_array"
+
+          echo "all-results=$all_results" >> $GITHUB_OUTPUT
+
+          echo "Final results for Python $python_version: $all_results"
+          echo "Summary: Passed=$passed_count, Failed=$failed_count"
