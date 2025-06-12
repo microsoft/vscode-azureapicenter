@@ -66,56 +66,46 @@ jobs:
           else
             echo "Discovering all test cases using pytest..."
 
-            # Find test files and collect test cases
-            test_files=$(find . -name "test_*.py" -type f | head -10)
-            echo "Debug: Found test files:"
-            echo "$test_files"
+            # Use pytest to collect all test cases
+            echo "Debug: Collecting test cases with pytest..."
 
-            if [ -z "$test_files" ]; then
-              echo "❌ No test files found"
-              test_cases='["full-suite"]'
-            else
-              # Use pytest to collect all test cases
-              echo "Debug: Collecting test cases with pytest..."
+            # Collect test node IDs and extract just the test function names
+            test_collection=$(python -m pytest --collect-only -q 2>/dev/null | \
+              grep "::test_" | \
+              sed 's/.*::\(test_[^[]*\).*/\1/' | \
+              sort | uniq || true)
 
-              # Collect test node IDs and extract just the test function names
-              test_collection=$(python -m pytest --collect-only -q 2>/dev/null | \
-                grep "::test_" | \
-                sed 's/.*::\(test_[^[]*\).*/\1/' | \
+            echo "Debug: Raw test collection output:"
+            echo "$test_collection"
+
+            if [ -z "$test_collection" ]; then
+              echo "❌ No test cases found with pytest, trying alternative approach..."
+
+              # Fallback: Parse test files directly for test function definitions
+              test_collection=$(grep -h "^def test_" $(find . -name "test_*.py") | \
+                sed 's/def \(test_[^(]*\).*/\1/' | \
                 sort | uniq || true)
 
-              echo "Debug: Raw test collection output:"
+              echo "Debug: Fallback test collection:"
               echo "$test_collection"
+            fi
 
-              if [ -z "$test_collection" ]; then
-                echo "❌ No test cases found with pytest, trying alternative approach..."
+            if [ -z "$test_collection" ]; then
+              echo "❌ No individual test cases found, using full-suite approach"
+              test_cases='["full-suite"]'
+            else
+              test_count=$(echo "$test_collection" | wc -l)
+              echo "✅ Successfully discovered $test_count test cases"
 
-                # Fallback: Parse test files directly for test function definitions
-                test_collection=$(grep -h "^def test_" $(find . -name "test_*.py") | \
-                  sed 's/def \(test_[^(]*\).*/\1/' | \
-                  sort | uniq || true)
+              # Convert to JSON array
+              test_cases=$(echo "$test_collection" | jq -R -s -c 'split("\n") | map(select(length > 0))')
+              total_tests=$(echo "$test_cases" | jq '. | length')
+              echo "Found $total_tests test cases total"
 
-                echo "Debug: Fallback test collection:"
-                echo "$test_collection"
-              fi
-
-              if [ -z "$test_collection" ]; then
-                echo "❌ No individual test cases found, using full-suite approach"
+              # Validate JSON format
+              if ! echo "$test_cases" | jq empty 2>/dev/null; then
+                echo "❌ Invalid JSON format, falling back to full-suite"
                 test_cases='["full-suite"]'
-              else
-                test_count=$(echo "$test_collection" | wc -l)
-                echo "✅ Successfully discovered $test_count test cases"
-
-                # Convert to JSON array
-                test_cases=$(echo "$test_collection" | jq -R -s -c 'split("\n") | map(select(length > 0))')
-                total_tests=$(echo "$test_cases" | jq '. | length')
-                echo "Found $total_tests test cases total"
-
-                # Validate JSON format
-                if ! echo "$test_cases" | jq empty 2>/dev/null; then
-                  echo "❌ Invalid JSON format, falling back to full-suite"
-                  test_cases='["full-suite"]'
-                fi
               fi
             fi
           fi
