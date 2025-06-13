@@ -241,12 +241,15 @@ jobs:
               -H "Authorization: Bearer ${{ github.token }}" \
               -H "Accept: application/vnd.github.v3+json" \
               "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs")
+            # Find ALL job IDs for this Python version - there are multiple jobs in the matrix
+            job_ids=$(echo "$jobs_response" | jq -r --arg version "$version" '.jobs[] | select(.name | contains("Python " + $version)) | .id')
+            job_count=$(echo "$job_ids" | wc -l)
 
-            # Find the job ID for this Python version - look for any job containing "Python X.Y"
-            job_id=$(echo "$jobs_response" | jq -r --arg version "$version" '.jobs[] | select(.name | contains("Python " + $version)) | .id' | head -1)
+            echo "Found $job_count jobs for Python $version:"
+            echo "$job_ids"
 
-            if [ -z "$job_id" ] || [ "$job_id" = "null" ]; then
-              echo "Warning: Could not find job ID for Python $version, falling back to overall result"
+            if [ -z "$job_ids" ] || [ "$job_ids" = "" ]; then
+              echo "Warning: Could not find any job IDs for Python $version, falling back to overall result"
               # Fallback to overall test result
               if [ "$test_job_result" = "success" ]; then
                 successful_cases=$cases_per_version
@@ -258,30 +261,42 @@ jobs:
                 failed_cases_list="Could not parse individual results"
               fi
             else
-              echo "Found job ID: $job_id for Python $version"
+              echo "Processing all $job_count jobs for Python $version..."
 
-              # Get job logs
-              job_logs=$(curl -s \
-                -H "Authorization: Bearer ${{ github.token }}" \
-                -H "Accept: application/vnd.github.v3+json" \
-                "https://api.github.com/repos/${{ github.repository }}/actions/jobs/$job_id/logs")
+              # Initialize counters for this Python version
+              passed_count=0
+              all_job_logs=""
 
+              # Iterate through all job IDs for this Python version
+              while IFS= read -r job_id; do
+                if [ -n "$job_id" ] && [ "$job_id" != "null" ]; then
+                  echo "Fetching logs for job ID: $job_id"
 
+                  # Get job logs for this specific job
+                  current_job_logs=$(curl -s \
+                    -H "Authorization: Bearer ${{ github.token }}" \
+                    -H "Accept: application/vnd.github.v3+json" \
+                    "https://api.github.com/repos/${{ github.repository }}/actions/jobs/$job_id/logs")
 
+                  # Append to combined logs
+                  all_job_logs="$all_job_logs$current_job_logs"
 
+                  # Count PASSED messages in this job
+                  job_passed_count=$(echo "$current_job_logs" | grep "PASSED" | grep "Python $version" | wc -l)
+                  passed_count=$((passed_count + job_passed_count))
+
+                  echo "Found $job_passed_count passed tests in job $job_id"
+                fi
+              done <<< "$job_ids"
 
               # Debug: Show sample of logs (first few lines with PASSED)
-              echo "Sample of PASSED messages found:"
-              echo "$job_logs" | grep "PASSED" | head -3 || echo "No PASSED messages found"
+              echo "Sample of PASSED messages found across all jobs:"
+              echo "$all_job_logs" | grep "PASSED" | head -3 || echo "No PASSED messages found"
 
-              # Count actual "PASSED" messages for this Python version
-              # Simplified approach: just look for "PASSED" and the Python version
+              # Final count for this Python version
               echo "Looking for: PASSED and Python $version"
-              echo "All PASSED messages in logs:"
-              echo "$job_logs" | grep "PASSED" || echo "No PASSED messages found at all"
-
-              # Use a simple and robust approach - just match "PASSED" and Python version
-              passed_count=$(echo "$job_logs" | grep "PASSED" | grep "Python $version" | wc -l)
+              echo "Total PASSED messages across all jobs:"
+              echo "$all_job_logs" | grep "PASSED" | grep "Python $version" || echo "No PASSED messages found at all"
 
               # Ensure passed_count is a valid number
               if ! [[ "$passed_count" =~ ^[0-9]+$ ]]; then
@@ -310,8 +325,8 @@ jobs:
                   failed_cases_list="Multiple test failures in full-suite run (check logs)"
                 else
                   # Find which specific tests failed by comparing discovered tests vs passed tests
-                  # Extract test names - simplified approach using just "PASSED" and Python version
-                  passed_tests=$(echo "$job_logs" | grep "PASSED" | grep "Python $version" | sed -n 's/.*PASSED: \(.*\) (Python.*/\1/p' || echo "")
+                  # Extract test names - simplified approach using just "PASSED" and Python version from all job logs
+                  passed_tests=$(echo "$all_job_logs" | grep "PASSED" | grep "Python $version" | sed -n 's/.*PASSED: \(.*\) (Python.*/\1/p' || echo "")
 
                   failed_tests=""
                   while IFS= read -r test_case; do
