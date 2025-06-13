@@ -271,10 +271,31 @@ jobs:
               echo "$job_logs" | grep "✅ PASSED:" | head -3 || echo "No PASSED messages found"
 
               # Count actual "✅ PASSED" messages for this Python version
-              passed_count=$(echo "$job_logs" | grep -c "✅ PASSED:.*Python $version)" || echo "0")
+              # First, let's see what the actual PASSED messages look like
+              echo "Looking for pattern: ✅ PASSED:.*Python $version"
+              echo "All PASSED messages in logs:"
+              echo "$job_logs" | grep "✅ PASSED:" || echo "No PASSED messages found at all"
+
+              # Use a more robust approach to count - match the exact pattern from test-execution-all.yml
+              # The pattern should be: ✅ PASSED: test_case (Python X.Y)
+              passed_count=$(echo "$job_logs" | grep -F "✅ PASSED:" | grep -F "Python $version)" | wc -l)
+
+              # Ensure passed_count is a valid number
+              if ! [[ "$passed_count" =~ ^[0-9]+$ ]]; then
+                echo "Warning: Could not parse passed count, setting to 0"
+                passed_count=0
+              fi
+
               echo "Found $passed_count passed tests for Python $version"
 
               successful_cases=$passed_count
+
+              # Ensure cases_per_version is a valid number before arithmetic
+              if ! [[ "$cases_per_version" =~ ^[0-9]+$ ]]; then
+                echo "Warning: cases_per_version is not a valid number, setting to 0"
+                cases_per_version=0
+              fi
+
               failed_cases_count=$((cases_per_version - successful_cases))
 
               # Extract failed test case names from logs if any
