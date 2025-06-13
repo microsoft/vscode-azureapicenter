@@ -216,60 +216,98 @@ jobs:
             </thead>
             <tbody>"
 
-          # Check the overall result of the test job
-          # In GitHub Actions, if any matrix job fails, the overall job fails
-          # We can use the needs context to determine the outcome
+          # Process results for each Python version by parsing actual test outputs
+          # Simplified approach: Parse actual test results from test-execution-all.yml outputs
+          # Instead of complex simulation, we rely on the "✅ PASSED: test_case (Python version)"
+          # messages echoed by the test-execution-all.yml workflow to count actual successes.
+          # Failed cases = total discovered cases - actual passed cases from echo outputs.
+
+          # Process results for each Python version by parsing actual test outputs
           test_job_result='${{ needs.test.result }}'
           echo "Test job result: $test_job_result"
-          # Process results for each Python version dynamically
-          version_index=0
+
           while IFS= read -r version; do
             echo "Processing Python $version results..."
-            version_index=$((version_index + 1))
 
-            # If the overall test job succeeded, assume all individual matrix jobs succeeded
-            # If it failed, we need to simulate realistic failure scenarios
-            if [ "$test_job_result" = "success" ]; then
-              successful_cases=$cases_per_version
-              failed_cases_count=0
-              failed_cases_list=""
+            # Get the workflow run logs and count PASSED messages for this Python version
+            # Fetch job logs from GitHub API to count actual "✅ PASSED" messages
+            echo "Fetching job logs for Python $version..."
+            # Get the job ID for this specific Python version from the test matrix
+            # Matrix jobs have names like "test_case_name (Python X.Y)" or "full-suite (Python X.Y)"
+            echo "Looking for job with Python $version in the name..."
+
+            # Use GitHub API to get workflow run jobs
+            jobs_response=$(curl -s \
+              -H "Authorization: Bearer ${{ github.token }}" \
+              -H "Accept: application/vnd.github.v3+json" \
+              "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs")
+
+            # Find the job ID for this Python version - look for any job containing "Python X.Y"
+            job_id=$(echo "$jobs_response" | jq -r --arg version "$version" '.jobs[] | select(.name | contains("Python " + $version)) | .id' | head -1)
+
+            if [ -z "$job_id" ] || [ "$job_id" = "null" ]; then
+              echo "Warning: Could not find job ID for Python $version, falling back to overall result"
+              # Fallback to overall test result
+              if [ "$test_job_result" = "success" ]; then
+                successful_cases=$cases_per_version
+                failed_cases_count=0
+                failed_cases_list=""
+              else
+                successful_cases=0
+                failed_cases_count=$cases_per_version
+                failed_cases_list="Could not parse individual results"
+              fi
             else
-              # Simulate realistic failure patterns when the job fails
-              # This is where you would parse actual test logs in a real implementation
-              # Use position-based logic instead of hardcoded versions
-              case "$version_index" in
-                1)
-                  # First version in the list - might have more compatibility issues
-                  failed_cases_count=3
-                  successful_cases=$((cases_per_version - failed_cases_count))
-                  failed_cases_list="test_integration_create_aws, test_integration_update_metadata, test_integration_auth_token"
-                  ;;
-                2)
-                  # Second version - stable, fewer failures
-                  failed_cases_count=1
-                  successful_cases=$((cases_per_version - failed_cases_count))
-                  failed_cases_list="test_integration_timeout_handling"
-                  ;;
-                3)
-                  # Third version - current stable, no failures
-                  failed_cases_count=0
-                  successful_cases=$cases_per_version
-                  failed_cases_list=""
-                  ;;
-                4)
-                  # Fourth version - might have some edge cases
-                  failed_cases_count=2
-                  successful_cases=$((cases_per_version - failed_cases_count))
-                  failed_cases_list="test_integration_delete_api, test_integration_schema_validation"
-                  ;;
-                *)
-                  # Default case for any additional Python versions (5th, 6th, etc.)
-                  # Simulate moderate failure rate for unknown versions
-                  failed_cases_count=1
-                  successful_cases=$((cases_per_version - failed_cases_count))
-                  failed_cases_list="test_integration_version_specific_issue"
-                  ;;
-              esac
+              echo "Found job ID: $job_id for Python $version"
+
+              # Get job logs
+              job_logs=$(curl -s \
+                -H "Authorization: Bearer ${{ github.token }}" \
+                -H "Accept: application/vnd.github.v3+json" \
+                "https://api.github.com/repos/${{ github.repository }}/actions/jobs/$job_id/logs")
+
+              # Debug: Show sample of logs (first few lines with PASSED)
+              echo "Sample of PASSED messages found:"
+              echo "$job_logs" | grep "✅ PASSED:" | head -3 || echo "No PASSED messages found"
+
+              # Count actual "✅ PASSED" messages for this Python version
+              passed_count=$(echo "$job_logs" | grep -c "✅ PASSED:.*Python $version)" || echo "0")
+              echo "Found $passed_count passed tests for Python $version"
+
+              successful_cases=$passed_count
+              failed_cases_count=$((cases_per_version - successful_cases))
+
+              # Extract failed test case names from logs if any
+              if [ $failed_cases_count -gt 0 ]; then
+                echo "Extracting failed test cases for Python $version..."
+
+                # Get all test cases that were run vs those that passed
+                if [ "$test_cases" = '["full-suite"]' ]; then
+                  failed_cases_list="Multiple test failures in full-suite run (check logs)"
+                else
+                  # Find which specific tests failed by comparing discovered tests vs passed tests
+                  passed_tests=$(echo "$job_logs" | grep "✅ PASSED:" | sed -n 's/.*✅ PASSED: \(.*\) (Python.*/\1/p' || echo "")
+
+                  failed_tests=""
+                  while IFS= read -r test_case; do
+                    if ! echo "$passed_tests" | grep -q "^$test_case$"; then
+                      if [ -z "$failed_tests" ]; then
+                        failed_tests="$test_case"
+                      else
+                        failed_tests="$failed_tests, $test_case"
+                      fi
+                    fi
+                  done <<< "$(echo "$test_cases" | jq -r '.[]')"
+
+                  if [ -z "$failed_tests" ]; then
+                    failed_cases_list="Unknown test failures (check logs)"
+                  else
+                    failed_cases_list="$failed_tests"
+                  fi
+                fi
+              else
+                failed_cases_list=""
+              fi
             fi
 
             # Calculate success rate for this version
@@ -411,7 +449,7 @@ jobs:
 
           # Set environment variables for the email sending step
           echo "EMAIL_SUBJECT=$email_subject" >> $GITHUB_ENV
-          echo "EMAIL_TO=${{secrets.AUTHOR_MAIL_ADDRESSES}}" >> $GITHUB_ENV  # TODO: Replace with actual email
+          echo "EMAIL_TO=frankqian@microsoft.com" >> $GITHUB_ENV  # TODO: Replace with actual email
 
           # Handle multi-line email body properly - ensure proper formatting is preserved
           # Use a delimiter that won't appear in the content
