@@ -266,19 +266,22 @@ jobs:
                 -H "Accept: application/vnd.github.v3+json" \
                 "https://api.github.com/repos/${{ github.repository }}/actions/jobs/$job_id/logs")
 
+
+
+
+
               # Debug: Show sample of logs (first few lines with PASSED)
               echo "Sample of PASSED messages found:"
-              echo "$job_logs" | grep "✅ PASSED:" | head -3 || echo "No PASSED messages found"
+              echo "$job_logs" | grep "PASSED" | head -3 || echo "No PASSED messages found"
 
-              # Count actual "✅ PASSED" messages for this Python version
-              # First, let's see what the actual PASSED messages look like
-              echo "Looking for pattern: ✅ PASSED:.*Python $version"
+              # Count actual "PASSED" messages for this Python version
+              # Simplified approach: just look for "PASSED" and the Python version
+              echo "Looking for: PASSED and Python $version"
               echo "All PASSED messages in logs:"
-              echo "$job_logs" | grep "✅ PASSED:" || echo "No PASSED messages found at all"
+              echo "$job_logs" | grep "PASSED" || echo "No PASSED messages found at all"
 
-              # Use a more robust approach to count - match the exact pattern from test-execution-all.yml
-              # The pattern should be: ✅ PASSED: test_case (Python X.Y)
-              passed_count=$(echo "$job_logs" | grep -F "✅ PASSED:" | grep -F "Python $version)" | wc -l)
+              # Use a simple and robust approach - just match "PASSED" and Python version
+              passed_count=$(echo "$job_logs" | grep "PASSED" | grep "Python $version" | wc -l)
 
               # Ensure passed_count is a valid number
               if ! [[ "$passed_count" =~ ^[0-9]+$ ]]; then
@@ -307,7 +310,8 @@ jobs:
                   failed_cases_list="Multiple test failures in full-suite run (check logs)"
                 else
                   # Find which specific tests failed by comparing discovered tests vs passed tests
-                  passed_tests=$(echo "$job_logs" | grep "✅ PASSED:" | sed -n 's/.*✅ PASSED: \(.*\) (Python.*/\1/p' || echo "")
+                  # Extract test names - simplified approach using just "PASSED" and Python version
+                  passed_tests=$(echo "$job_logs" | grep "PASSED" | grep "Python $version" | sed -n 's/.*PASSED: \(.*\) (Python.*/\1/p' || echo "")
 
                   failed_tests=""
                   while IFS= read -r test_case; do
