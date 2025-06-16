@@ -1,4 +1,7 @@
-﻿name: CLI weekly live test
+﻿### How to use this workflow
+### To change the Python version matrix, please modify line 121 in "discover-tests" - `python_versions='["3.9", "3.10", "3.11", "3.12"]'`
+### To change the target test repo and branch, please modify line 53 to 55 in ./test-execution-all.yml
+name: CLI weekly live test
 
 on:
   schedule:
@@ -6,7 +9,7 @@ on:
   workflow_dispatch:
     inputs:
       test-cases:
-        description: 'Specific test cases to run. Example: ["test_integration_create_aws", "test_integration_delete"]. Leave empty to run all test cases'
+        description: 'Specific test cases to run. Example: ["test_integration_create_aws", "test_api_delete"]. Leave empty to run all test cases'
         required: false
         type: string
 
@@ -153,53 +156,27 @@ jobs:
           pattern: test-results-*
           merge-multiple: true
 
-      - name: Debug - List downloaded artifacts
-        run: |
-          echo "Downloaded artifacts structure:"
-          find test-results/ -type f 2>/dev/null | head -20 || echo "No files found"
-          echo "Total JSON files:"
-          find test-results/ -name "*.json" 2>/dev/null | wc -l || echo "0"
-
       - name: Generate Email Content
         id: generate-email-content
         run: |
-          echo "Generating email content based on test results..."
-
-          # Get test cases that were run
           test_cases='${{ needs.setup.outputs.test-cases }}'
           python_versions='${{ needs.setup.outputs.python-versions }}'
-
-          echo "Test cases: $test_cases"
-          echo "Python versions: $python_versions"
-
-          # Parse Python versions from JSON array
           python_versions_array=$(echo "$python_versions" | jq -r '.[]')
           python_versions_count=$(echo "$python_versions" | jq '. | length')
 
-          echo "Parsed Python versions:"
-          echo "$python_versions_array"
-          echo "Number of Python versions: $python_versions_count"
-
-          # Initialize counters for overall statistics
+          # Initialize counters
           total_cases=0
           total_success=0
           total_failed=0
           failed_cases=""
-          # Count total test cases - we'll determine this dynamically from actual job results
-          # instead of making assumptions about test discovery
+
           if [ "$test_cases" = '["full-suite"]' ]; then
-            # For full-suite, we'll count actual tests from the logs later
-            cases_per_version="TBD"  # Will be determined from actual logs
+            cases_per_version="TBD"
           else
-            # For individual test cases, we'll still count actual tests from logs
-            # because the number of jobs may not match the number of test cases
-            cases_per_version="TBD"  # Will be determined from actual logs
+            cases_per_version="TBD"
           fi
 
-          echo "Test discovery mode: $test_cases"
-          echo "Cases per version: Will be determined from actual job logs"
-
-          # Create summary table header - using HTML for polished formatting
+          # Create summary table header
           email_body="<h2>📊 CLI Weekly Test Results Summary</h2>
           <p><strong>Test Execution Date:</strong> $(date '+%Y-%m-%d %H:%M:%S UTC')<br>
           <strong>Repository:</strong> azure-cli-extensions (apic-extension)<br>
@@ -218,38 +195,16 @@ jobs:
               </tr>
             </thead>
             <tbody>"
-
-          # Process results for each Python version by parsing actual test outputs
-          # Simplified approach: Parse actual test results from test-execution-all.yml outputs
-          # Instead of complex simulation, we rely on the "✅ PASSED: test_case (Python version)"
-          # messages echoed by the test-execution-all.yml workflow to count actual successes.
-          # Failed cases = total discovered cases - actual passed cases from echo outputs.
-
-          # Process results for each Python version by parsing actual test outputs
+          # Process results for each Python version
           test_job_result='${{ needs.test.result }}'
-          echo "Test job result: $test_job_result"
           while IFS= read -r version; do
-            echo "Processing Python $version results..."
-            # Process test results from downloaded artifacts (more reliable than job discovery)
-            echo "Processing test result artifacts for Python $version..."
-
-            # Debug: Show what we're looking for and what exists
-            echo "Looking for pattern: *python-${version}* in test-results/"
-            echo "Available files in test-results/:"
-            find test-results/ -type f 2>/dev/null | head -10 || echo "No files found in test-results/"
-              # Find all result files for this Python version - try multiple patterns
+            # Find result files for this Python version
             result_files=""
-
-            # Try different search patterns since artifact naming might vary
-            # With merge-multiple: true, files should be directly in test-results/
             for pattern in "result-${version}-*.json" "result-*${version}*.json" "*python-${version}*.json" "*${version}*.json"; do
               found_files=$(find test-results/ -name "$pattern" 2>/dev/null || echo "")
               if [ -n "$found_files" ]; then
                 result_files="$found_files"
-                echo "Found files with pattern '$pattern': $result_files"
                 break
-              else
-                echo "No files found with pattern: $pattern"
               fi
             done
 
@@ -257,18 +212,12 @@ jobs:
             failed_count=0
             total_cases_this_version=0
             failed_cases_list=""
-
             if [ -n "$result_files" ]; then
-              echo "Found result files for Python $version:"
-              echo "$result_files"
-
               # Process each result file
               while IFS= read -r result_file; do
-                if [ -f "$result_file" ]; then
+                  if [ -f "$result_file" ]; then
                   test_case=$(jq -r '.test_case' "$result_file" 2>/dev/null || echo "unknown")
                   result=$(jq -r '.result' "$result_file" 2>/dev/null || echo "unknown")
-
-                  echo "Processing: $test_case = $result"
 
                   total_cases_this_version=$((total_cases_this_version + 1))
 
@@ -285,8 +234,7 @@ jobs:
                 fi
               done <<< "$result_files"
             else
-              echo "Warning: No result files found for Python $version, using fallback"
-              # Fallback to overall test result if no artifacts found
+              # Fallback if no artifacts found
               if [ "$test_job_result" = "success" ]; then
                 passed_count=1
                 failed_count=0
@@ -300,18 +248,10 @@ jobs:
               fi
             fi
 
-            echo "Results for Python $version:"
-            echo "Total cases: $total_cases_this_version"
-            echo "Passed: $passed_count"
-            echo "Failed: $failed_count"
             cases_per_version=$total_cases_this_version
             successful_cases=$passed_count
             failed_cases_count=$failed_count
 
-            # Debug: List what artifacts were actually downloaded
-            echo "Debug: Checking for downloaded artifacts..."
-            find test-results/ -type f 2>/dev/null || echo "No test-results directory found"
-            ls -la test-results/ 2>/dev/null || echo "Cannot list test-results directory"
             # Calculate success rate for this version
             if [ $cases_per_version -eq 0 ]; then
               success_rate=0
@@ -459,7 +399,7 @@ jobs:
 
           # Set environment variables for the email sending step
           echo "EMAIL_SUBJECT=$email_subject" >> $GITHUB_ENV
-          echo "EMAIL_TO=frankqian@microsoft.com" >> $GITHUB_ENV  # TODO: Replace with actual email
+          echo "EMAIL_TO=${{secrets.AUTHOR_MAIL_ADDRESSES}}" >> $GITHUB_ENV  # TODO: Replace with actual email
 
           # Handle multi-line email body properly - ensure proper formatting is preserved
           # Use a delimiter that won't appear in the content
