@@ -75,22 +75,85 @@ jobs:
 
           cd azure-cli-extensions
           source .venv/bin/activate
-
           # Run the specific test case
+          test_result="FAILED"
+          test_start_time=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
           if [ "$test_case" = "full-suite" ]; then
             echo "Running full test suite..."
-            azdev test apic-extension --discover --live
+            # Capture both output and exit code
+            set +e  # Don't exit on command failure
+            test_output=$(azdev test apic-extension --discover --live 2>&1)
+            test_exit_code=$?
+            set -e  # Re-enable exit on error
+
+            echo "Test output:"
+            echo "$test_output"
+            echo "Exit code: $test_exit_code"
+
+            # Check both exit code and output for failure indicators
+            if [ $test_exit_code -eq 0 ] && ! echo "$test_output" | grep -i -E "(failed|error|FAIL)" > /dev/null; then
+              test_result="PASSED"
+            else
+              test_result="FAILED"
+            fi
           else
             echo "Running individual test case: $test_case"
-            azdev test azext_apic-extension $test_case --discover --live
+            # Capture both output and exit code
+            set +e  # Don't exit on command failure
+            test_output=$(azdev test azext_apic-extension $test_case --discover --live 2>&1)
+            test_exit_code=$?
+            set -e  # Re-enable exit on error
+
+            echo "Test output:"
+            echo "$test_output"
+            echo "Exit code: $test_exit_code"
+
+            # Check both exit code and output for failure indicators
+            if [ $test_exit_code -eq 0 ] && ! echo "$test_output" | grep -i -E "(failed|error|FAIL)" > /dev/null; then
+              test_result="PASSED"
+            else
+              test_result="FAILED"
+            fi
           fi
 
-          echo "✅ PASSED: $test_case (Python $python_version)"
+          test_end_time=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
+
+          # Output result to centralized location
+          echo "Test result: $test_result for $test_case (Python $python_version)"
+          if [ "$test_result" = "PASSED" ]; then
+            echo "✅ PASSED: $test_case (Python $python_version)"
+          else
+            echo "❌ FAILED: $test_case (Python $python_version)"
+          fi
           echo "Completed: $test_case (Python $python_version)"
+
+          # Write result to a file that will be uploaded as artifact
+          mkdir -p test-results
+          result_file="test-results/result-${python_version}-$(echo "$test_case" | tr '/' '_' | tr ' ' '_').json"
+          cat > "$result_file" << EOF
+          {
+            "test_case": "$test_case",
+            "python_version": "$python_version",
+            "result": "$test_result",
+            "start_time": "$test_start_time",
+            "end_time": "$test_end_time",
+            "job_id": "${{ github.job }}"
+          }
+          EOF
+
+          echo "Result written to $result_file"
         env:
           USERASSIGNED_IDENTITY: ${{ secrets.USERASSIGNED_IDENTITY }}
           AWS_ACCESS_KEY_LINK: ${{ secrets.AWS_ACCESS_KEY_LINK }}
           AWS_SECRET_ACCESS_KEY_LINK: ${{ secrets.AWS_SECRET_ACCESS_KEY_LINK }}
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()  # Upload even if tests failed
+        with:
+          name: test-results-python-${{ inputs.python-version }}-${{ matrix.test-case }}
+          path: test-results/
+          retention-days: 1
 
     outputs:
       test-case: ${{ matrix.test-case }}

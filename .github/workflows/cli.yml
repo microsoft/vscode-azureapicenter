@@ -66,56 +66,46 @@ jobs:
           else
             echo "Discovering all test cases using pytest..."
 
-            # Find test files and collect test cases
-            test_files=$(find . -name "test_*.py" -type f | head -10)
-            echo "Debug: Found test files:"
-            echo "$test_files"
+            # Use pytest to collect all test cases
+            echo "Debug: Collecting test cases with pytest..."
 
-            if [ -z "$test_files" ]; then
-              echo "❌ No test files found"
-              test_cases='["full-suite"]'
-            else
-              # Use pytest to collect all test cases
-              echo "Debug: Collecting test cases with pytest..."
+            # Collect test node IDs and extract just the test function names
+            test_collection=$(python -m pytest --collect-only -q 2>/dev/null | \
+              grep "::test_" | \
+              sed 's/.*::\(test_[^[]*\).*/\1/' | \
+              sort | uniq || true)
 
-              # Collect test node IDs and extract just the test function names
-              test_collection=$(python -m pytest --collect-only -q 2>/dev/null | \
-                grep "::test_" | \
-                sed 's/.*::\(test_[^[]*\).*/\1/' | \
+            echo "Debug: Raw test collection output:"
+            echo "$test_collection"
+
+            if [ -z "$test_collection" ]; then
+              echo "❌ No test cases found with pytest, trying alternative approach..."
+
+              # Fallback: Parse test files directly for test function definitions
+              test_collection=$(grep -h "^def test_" $(find . -name "test_*.py") | \
+                sed 's/def \(test_[^(]*\).*/\1/' | \
                 sort | uniq || true)
 
-              echo "Debug: Raw test collection output:"
+              echo "Debug: Fallback test collection:"
               echo "$test_collection"
+            fi
 
-              if [ -z "$test_collection" ]; then
-                echo "❌ No test cases found with pytest, trying alternative approach..."
+            if [ -z "$test_collection" ]; then
+              echo "❌ No individual test cases found, using full-suite approach"
+              test_cases='["full-suite"]'
+            else
+              test_count=$(echo "$test_collection" | wc -l)
+              echo "✅ Successfully discovered $test_count test cases"
 
-                # Fallback: Parse test files directly for test function definitions
-                test_collection=$(grep -h "^def test_" $(find . -name "test_*.py") | \
-                  sed 's/def \(test_[^(]*\).*/\1/' | \
-                  sort | uniq || true)
+              # Convert to JSON array
+              test_cases=$(echo "$test_collection" | jq -R -s -c 'split("\n") | map(select(length > 0))')
+              total_tests=$(echo "$test_cases" | jq '. | length')
+              echo "Found $total_tests test cases total"
 
-                echo "Debug: Fallback test collection:"
-                echo "$test_collection"
-              fi
-
-              if [ -z "$test_collection" ]; then
-                echo "❌ No individual test cases found, using full-suite approach"
+              # Validate JSON format
+              if ! echo "$test_cases" | jq empty 2>/dev/null; then
+                echo "❌ Invalid JSON format, falling back to full-suite"
                 test_cases='["full-suite"]'
-              else
-                test_count=$(echo "$test_collection" | wc -l)
-                echo "✅ Successfully discovered $test_count test cases"
-
-                # Convert to JSON array
-                test_cases=$(echo "$test_collection" | jq -R -s -c 'split("\n") | map(select(length > 0))')
-                total_tests=$(echo "$test_cases" | jq '. | length')
-                echo "Found $total_tests test cases total"
-
-                # Validate JSON format
-                if ! echo "$test_cases" | jq empty 2>/dev/null; then
-                  echo "❌ Invalid JSON format, falling back to full-suite"
-                  test_cases='["full-suite"]'
-                fi
               fi
             fi
           fi
@@ -181,20 +171,19 @@ jobs:
           total_success=0
           total_failed=0
           failed_cases=""
-
-          # Count total test cases
+          # Count total test cases - we'll determine this dynamically from actual job results
+          # instead of making assumptions about test discovery
           if [ "$test_cases" = '["full-suite"]' ]; then
-            # If running full suite, estimate 124 cases based on the comment in the requirements
-            cases_per_version=124
+            # For full-suite, we'll count actual tests from the logs later
+            cases_per_version="TBD"  # Will be determined from actual logs
           else
-            # Count individual test cases
-            cases_per_version=$(echo "$test_cases" | jq '. | length')
+            # For individual test cases, we'll still count actual tests from logs
+            # because the number of jobs may not match the number of test cases
+            cases_per_version="TBD"  # Will be determined from actual logs
           fi
 
-          # Calculate totals across all Python versions
-          total_cases=$((cases_per_version * python_versions_count))
-          echo "Cases per version: $cases_per_version"
-          echo "Total cases across all versions: $total_cases"
+          echo "Test discovery mode: $test_cases"
+          echo "Cases per version: Will be determined from actual job logs"
 
           # Create summary table header - using HTML for polished formatting
           email_body="<h2>📊 CLI Weekly Test Results Summary</h2>
@@ -225,139 +214,77 @@ jobs:
           # Process results for each Python version by parsing actual test outputs
           test_job_result='${{ needs.test.result }}'
           echo "Test job result: $test_job_result"
-
           while IFS= read -r version; do
             echo "Processing Python $version results..."
 
-            # Get the workflow run logs and count PASSED messages for this Python version
-            # Fetch job logs from GitHub API to count actual "✅ PASSED" messages
-            echo "Fetching job logs for Python $version..."
-            # Get the job ID for this specific Python version from the test matrix
-            # Matrix jobs have names like "test_case_name (Python X.Y)" or "full-suite (Python X.Y)"
-            echo "Looking for job with Python $version in the name..."
+            # Process test results from downloaded artifacts (more reliable than job discovery)
+            echo "Processing test result artifacts for Python $version..."
 
-            # Use GitHub API to get workflow run jobs
-            jobs_response=$(curl -s \
-              -H "Authorization: Bearer ${{ github.token }}" \
-              -H "Accept: application/vnd.github.v3+json" \
-              "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs")
-            # Find ALL job IDs for this Python version - there are multiple jobs in the matrix
-            job_ids=$(echo "$jobs_response" | jq -r --arg version "$version" '.jobs[] | select(.name | contains("Python " + $version)) | .id')
-            job_count=$(echo "$job_ids" | wc -l)
+            # Find all result files for this Python version
+            result_files=$(find test-results/ -name "*python-${version}*" -name "*.json" 2>/dev/null || echo "")
 
-            echo "Found $job_count jobs for Python $version:"
-            echo "$job_ids"
+            passed_count=0
+            failed_count=0
+            total_cases_this_version=0
+            failed_cases_list=""
 
-            if [ -z "$job_ids" ] || [ "$job_ids" = "" ]; then
-              echo "Warning: Could not find any job IDs for Python $version, falling back to overall result"
-              # Fallback to overall test result
-              if [ "$test_job_result" = "success" ]; then
-                successful_cases=$cases_per_version
-                failed_cases_count=0
-                failed_cases_list=""
-              else
-                successful_cases=0
-                failed_cases_count=$cases_per_version
-                failed_cases_list="Could not parse individual results"
-              fi
-            else
-              echo "Processing all $job_count jobs for Python $version..."
+            if [ -n "$result_files" ]; then
+              echo "Found result files for Python $version:"
+              echo "$result_files"
 
-              # Initialize counters for this Python version
-              passed_count=0
-              all_job_logs=""
+              # Process each result file
+              while IFS= read -r result_file; do
+                if [ -f "$result_file" ]; then
+                  test_case=$(jq -r '.test_case' "$result_file" 2>/dev/null || echo "unknown")
+                  result=$(jq -r '.result' "$result_file" 2>/dev/null || echo "unknown")
 
-              # Iterate through all job IDs for this Python version
-              while IFS= read -r job_id; do
-                if [ -n "$job_id" ] && [ "$job_id" != "null" ]; then
-                  echo "Fetching logs for job ID: $job_id"
+                  echo "Processing: $test_case = $result"
 
-                  # Get job logs for this specific job
-                  current_job_logs=$(curl -s \
-                    -H "Authorization: Bearer ${{ github.token }}" \
-                    -H "Accept: application/vnd.github.v3+json" \
-                    "https://api.github.com/repos/${{ github.repository }}/actions/jobs/$job_id/logs")
+                  total_cases_this_version=$((total_cases_this_version + 1))
 
-                  # Append to combined logs
-                  all_job_logs="$all_job_logs$current_job_logs"
-
-                  # Count PASSED messages in this job
-                  job_passed_count=$(echo "$current_job_logs" | grep "PASSED" | grep "Python $version" | wc -l)
-                  passed_count=$((passed_count + job_passed_count))
-
-                  echo "Found $job_passed_count passed tests in job $job_id"
-                fi
-              done <<< "$job_ids"
-
-              # Debug: Show sample of logs (first few lines with PASSED)
-              echo "Sample of PASSED messages found across all jobs:"
-              echo "$all_job_logs" | grep "PASSED" | head -3 || echo "No PASSED messages found"
-
-              # Final count for this Python version
-              echo "Looking for: PASSED and Python $version"
-              echo "Total PASSED messages across all jobs:"
-              echo "$all_job_logs" | grep "PASSED" | grep "Python $version" || echo "No PASSED messages found at all"
-
-              # Ensure passed_count is a valid number
-              if ! [[ "$passed_count" =~ ^[0-9]+$ ]]; then
-                echo "Warning: Could not parse passed count, setting to 0"
-                passed_count=0
-              fi
-
-              echo "Found $passed_count passed tests for Python $version"
-
-              successful_cases=$passed_count
-
-              # Ensure cases_per_version is a valid number before arithmetic
-              if ! [[ "$cases_per_version" =~ ^[0-9]+$ ]]; then
-                echo "Warning: cases_per_version is not a valid number, setting to 0"
-                cases_per_version=0
-              fi
-
-              failed_cases_count=$((cases_per_version - successful_cases))
-
-              # Extract failed test case names from logs if any
-              if [ $failed_cases_count -gt 0 ]; then
-                echo "Extracting failed test cases for Python $version..."
-
-                # Get all test cases that were run vs those that passed
-                if [ "$test_cases" = '["full-suite"]' ]; then
-                  failed_cases_list="Multiple test failures in full-suite run (check logs)"
-                else
-                  # Find which specific tests failed by comparing discovered tests vs passed tests
-                  # Extract test names - simplified approach using just "PASSED" and Python version from all job logs
-                  passed_tests=$(echo "$all_job_logs" | grep "PASSED" | grep "Python $version" | sed -n 's/.*PASSED: \(.*\) (Python.*/\1/p' || echo "")
-
-                  failed_tests=""
-                  while IFS= read -r test_case; do
-                    if ! echo "$passed_tests" | grep -q "^$test_case$"; then
-                      if [ -z "$failed_tests" ]; then
-                        failed_tests="$test_case"
-                      else
-                        failed_tests="$failed_tests, $test_case"
-                      fi
-                    fi
-                  done <<< "$(echo "$test_cases" | jq -r '.[]')"
-
-                  if [ -z "$failed_tests" ]; then
-                    failed_cases_list="Unknown test failures (check logs)"
+                  if [ "$result" = "PASSED" ]; then
+                    passed_count=$((passed_count + 1))
                   else
-                    failed_cases_list="$failed_tests"
+                    failed_count=$((failed_count + 1))
+                    if [ -z "$failed_cases_list" ]; then
+                      failed_cases_list="$test_case"
+                    else
+                      failed_cases_list="$failed_cases_list, $test_case"
+                    fi
                   fi
                 fi
-              else
+              done <<< "$result_files"
+            else
+              echo "Warning: No result files found for Python $version, using fallback"
+              # Fallback to overall test result if no artifacts found
+              if [ "$test_job_result" = "success" ]; then
+                passed_count=1
+                failed_count=0
+                total_cases_this_version=1
                 failed_cases_list=""
+              else
+                passed_count=0
+                failed_count=1
+                total_cases_this_version=1
+                failed_cases_list="Could not find test results"
               fi
             fi
 
+            echo "Results for Python $version:"
+            echo "Total cases: $total_cases_this_version"
+            echo "Passed: $passed_count"
+            echo "Failed: $failed_count"
+
+            cases_per_version=$total_cases_this_version
+            successful_cases=$passed_count
             # Calculate success rate for this version
             if [ $cases_per_version -eq 0 ]; then
               success_rate=0
             else
               success_rate=$(( (successful_cases * 100) / cases_per_version ))
             fi
-
             # Add to totals
+            total_cases=$((total_cases + cases_per_version))
             total_success=$((total_success + successful_cases))
             total_failed=$((total_failed + failed_cases_count))
 
@@ -387,6 +314,14 @@ jobs:
                 <td style='padding: 8px; text-align: center;'>$success_rate%</td>
               </tr>"
           done <<< "$python_versions_array"
+
+          # Final totals after processing all Python versions
+          echo "=========================================="
+          echo "FINAL TOTALS:"
+          echo "Total cases across all versions: $total_cases"
+          echo "Total successful: $total_success"
+          echo "Total failed: $total_failed"
+          echo "=========================================="
 
           # Calculate overall success rate
           if [ $total_cases -eq 0 ]; then
