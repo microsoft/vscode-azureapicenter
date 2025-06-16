@@ -460,3 +460,10 @@ jobs:
           else
             echo "Email sent successfully"
           fi
+
+      - name: Cleanup test result artifacts
+        if: always()
+        uses: geekyeggo/delete-artifact@v5
+        with:
+          name: test-results-*
+          failOnError: false
