@@ -126,8 +126,9 @@ jobs:
             echo "❌ FAILED: $test_case (Python $python_version)"
           fi
           echo "Completed: $test_case (Python $python_version)"
-
           # Write result to a file that will be uploaded as artifact
+          # Create the results directory in the workspace root (not inside azure-cli-extensions)
+          cd "$GITHUB_WORKSPACE"
           mkdir -p test-results
           result_file="test-results/result-${python_version}-$(echo "$test_case" | tr '/' '_' | tr ' ' '_').json"
           cat > "$result_file" << EOF
@@ -142,6 +143,7 @@ jobs:
           EOF
 
           echo "Result written to $result_file"
+          echo "File exists check: $(ls -la "$result_file" 2>/dev/null || echo 'File not found')"
         env:
           USERASSIGNED_IDENTITY: ${{ secrets.USERASSIGNED_IDENTITY }}
           AWS_ACCESS_KEY_LINK: ${{ secrets.AWS_ACCESS_KEY_LINK }}

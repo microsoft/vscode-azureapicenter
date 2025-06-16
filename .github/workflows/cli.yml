@@ -146,6 +146,20 @@ jobs:
     needs: [setup, test]
     if: (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && !cancelled()
     steps:
+      - name: Download all test result artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: test-results/
+          pattern: test-results-*
+          merge-multiple: true
+
+      - name: Debug - List downloaded artifacts
+        run: |
+          echo "Downloaded artifacts structure:"
+          find test-results/ -type f 2>/dev/null | head -20 || echo "No files found"
+          echo "Total JSON files:"
+          find test-results/ -name "*.json" 2>/dev/null | wc -l || echo "0"
+
       - name: Generate Email Content
         id: generate-email-content
         run: |
@@ -216,12 +230,28 @@ jobs:
           echo "Test job result: $test_job_result"
           while IFS= read -r version; do
             echo "Processing Python $version results..."
-
             # Process test results from downloaded artifacts (more reliable than job discovery)
             echo "Processing test result artifacts for Python $version..."
 
-            # Find all result files for this Python version
-            result_files=$(find test-results/ -name "*python-${version}*" -name "*.json" 2>/dev/null || echo "")
+            # Debug: Show what we're looking for and what exists
+            echo "Looking for pattern: *python-${version}* in test-results/"
+            echo "Available files in test-results/:"
+            find test-results/ -type f 2>/dev/null | head -10 || echo "No files found in test-results/"
+              # Find all result files for this Python version - try multiple patterns
+            result_files=""
+
+            # Try different search patterns since artifact naming might vary
+            # With merge-multiple: true, files should be directly in test-results/
+            for pattern in "result-${version}-*.json" "result-*${version}*.json" "*python-${version}*.json" "*${version}*.json"; do
+              found_files=$(find test-results/ -name "$pattern" 2>/dev/null || echo "")
+              if [ -n "$found_files" ]; then
+                result_files="$found_files"
+                echo "Found files with pattern '$pattern': $result_files"
+                break
+              else
+                echo "No files found with pattern: $pattern"
+              fi
+            done
 
             passed_count=0
             failed_count=0
@@ -274,9 +304,14 @@ jobs:
             echo "Total cases: $total_cases_this_version"
             echo "Passed: $passed_count"
             echo "Failed: $failed_count"
-
             cases_per_version=$total_cases_this_version
             successful_cases=$passed_count
+            failed_cases_count=$failed_count
+
+            # Debug: List what artifacts were actually downloaded
+            echo "Debug: Checking for downloaded artifacts..."
+            find test-results/ -type f 2>/dev/null || echo "No test-results directory found"
+            ls -la test-results/ 2>/dev/null || echo "Cannot list test-results directory"
             # Calculate success rate for this version
             if [ $cases_per_version -eq 0 ]; then
               success_rate=0
@@ -296,10 +331,10 @@ jobs:
                 failed_cases="$failed_cases\nPython $version: $failed_cases_list"
               fi
             fi
-
             # Add row to table using HTML formatting
             row_color=""
-            if [ $failed_cases_count -gt 0 ]; then
+            # Safely check if failed_cases_count is a number and greater than 0
+            if [[ "$failed_cases_count" =~ ^[0-9]+$ ]] && [ "$failed_cases_count" -gt 0 ]; then
               row_color=" style='background-color: #ffe6e6;'"  # Light red for failures
             else
               row_color=" style='background-color: #e6ffe6;'"  # Light green for success
