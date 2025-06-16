@@ -82,9 +82,11 @@ jobs:
             echo "$test_collection"
 
             if [ -z "$test_collection" ]; then
+
               echo "❌ No test cases found with pytest, trying alternative approach..."
 
               # Fallback: Parse test files directly for test function definitions
+
               test_collection=$(grep -h "^def test_" $(find . -name "test_*.py") | \
                 sed 's/def \(test_[^(]*\).*/\1/' | \
                 sort | uniq || true)
@@ -142,7 +144,6 @@ jobs:
       AWS_ACCESS_KEY_LINK: ${{ secrets.AWS_ACCESS_KEY_LINK }}
       AWS_SECRET_ACCESS_KEY_LINK: ${{ secrets.AWS_SECRET_ACCESS_KEY_LINK }}
 
-  # Send notification with inline logic (no reusable workflow)
   notify:
     runs-on: ubuntu-latest
     environment: engineering
@@ -176,7 +177,6 @@ jobs:
             cases_per_version="TBD"
           fi
 
-          # Create summary table header
           email_body="<h2>📊 CLI Weekly Test Results Summary</h2>
           <p><strong>Test Execution Date:</strong> $(date '+%Y-%m-%d %H:%M:%S UTC')<br>
           <strong>Repository:</strong> azure-cli-extensions (apic-extension)<br>
@@ -399,7 +399,7 @@ jobs:
 
           # Set environment variables for the email sending step
           echo "EMAIL_SUBJECT=$email_subject" >> $GITHUB_ENV
-          echo "EMAIL_TO=${{secrets.AUTHOR_MAIL_ADDRESSES}}" >> $GITHUB_ENV  # TODO: Replace with actual email
+          echo "EMAIL_TO=${{secrets.AUTHOR_MAIL_ADDRESSES}}" >> $GITHUB_ENV
 
           # Handle multi-line email body properly - ensure proper formatting is preserved
           # Use a delimiter that won't appear in the content
