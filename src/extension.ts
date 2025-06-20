@@ -20,6 +20,7 @@ import { CreateDeclarativeAgent } from './commands/createDeclarativeAgent';
 import { detectBreakingChange } from './commands/detectBreakingChange';
 import { showOpenApi } from './commands/editOpenApi';
 import { ExportAPI } from './commands/exportApi';
+import { generateApicEnv } from './commands/generateApicEnv';
 import { GenerateApiFromCode } from './commands/generateApiFromCode';
 import { generateApiLibrary } from './commands/generateApiLibrary';
 import { generateApiSpecFromCodeProject } from './commands/generateApiSpecFromCodeProject';
@@ -33,6 +34,7 @@ import openInAzurePortal from './commands/openInAzurePortal';
 import { openUrlFromTreeNode } from './commands/openUrl';
 import { refreshTree } from './commands/refreshTree';
 import { registerApi } from './commands/registerApi';
+import { registerMCP } from "./commands/registerMCP";
 import { removeDataplaneAPI } from './commands/removeDataplaneApi';
 import { addCustomFunction } from './commands/rules/addCustomFunction';
 import { deleteCustomFunction } from './commands/rules/deleteCustomFunction';
@@ -106,6 +108,10 @@ export async function activate(context: vscode.ExtensionContext) {
     registerCommandWithTelemetry('azure-api-center.generateHttpFile', GenerateHttpFile.generateHttpFile);
 
     registerCommandWithTelemetry('azure-api-center.registerApi', registerApi);
+
+    registerCommandWithTelemetry('azure-api-center.registerMCP', registerMCP);
+
+    registerCommandWithTelemetry('azure-api-center.createApiEnvironment', generateApicEnv);
 
     registerCommandWithTelemetry('azure-api-center.searchApi', searchApi);
 

@@ -18,7 +18,7 @@ export class ApiDeploymentTreeItem extends AzExtTreeItem {
   }
 
   public get id(): string {
-    return this.apiCenterApiDeployment.id;
+    return this.apiCenterApiDeployment.id!;
   }
 
   public get label(): string {

@@ -38,7 +38,15 @@ export const AzureAccountCreateUrl = {
 export const RegisterApiOptions = {
     stepByStep: UiStrings.RegisterApiOptionStepByStep,
     cicd: UiStrings.RegisterApiOptionCicd,
+    mcp: UiStrings.RegisterApiOptionMCP,
 };
+
+export const EnvironmentKind = {
+    production: UiStrings.APICEnvironmentKindProduction,
+    staging: UiStrings.APICEnvironmentKindStaging,
+    development: UiStrings.APICEnvironmentKindDevelopment,
+    testing: UiStrings.APICEnvironmentKindTestings,
+}
 
 export const TreeViewType = {
     controlPlaneView: UiStrings.APIControlPlaneView,

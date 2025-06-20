@@ -73,6 +73,9 @@ export type ApiCenterEnvironment = {
     location: string;
     name: string;
     properties: {
+        kind: string;
+        server?: string;
+        EnvironmentServerType?: string;
     };
     // tslint:disable-next-line:no-reserved-keywords
     type: string;
@@ -99,8 +102,8 @@ export type DataPlaneApiCenterApiVersion = {
 };
 
 export type ApiCenterApiDeployment = {
-    id: string;
-    location: string;
+    id?: string;
+    location?: string;
     name: string;
     properties: {
         server: {

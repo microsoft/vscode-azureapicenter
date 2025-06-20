@@ -99,6 +99,16 @@
         "category": "Azure API Center"
       },
       {
+        "command": "azure-api-center.registerMCP",
+        "title": "%azure-api-center.commands.registerMCP.title%",
+        "category": "Azure API Center"
+      },
+      {
+        "command": "azure-api-center.createApiEnvironment",
+        "title": "%azure-api-center.commands.createApiEnvironment.title%",
+        "category": "Azure API Center"
+      },
+      {
         "command": "azure-api-center.searchApi",
         "title": "%azure-api-center.commands.searchApi.title%",
         "category": "Azure API Center",
@@ -323,6 +333,14 @@
         {
           "command": "azure-api-center.registerApi",
           "when": "view == apiCenterTreeView && viewItem =~ /^azureApiCenterApis/"
+        },
+        {
+          "command": "azure-api-center.registerMCP",
+          "when": "view == apiCenterTreeView && viewItem =~ /^azureApiCenterApis/"
+        },
+        {
+          "command": "azure-api-center.createApiEnvironment",
+          "when": "view == apiCenterTreeView && viewItem =~ /^azureApiCenterEnvironments/"
         },
         {
           "command": "azure-api-center.searchApi",
