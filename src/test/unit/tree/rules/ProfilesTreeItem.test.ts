@@ -32,7 +32,7 @@ describe('ProfilesTreeItem', () => {
     });
 
     it('should return correct label', () => {
-        assert.strictEqual(profilesTreeItem.label, "Profiles");
+        assert.strictEqual(profilesTreeItem.label, "Profiles (Preview)");
     });
 
     it('should return correct icon path', () => {
