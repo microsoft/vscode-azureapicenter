@@ -9,7 +9,7 @@ import { ApiVersionsTreeItem } from "./ApiVersionsTreeItem";
 export class ApiTreeItem extends AzExtParentTreeItem {
   public readonly childTypeLabel: string = UiStrings.ApiTreeItemChildTypeLabel;
   public static contextValue: string = "azureApiCenterApi";
-  public readonly contextValue: string = ApiTreeItem.contextValue;
+  public readonly contextValue: string = "";
   public readonly apiVersionsTreeItem: ApiVersionsTreeItem;
   public readonly apiDeploymentsTreeItem?: ApiDeploymentsTreeItem;
   private readonly _apiCenterApi: IApiCenterApiBase;
@@ -18,6 +18,13 @@ export class ApiTreeItem extends AzExtParentTreeItem {
     super(parent);
     this._apiCenterName = apiCenterName;
     this._apiCenterApi = apiCenterApi;
+    if (this._apiCenterApi.getType() === "mcp") {
+      this.contextValue = ApiTreeItem.contextValue + "-mcp";
+      this.description = "mcp";
+    }
+    else {
+      this.contextValue = ApiTreeItem.contextValue;
+    }
     this.apiVersionsTreeItem = new ApiVersionsTreeItem(this, apiCenterName, apiCenterApi.generateChild());
     if (apiCenterApi instanceof ApiCenterApiManagement) {
       this.apiDeploymentsTreeItem = new ApiDeploymentsTreeItem(this, apiCenterName, (apiCenterApi as ApiCenterApiManagement).getData());
@@ -25,6 +32,9 @@ export class ApiTreeItem extends AzExtParentTreeItem {
   }
 
   public get iconPath(): TreeItemIconPath {
+    if (this._apiCenterApi.getType() === "mcp") {
+      return new vscode.ThemeIcon("mcp");
+    }
     return new vscode.ThemeIcon("library");
   }
 

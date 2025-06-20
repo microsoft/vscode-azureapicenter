@@ -37,8 +37,7 @@ export const AzureAccountCreateUrl = {
 
 export const RegisterApiOptions = {
     stepByStep: UiStrings.RegisterApiOptionStepByStep,
-    cicd: UiStrings.RegisterApiOptionCicd,
-    mcp: UiStrings.RegisterApiOptionMCP,
+    cicd: UiStrings.RegisterApiOptionCicd
 };
 
 export const EnvironmentKind = {

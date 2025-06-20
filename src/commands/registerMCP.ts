@@ -2,6 +2,8 @@
 // Licensed under the MIT license.
 import { getResourceGroupFromId } from "@microsoft/vscode-azext-azureutils";
 import { IActionContext, UserCancelledError } from "@microsoft/vscode-azext-utils";
+import * as fse from 'fs-extra';
+import * as path from 'path';
 import * as vscode from 'vscode';
 import { ApiCenterService } from "../azure/ApiCenter/ApiCenterService";
 import { ApiCenterApi, ApiCenterApiDeployment, ApiCenterApiVersion, ApiCenterApiVersionDefinition, ApiCenterApiVersionDefinitionImport, ApiVersionLifecycleStage } from "../azure/ApiCenter/contracts";
@@ -89,11 +91,20 @@ async function createApiMCP(apiCenterService: ApiCenterService, mcpApiName: stri
         };
         validateResponse(await apiCenterService.createOrUpdateApiVersionDefinition(mcpApiName, apiVersionName, sseDefinition as ApiCenterApiVersionDefinition));
 
+        const srcFilePath = path.join(getTemplatesFolder(), "definition", "mcp.json");
+        const fileContent = await fse.readFile(srcFilePath);
+        const importSSEPayload = {
+            format: "inline",
+            value: fileContent.toString(),
+            specification: {
+                name: `SSE Definition for ${mcpApiName}`,
+            }
+        };
         validateResponse(await apiCenterService.importSpecification(
             mcpApiName,
             apiVersionName,
             sseDefinitionName,
-            {} as ApiCenterApiVersionDefinitionImport));
+            importSSEPayload as ApiCenterApiVersionDefinitionImport));
 
         const streamableDefinitionName = "default-streamable";
         const streamableObj = {
@@ -104,11 +115,18 @@ async function createApiMCP(apiCenterService: ApiCenterService, mcpApiName: stri
         }
         validateResponse(await apiCenterService.createOrUpdateApiVersionDefinition(mcpApiName, apiVersionName, streamableObj as ApiCenterApiVersionDefinition));
 
+        const importSDPayload = {
+            format: "inline",
+            value: fileContent.toString(),
+            specification: {
+                name: `Streamable Definition for ${mcpApiName}`,
+            }
+        };
         validateResponse(await apiCenterService.importSpecification(
             mcpApiName,
             apiVersionName,
             streamableDefinitionName,
-            {} as ApiCenterApiVersionDefinitionImport));
+            importSDPayload as ApiCenterApiVersionDefinitionImport));
 
         const deploymentObj = {
             name: "default-deployment",
@@ -132,6 +150,10 @@ async function createApiMCP(apiCenterService: ApiCenterService, mcpApiName: stri
 
 function getNameFromTitle(title: string) {
     return title.trim().toLocaleLowerCase().replace(/ /g, '-').replace(/[^A-Za-z0-9-]/g, '');
+}
+
+function getTemplatesFolder(): string {
+    return path.join(__dirname, "..", "templates");
 }
 
 function validateInputForTitle(value: string) {
