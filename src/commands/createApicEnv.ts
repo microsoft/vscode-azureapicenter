@@ -36,7 +36,7 @@ export async function generateApicEnv(context: IActionContext, node?: Environmen
 
         await vscode.window.withProgress({
             location: vscode.ProgressLocation.Notification,
-            title: UiStrings.CreateingEnvironmentProgressTitle,
+            title: UiStrings.CreateEnvironmentProgressTitle,
         }, async (progress, token) => {
             const resourceGroupName = getResourceGroupFromId(node!.apiCenter.id);
             const apiCenterService = new ApiCenterService(node!.parent?.subscription!, resourceGroupName, node!.apiCenter.name);

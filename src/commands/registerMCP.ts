@@ -37,9 +37,8 @@ export async function registerMCP(context: IActionContext, node?: ApisTreeItem) 
     if (!envs || !envs.value || envs.value.length === 0) {
         vscode.window.showWarningMessage(UiStrings.NoEnvironmentsFound);
     }
-    const envSelection = [];
-    envSelection.push(...envs.value.map(env => env.name));
-    const envSelected = await vscode.window.showQuickPick(envSelection, { title: UiStrings.SelectApiEnvironment, ignoreFocusOut: true });
+    const envNames = envs.value.map(env => env.name);
+    const envSelected = await vscode.window.showQuickPick(envNames, { title: UiStrings.SelectApiEnvironment, ignoreFocusOut: true });
     if (!envSelected) {
         throw new UserCancelledError();
     }

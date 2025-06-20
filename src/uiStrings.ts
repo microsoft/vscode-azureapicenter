@@ -181,7 +181,7 @@ export class UiStrings {
     static readonly APICEnvironmentKindDevelopment = vscode.l10n.t("Development");
     static readonly APICEnvironmentKindTestings = vscode.l10n.t("Testing");
     static readonly SelectEnvironmentKind = vscode.l10n.t("Select API Center Environment Kind");
-    static readonly CreateingEnvironmentProgressTitle = vscode.l10n.t("Creating API Center Environment");
+    static readonly CreateEnvironmentProgressTitle = vscode.l10n.t("Create API Center Environment");
     static readonly APICEnvironmentCreated = vscode.l10n.t("API Center Environment '{0}' created successfully.");
     static readonly APICMCPApiTitle = vscode.l10n.t("MCP API Title");
     static readonly APICMCPEndpoint = vscode.l10n.t("MCP Runtime URL");
