@@ -118,7 +118,7 @@ export class UiStrings {
     static readonly NoRulesExported = vscode.l10n.t("No Rules to export.");
     static readonly RulesExported = vscode.l10n.t("Rules exported to '{0}'.");
     static readonly TreeitemLabelFunctions = vscode.l10n.t("Functions");
-    static readonly TreeitemLabelProfiles = vscode.l10n.t("Profiles");
+    static readonly TreeitemLabelProfiles = vscode.l10n.t("Profiles (Preview)");
     static readonly OpenApiCenterFolder = vscode.l10n.t("Rules folder is required to be opened to enable live API linting. Click 'Yes' to open the rules folder in current window.");
     static readonly NoRuleFileFound = vscode.l10n.t("No rule file ('{0}') found in the rules folder '{1}'. Please add a rule file to enable API Analysis.");
     static readonly AddDataPlaneRuntimeUrl = vscode.l10n.t("Input Runtime URL");
@@ -134,7 +134,7 @@ export class UiStrings {
     static readonly APIDataPlaneView = vscode.l10n.t("API Center Data Plane");
     static readonly APIDataPlaneWiki = vscode.l10n.t("API Center Portal Guide");
     static readonly ApiAccessesTreeItemChildTypeLabel = vscode.l10n.t("Authentication");
-    static readonly TreeitemLabelAccesses = vscode.l10n.t("Authentication");
+    static readonly TreeitemLabelAccesses = vscode.l10n.t("Authentication (Preview)");
     static readonly GenerateOpenApiProgress = vscode.l10n.t("Invoking Azure API Center plugin to generate OpenAPI specification documentation...");
     static readonly GenerateOpenApiRegisterApiDesc = vscode.l10n.t("\n\nAzure API Center is a centralized hub for discovering, reusing, and governing all of your organization's APIs. Would you like to register your API in Azure API Center?");
     static readonly GenerateOpenApiRegisterApiButton = vscode.l10n.t("Register your API in API Center");
