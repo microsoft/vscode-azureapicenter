@@ -1,8 +1,8 @@
 name: CLI weekly live test
 
 on:
-#  schedule:
-#    - cron: "0 18 * * 0"
+  schedule:
+    - cron: "0 18 * * 0"
   workflow_dispatch:
 
 permissions:
@@ -31,7 +31,7 @@ jobs:
         run: |
           git clone https://github.com/blackchoey/azure-cli-extensions.git
           cd azure-cli-extensions
-          git checkout dev
+          git checkout main
 
       - name: Setup development environment
         run: |
@@ -50,6 +50,8 @@ jobs:
           azdev test apic-extension --live
         env:
           USERASSIGNED_IDENTITY: ${{ secrets.USERASSIGNED_IDENTITY }}
+          AWS_ACCESS_KEY_LINK: ${{ secrets.AWS_ACCESS_KEY_LINK }}
+          AWS_SECRET_ACCESS_KEY_LINK: ${{ secrets.AWS_SECRET_ACCESS_KEY_LINK }}
 
   notify:
     if: failure()
