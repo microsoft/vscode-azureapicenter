@@ -5,7 +5,7 @@ import { IActionContext, UserCancelledError } from "@microsoft/vscode-azext-util
 import * as vscode from 'vscode';
 import { ApiCenterService } from "../azure/ApiCenter/ApiCenterService";
 import { ApiCenterEnvironment } from "../azure/ApiCenter/contracts";
-import { EnvironmentKind } from "../constants";
+import { ApiCenterEnvironmentServerType, EnvironmentKind } from "../constants";
 import { ext } from "../extensionVariables";
 import { ApiCenterTreeItem } from "../tree/ApiCenterTreeItem";
 import { EnvironmentsTreeItem } from "../tree/EnvironmentsTreeItem";
@@ -34,6 +34,21 @@ export async function generateApicEnv(context: IActionContext, node?: Environmen
             throw new UserCancelledError();
         }
 
+        const serverType = await vscode.window.showQuickPick(Object.values(ApiCenterEnvironmentServerType), { placeHolder: UiStrings.SelectApicEnvironmentServerType });
+        let serverProp = {};
+        if (serverType) {
+            const serverEndpoint = await vscode.window.showInputBox({
+                title: UiStrings.ServiceName, prompt: UiStrings.InputValidAPICEnvServerEndpoint, ignoreFocusOut: true
+            });
+            if (serverEndpoint) {
+                serverProp = {
+                    type: serverType,
+                    managementPortalUri: [serverEndpoint]
+                }
+            }
+        }
+
+
         await vscode.window.withProgress({
             location: vscode.ProgressLocation.Notification,
             title: UiStrings.CreateEnvironmentProgressTitle,
@@ -44,6 +59,7 @@ export async function generateApicEnv(context: IActionContext, node?: Environmen
                 name: apiEnvName,
                 properties: {
                     kind: envKind,
+                    server: serverProp
                 }
             }
             const result = await apiCenterService.createOrUpdateApiCenterEnvironment(apicEnv as ApiCenterEnvironment);

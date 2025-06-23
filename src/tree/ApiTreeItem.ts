@@ -26,9 +26,6 @@ export class ApiTreeItem extends AzExtParentTreeItem {
   }
 
   public get iconPath(): TreeItemIconPath {
-    if (this._apiCenterApi.getType() === "mcp") {
-      return new vscode.ThemeIcon("mcp");
-    }
     return new vscode.ThemeIcon("library");
   }
 

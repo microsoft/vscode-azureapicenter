@@ -74,8 +74,10 @@ export type ApiCenterEnvironment = {
     name: string;
     properties: {
         kind: string;
-        server?: string;
-        EnvironmentServerType?: string;
+        server?: {
+            type: string;
+            managementPortalUri: string[];
+        }
     };
     // tslint:disable-next-line:no-reserved-keywords
     type: string;

@@ -72,3 +72,16 @@ export const ApiSpecificationOptions = {
     localFile: UiStrings.ApiSpecificationOptionLocalFile,
     activeEditor: UiStrings.ApiSpecificationOptionActiveEditor,
 };
+
+export const ApiCenterEnvironmentServerType = {
+    AzureAPIManagement: UiStrings.ApiCenterEnvironmentServerTypeAzureAPIManagement,
+    AzureAppService: UiStrings.ApiCenterEnvironmentServerTypeAzureAppService,
+    AzureContainerApp: UiStrings.ApiCenterEnvironmentServerTypeAzureContainerApps,
+    AzureFunction: UiStrings.ApiCenterEnvironmentServerTypeAzureFunction,
+    AzureComputeService: UiStrings.ApiCenterEnvironmentServerTypeAzureComputeService,
+    ApigeeAPIM: UiStrings.ApiCenterEnvironmentServerTypeApigeeAPIM,
+    AWSAPIManagement: UiStrings.ApiCenterEnvironmentServerTypeAWSAPIGateway,
+    KongAPIGateWay: UiStrings.ApiCenterEnvironmentServerTypeKongAPIGateway,
+    k8s: UiStrings.ApiCenterEnvironmentServerTypeK8s,
+    MuleAPIM: UiStrings.ApiCenterEnvironmentServerTypeMuleSoftAPIM,
+}

@@ -188,4 +188,16 @@ export class UiStrings {
     static readonly RegisterMCPProgressTitle = vscode.l10n.t("Registering MCP API");
     static readonly RegisterMCPSuccess = vscode.l10n.t("MCP API '{0}' registered successfully.");
     static readonly NoEnvironmentsFound = vscode.l10n.t("No environments found for MCP registration, please create environment first.");
+    static readonly ApiCenterEnvironmentServerTypeAzureAPIManagement = vscode.l10n.t("Azure API Management");
+    static readonly ApiCenterEnvironmentServerTypeAzureAppService = vscode.l10n.t("Azure App Service");
+    static readonly ApiCenterEnvironmentServerTypeAzureContainerApps = vscode.l10n.t("Azure Container Apps");
+    static readonly ApiCenterEnvironmentServerTypeAzureFunction = vscode.l10n.t("Azure Functions");
+    static readonly ApiCenterEnvironmentServerTypeAzureComputeService = vscode.l10n.t("Azure Compute service");
+    static readonly ApiCenterEnvironmentServerTypeApigeeAPIM = vscode.l10n.t("Apigee API Management");
+    static readonly ApiCenterEnvironmentServerTypeAWSAPIGateway = vscode.l10n.t("AWS API Gateway");
+    static readonly ApiCenterEnvironmentServerTypeKongAPIGateway = vscode.l10n.t("Kong API Gateway");
+    static readonly ApiCenterEnvironmentServerTypeK8s = vscode.l10n.t("Kubernetes");
+    static readonly ApiCenterEnvironmentServerTypeMuleSoftAPIM = vscode.l10n.t("MuleSoft API Management");
+    static readonly SelectApicEnvironmentServerType = vscode.l10n.t("API Center Environment Server Type (Optional)");
+    static readonly InputValidAPICEnvServerEndpoint = vscode.l10n.t("Please enter a valid Management portal URL");
 }
