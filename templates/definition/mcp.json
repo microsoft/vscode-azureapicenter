@@ -1,8 +1,9 @@
 {
-    "openapi": "3.0.4",
+    "openapi": "3.0.0",
     "info": {
-        "title": "api",
-        "description": "OpenAPI for MCP Server",
-        "version": "1.0.0.0"
-    }
+        "title": "",
+        "description": "This is an OpenApi specification for the MCP server.",
+        "version": ""
+    },
+    "servers": []
 }

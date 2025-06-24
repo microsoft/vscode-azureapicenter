@@ -82,7 +82,7 @@ async function createApiMCP(apiCenterService: ApiCenterService, mcpApiName: stri
         };
         validateResponse(await apiCenterService.createOrUpdateApiVersion(mcpApiName, apiVersion as ApiCenterApiVersion));
 
-        const sseDefinitionName = "default-sse"
+        const sseDefinitionName = "mcp"
         const sseDefinition = {
             name: sseDefinitionName,
             properties: {
@@ -92,47 +92,33 @@ async function createApiMCP(apiCenterService: ApiCenterService, mcpApiName: stri
         validateResponse(await apiCenterService.createOrUpdateApiVersionDefinition(mcpApiName, apiVersionName, sseDefinition as ApiCenterApiVersionDefinition));
 
         const srcFilePath = path.join(getTemplatesFolder(), "definition", "mcp.json");
-        const fileContent = await fse.readFile(srcFilePath);
-        const importSSEPayload = {
+        const fileContent = await fse.readFile(srcFilePath, 'utf8');
+        const mcpJson = JSON.parse(fileContent);
+        mcpJson.info.version = mcpVersion;
+        mcpJson.info.title = mcpApiName;
+        mcpJson.servers.push({
+            url: mcpEndpoint
+        })
+        const updatedFileContent = JSON.stringify(mcpJson, null, 2);
+        const importMCPPayload = {
             format: "inline",
-            value: fileContent.toString(),
+            value: updatedFileContent,
             specification: {
-                name: `SSE Definition for ${mcpApiName}`,
+                name: "openapi",
             }
         };
         validateResponse(await apiCenterService.importSpecification(
             mcpApiName,
             apiVersionName,
             sseDefinitionName,
-            importSSEPayload as ApiCenterApiVersionDefinitionImport));
+            importMCPPayload as ApiCenterApiVersionDefinitionImport));
 
-        const streamableDefinitionName = "default-streamable";
-        const streamableObj = {
-            name: streamableDefinitionName,
-            properties: {
-                title: "Streamable Definition for " + mcpApiName,
-            }
-        }
-        validateResponse(await apiCenterService.createOrUpdateApiVersionDefinition(mcpApiName, apiVersionName, streamableObj as ApiCenterApiVersionDefinition));
-
-        const importSDPayload = {
-            format: "inline",
-            value: fileContent.toString(),
-            specification: {
-                name: `Streamable Definition for ${mcpApiName}`,
-            }
-        };
-        validateResponse(await apiCenterService.importSpecification(
-            mcpApiName,
-            apiVersionName,
-            streamableDefinitionName,
-            importSDPayload as ApiCenterApiVersionDefinitionImport));
 
         const deploymentObj = {
             name: "default-deployment",
             properties: {
                 title: "Deployment to " + mcpApiName,
-                definitionId: `/workspaces/default/apis/${mcpApiName}/versions/${apiVersionName}/definitions/default-sse`,
+                definitionId: `/workspaces/default/apis/${mcpApiName}/versions/${apiVersionName}/definitions/${sseDefinitionName}`,
                 environmentId: `/workspaces/default/environments/${envSelected}`,
                 isDefault: true,
                 server: {

@@ -24,6 +24,7 @@ export const tenantSetting: string = 'tenant';
 export const TeamsToolkitExtensionId = "TeamsDevApp.ms-teams-vscode-extension";
 export const TeamsToolkitMinimumVersion = "5.13.2025021807";
 export const DataPlaneAccountsKey = "azure-api-center.dataPlaneAccounts";
+export const ContinueToSkip = UiStrings.ContinueToSkip;
 
 export const AzureAccountType = {
     createAzureAccount: "azureapicenterCreateAzureAccount",

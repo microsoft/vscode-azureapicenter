@@ -5,7 +5,7 @@ import { IActionContext, UserCancelledError } from "@microsoft/vscode-azext-util
 import * as vscode from 'vscode';
 import { ApiCenterService } from "../azure/ApiCenter/ApiCenterService";
 import { ApiCenterEnvironment } from "../azure/ApiCenter/contracts";
-import { ApiCenterEnvironmentServerType, EnvironmentKind } from "../constants";
+import { ApiCenterEnvironmentServerType, ContinueToSkip, EnvironmentKind } from "../constants";
 import { ext } from "../extensionVariables";
 import { ApiCenterTreeItem } from "../tree/ApiCenterTreeItem";
 import { EnvironmentsTreeItem } from "../tree/EnvironmentsTreeItem";
@@ -22,7 +22,7 @@ export async function generateApicEnv(context: IActionContext, node?: Environmen
         }
 
         const apiEnvName = await vscode.window.showInputBox({
-            title: UiStrings.ServiceName, prompt: UiStrings.InputValidEnvironemntName, ignoreFocusOut: true
+            title: UiStrings.EnterApiCenterEnvironmentName, prompt: UiStrings.InputValidEnvironemntName, ignoreFocusOut: true
         });
 
         if (!apiEnvName) {
@@ -34,11 +34,11 @@ export async function generateApicEnv(context: IActionContext, node?: Environmen
             throw new UserCancelledError();
         }
 
-        const serverType = await vscode.window.showQuickPick(Object.values(ApiCenterEnvironmentServerType), { placeHolder: UiStrings.SelectApicEnvironmentServerType });
+        const serverType = await vscode.window.showQuickPick([ContinueToSkip, ...Object.values(ApiCenterEnvironmentServerType)], { placeHolder: UiStrings.SelectApicEnvironmentServerType });
         let serverProp = {};
-        if (serverType) {
+        if (serverType != ContinueToSkip) {
             const serverEndpoint = await vscode.window.showInputBox({
-                title: UiStrings.ServiceName, prompt: UiStrings.InputValidAPICEnvServerEndpoint, ignoreFocusOut: true
+                title: UiStrings.EnterApiCenterEnvironmentEndpoint, prompt: UiStrings.InputValidAPICEnvServerEndpoint, ignoreFocusOut: true
             });
             if (serverEndpoint) {
                 serverProp = {
@@ -46,8 +46,9 @@ export async function generateApicEnv(context: IActionContext, node?: Environmen
                     managementPortalUri: [serverEndpoint]
                 }
             }
+        } else if (!serverType) {
+            throw new UserCancelledError();
         }
-
 
         await vscode.window.withProgress({
             location: vscode.ProgressLocation.Notification,

@@ -11,6 +11,7 @@ export class EnvironmentTreeItem extends AzExtTreeItem {
   constructor(parent: AzExtParentTreeItem, apiCenterEnv: ApiCenterEnvironment) {
     super(parent);
     this._apiCenterEnv = apiCenterEnv;
+    this.description = this._apiCenterEnv.properties?.kind || "";
   }
 
   public get iconPath(): TreeItemIconPath {

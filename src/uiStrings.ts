@@ -182,6 +182,8 @@ export class UiStrings {
     static readonly APICEnvironmentKindTestings = vscode.l10n.t("Testing");
     static readonly SelectEnvironmentKind = vscode.l10n.t("Select API Center Environment Kind");
     static readonly CreateEnvironmentProgressTitle = vscode.l10n.t("Create API Center Environment");
+    static readonly EnterApiCenterEnvironmentName = vscode.l10n.t("Enter API Center Environment Name");
+    static readonly EnterApiCenterEnvironmentEndpoint = vscode.l10n.t("Enter API Center Environment Management Portal URL");
     static readonly APICEnvironmentCreated = vscode.l10n.t("API Center Environment '{0}' created successfully.");
     static readonly APICMCPApiTitle = vscode.l10n.t("MCP API Title");
     static readonly APICMCPEndpoint = vscode.l10n.t("MCP Runtime URL");
@@ -200,4 +202,5 @@ export class UiStrings {
     static readonly ApiCenterEnvironmentServerTypeMuleSoftAPIM = vscode.l10n.t("MuleSoft API Management");
     static readonly SelectApicEnvironmentServerType = vscode.l10n.t("API Center Environment Server Type (Optional)");
     static readonly InputValidAPICEnvServerEndpoint = vscode.l10n.t("Please enter a valid Management portal URL");
+    static readonly ContinueToSkip = vscode.l10n.t("Continue to Skip");
 }
