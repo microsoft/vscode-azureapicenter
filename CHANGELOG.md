@@ -8,13 +8,13 @@
 * **Generate OpenAPI Specification**: Added functionality to generate an OpenAPI specification from the entire code project.
 * **'Open in Azure Portal' Command**: Introduced a new command that allows users to open their API Center directly in the Azure Portal.
 * **Rebranding**: Rebranded the 'Platform API Catalog' to 'API Center Portal View'.
-* **Tree View for API Authentication**: Implemented a new tree view for API authentication and added 'Get Credential' command to get API credentials from API Authentication to get API access.
+* [Preview] **Tree View for API Authentication**: Implemented a new tree view for API authentication and added 'Get Credential' command to get API credentials from API Authentication to get API access.
 * **Generate HTTP File with API Key**: Introduced the ability to generate an HTTP file that includes the API key from API authentication. This enhancement facilitates easier testing and integration of APIs.
 * **'Get Spectral Rules' Language Model Tool**: Added a language model tool to help generate compliant OpenAPI specifications by providing spectral rules. This tool ensures that the generated specifications adhere to industry standards.
 * **'Copy Runtime URL' Command**: Added a command to copy the deployment URL from the deployment. This feature makes it more convenient to share and access deployment URLs.
 * **'Create API Center Service in Azure' Command**: Introduced a new command to create a new API Center service in Azure.
 * Integrate with the `Microsoft 365 Agents Toolkit` extension to empower developers to create M365 Copilot Declarative Agents using API definitions from API Center.
-* Manage API Analysis for Azure API Center:
+* [Preview] Manage API Analysis for Azure API Center:
     * View API Analysis Profiles
     * View and edit linting rules
     * Create, rename and delete JavaScript Custom Functions
