@@ -34,7 +34,7 @@ import openInAzurePortal from './commands/openInAzurePortal';
 import { openUrlFromTreeNode } from './commands/openUrl';
 import { refreshTree } from './commands/refreshTree';
 import { registerApi } from './commands/registerApi';
-import { registerMCP } from "./commands/registerMCP";
+import { RegisterMCP } from "./commands/registerMCP";
 import { removeDataplaneAPI } from './commands/removeDataplaneApi';
 import { addCustomFunction } from './commands/rules/addCustomFunction';
 import { deleteCustomFunction } from './commands/rules/deleteCustomFunction';
@@ -109,7 +109,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
     registerCommandWithTelemetry('azure-api-center.registerApi', registerApi);
 
-    registerCommandWithTelemetry('azure-api-center.registerMCP', registerMCP);
+    registerCommandWithTelemetry('azure-api-center.registerMCP', RegisterMCP.registerMCP);
 
     registerCommandWithTelemetry('azure-api-center.createApiEnvironment', generateApicEnv);
 
