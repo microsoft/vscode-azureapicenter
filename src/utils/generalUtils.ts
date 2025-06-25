@@ -57,7 +57,6 @@ export namespace GeneralUtils {
 
     export async function fetchDataFromLink(link: string): Promise<string> {
         const res = await axios.get(link, {
-            headers: { 'Content-Type': 'application/json' },
             responseType: 'text'
         });
         return res.data;
