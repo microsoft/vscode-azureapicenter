@@ -89,7 +89,11 @@ export class ApiCenterService {
       }
     };
     const response = await client.sendRequest(options);
-    return response.parsedBody;
+    if (response.status === 200 || response.status === 201) {
+      return response.parsedBody;
+    } else {
+      throw new Error(`Failed to create or update API Center environment. Status code: ${response.status}.`);
+    }
   }
 
   public async getApiCenterEnvironments(): Promise<{ value: ApiCenterEnvironment[]; nextLink: string }> {

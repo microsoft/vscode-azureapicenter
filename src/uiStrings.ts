@@ -203,4 +203,5 @@ export class UiStrings {
     static readonly SelectApicEnvironmentServerType = vscode.l10n.t("API Center Environment Server Type (Optional)");
     static readonly InputValidAPICEnvServerEndpoint = vscode.l10n.t("Please enter a valid Management portal URL");
     static readonly ContinueToSkip = vscode.l10n.t("Continue to Skip");
+    static readonly ValueMustContainLetterOrNumber = vscode.l10n.t("Please ensure the name contains at least one letter or number.");
 }
