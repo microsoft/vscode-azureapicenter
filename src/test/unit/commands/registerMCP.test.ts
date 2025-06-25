@@ -12,6 +12,7 @@ describe("registerMCP test cases", () => {
     let sandbox: sinon.SinonSandbox;
     let mockNode: sinon.SinonStubbedInstance<ApisTreeItem>;
     let mockApiCenterTreeItem: sinon.SinonStubbedInstance<ApiCenterTreeItem>;
+    let withProgressStub: sinon.SinonStub;
 
     beforeEach(() => {
         sandbox = sinon.createSandbox();
@@ -19,7 +20,7 @@ describe("registerMCP test cases", () => {
         // Mock tree items
         mockNode = sandbox.createStubInstance(ApisTreeItem);
         mockApiCenterTreeItem = sandbox.createStubInstance(ApiCenterTreeItem);
-
+        withProgressStub = sandbox.stub(vscode.window, 'withProgress');
 
         // Mock ext.treeDataProvider
         sandbox.stub(AzExtTreeDataProvider.prototype, "showTreeItemPicker").resolves(
@@ -114,6 +115,213 @@ describe("registerMCP test cases", () => {
 
         // Assert
         sandbox.assert.calledOnce(showWarningStub);
+    });
+
+    it('should generate MCP spec with correct values', async () => {
+        // Arrange
+        const mcpVersion = 'v1.0';
+        const mcpApiName = 'test-mcp-api';
+        const mcpEndpoint = 'https://test-endpoint.com';
+
+        // Mock the file system operations
+        const mockFileContent = JSON.stringify({
+            info: {
+                version: '',
+                title: ''
+            },
+            servers: []
+        });
+
+        sandbox.stub(require('fs-extra'), 'readFile').resolves(mockFileContent);
+
+        // Act
+        const result = await RegisterMCP.generateMCPSpec(mcpVersion, mcpApiName, mcpEndpoint);
+
+        // Assert
+        assert.exists(result);
+        assert.equal(result.format, 'inline');
+        assert.exists(result.value);
+        assert.exists(result.specification);
+        assert.equal(result.specification.name, 'openapi');
+
+        // Parse the generated JSON to verify content
+        const generatedSpec = JSON.parse(result.value);
+        assert.equal(generatedSpec.info.version, mcpVersion);
+        assert.equal(generatedSpec.info.title, mcpApiName);
+        assert.isArray(generatedSpec.servers);
+        assert.equal(generatedSpec.servers.length, 1);
+        assert.equal(generatedSpec.servers[0].url, mcpEndpoint);
+    });
+
+    it('should generate correct deployment object for MCP', () => {
+        // Arrange
+        const mcpApiName = 'test-mcp-api';
+        const apiVersionName = 'v1-0';
+        const mcpDefinitionName = 'mcp';
+        const envSelected = 'test-env';
+        const mcpEndpoint = 'https://test-endpoint.com';
+
+        // Act
+        const deployment = RegisterMCP.getDeploymentForMCP(
+            mcpApiName,
+            apiVersionName,
+            mcpDefinitionName,
+            envSelected,
+            mcpEndpoint
+        );
+
+        // Assert
+        assert.equal(deployment.name, 'default-deployment');
+        assert.equal(deployment.type, 'Microsoft.ApiCenter/services/workspaces/apis/deployments');
+
+        assert.exists(deployment.properties);
+        assert.equal(deployment.properties.title, `Deployment to ${mcpApiName}`);
+        assert.equal(deployment.properties.definitionId, `/workspaces/default/apis/${mcpApiName}/versions/${apiVersionName}/definitions/${mcpDefinitionName}`);
+        assert.equal(deployment.properties.environmentId, `/workspaces/default/environments/${envSelected}`);
+        assert.equal(deployment.properties.isDefault, true);
+
+        assert.exists(deployment.properties.server);
+        assert.isArray(deployment.properties.server.runtimeUri);
+        assert.equal(deployment.properties.server.runtimeUri.length, 1);
+        assert.equal(deployment.properties.server.runtimeUri[0], mcpEndpoint);
+    });
+
+    it('should successfully create API MCP with all components', async () => {
+        // Arrange
+        const mcpApiName = 'test-mcp-api';
+        const mcpVersion = 'v1.0';
+        const apiVersionLifecycleStage = 'development';
+        const envSelected = 'test-env';
+        const mcpEndpoint = 'https://test-endpoint.com';
+
+        const mockApiCenterService = sandbox.createStubInstance(ApiCenterService);
+
+        // Mock all service method responses
+        mockApiCenterService.createOrUpdateApi.resolves({} as any);
+        mockApiCenterService.createOrUpdateApiVersion.resolves({} as any);
+        mockApiCenterService.createOrUpdateApiVersionDefinition.resolves({} as any);
+        mockApiCenterService.importSpecification.resolves({} as any);
+        mockApiCenterService.createOrUpdateApiDeployment.resolves({} as any);
+
+        // Mock file system for generateMCPSpec
+        const mockFileContent = JSON.stringify({
+            info: { version: '', title: '' },
+            servers: []
+        });
+        sandbox.stub(require('fs-extra'), 'readFile').resolves(mockFileContent);
+
+        // Mock progress and window
+        withProgressStub.callsFake(async (options, task) => {
+            await task({ report: () => { } }, { isCancellationRequested: false });
+        });
+        const showInfoStub = sandbox.stub(vscode.window, 'showInformationMessage');
+
+        // Act
+        await RegisterMCP.createApiMCP(
+            mockApiCenterService as any,
+            mcpApiName,
+            mcpVersion,
+            apiVersionLifecycleStage,
+            envSelected,
+            mcpEndpoint
+        );
+
+        // Assert
+        // Verify API creation
+        sandbox.assert.calledOnceWithExactly(
+            mockApiCenterService.createOrUpdateApi,
+            sinon.match({
+                name: mcpApiName,
+                properties: {
+                    title: mcpApiName,
+                    kind: 'mcp'
+                }
+            })
+        );
+
+        // Verify API version creation
+        sandbox.assert.calledOnceWithExactly(
+            mockApiCenterService.createOrUpdateApiVersion,
+            mcpApiName,
+            sinon.match({
+                name: 'v1-0',
+                properties: {
+                    title: 'v1.0',
+                    lifecycleStage: 'development'
+                }
+            })
+        );
+
+        // Verify definition creation
+        sandbox.assert.calledOnceWithExactly(
+            mockApiCenterService.createOrUpdateApiVersionDefinition,
+            mcpApiName,
+            'v1-0',
+            sinon.match({
+                name: 'mcp',
+                properties: {
+                    title: `SSE Definition for ${mcpApiName}`
+                }
+            })
+        );
+
+        // Verify import specification
+        sandbox.assert.calledOnceWithExactly(
+            mockApiCenterService.importSpecification,
+            mcpApiName,
+            'v1-0',
+            'mcp',
+            sinon.match({
+                format: 'inline',
+                value: sinon.match.string,
+                specification: { name: 'openapi' }
+            })
+        );
+
+        // Verify deployment creation
+        sandbox.assert.calledOnceWithExactly(
+            mockApiCenterService.createOrUpdateApiDeployment,
+            mcpApiName,
+            sinon.match({
+                name: 'default-deployment',
+                type: 'Microsoft.ApiCenter/services/workspaces/apis/deployments'
+            })
+        );
+
+        // Verify success message
+        sandbox.assert.calledOnce(showInfoStub);
+    });
+
+    it('should throw error when API creation fails', async () => {
+        // Arrange
+        const mcpApiName = 'test-mcp-api';
+        const mcpVersion = 'v1.0';
+        const apiVersionLifecycleStage = 'development';
+        const envSelected = 'test-env';
+        const mcpEndpoint = 'https://test-endpoint.com';
+        const errorMessage = 'API creation failed';
+
+        const mockApiCenterService = sandbox.createStubInstance(ApiCenterService);
+        mockApiCenterService.createOrUpdateApi.throws({ message: errorMessage });
+
+        withProgressStub.callsFake(async (options, task) => {
+            await task({ report: () => { } }, { isCancellationRequested: false });
+        });
+
+        // Act & Assert
+        try {
+            await RegisterMCP.createApiMCP(
+                mockApiCenterService as any,
+                mcpApiName,
+                mcpVersion,
+                apiVersionLifecycleStage,
+                envSelected,
+                mcpEndpoint
+            );
+            assert.fail('Expected error to be thrown');
+        } catch (error: any) {
+            assert.equal(error.message, errorMessage);
+        }
     });
 
 });

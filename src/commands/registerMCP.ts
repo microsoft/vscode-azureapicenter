@@ -75,7 +75,7 @@ export namespace RegisterMCP {
             };
             validateResponse(await apiCenterService.createOrUpdateApi(api as ApiCenterApi));
 
-            const apiVersionName = GeneralUtils.getNameFromTitle(mcpVersion);
+            const apiVersionName = mcpVersion.replace(/[^a-zA-Z0-9]+/g, '-');
             const apiVersion = {
                 name: apiVersionName,
                 properties: {
