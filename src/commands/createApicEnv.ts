@@ -36,7 +36,7 @@ export async function generateApicEnv(context: IActionContext, node?: Environmen
 
     const serverType = await vscode.window.showQuickPick([ContinueToSkip, ...Object.values(ApiCenterEnvironmentServerType)], { placeHolder: UiStrings.SelectApicEnvironmentServerType });
     let serverProp = {};
-    if (serverType != ContinueToSkip) {
+    if (serverType !== ContinueToSkip) {
         const serverEndpoint = await vscode.window.showInputBox({
             title: UiStrings.EnterApiCenterEnvironmentEndpoint, prompt: UiStrings.InputValidAPICEnvServerEndpoint, ignoreFocusOut: true, validateInput: GeneralUtils.validateURI
         });
@@ -44,7 +44,7 @@ export async function generateApicEnv(context: IActionContext, node?: Environmen
             serverProp = {
                 type: serverType,
                 managementPortalUri: [serverEndpoint]
-            }
+            };
         }
     } else if (!serverType) {
         throw new UserCancelledError();
@@ -62,7 +62,9 @@ export async function generateApicEnv(context: IActionContext, node?: Environmen
                 kind: envKind,
                 server: serverProp
             }
-        }
+        };
+        console.log(`Creating API Center Environment: ${apicEnv.name}`);
+        console.dir(apicEnv, { depth: null });
         await apiCenterService.createOrUpdateApiCenterEnvironment(apicEnv as ApiCenterEnvironment);
         node!.refresh(context);
     });

@@ -46,7 +46,7 @@ export const EnvironmentKind = {
     staging: UiStrings.APICEnvironmentKindStaging,
     development: UiStrings.APICEnvironmentKindDevelopment,
     testing: UiStrings.APICEnvironmentKindTestings,
-}
+};
 
 export const TreeViewType = {
     controlPlaneView: UiStrings.APIControlPlaneView,
@@ -75,14 +75,14 @@ export const ApiSpecificationOptions = {
 };
 
 export const ApiCenterEnvironmentServerType = {
-    AzureAPIManagement: UiStrings.ApiCenterEnvironmentServerTypeAzureAPIManagement,
-    AzureAppService: UiStrings.ApiCenterEnvironmentServerTypeAzureAppService,
-    AzureContainerApp: UiStrings.ApiCenterEnvironmentServerTypeAzureContainerApps,
-    AzureFunction: UiStrings.ApiCenterEnvironmentServerTypeAzureFunction,
-    AzureComputeService: UiStrings.ApiCenterEnvironmentServerTypeAzureComputeService,
-    ApigeeAPIM: UiStrings.ApiCenterEnvironmentServerTypeApigeeAPIM,
-    AWSAPIManagement: UiStrings.ApiCenterEnvironmentServerTypeAWSAPIGateway,
-    KongAPIGateWay: UiStrings.ApiCenterEnvironmentServerTypeKongAPIGateway,
-    k8s: UiStrings.ApiCenterEnvironmentServerTypeK8s,
-    MuleAPIM: UiStrings.ApiCenterEnvironmentServerTypeMuleSoftAPIM,
-}
+    AzureAPIManagement: UiStrings.AzureAPIManagement,
+    AzureAppService: UiStrings.AzureAppService,
+    AzureContainerApp: UiStrings.AzureContainerApps,
+    AzureFunction: UiStrings.AzureFunction,
+    AzureComputeService: UiStrings.AzureComputeService,
+    ApigeeAPIM: UiStrings.ApigeeAPIM,
+    AWSAPIManagement: UiStrings.AWSAPIGateway,
+    KongAPIGateWay: UiStrings.KongAPIGateway,
+    k8s: UiStrings.K8s,
+    MuleAPIM: UiStrings.MuleSoftAPIM,
+};

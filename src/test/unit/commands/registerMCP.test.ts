@@ -13,15 +13,18 @@ describe("registerMCP test cases", () => {
     let mockNode: sinon.SinonStubbedInstance<ApisTreeItem>;
     let mockApiCenterTreeItem: sinon.SinonStubbedInstance<ApiCenterTreeItem>;
     let withProgressStub: sinon.SinonStub;
-
-    beforeEach(() => {
+    let showInputBoxStub: sinon.SinonStub;
+    let showQuickPickStub: sinon.SinonStub;
+    before(() => {
         sandbox = sinon.createSandbox();
-
+    });
+    beforeEach(() => {
         // Mock tree items
         mockNode = sandbox.createStubInstance(ApisTreeItem);
         mockApiCenterTreeItem = sandbox.createStubInstance(ApiCenterTreeItem);
         withProgressStub = sandbox.stub(vscode.window, 'withProgress');
-
+        showInputBoxStub = sandbox.stub(vscode.window, "showInputBox");
+        showQuickPickStub = sandbox.stub(vscode.window, "showQuickPick");
         // Mock ext.treeDataProvider
         sandbox.stub(AzExtTreeDataProvider.prototype, "showTreeItemPicker").resolves(
             mockApiCenterTreeItem
@@ -42,12 +45,12 @@ describe("registerMCP test cases", () => {
         sandbox.stub(ApiCenterService.prototype, "getApiCenterEnvironments").resolves({
             value: [{ name: 'test-env' }, { name: 'prod-env' }]
         } as any);
-        sandbox.stub(vscode.window, "showInputBox")
+        showInputBoxStub
             .onFirstCall().resolves('test-mcp-api')
             .onSecondCall().resolves('https://test-endpoint.com')
             .onThirdCall().resolves('v1.0');
 
-        sandbox.stub(vscode.window, "showQuickPick")
+        showQuickPickStub
             .onFirstCall().resolves('test-env' as any)
             .onSecondCall().resolves('development' as any);
         const createApiMCPStub = sandbox.stub(RegisterMCP, "createApiMCP").resolves();
@@ -66,7 +69,7 @@ describe("registerMCP test cases", () => {
 
         mockNode.apiCenter = mockApiCenter as any;
 
-        sandbox.stub(vscode.window, "showInputBox").onFirstCall().resolves(undefined);
+        showInputBoxStub.onFirstCall().resolves(undefined);
 
         // Act & Assert
         try {
@@ -83,7 +86,7 @@ describe("registerMCP test cases", () => {
 
         mockNode.apiCenter = mockApiCenter as any;
 
-        sandbox.stub(vscode.window, "showInputBox")
+        showInputBoxStub
             .onFirstCall().resolves('test-mcp-api')
             .onSecondCall().resolves(undefined);
 
@@ -106,7 +109,7 @@ describe("registerMCP test cases", () => {
 
         sandbox.stub(ApiCenterService.prototype, 'getApiCenterEnvironments').resolves({ value: [] } as any);
 
-        sandbox.stub(vscode.window, "showInputBox")
+        showInputBoxStub
             .onFirstCall().resolves('test-mcp-api')
             .onSecondCall().resolves('https://test-endpoint.com');
 
@@ -230,7 +233,7 @@ describe("registerMCP test cases", () => {
         // Verify API creation
         sandbox.assert.calledOnceWithExactly(
             mockApiCenterService.createOrUpdateApi,
-            sinon.match({
+            sandbox.match({
                 name: mcpApiName,
                 properties: {
                     title: mcpApiName,
@@ -243,7 +246,7 @@ describe("registerMCP test cases", () => {
         sandbox.assert.calledOnceWithExactly(
             mockApiCenterService.createOrUpdateApiVersion,
             mcpApiName,
-            sinon.match({
+            sandbox.match({
                 name: 'v1-0',
                 properties: {
                     title: 'v1.0',
@@ -257,7 +260,7 @@ describe("registerMCP test cases", () => {
             mockApiCenterService.createOrUpdateApiVersionDefinition,
             mcpApiName,
             'v1-0',
-            sinon.match({
+            sandbox.match({
                 name: 'mcp',
                 properties: {
                     title: `SSE Definition for ${mcpApiName}`
@@ -271,9 +274,9 @@ describe("registerMCP test cases", () => {
             mcpApiName,
             'v1-0',
             'mcp',
-            sinon.match({
+            sandbox.match({
                 format: 'inline',
-                value: sinon.match.string,
+                value: sandbox.match.string,
                 specification: { name: 'openapi' }
             })
         );
@@ -282,7 +285,7 @@ describe("registerMCP test cases", () => {
         sandbox.assert.calledOnceWithExactly(
             mockApiCenterService.createOrUpdateApiDeployment,
             mcpApiName,
-            sinon.match({
+            sandbox.match({
                 name: 'default-deployment',
                 type: 'Microsoft.ApiCenter/services/workspaces/apis/deployments'
             })

@@ -74,10 +74,6 @@ export namespace GeneralUtils {
         }
     }
 
-    export function getNameFromTitle(title: string) {
-        return title.trim().toLocaleLowerCase().replace(/ /g, '-').replace(/[^A-Za-z0-9-]/g, '');
-    }
-
     export function validateURI(value: string) {
         try {
             new URL(value);
