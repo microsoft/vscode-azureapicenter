@@ -50,7 +50,7 @@ describe("export API test cases", () => {
     let node: ApiVersionDefinitionTreeItem;
     before(() => {
         sandbox = sinon.createSandbox();
-        sinon.stub(TelemetryClient, "sendEvent").returns();
+        sandbox.stub(TelemetryClient, "sendEvent").returns();
     });
     beforeEach(() => {
         root = new RootTreeItem(undefined);
