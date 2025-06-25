@@ -40,6 +40,7 @@ export namespace RegisterMCP {
         const envs = await apiCenterService.getApiCenterEnvironments();
         if (!envs || !envs.value || envs.value.length === 0) {
             vscode.window.showWarningMessage(UiStrings.NoEnvironmentsFound);
+            return;
         }
         const envNames = envs.value.map(env => env.name);
         const envSelected = await vscode.window.showQuickPick(envNames, { title: UiStrings.SelectApiEnvironment, ignoreFocusOut: true });
@@ -84,7 +85,7 @@ export namespace RegisterMCP {
             };
             validateResponse(await apiCenterService.createOrUpdateApiVersion(mcpApiName, apiVersion as ApiCenterApiVersion));
 
-            const mcpDefinitionName = "mcp"
+            const mcpDefinitionName = "mcp";
             const sseDefinition = {
                 name: mcpDefinitionName,
                 properties: {
@@ -105,7 +106,7 @@ export namespace RegisterMCP {
             validateResponse(await apiCenterService.createOrUpdateApiDeployment(mcpApiName, deploymentObj as ApiCenterApiDeployment));
 
             vscode.window.showInformationMessage(vscode.l10n.t(UiStrings.RegisterMCPSuccess, mcpApiName));
-        })
+        });
     }
 
     function validateResponse(response: any) {
@@ -122,7 +123,7 @@ export namespace RegisterMCP {
         mcpJson.info.title = mcpApiName;
         mcpJson.servers.push({
             url: mcpEndpoint
-        })
+        });
         const updatedFileContent = JSON.stringify(mcpJson, null, 2);
         return {
             format: "inline",
@@ -146,6 +147,6 @@ export namespace RegisterMCP {
                 }
             },
             type: "Microsoft.ApiCenter/services/workspaces/apis/deployments"
-        }
+        };
     }
 }
