@@ -22,7 +22,7 @@ export async function generateApicEnv(context: IActionContext, node?: Environmen
     }
 
     const apiEnvName = await vscode.window.showInputBox({
-        title: UiStrings.EnterApiCenterEnvironmentName, prompt: UiStrings.InputValidEnvironemntName, ignoreFocusOut: true, validateInput: GeneralUtils.validateInputForTitle
+        title: UiStrings.EnterApiCenterEnvironmentName, prompt: UiStrings.InputValidEnvironmentName, ignoreFocusOut: true, validateInput: GeneralUtils.validateInputForTitle
     });
 
     if (!apiEnvName) {

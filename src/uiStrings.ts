@@ -175,7 +175,7 @@ export class UiStrings {
     static readonly addDadaPlaneApiSuccess = vscode.l10n.t("Data Plane API '{0}' added successfully. You can view more content after signing in.");
     static readonly SelectDataPlaneAccount = vscode.l10n.t("Select an active Data Plane account");
     static readonly DataPlaneAccountSetTo = vscode.l10n.t("Active Data Plane account set to '{0}'.");
-    static readonly InputValidEnvironemntName = vscode.l10n.t("Please input a valid environment name.");
+    static readonly InputValidEnvironmentName = vscode.l10n.t("Please input a valid environment name.");
     static readonly APICEnvironmentKindProduction = vscode.l10n.t("Production");
     static readonly APICEnvironmentKindStaging = vscode.l10n.t("Staging");
     static readonly APICEnvironmentKindDevelopment = vscode.l10n.t("Development");
