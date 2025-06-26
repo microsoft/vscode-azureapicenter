@@ -4,8 +4,7 @@ import { getResourceGroupFromId } from "@microsoft/vscode-azext-azureutils";
 import { IActionContext, UserCancelledError } from "@microsoft/vscode-azext-utils";
 import * as vscode from 'vscode';
 import { ApiCenterService } from "../azure/ApiCenter/ApiCenterService";
-import { ApiCenterEnvironment } from "../azure/ApiCenter/contracts";
-import { ApiCenterEnvironmentServerType, ContinueToSkip, EnvironmentKind } from "../constants";
+import { ApiCenterEnvironment, ApiCenterEnvironmentServerType, EnvironmentKind } from "../azure/ApiCenter/contracts";
 import { ext } from "../extensionVariables";
 import { ApiCenterTreeItem } from "../tree/ApiCenterTreeItem";
 import { EnvironmentsTreeItem } from "../tree/EnvironmentsTreeItem";
@@ -33,10 +32,22 @@ export async function generateApicEnv(context: IActionContext, node?: Environmen
     if (!envKind) {
         throw new UserCancelledError();
     }
-
-    const serverType = await vscode.window.showQuickPick([ContinueToSkip, ...Object.values(ApiCenterEnvironmentServerType)], { placeHolder: UiStrings.SelectApicEnvironmentServerType });
+    const quickPickItems = [{
+        label: UiStrings.ContinueWithoutSelecting,
+    }, {
+        label: "",
+        kind: vscode.QuickPickItemKind.Separator
+    }, ...Object.values(ApiCenterEnvironmentServerType).map((type) => {
+        return {
+            label: type
+        };
+    })];
+    const serverType = await vscode.window.showQuickPick(quickPickItems, { placeHolder: UiStrings.SelectApicEnvironmentServerType });
     let serverProp = {};
-    if (serverType !== ContinueToSkip) {
+    if (!serverType) {
+        throw new UserCancelledError();
+    }
+    else if (serverType?.label !== UiStrings.ContinueWithoutSelecting) {
         const serverEndpoint = await vscode.window.showInputBox({
             title: UiStrings.EnterApiCenterEnvironmentEndpoint, prompt: UiStrings.InputValidAPICEnvServerEndpoint, ignoreFocusOut: true, validateInput: GeneralUtils.validateURI
         });
@@ -46,8 +57,6 @@ export async function generateApicEnv(context: IActionContext, node?: Environmen
                 managementPortalUri: [serverEndpoint]
             };
         }
-    } else if (!serverType) {
-        throw new UserCancelledError();
     }
 
     await vscode.window.withProgress({
@@ -63,8 +72,6 @@ export async function generateApicEnv(context: IActionContext, node?: Environmen
                 server: serverProp
             }
         };
-        console.log(`Creating API Center Environment: ${apicEnv.name}`);
-        console.dir(apicEnv, { depth: null });
         await apiCenterService.createOrUpdateApiCenterEnvironment(apicEnv as ApiCenterEnvironment);
         node!.refresh(context);
     });

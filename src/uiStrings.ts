@@ -60,7 +60,7 @@ export class UiStrings {
     static readonly TreeitemLabelDefinitions = vscode.l10n.t("Definitions");
     static readonly TreeitemLabelVersions = vscode.l10n.t("Versions");
     static readonly TreeitemLabelEnvironments = vscode.l10n.t("Environments");
-    static readonly SelectApiEnvironment = vscode.l10n.t("Select or Create an API Environment");
+    static readonly SelectApiEnvironment = vscode.l10n.t("Select an existing API Environment");
     static readonly AccountTreeItemChildTypeLabel = vscode.l10n.t("Subscription");
     static readonly SubscriptionTreeItemChildTypeLabel = vscode.l10n.t("API Center Service");
     static readonly ApiCenterTreeItemTreeItemChildTypeLabel = vscode.l10n.t("APIs or Environments");
@@ -176,10 +176,6 @@ export class UiStrings {
     static readonly SelectDataPlaneAccount = vscode.l10n.t("Select an active Data Plane account");
     static readonly DataPlaneAccountSetTo = vscode.l10n.t("Active Data Plane account set to '{0}'.");
     static readonly InputValidEnvironmentName = vscode.l10n.t("Please input a valid environment name.");
-    static readonly APICEnvironmentKindProduction = vscode.l10n.t("Production");
-    static readonly APICEnvironmentKindStaging = vscode.l10n.t("Staging");
-    static readonly APICEnvironmentKindDevelopment = vscode.l10n.t("Development");
-    static readonly APICEnvironmentKindTestings = vscode.l10n.t("Testing");
     static readonly SelectEnvironmentKind = vscode.l10n.t("Select API Center Environment Kind");
     static readonly CreateEnvironmentProgressTitle = vscode.l10n.t("Create API Center Environment");
     static readonly EnterApiCenterEnvironmentName = vscode.l10n.t("Enter API Center Environment Name");
@@ -190,18 +186,7 @@ export class UiStrings {
     static readonly RegisterMCPProgressTitle = vscode.l10n.t("Registering MCP API");
     static readonly RegisterMCPSuccess = vscode.l10n.t("MCP API '{0}' registered successfully.");
     static readonly NoEnvironmentsFound = vscode.l10n.t("No environments found for MCP registration, please create environment first.");
-    static readonly AzureAPIManagement = vscode.l10n.t("Azure API Management");
-    static readonly AzureAppService = vscode.l10n.t("Azure App Service");
-    static readonly AzureContainerApps = vscode.l10n.t("Azure Container Apps");
-    static readonly AzureFunction = vscode.l10n.t("Azure Functions");
-    static readonly AzureComputeService = vscode.l10n.t("Azure Compute service");
-    static readonly ApigeeAPIM = vscode.l10n.t("Apigee API Management");
-    static readonly AWSAPIGateway = vscode.l10n.t("AWS API Gateway");
-    static readonly KongAPIGateway = vscode.l10n.t("Kong API Gateway");
-    static readonly K8s = vscode.l10n.t("Kubernetes");
-    static readonly MuleSoftAPIM = vscode.l10n.t("MuleSoft API Management");
     static readonly SelectApicEnvironmentServerType = vscode.l10n.t("API Center Environment Server Type (Optional)");
     static readonly InputValidAPICEnvServerEndpoint = vscode.l10n.t("Please enter a valid Management portal URL");
-    static readonly ContinueToSkip = vscode.l10n.t("Continue to Skip");
     static readonly ValueMustContainLetterOrNumber = vscode.l10n.t("Please ensure the name contains at least one letter or number.");
 }

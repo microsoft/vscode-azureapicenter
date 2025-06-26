@@ -24,7 +24,6 @@ export const tenantSetting: string = 'tenant';
 export const TeamsToolkitExtensionId = "TeamsDevApp.ms-teams-vscode-extension";
 export const TeamsToolkitMinimumVersion = "5.13.2025021807";
 export const DataPlaneAccountsKey = "azure-api-center.dataPlaneAccounts";
-export const ContinueToSkip = UiStrings.ContinueToSkip;
 
 export const AzureAccountType = {
     createAzureAccount: "azureapicenterCreateAzureAccount",
@@ -39,13 +38,6 @@ export const AzureAccountCreateUrl = {
 export const RegisterApiOptions = {
     stepByStep: UiStrings.RegisterApiOptionStepByStep,
     cicd: UiStrings.RegisterApiOptionCicd
-};
-
-export const EnvironmentKind = {
-    production: UiStrings.APICEnvironmentKindProduction,
-    staging: UiStrings.APICEnvironmentKindStaging,
-    development: UiStrings.APICEnvironmentKindDevelopment,
-    testing: UiStrings.APICEnvironmentKindTestings,
 };
 
 export const TreeViewType = {
@@ -72,17 +64,4 @@ export const ApiSpecificationOptions = {
     apiCenter: UiStrings.ApiSpecificationOptionApiCenter,
     localFile: UiStrings.ApiSpecificationOptionLocalFile,
     activeEditor: UiStrings.ApiSpecificationOptionActiveEditor,
-};
-
-export const ApiCenterEnvironmentServerType = {
-    AzureAPIManagement: UiStrings.AzureAPIManagement,
-    AzureAppService: UiStrings.AzureAppService,
-    AzureContainerApp: UiStrings.AzureContainerApps,
-    AzureFunction: UiStrings.AzureFunction,
-    AzureComputeService: UiStrings.AzureComputeService,
-    ApigeeAPIM: UiStrings.ApigeeAPIM,
-    AWSAPIManagement: UiStrings.AWSAPIGateway,
-    KongAPIGateWay: UiStrings.KongAPIGateway,
-    k8s: UiStrings.K8s,
-    MuleAPIM: UiStrings.MuleSoftAPIM,
 };

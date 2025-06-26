@@ -221,6 +221,26 @@ export enum SpecificationName {
     other = 'Other',
 };
 
+export enum EnvironmentKind {
+    production = "production",
+    staging = "staging",
+    development = "development",
+    testing = "testing",
+};
+
+export enum ApiCenterEnvironmentServerType {
+    AzureAPIManagement = "Azure API Management",
+    AzureAppService = "Azure App Service",
+    AzureContainerApp = "Azure Container Apps",
+    AzureFunction = "Azure Function",
+    AzureComputeService = "Azure Compute Service",
+    ApigeeAPIM = "Apigee API Management",
+    AWSAPIManagement = "AWS API Gateway",
+    KongAPIGateWay = "Kong API Gateway",
+    k8s = "Kubernetes",
+    MuleAPIM = "MuleSoft API Management",
+};
+
 export enum ApiSpecExportResultFormat {
     inline = 'inline',
     link = 'link',

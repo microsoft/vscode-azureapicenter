@@ -89,7 +89,7 @@ export namespace RegisterMCP {
             const sseDefinition = {
                 name: mcpDefinitionName,
                 properties: {
-                    title: "SSE Definition for " + mcpApiName,
+                    title: "OpenAPI Definition for " + mcpApiName,
                 }
             };
             validateResponse(await apiCenterService.createOrUpdateApiVersionDefinition(mcpApiName, apiVersionName, sseDefinition as ApiCenterApiVersionDefinition));
