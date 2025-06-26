@@ -5,9 +5,8 @@ import { assert } from "chai";
 import * as sinon from "sinon";
 import * as vscode from "vscode";
 import { ApiCenterService } from "../../../azure/ApiCenter/ApiCenterService";
-import { ApiCenterEnvironment } from "../../../azure/ApiCenter/contracts";
+import { ApiCenterEnvironment, ApiCenterEnvironmentServerType, EnvironmentKind } from "../../../azure/ApiCenter/contracts";
 import { generateApicEnv } from "../../../commands/createApicEnv";
-import { ApiCenterEnvironmentServerType, ContinueToSkip, EnvironmentKind } from "../../../constants";
 import { ApiCenterTreeItem } from "../../../tree/ApiCenterTreeItem";
 import { EnvironmentsTreeItem } from "../../../tree/EnvironmentsTreeItem";
 
@@ -118,7 +117,7 @@ describe("createApicEnv", () => {
 
         showQuickPickStub
             .onFirstCall().resolves(envKind as any)
-            .onSecondCall().resolves(ContinueToSkip as any);
+            .onSecondCall().resolves("Continue without selecting" as any);
 
         const createOrUpdateStub = sandbox.stub(ApiCenterService.prototype, "createOrUpdateApiCenterEnvironment").resolves({} as any);
 
