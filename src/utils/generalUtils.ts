@@ -61,8 +61,10 @@ export namespace GeneralUtils {
     }
 
     export async function fetchDataFromLink(link: string): Promise<string> {
-        const res = await axios.get(link);
-        return JSON.stringify(res.data);
+        const res = await axios.get(link, {
+            responseType: 'text'
+        });
+        return res.data;
     }
 
     export function validateInputForTitle(value: string) {
