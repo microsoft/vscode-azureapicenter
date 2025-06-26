@@ -17,7 +17,7 @@ Shift-left API design conformance checks into Visual Studio Code with integrated
 
 ![linting](./media/integrated-lint.png)
 
-[[Pre-Release]](#pre-release) Manage API Analysis for Azure API Center.
+[Preview] Manage API Analysis for Azure API Center.
 
 ![Manage API Analysis](./media/managed-lint.png)
 
@@ -82,7 +82,7 @@ Create M365 Copilot Declarative Agent
 
 ![Create M365 Copilot Declarative Agent](./media/create-declarative-agent.png)
 
-Manage API Authentication
+[Preview] Manage API Authentication
 
 ![API Authentication](./media/api-access.png)
 

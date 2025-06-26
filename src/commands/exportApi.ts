@@ -9,6 +9,7 @@ import { ApiSpecExportResultFormat } from "../azure/ApiCenter/contracts";
 import { ApiVersionDefinitionTreeItem } from "../tree/ApiVersionDefinitionTreeItem";
 import { createTemporaryFolder } from "../utils/fsUtil";
 import { GeneralUtils } from "../utils/generalUtils";
+import { inferDefinitionFileType } from "../utils/inferDefinitionFileType";
 import { treeUtils } from "../utils/treeUtils";
 export namespace ExportAPI {
     export async function exportApi(
@@ -28,8 +29,8 @@ export namespace ExportAPI {
         return `${treeItem.apiCenterName}-${treeItem.apiCenterApiName}`;
     }
 
-    function getFilename(treeItem: ApiVersionDefinitionTreeItem): string {
-        return `${treeItem.apiCenterApiVersionDefinition.getName()}`;
+    function getFilename(treeItem: ApiVersionDefinitionTreeItem, fileType: string): string {
+        return `${treeItem.apiCenterApiVersionDefinition.getName()}${fileType}`;
     }
 
     async function writeToTempFile(node: ApiVersionDefinitionTreeItem, specFormat: string, specValue: string) {
@@ -43,7 +44,8 @@ export namespace ExportAPI {
     export async function showTempFile(node: ApiVersionDefinitionTreeItem, fileContent: string) {
         const folderName = getFolderName(node);
         const folderPath = await createTemporaryFolder(folderName);
-        const fileName = getFilename(node);
+        const fileType = inferDefinitionFileType(fileContent);
+        const fileName = getFilename(node, fileType);
         const localFilePath: string = path.join(folderPath, fileName);
         await fs.ensureFile(localFilePath);
         const document: vscode.TextDocument = await vscode.workspace.openTextDocument(localFilePath);
