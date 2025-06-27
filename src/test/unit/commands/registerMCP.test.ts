@@ -263,7 +263,7 @@ describe("registerMCP test cases", () => {
             sandbox.match({
                 name: 'mcp',
                 properties: {
-                    title: `SSE Definition for ${mcpApiName}`
+                    title: `OpenAPI Definition for ${mcpApiName}`
                 }
             })
         );

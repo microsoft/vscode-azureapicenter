@@ -131,7 +131,7 @@ describe("createApicEnv", () => {
         sandbox.assert.calledWithExactly(createOrUpdateStub, {
             name: apiEnvName,
             properties: {
-                kind: envKind,
+                kind: "development",
                 server: {}
             }
         } as ApiCenterEnvironment);
@@ -187,7 +187,7 @@ describe("createApicEnv", () => {
         sandbox.assert.calledWithExactly(createOrUpdateStub, {
             name: apiEnvName,
             properties: {
-                kind: envKind,
+                kind: "development",
                 server: {}
             }
         } as ApiCenterEnvironment);

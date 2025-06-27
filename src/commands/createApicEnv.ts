@@ -68,7 +68,7 @@ export async function generateApicEnv(context: IActionContext, node?: Environmen
         const apicEnv = {
             name: apiEnvName,
             properties: {
-                kind: envKind,
+                kind: envKind.toLocaleLowerCase(),
                 server: serverProp
             }
         };

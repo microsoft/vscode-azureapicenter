@@ -222,10 +222,10 @@ export enum SpecificationName {
 };
 
 export enum EnvironmentKind {
-    production = "production",
-    staging = "staging",
-    development = "development",
-    testing = "testing",
+    production = "Production",
+    staging = "Staging",
+    development = "Development",
+    testing = "Testing",
 };
 
 export enum ApiCenterEnvironmentServerType {
