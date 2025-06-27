@@ -5,7 +5,7 @@ import { ISubscriptionContext } from "@microsoft/vscode-azext-utils";
 import * as assert from "assert";
 import * as sinon from "sinon";
 import { ApiCenterService } from "../../../../azure/ApiCenter/ApiCenterService";
-import { ApiCenterRulesetImport, ApiCenterRulesetImportFormat } from "../../../../azure/ApiCenter/contracts";
+import { ApiCenterEnvironment, ApiCenterRulesetImport, ApiCenterRulesetImportFormat } from "../../../../azure/ApiCenter/contracts";
 
 describe("ApiCenterService", () => {
     let sandbox: sinon.SinonSandbox;
@@ -171,5 +171,93 @@ describe("ApiCenterService", () => {
         const apiCenterService = new ApiCenterService(subscriptionContext, "fakeResourceGroup", "fakeServiceName");
         const response = await apiCenterService.listApiCenterServers();
         assert.strictEqual(response.namespace, "Microsoft.ApiCenter");
+    });
+    it("createOrUpdateApiCenterEnvironment succeeded", async () => {
+        const mockResponse = {
+            status: 200,
+            parsedBody: {
+                id: "fakeId",
+                name: "test-env",
+                type: "Microsoft.ApiCenter/services/workspaces/environments",
+                properties: {
+                    kind: "development",
+                    title: "test-env"
+                }
+            },
+        } as HttpOperationResponse;
+
+        const sendRequestStub = sandbox.stub(ServiceClient.prototype, "sendRequest");
+        sendRequestStub.onFirstCall().resolves(mockResponse);
+
+        const apiCenterService = new ApiCenterService(subscriptionContext, "fakeResourceGroup", "fakeServiceName");
+        const apiCenterEnvironment = {
+            name: "test-env",
+            properties: {
+                kind: "development"
+            }
+        };
+
+        const response = await apiCenterService.createOrUpdateApiCenterEnvironment(apiCenterEnvironment as ApiCenterEnvironment);
+
+        assert.strictEqual(response.id, "fakeId");
+        assert.strictEqual(response.name, "test-env");
+        assert.strictEqual(response.properties.kind, "development");
+    });
+
+    it("createOrUpdateApiCenterEnvironment with 201 status", async () => {
+        const mockResponse = {
+            status: 201,
+            parsedBody: {
+                id: "fakeId",
+                name: "prod-env",
+                type: "Microsoft.ApiCenter/services/workspaces/environments",
+                properties: {
+                    kind: "production",
+                    title: "prod-env"
+                }
+            },
+        } as HttpOperationResponse;
+
+        const sendRequestStub = sandbox.stub(ServiceClient.prototype, "sendRequest");
+        sendRequestStub.onFirstCall().resolves(mockResponse);
+
+        const apiCenterService = new ApiCenterService(subscriptionContext, "fakeResourceGroup", "fakeServiceName");
+        const apiCenterEnvironment = {
+            name: "prod-env",
+            properties: {
+                kind: "production"
+            }
+        };
+
+        const response = await apiCenterService.createOrUpdateApiCenterEnvironment(apiCenterEnvironment as ApiCenterEnvironment);
+
+        assert.strictEqual(response.id, "fakeId");
+        assert.strictEqual(response.name, "prod-env");
+        assert.strictEqual(response.properties.kind, "production");
+    });
+
+    it("createOrUpdateApiCenterEnvironment failed", async () => {
+        const mockResponse = {
+            status: 400,
+            bodyAsText: "Bad Request"
+        } as HttpOperationResponse;
+
+        const sendRequestStub = sandbox.stub(ServiceClient.prototype, "sendRequest");
+        sendRequestStub.onFirstCall().resolves(mockResponse);
+
+        const apiCenterService = new ApiCenterService(subscriptionContext, "fakeResourceGroup", "fakeServiceName");
+        const apiCenterEnvironment = {
+            name: "test-env",
+            properties: {
+                kind: "development"
+            }
+        };
+
+        try {
+            await apiCenterService.createOrUpdateApiCenterEnvironment(apiCenterEnvironment as ApiCenterEnvironment);
+            assert.fail("Expected error to be thrown");
+        } catch (error: any) {
+            assert.strictEqual(error.message, "Failed to create or update API Center environment. Status code: 400.");
+        }
     });
 });

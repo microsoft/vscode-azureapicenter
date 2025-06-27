@@ -37,7 +37,7 @@ export const AzureAccountCreateUrl = {
 
 export const RegisterApiOptions = {
     stepByStep: UiStrings.RegisterApiOptionStepByStep,
-    cicd: UiStrings.RegisterApiOptionCicd,
+    cicd: UiStrings.RegisterApiOptionCicd
 };
 
 export const TreeViewType = {

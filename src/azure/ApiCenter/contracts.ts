@@ -73,6 +73,11 @@ export type ApiCenterEnvironment = {
     location: string;
     name: string;
     properties: {
+        kind: string;
+        server?: {
+            type: string;
+            managementPortalUri: string[];
+        }
     };
     // tslint:disable-next-line:no-reserved-keywords
     type: string;
@@ -99,8 +104,8 @@ export type DataPlaneApiCenterApiVersion = {
 };
 
 export type ApiCenterApiDeployment = {
-    id: string;
-    location: string;
+    id?: string;
+    location?: string;
     name: string;
     properties: {
         server: {
@@ -214,6 +219,26 @@ export enum SpecificationName {
     asyncapi = 'AsyncAPI',
     raml = 'RAML',
     other = 'Other',
+};
+
+export enum EnvironmentKind {
+    production = "Production",
+    staging = "Staging",
+    development = "Development",
+    testing = "Testing",
+};
+
+export enum ApiCenterEnvironmentServerType {
+    AzureAPIManagement = "Azure API Management",
+    AzureAppService = "Azure App Service",
+    AzureContainerApp = "Azure Container Apps",
+    AzureFunction = "Azure Function",
+    AzureComputeService = "Azure Compute Service",
+    ApigeeAPIM = "Apigee API Management",
+    AWSAPIManagement = "AWS API Gateway",
+    KongAPIGateWay = "Kong API Gateway",
+    k8s = "Kubernetes",
+    MuleAPIM = "MuleSoft API Management",
 };
 
 export enum ApiSpecExportResultFormat {

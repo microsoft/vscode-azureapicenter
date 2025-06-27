@@ -22,16 +22,16 @@ describe("setApiRuleset", () => {
     });
 
     beforeEach(() => {
-        showQuickPickStub = sinon.stub(vscode.window, "showQuickPick");
-        showOpenDialogStub = sinon.stub(vscode.window, "showOpenDialog");
-        showInputBoxStub = sinon.stub(vscode.window, "showInputBox");
-        sendEventStub = sinon.stub(TelemetryClient, "sendEvent");
-        setRulesetFileStub = sinon.stub(SetRulesetFile, "setRulesetFile");
-        ensureExtensionStub = sinon.stub(EnsureExtension, "ensureExtension");
+        showQuickPickStub = sandbox.stub(vscode.window, "showQuickPick");
+        showOpenDialogStub = sandbox.stub(vscode.window, "showOpenDialog");
+        showInputBoxStub = sandbox.stub(vscode.window, "showInputBox");
+        sendEventStub = sandbox.stub(TelemetryClient, "sendEvent");
+        setRulesetFileStub = sandbox.stub(SetRulesetFile, "setRulesetFile");
+        ensureExtensionStub = sandbox.stub(EnsureExtension, "ensureExtension");
     });
 
     afterEach(() => {
-        sinon.restore();
+        sandbox.restore();
     });
 
     it("should set default ruleset file", async () => {
@@ -62,7 +62,7 @@ describe("setApiRuleset", () => {
     });
 
     it("should set active file as ruleset file", async () => {
-        const activeEditorStub = sinon.stub(vscode.window, "activeTextEditor").get(() => ({
+        const activeEditorStub = sandbox.stub(vscode.window, "activeTextEditor").get(() => ({
             document: { uri: { fsPath: "activeFilePath" } }
         }));
 

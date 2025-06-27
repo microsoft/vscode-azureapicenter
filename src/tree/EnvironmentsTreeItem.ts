@@ -11,11 +11,9 @@ import { EnvironmentTreeItem } from "./EnvironmentTreeItem";
 export class EnvironmentsTreeItem extends AzExtParentTreeItem {
   public static contextValue: string = "azureApiCenterEnvironments";
   public readonly contextValue: string = EnvironmentsTreeItem.contextValue;
-  private readonly _apiCenter: ApiCenter;
   private _nextLink: string | undefined;
-  constructor(parent: AzExtParentTreeItem, apicenter: ApiCenter) {
+  constructor(parent: AzExtParentTreeItem, public apiCenter: ApiCenter) {
     super(parent);
-    this._apiCenter = apicenter;
   }
   public get label(): string {
     return UiStrings.TreeitemLabelEnvironments;
@@ -26,8 +24,8 @@ export class EnvironmentsTreeItem extends AzExtParentTreeItem {
   }
 
   public async loadMoreChildrenImpl(clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
-    const resourceGroupName = getResourceGroupFromId(this._apiCenter.id);
-    const apiCenterService = new ApiCenterService(this.parent?.subscription!, resourceGroupName, this._apiCenter.name);
+    const resourceGroupName = getResourceGroupFromId(this.apiCenter.id);
+    const apiCenterService = new ApiCenterService(this.parent?.subscription!, resourceGroupName, this.apiCenter.name);
     const apis = await apiCenterService.getApiCenterEnvironments();
 
     this._nextLink = apis.nextLink;
