@@ -189,4 +189,13 @@ export class UiStrings {
     static readonly SelectApicEnvironmentServerType = vscode.l10n.t("API Center Environment Server Type (Optional)");
     static readonly InputValidAPICEnvServerEndpoint = vscode.l10n.t("Please enter a valid Management portal URL");
     static readonly ValueMustContainLetterOrNumber = vscode.l10n.t("Please ensure the name contains at least one letter or number.");
+    static readonly UploadingSpec = vscode.l10n.t("Uploading spec to API Center");
+    static readonly SpecUploaded = vscode.l10n.t("Spec uploaded successfully.");
+    static readonly SavingWillUpdate = vscode.l10n.t("Saving will update the API spec '{0}'.");
+    static readonly MethodNotImplemented = vscode.l10n.t("Method not implemented.");
+    static readonly Opening = vscode.l10n.t("Opening '{0}'...");
+    static readonly TooLargeError = vscode.l10n.t("'{0}' is too large to download.");
+    static readonly OverwriteWarning = vscode.l10n.t("You are about to overwrite '{0}', which has unsaved changes. Do you want to continue?");
+    static readonly Updating = vscode.l10n.t("Updating '{0}'...");
+    static readonly Updated = vscode.l10n.t("Updated '{0}'.");
 }
