@@ -310,7 +310,7 @@
         },
         {
           "command": "azure-api-center.showOpenApi",
-          "when": "view == apiCenterTreeView && viewItem =~ /never/"
+          "when": "view == apiCenterTreeView && viewItem =~ /azureApiCenterApiVersionDefinitionTreeItem/"
         },
         {
           "command": "azure-api-center.generateHttpFile",
@@ -409,10 +409,6 @@
         },
         {
           "command": "azure-api-center.importOpenApiByLink",
-          "when": "never"
-        },
-        {
-          "command": "azure-api-center.showOpenApi",
           "when": "never"
         },
         {
@@ -642,6 +638,11 @@
       {
         "title": "Azure Api Center",
         "properties": {
+          "azure-api-center.showSavePrompt": {
+            "type": "boolean",
+            "default": true,
+            "description": "Show warning dialog on remote file uploading."
+          },
           "azure-api-center.selectedSubscriptions": {
             "type": "array",
             "description": "Selected Azure subscriptions",

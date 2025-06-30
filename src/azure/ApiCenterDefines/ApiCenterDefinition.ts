@@ -67,6 +67,7 @@ export type IDefinitionBase = {
     getId: () => string,
     getContext: () => string,
     getName: () => string;
+    getSpecificationName: () => string;
     getDefinitions: (context: ISubscriptionContext, apiServiceName: string, apiName: string, apiVersionName: string) => Promise<ApiCenterApiVersionDefinitionExport>;
 };
 
@@ -97,6 +98,9 @@ export class ApiCenterVersionDefinitionManagement implements IDefinitionBase {
     getId() {
         return this.data.id;
     };
+    getSpecificationName(): string {
+        return this.data.properties.specification.name;
+    };
 };
 
 export class ApiCenterVersionDefinitionDataPlane implements IDefinitionBase {
@@ -118,5 +122,8 @@ export class ApiCenterVersionDefinitionDataPlane implements IDefinitionBase {
     };
     getId() {
         return this.data.name;
+    };
+    getSpecificationName(): string {
+        return this.data.specification.name;
     };
 };

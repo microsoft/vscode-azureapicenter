@@ -44,8 +44,7 @@ export class OpenApiEditor extends Editor<ApiVersionDefinitionTreeItem> {
                     format: "inline",
                     value: data.toString(),
                     specification: {
-                        name: "openapi", // TODO: we need to change this right?
-                        version: "0.0.1" // TODO: we need to change this right?
+                        name: treeItem.apiCenterApiVersionDefinition.getSpecificationName()
                     }
                 };
 
@@ -62,11 +61,11 @@ export class OpenApiEditor extends Editor<ApiVersionDefinitionTreeItem> {
         });
     }
     public async getFilename(treeItem: ApiVersionDefinitionTreeItem, options: EditorOptions): Promise<string> {
-        return `${treeItem.apiCenterName}-${treeItem.apiCenterApiName}-${treeItem.apiCenterApiVersionName}--${treeItem.apiCenterApiVersionDefinition.getName()}-openapi-tempFile${options.fileType}`;
+        return `${treeItem.apiCenterName}-${treeItem.apiCenterApiName}-${treeItem.apiCenterApiVersionName}-${treeItem.apiCenterApiVersionDefinition.getName()}-tempFile${options.fileType}`;
     }
 
     public async getDiffFilename(treeItem: ApiVersionDefinitionTreeItem, options: EditorOptions): Promise<string> {
-        return `${treeItem.apiCenterName}-${treeItem.apiCenterApiName}-${treeItem.apiCenterApiVersionName}--${treeItem.apiCenterApiVersionDefinition.getName()}-openapi.json${options.fileType}`;
+        return `${treeItem.apiCenterName}-${treeItem.apiCenterApiName}-${treeItem.apiCenterApiVersionName}-${treeItem.apiCenterApiVersionDefinition.getName()}-diff${options.fileType}`;
     }
 
     public async getSaveConfirmationText(treeItem: ApiVersionDefinitionTreeItem): Promise<string> {

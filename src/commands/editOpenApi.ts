@@ -8,7 +8,7 @@ import { ApiVersionDefinitionTreeItem } from "../tree/ApiVersionDefinitionTreeIt
 
 export async function showOpenApi(actionContext: IActionContext, node?: ApiVersionDefinitionTreeItem) {
     if (!node) {
-        node = await ext.treeDataProvider.showTreeItemPicker<ApiVersionDefinitionTreeItem>(ApiCenterVersionDefinitionManagement.contextValue, actionContext);
+        node = await ext.treeDataProvider.showTreeItemPicker<ApiVersionDefinitionTreeItem>(new RegExp(`${ApiCenterVersionDefinitionManagement.contextValue}.*`), actionContext);
     }
     await ext.openApiEditor.showEditor(node);
     commands.executeCommand('setContext', 'isEditorEnabled', true);
