@@ -79,8 +79,8 @@
         "category": "Azure API Center"
       },
       {
-        "command": "azure-api-center.showOpenApi",
-        "title": "%azure-api-center.commands.showOpenApi.title%",
+        "command": "azure-api-center.editApi",
+        "title": "%azure-api-center.commands.editApi.title%",
         "category": "Azure API Center"
       },
       {
@@ -319,7 +319,7 @@
           "when": "(view == apiCenterTreeView && viewItem =~ /azureApiCenterApiVersionDefinitionTreeItem/) || (view == apiCenterWorkspace && viewItem =~ /azureApiCenterApiVersionDataPlaneDefinitionTreeItem/)"
         },
         {
-          "command": "azure-api-center.showOpenApi",
+          "command": "azure-api-center.editApi",
           "when": "view == apiCenterTreeView && viewItem =~ /azureApiCenterApiVersionDefinitionTreeItem/"
         },
         {

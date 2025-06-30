@@ -19,7 +19,7 @@ import { CreateAzureApiCenterService } from './commands/createApiCenterService';
 import { generateApicEnv } from './commands/createApicEnv';
 import { CreateDeclarativeAgent } from './commands/createDeclarativeAgent';
 import { detectBreakingChange } from './commands/detectBreakingChange';
-import { showOpenApi } from './commands/editOpenApi';
+import { editApi } from './commands/editApi';
 import { ExportAPI } from './commands/exportApi';
 import { GenerateApiFromCode } from './commands/generateApiFromCode';
 import { generateApiLibrary } from './commands/generateApiLibrary';
@@ -97,7 +97,7 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.workspace.onDidSaveTextDocument,
         async (actionContext: IActionContext, doc: vscode.TextDocument) => { await openApiEditor.onDidSaveTextDocument(actionContext, context.globalState, doc); });
 
-    registerCommandWithTelemetry('azure-api-center.showOpenApi', showOpenApi, doubleClickDebounceDelay);
+    registerCommandWithTelemetry('azure-api-center.editApi', editApi, doubleClickDebounceDelay);
 
     registerCommandWithTelemetry('azure-api-center.open-api-docs', openAPiInSwagger);
 
