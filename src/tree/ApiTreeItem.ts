@@ -18,6 +18,7 @@ export class ApiTreeItem extends AzExtParentTreeItem {
     super(parent);
     this._apiCenterName = apiCenterName;
     this._apiCenterApi = apiCenterApi;
+    this.description = this._apiCenterApi.getType().toLowerCase();
     this.apiVersionsTreeItem = new ApiVersionsTreeItem(this, apiCenterName, apiCenterApi.generateChild());
     if (apiCenterApi instanceof ApiCenterApiManagement) {
       this.apiDeploymentsTreeItem = new ApiDeploymentsTreeItem(this, apiCenterName, (apiCenterApi as ApiCenterApiManagement).getData());

@@ -78,10 +78,14 @@ export type IApiCenterApiBase = {
     getId: () => string;
     getLabel: () => string;
     generateChild: () => IVersionsBase;
+    getType: () => string;
 };
 
 export class ApiCenterApiManagement implements IApiCenterApiBase {
     constructor(private data: ApiCenterApi) { }
+    getType(): string {
+        return this.data.properties.kind || "unknown";
+    }
     getData(): ApiCenterApi {
         return this.data;
     }
@@ -105,6 +109,9 @@ export class ApiCenterApiManagement implements IApiCenterApiBase {
 
 export class ApiCenterApiDataPlane implements IApiCenterApiBase {
     constructor(private data: DataPlaneApiCenterApi) { }
+    getType(): string {
+        return this.data.kind || "unknown";
+    }
     getLabel(): string {
         return this.data.name;
     }

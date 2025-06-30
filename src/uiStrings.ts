@@ -43,6 +43,7 @@ export class UiStrings {
     static readonly CopilotExceedsTokenLimit = vscode.l10n.t("The size of the current file is large for GitHub Copilot. Please try again with a file of smaller size.");
     static readonly RegisterApiOptionStepByStep = vscode.l10n.t("Manual");
     static readonly RegisterApiOptionCicd = vscode.l10n.t("CI/CD");
+    static readonly RegisterApiOptionMCP = vscode.l10n.t("MCP");
     static readonly ApiRulesetOptionDefault = vscode.l10n.t("Default");
     static readonly ApiRulesetOptionAzureApiGuideline = vscode.l10n.t("Microsoft Azure REST API");
     static readonly ApiRulesetOptionSpectralOwasp = vscode.l10n.t("OWASP API Security Top 10");
@@ -59,6 +60,7 @@ export class UiStrings {
     static readonly TreeitemLabelDefinitions = vscode.l10n.t("Definitions");
     static readonly TreeitemLabelVersions = vscode.l10n.t("Versions");
     static readonly TreeitemLabelEnvironments = vscode.l10n.t("Environments");
+    static readonly SelectApiEnvironment = vscode.l10n.t("Select an existing API Environment");
     static readonly AccountTreeItemChildTypeLabel = vscode.l10n.t("Subscription");
     static readonly SubscriptionTreeItemChildTypeLabel = vscode.l10n.t("API Center Service");
     static readonly ApiCenterTreeItemTreeItemChildTypeLabel = vscode.l10n.t("APIs or Environments");
@@ -173,4 +175,18 @@ export class UiStrings {
     static readonly addDadaPlaneApiSuccess = vscode.l10n.t("Data Plane API '{0}' added successfully. You can view more content after signing in.");
     static readonly SelectDataPlaneAccount = vscode.l10n.t("Select an active Data Plane account");
     static readonly DataPlaneAccountSetTo = vscode.l10n.t("Active Data Plane account set to '{0}'.");
+    static readonly InputValidEnvironmentName = vscode.l10n.t("Please input a valid environment name.");
+    static readonly SelectEnvironmentKind = vscode.l10n.t("Select API Center Environment Kind");
+    static readonly CreateEnvironmentProgressTitle = vscode.l10n.t("Create API Center Environment");
+    static readonly EnterApiCenterEnvironmentName = vscode.l10n.t("Enter API Center Environment Name");
+    static readonly EnterApiCenterEnvironmentEndpoint = vscode.l10n.t("Enter API Center Environment Management Portal URL");
+    static readonly APICEnvironmentCreated = vscode.l10n.t("API Center Environment '{0}' created successfully.");
+    static readonly APICMCPApiTitle = vscode.l10n.t("MCP API Title");
+    static readonly APICMCPEndpoint = vscode.l10n.t("MCP Runtime URL");
+    static readonly RegisterMCPProgressTitle = vscode.l10n.t("Registering MCP API");
+    static readonly RegisterMCPSuccess = vscode.l10n.t("MCP API '{0}' registered successfully.");
+    static readonly NoEnvironmentsFound = vscode.l10n.t("No environments found for MCP registration, please create environment first.");
+    static readonly SelectApicEnvironmentServerType = vscode.l10n.t("API Center Environment Server Type (Optional)");
+    static readonly InputValidAPICEnvServerEndpoint = vscode.l10n.t("Please enter a valid Management portal URL");
+    static readonly ValueMustContainLetterOrNumber = vscode.l10n.t("Please ensure the name contains at least one letter or number.");
 }

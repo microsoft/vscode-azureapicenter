@@ -75,6 +75,27 @@ export class ApiCenterService {
     return response.parsedBody;
   }
 
+  public async createOrUpdateApiCenterEnvironment(apiCenterEnvironment: ApiCenterEnvironment): Promise<ApiCenterEnvironment> {
+    const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
+    const client = new ServiceClient(creds, clientOptions);
+    const options: RequestPrepareOptions = {
+      method: "PUT",
+      url: APICenterRestAPIs.CreateAPIEnvironment(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, apiCenterEnvironment.name, this.apiVersion),
+      body: {
+        properties: {
+          kind: apiCenterEnvironment.properties.kind,
+          title: apiCenterEnvironment.name
+        }
+      }
+    };
+    const response = await client.sendRequest(options);
+    if (response.status === 200 || response.status === 201) {
+      return response.parsedBody;
+    } else {
+      throw new Error(`Failed to create or update API Center environment. Status code: ${response.status}.`);
+    }
+  }
+
   public async getApiCenterEnvironments(): Promise<{ value: ApiCenterEnvironment[]; nextLink: string }> {
     const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
     const client = new ServiceClient(creds, clientOptions);
@@ -226,7 +247,9 @@ export class ApiCenterService {
     const options: RequestPrepareOptions = {
       method: "PUT",
       url: APICenterRestAPIs.CreateAPIDeployment(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, apiName, apiCenterApiDeployment.name, this.apiVersion),
-      body: apiCenterApiDeployment.properties
+      body: {
+        properties: apiCenterApiDeployment.properties
+      }
     };
     const response = await client.sendRequest(options);
 
