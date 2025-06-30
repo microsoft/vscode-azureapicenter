@@ -1,5 +1,5 @@
 ﻿### How to use this workflow
-### To change the Python version matrix, please modify line 121 in "discover-tests" - `python_versions='["3.9", "3.10", "3.11", "3.12"]'`
+### To change the Python version matrix, please modify the PYTHON_VERSIONS variable in the setup job
 ### To change the target test repo and branch, please modify line 53 to 55 in ./test-execution-all.yml
 name: CLI weekly live test
 
@@ -21,6 +21,9 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     environment: engineering
+    # Python versions to test against - CONFIGURE HERE
+    env:
+      PYTHON_VERSIONS: '["3.9", "3.10", "3.11", "3.12"]'
     outputs:
       test-cases: ${{ steps.discover-tests.outputs.test-cases }}
       python-versions: ${{ steps.discover-tests.outputs.python-versions }}
@@ -42,7 +45,7 @@ jobs:
         run: |
           git clone https://github.com/blackchoey/azure-cli-extensions.git
           cd azure-cli-extensions
-          git checkout frank/for-pipeline-test
+          git checkout main
 
       - name: Setup development environment
         run: |
@@ -118,10 +121,8 @@ jobs:
           echo "Final test cases: $test_cases"
           echo "test-cases=$test_cases" >> $GITHUB_OUTPUT
 
-          # Python versions to test against - CONFIGURE HERE
-          # To change Python versions, modify this line only:
-          python_versions='["3.9", "3.10", "3.11", "3.12"]'
-          echo "python-versions=$python_versions" >> $GITHUB_OUTPUT
+          # Python versions to test against - defined in job env
+          echo "python-versions=$PYTHON_VERSIONS" >> $GITHUB_OUTPUT
 
   # Execute tests using matrix strategy for all Python versions
   # This replaces the previous 4 duplicate jobs (test-python-39, test-python-310, etc.)
