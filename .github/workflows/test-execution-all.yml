@@ -60,7 +60,7 @@ jobs:
           python -m venv .venv
           source .venv/bin/activate
           python -m pip install -U pip
-          pip install azdev
+          pip install -r ${{ github.workspace }}/requirements.txt
           azdev setup -r .
           azdev extension add apic-extension
 
