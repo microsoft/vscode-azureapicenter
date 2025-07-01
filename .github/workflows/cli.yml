@@ -21,8 +21,8 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     environment: engineering
-    # Python versions to test against - CONFIGURE HERE
     env:
+      # Python versions to test against - CONFIGURE HERE
       PYTHON_VERSIONS: '["3.9", "3.10", "3.11", "3.12"]'
     outputs:
       test-cases: ${{ steps.discover-tests.outputs.test-cases }}
@@ -85,20 +85,6 @@ jobs:
             echo "$test_collection"
 
             if [ -z "$test_collection" ]; then
-
-              echo "❌ No test cases found with pytest, trying alternative approach..."
-
-              # Fallback: Parse test files directly for test function definitions
-
-              test_collection=$(grep -h "^def test_" $(find . -name "test_*.py") | \
-                sed 's/def \(test_[^(]*\).*/\1/' | \
-                sort | uniq || true)
-
-              echo "Debug: Fallback test collection:"
-              echo "$test_collection"
-            fi
-
-            if [ -z "$test_collection" ]; then
               echo "❌ No individual test cases found, using full-suite approach"
               test_cases='["full-suite"]'
             else
@@ -109,12 +95,6 @@ jobs:
               test_cases=$(echo "$test_collection" | jq -R -s -c 'split("\n") | map(select(length > 0))')
               total_tests=$(echo "$test_cases" | jq '. | length')
               echo "Found $total_tests test cases total"
-
-              # Validate JSON format
-              if ! echo "$test_cases" | jq empty 2>/dev/null; then
-                echo "❌ Invalid JSON format, falling back to full-suite"
-                test_cases='["full-suite"]'
-              fi
             fi
           fi
 
@@ -172,11 +152,7 @@ jobs:
           total_failed=0
           failed_cases=""
 
-          if [ "$test_cases" = '["full-suite"]' ]; then
-            cases_per_version="TBD"
-          else
-            cases_per_version="TBD"
-          fi
+          cases_per_version="TBD"
 
           email_body="<h2>📊 CLI Weekly Test Results Summary</h2>
           <p><strong>Test Execution Date:</strong> $(date '+%Y-%m-%d %H:%M:%S UTC')<br>
@@ -200,14 +176,7 @@ jobs:
           test_job_result='${{ needs.test.result }}'
           while IFS= read -r version; do
             # Find result files for this Python version
-            result_files=""
-            for pattern in "result-${version}-*.json" "result-*${version}*.json" "*python-${version}*.json" "*${version}*.json"; do
-              found_files=$(find test-results/ -name "$pattern" 2>/dev/null || echo "")
-              if [ -n "$found_files" ]; then
-                result_files="$found_files"
-                break
-              fi
-            done
+            result_files=$(find test-results/ -name "result-${version}-*.json" 2>/dev/null || echo "")
 
             passed_count=0
             failed_count=0
@@ -234,19 +203,6 @@ jobs:
                   fi
                 fi
               done <<< "$result_files"
-            else
-              # Fallback if no artifacts found
-              if [ "$test_job_result" = "success" ]; then
-                passed_count=1
-                failed_count=0
-                total_cases_this_version=1
-                failed_cases_list=""
-              else
-                passed_count=0
-                failed_count=1
-                total_cases_this_version=1
-                failed_cases_list="Could not find test results"
-              fi
             fi
 
             cases_per_version=$total_cases_this_version
@@ -254,11 +210,8 @@ jobs:
             failed_cases_count=$failed_count
 
             # Calculate success rate for this version
-            if [ $cases_per_version -eq 0 ]; then
-              success_rate=0
-            else
-              success_rate=$(( (successful_cases * 100) / cases_per_version ))
-            fi
+            success_rate=$(( (successful_cases * 100) / cases_per_version ))
+
             # Add to totals
             total_cases=$((total_cases + cases_per_version))
             total_success=$((total_success + successful_cases))
@@ -275,7 +228,7 @@ jobs:
             # Add row to table using HTML formatting
             row_color=""
             # Safely check if failed_cases_count is a number and greater than 0
-            if [[ "$failed_cases_count" =~ ^[0-9]+$ ]] && [ "$failed_cases_count" -gt 0 ]; then
+            if [ "$failed_cases_count" -gt 0 ]; then
               row_color=" style='background-color: #ffe6e6;'"  # Light red for failures
             else
               row_color=" style='background-color: #e6ffe6;'"  # Light green for success
@@ -291,6 +244,7 @@ jobs:
               </tr>"
           done <<< "$python_versions_array"
 
+
           # Final totals after processing all Python versions
           echo "=========================================="
           echo "FINAL TOTALS:"
@@ -300,11 +254,7 @@ jobs:
           echo "=========================================="
 
           # Calculate overall success rate
-          if [ $total_cases -eq 0 ]; then
-            overall_success_rate=0
-          else
-            overall_success_rate=$(( (total_success * 100) / total_cases ))
-          fi
+          overall_success_rate=$(( (total_success * 100) / total_cases ))
 
           # Add total row and close HTML table
           total_row_color=""
