@@ -5,6 +5,7 @@ import { IActionContext, UserCancelledError } from "@microsoft/vscode-azext-util
 import * as vscode from 'vscode';
 import { ApiCenterService } from "../azure/ApiCenter/ApiCenterService";
 import { ApiCenterEnvironment, ApiCenterEnvironmentServerType, EnvironmentKind } from "../azure/ApiCenter/contracts";
+import { ApiCenterEnvironmentsManagement } from "../azure/ApiCenterDefines/ApiCenterEnvronment";
 import { ext } from "../extensionVariables";
 import { ApiCenterTreeItem } from "../tree/ApiCenterTreeItem";
 import { EnvironmentsTreeItem } from "../tree/EnvironmentsTreeItem";
@@ -63,8 +64,9 @@ export async function generateApicEnv(context: IActionContext, node?: Environmen
         location: vscode.ProgressLocation.Notification,
         title: UiStrings.CreateEnvironmentProgressTitle,
     }, async (progress, token) => {
-        const resourceGroupName = getResourceGroupFromId(node!.apiCenter.id);
-        const apiCenterService = new ApiCenterService(node!.parent?.subscription!, resourceGroupName, node!.apiCenter.name);
+        const apiEnvsNode = node!.apiEnvironments as ApiCenterEnvironmentsManagement;
+        const resourceGroupName = getResourceGroupFromId(apiEnvsNode.getId());
+        const apiCenterService = new ApiCenterService(node!.parent?.subscription!, resourceGroupName, apiEnvsNode.getName());
         const apicEnv = {
             name: apiEnvName,
             properties: {

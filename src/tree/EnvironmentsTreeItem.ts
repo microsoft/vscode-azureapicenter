@@ -1,10 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
-import { getResourceGroupFromId } from "@microsoft/vscode-azext-azureutils";
 import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import * as vscode from 'vscode';
-import { ApiCenterService } from "../azure/ApiCenter/ApiCenterService";
-import { ApiCenter } from "../azure/ApiCenter/contracts";
+import { IEnvironmentsBase } from "../azure/ApiCenterDefines/ApiCenterEnvronment";
 import { UiStrings } from "../uiStrings";
 import { EnvironmentTreeItem } from "./EnvironmentTreeItem";
 
@@ -12,7 +10,7 @@ export class EnvironmentsTreeItem extends AzExtParentTreeItem {
   public static contextValue: string = "azureApiCenterEnvironments";
   public readonly contextValue: string = EnvironmentsTreeItem.contextValue;
   private _nextLink: string | undefined;
-  constructor(parent: AzExtParentTreeItem, public apiCenter: ApiCenter) {
+  constructor(parent: AzExtParentTreeItem, private _apiCenterName: string, public apiEnvironments: IEnvironmentsBase) {
     super(parent);
   }
   public get label(): string {
@@ -24,20 +22,16 @@ export class EnvironmentsTreeItem extends AzExtParentTreeItem {
   }
 
   public async loadMoreChildrenImpl(clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
-    const resourceGroupName = getResourceGroupFromId(this.apiCenter.id);
-    const apiCenterService = new ApiCenterService(this.parent?.subscription!, resourceGroupName, this.apiCenter.name);
-    const apis = await apiCenterService.getApiCenterEnvironments();
-
-    this._nextLink = apis.nextLink;
+    const apis = await this.apiEnvironments.getChild(this.parent?.subscription!, this._apiCenterName);
     return await this.createTreeItemsWithErrorHandling(
-      apis.value,
+      apis,
       'invalidResource',
-      resource => new EnvironmentTreeItem(this, resource),
+      resource => new EnvironmentTreeItem(this, this.apiEnvironments.generateChild(resource)),
       resource => resource.name
     );
   }
 
   public hasMoreChildrenImpl(): boolean {
-    return this._nextLink !== undefined;
+    return this.apiEnvironments.getNextLink() !== undefined;
   }
 }

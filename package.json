@@ -391,7 +391,7 @@
         },
         {
           "command": "azure-api-center.copyDeploymentUrl",
-          "when": "view == apiCenterTreeView && viewItem == azureApiCenterApiDeployment"
+          "when": "(view == apiCenterTreeView && viewItem == azureApiCenterApiDeployment) || (view == apiCenterWorkspace && viewItem == azureApiCenterDataPlaneApiDeployment)"
         },
         {
           "command": "azure-api-center.openInPortal",

@@ -1,5 +1,9 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
+
+
+
+// Licensed under the MIT license.
 export type GeneralApiCenter = ApiCenter | DataPlaneApiCenter;
 
 export type ResourceGroup = {
@@ -68,20 +72,40 @@ export type DataPlaneApiCenterApi = {
     customProperties: {};
 };
 
+export type GeneralApiCenterEnvironment = ApiCenterEnvironment | DataPlaneApiCenterEnvironment;
+
 export type ApiCenterEnvironment = {
     id: string;
     location: string;
     name: string;
     properties: {
+        title: string;
         kind: string;
         server?: {
             type: string;
             managementPortalUri: string[];
         }
+        onboarding?: {
+            developerPortalUri: string[];
+        }
     };
     // tslint:disable-next-line:no-reserved-keywords
     type: string;
 };
+
+export type DataPlaneApiCenterEnvironment = {
+    name: string;
+    title: string;
+    kind: string;
+    server?: {
+        type: ApiCenterEnvironmentServerType;
+        managementPortalUris: string[];
+    };
+    onboarding?: {
+        instructions: string;
+        developerPortalUris: string[];
+    }
+}
 
 export type GeneralApiCenterApiVersion = ApiCenterApiVersion | DataPlaneApiCenterApiVersion;
 
@@ -103,18 +127,33 @@ export type DataPlaneApiCenterApiVersion = {
     lifecycleStage: string;
 };
 
+export type GeneralApiCenterApiDeployment = ApiCenterApiDeployment | DataPlaneApiCenterApiDeployment;
+
 export type ApiCenterApiDeployment = {
-    id?: string;
-    location?: string;
+    id: string;
     name: string;
     properties: {
         server: {
             runtimeUri: string[];
-        }
+        },
+        title: string;
+        environmentId: string;
+        definitionId: string;
     };
     // tslint:disable-next-line:no-reserved-keywords
     type: string;
 };
+
+export type DataPlaneApiCenterApiDeployment = {
+    name: string;
+    title: string;
+    environment: string;
+    server: {
+        runtimeUri: string[];
+    };
+    // tslint:disable-next-line:no-reserved-keywords
+    recommended: boolean;
+}
 
 export type GeneralApiCenterApiVersionDefinition = ApiCenterApiVersionDefinition | DataPlaneApiCenterApiVersionDefinition;
 

@@ -3,6 +3,7 @@
 import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import { ApiCenter } from "../azure/ApiCenter/contracts";
 import { ApiCenterApisManagement } from "../azure/ApiCenterDefines/ApiCenterApi";
+import { ApiCenterEnvironmentsManagement } from "../azure/ApiCenterDefines/ApiCenterEnvronment";
 import { UiStrings } from "../uiStrings";
 import { treeUtils } from "../utils/treeUtils";
 import { ApisTreeItem } from "./ApisTreeItem";
@@ -23,7 +24,7 @@ export class ApiCenterTreeItem extends AzExtParentTreeItem {
     super(parent);
     this._apicenter = apicenter;
     this.apisTreeItem = new ApisTreeItem(this, new ApiCenterApisManagement(apicenter));
-    this.environmentsTreeItem = new EnvironmentsTreeItem(this, apicenter);
+    this.environmentsTreeItem = new EnvironmentsTreeItem(this, apicenter.name, new ApiCenterEnvironmentsManagement(apicenter));
     this.profilesTreeItem = new ProfilesTreeItem(this, apicenter);
   }
 
