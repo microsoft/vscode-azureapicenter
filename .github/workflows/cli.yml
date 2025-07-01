@@ -73,31 +73,40 @@ jobs:
           echo "Debug: Checking if apic-extension is installed:"
           azdev extension show apic-extension || echo "apic-extension not found!"
 
+
           echo "=== Installing apic-extension in development mode ==="
           cd src/apic-extension
           pip install -e .
+          cd ../..
 
           echo "Debug: Verifying extension installation in Azure CLI..."
-          # Force Azure CLI to discover newly installed extensions
-          az extension list --query "[?name=='apic']" -o table || echo "Extension not in regular list"
-          az extension list-available --query "[?name=='apic']" -o table || echo "Extension not in available list"
+          echo "Checking for apic-related packages..."
+          pip list | grep -i apic || echo "No apic packages found"
 
-          echo "Debug: Checking Azure CLI module path..."
-          python -c "import azext_apic; print('Extension module found at:', azext_apic.__file__)" || echo "Extension module not importable"
+          echo "Debug: Trying to import extension module..."
+          python -c "import azext_apic; print('azext_apic module imported successfully')" || echo "azext_apic import failed"
 
           echo "Debug: Force Azure CLI to discover extensions..."
           export AZURE_EXTENSION_DIR=$(python -c "import site; print(site.getsitepackages()[0])")
-          export PYTHONPATH="${PYTHONPATH}:$(pwd)"
+          export PYTHONPATH="${PYTHONPATH}:$(pwd)/src/apic-extension"
+
+          echo "Debug: Installing Azure CLI extension directly..."
+          # Try installing the extension directly into Azure CLI
+          az extension add --source ./src/apic-extension --debug 2>&1 | head -10 || echo "Direct extension install failed"
 
           echo "Debug: Verifying az apic command availability:"
           az apic --help 2>&1 | head -5 || echo "az apic command not available"
 
+
           echo "Debug: Environment variables:"
           echo "AZURE_EXTENSION_DIR: $AZURE_EXTENSION_DIR"
           echo "PYTHONPATH: $PYTHONPATH"
-            # Test extension discovery with --discover flag
+
           echo "Debug: Testing extension discovery:"
           az extension list --debug 2>&1 | grep -i apic || echo "No apic found in debug output"
+
+          echo "Debug: Final verification - try to run Azure CLI with apic extension:"
+          az apic --version 2>&1 || echo "apic extension not working"
 
       - name: Discover test cases and set outputs
         id: discover-tests
