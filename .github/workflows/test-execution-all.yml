@@ -35,6 +35,9 @@ jobs:
         test-case: ${{ fromJson(inputs.test-cases) }}
     name: ${{ matrix.test-case }} (Python ${{ inputs.python-version }})
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
