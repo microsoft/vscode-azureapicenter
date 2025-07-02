@@ -137,7 +137,6 @@ export abstract class Editor<ContextT> implements vscode.Disposable {
         this.appendLineToOutput(vscode.l10n.t(UiStrings.Updating, filename));
         const updatedData: string = await this.updateData(context, rawText);
         this.appendLineToOutput(vscode.l10n.t(UiStrings.Updated, filename));
-        // await this.updateEditor(updatedData, doc.isClosed ? undefined : vscode.window.visibleTextEditors.find(editor => editor.document.uri.fsPath === doc.uri.fsPath));
     }
 
     private async updateEditor(data: string, textEditor?: vscode.TextEditor): Promise<void> {
