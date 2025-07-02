@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import * as vscode from 'vscode';
-import { IEnvironmentsBase } from "../azure/ApiCenterDefines/ApiCenterEnvronment";
+import { IEnvironmentsBase } from "../azure/ApiCenterDefines/ApiCenterEnvironment";
 import { UiStrings } from "../uiStrings";
 import { EnvironmentTreeItem } from "./EnvironmentTreeItem";
 

@@ -4,7 +4,7 @@ import { AzExtParentTreeItem, AzExtTreeItem, GenericParentTreeItem, GenericParen
 import * as vscode from "vscode";
 import { DataPlaneAccount } from "../azure/ApiCenter/ApiCenterDataPlaneAPIs";
 import { ApiCenterApisDataplane } from "../azure/ApiCenterDefines/ApiCenterApi";
-import { ApiCenterEnvironmentsDataplane } from "../azure/ApiCenterDefines/ApiCenterEnvronment";
+import { ApiCenterEnvironmentsDataplane } from "../azure/ApiCenterDefines/ApiCenterEnvironment";
 import { AzureDataSessionProvider } from "../azure/azureLogin/authTypes";
 import { AzureAuth } from "../azure/azureLogin/azureAuth";
 import { AzureDataSessionProviderHelper, generateScopes } from "../azure/azureLogin/dataSessionProvider";

@@ -5,7 +5,7 @@ import { IActionContext, UserCancelledError } from "@microsoft/vscode-azext-util
 import * as vscode from 'vscode';
 import { ApiCenterService } from "../azure/ApiCenter/ApiCenterService";
 import { ApiCenterEnvironment, ApiCenterEnvironmentServerType, EnvironmentKind } from "../azure/ApiCenter/contracts";
-import { ApiCenterEnvironmentsManagement } from "../azure/ApiCenterDefines/ApiCenterEnvronment";
+import { ApiCenterEnvironmentsManagement } from "../azure/ApiCenterDefines/ApiCenterEnvironment";
 import { ext } from "../extensionVariables";
 import { ApiCenterTreeItem } from "../tree/ApiCenterTreeItem";
 import { EnvironmentsTreeItem } from "../tree/EnvironmentsTreeItem";

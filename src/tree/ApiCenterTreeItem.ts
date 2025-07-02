@@ -3,7 +3,7 @@
 import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import { ApiCenter } from "../azure/ApiCenter/contracts";
 import { ApiCenterApisManagement } from "../azure/ApiCenterDefines/ApiCenterApi";
-import { ApiCenterEnvironmentsManagement } from "../azure/ApiCenterDefines/ApiCenterEnvronment";
+import { ApiCenterEnvironmentsManagement } from "../azure/ApiCenterDefines/ApiCenterEnvironment";
 import { UiStrings } from "../uiStrings";
 import { treeUtils } from "../utils/treeUtils";
 import { ApisTreeItem } from "./ApisTreeItem";
