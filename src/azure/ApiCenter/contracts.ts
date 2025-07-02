@@ -1,9 +1,5 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
-
-
-
-// Licensed under the MIT license.
 export type GeneralApiCenter = ApiCenter | DataPlaneApiCenter;
 
 export type ResourceGroup = {
@@ -105,7 +101,7 @@ export type DataPlaneApiCenterEnvironment = {
         instructions: string;
         developerPortalUris: string[];
     }
-}
+};
 
 export type GeneralApiCenterApiVersion = ApiCenterApiVersion | DataPlaneApiCenterApiVersion;
 
@@ -153,7 +149,7 @@ export type DataPlaneApiCenterApiDeployment = {
     };
     // tslint:disable-next-line:no-reserved-keywords
     recommended: boolean;
-}
+};
 
 export type GeneralApiCenterApiVersionDefinition = ApiCenterApiVersionDefinition | DataPlaneApiCenterApiVersionDefinition;
 

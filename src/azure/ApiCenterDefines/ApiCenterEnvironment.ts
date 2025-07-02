@@ -64,7 +64,7 @@ export type IEnvironmentBase = {
     getManagementPortalUris: () => string[];
     getContext: () => string;
     getKind: () => string;
-}
+};
 
 export class ApiCenterEnvironmentManagement implements IEnvironmentBase {
     constructor(private data: ApiCenterEnvironment) { }
