@@ -31,6 +31,7 @@ jobs:
     environment: engineering
     strategy:
       fail-fast: false
+      max-parallel: 50
       matrix:
         test-case: ${{ fromJson(inputs.test-cases) }}
     name: ${{ matrix.test-case }} (Python ${{ inputs.python-version }})

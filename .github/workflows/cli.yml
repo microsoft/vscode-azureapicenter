@@ -57,7 +57,7 @@ jobs:
           source .venv/bin/activate
 
           python -m pip install -U pip
-          pip install -r azdev pytest msrestazure
+          pip install azdev pytest msrestazure
 
           # Azure CLI Development Setup
           azdev setup -r .
