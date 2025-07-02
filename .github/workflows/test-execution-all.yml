@@ -71,15 +71,9 @@ jobs:
           azdev setup -r .
           azdev extension add apic-extension
 
-
-
           echo "=== Installing apic-extension in development mode ==="
           cd src/apic-extension
           pip install -e .
-          cd ../..
-
-          # Install extension directly into Azure CLI
-          az extension add --source ./src/apic-extension
 
       - name: Execute test case
         run: |

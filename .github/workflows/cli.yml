@@ -63,9 +63,6 @@ jobs:
           # Install extension in development mode
           cd src/apic-extension
           pip install -e .
-          cd ../..
-          # Install extension directly into Azure CLI
-          az extension add --source ./src/apic-extension
 
       - name: Discover test cases and set outputs
         id: discover-tests
