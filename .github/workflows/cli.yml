@@ -47,6 +47,7 @@ jobs:
           cd azure-cli-extensions
           git checkout frank/for-pipeline-test
 
+
       - name: Setup development environment
         run: |
           cd azure-cli-extensions
@@ -54,59 +55,17 @@ jobs:
           source .venv/bin/activate
           python -m pip install -U pip
           pip install -r ${{ github.workspace }}/requirements.txt
-          echo "=== Installed packages verification ==="
-          pip list
 
-          echo "=== Azure CLI Development Setup ==="
-          echo "Debug: Setting up azdev..."
+          # Azure CLI Development Setup
           azdev setup -r .
-
-          echo "Debug: Available extensions before adding apic-extension:"
-          azdev extension list
-
-          echo "Debug: Adding apic-extension..."
           azdev extension add apic-extension
 
-          echo "Debug: Available extensions after adding apic-extension:"
-          azdev extension list
-
-          echo "Debug: Checking if apic-extension is installed:"
-          azdev extension show apic-extension || echo "apic-extension not found!"
-
-
-          echo "=== Installing apic-extension in development mode ==="
+          # Install extension in development mode
           cd src/apic-extension
           pip install -e .
           cd ../..
-
-          echo "Debug: Verifying extension installation in Azure CLI..."
-          echo "Checking for apic-related packages..."
-          pip list | grep -i apic || echo "No apic packages found"
-
-          echo "Debug: Trying to import extension module..."
-          python -c "import azext_apic; print('azext_apic module imported successfully')" || echo "azext_apic import failed"
-
-          echo "Debug: Force Azure CLI to discover extensions..."
-          export AZURE_EXTENSION_DIR=$(python -c "import site; print(site.getsitepackages()[0])")
-          export PYTHONPATH="${PYTHONPATH}:$(pwd)/src/apic-extension"
-
-          echo "Debug: Installing Azure CLI extension directly..."
-          # Try installing the extension directly into Azure CLI
-          az extension add --source ./src/apic-extension --debug 2>&1 | head -10 || echo "Direct extension install failed"
-
-          echo "Debug: Verifying az apic command availability:"
-          az apic --help 2>&1 | head -5 || echo "az apic command not available"
-
-
-          echo "Debug: Environment variables:"
-          echo "AZURE_EXTENSION_DIR: $AZURE_EXTENSION_DIR"
-          echo "PYTHONPATH: $PYTHONPATH"
-
-          echo "Debug: Testing extension discovery:"
-          az extension list --debug 2>&1 | grep -i apic || echo "No apic found in debug output"
-
-          echo "Debug: Final verification - try to run Azure CLI with apic extension:"
-          az apic --version 2>&1 || echo "apic extension not working"
+          # Install extension directly into Azure CLI
+          az extension add --source ./src/apic-extension
 
       - name: Discover test cases and set outputs
         id: discover-tests
@@ -116,7 +75,9 @@ jobs:
 
           # Ensure extension environment is set up for pytest
           export AZURE_EXTENSION_DIR=$(python -c "import site; print(site.getsitepackages()[0])")
+          echo "AZURE_EXTENSION_DIR=$AZURE_EXTENSION_DIR"
           export PYTHONPATH="${PYTHONPATH}:$(pwd)/src/apic-extension"
+          echo "PYTHONPATH=$PYTHONPATH"
 
           cd src/apic-extension
 
@@ -127,31 +88,13 @@ jobs:
             test_cases="$test_input"
           else
             echo "Discovering all test cases using pytest..."
-
-            # Debug: Show current environment
-            echo "Debug: Current working directory: $(pwd)"
-            echo "Debug: Python path: $(which python)"
-            echo "Debug: Python version: $(python --version)"
-            echo "Debug: Pytest version: $(python -m pytest --version)"
-            echo "Debug: Available test files:"
-            find . -name "test_*.py" -type f | head -10
-            echo "Debug: Pytest configuration files:"
-            find . -name "pytest.ini" -o -name "pyproject.toml" -o -name "setup.cfg" -o -name "tox.ini" | head -5
-            echo "Debug: Azure CLI extension module check:"
-            python -c "import sys; sys.path.append('.'); import azext_apic; print('Extension module loaded successfully')" || echo "Extension module not loadable"
-
             # Use pytest to collect all test cases
-            echo "Debug: Collecting test cases with pytest..."
             echo "Debug: Full pytest command output:"
 
             # Show full pytest collection output for debugging
             echo "=== Full pytest --collect-only output ==="
             python -m pytest --collect-only -v --tb=short 2>&1 | head -50
             echo "=== End pytest --collect-only output ==="
-              echo "Debug: Checking if Azure CLI can find the extension during pytest collection:"
-            python -c "import sys; sys.path.append('.'); import azext_apic; print('Extension module loaded')" || echo "Extension module not importable"
-            python -c "from azure.cli.core import get_default_cli; print('Azure CLI core accessible')" || echo "Azure CLI core not accessible"
-
             echo "Debug: Extracting test function names..."
 
             # Collect test node IDs and extract just the test function names
@@ -163,41 +106,22 @@ jobs:
             echo "Debug: Raw test collection output:"
             echo "$test_collection"
 
-            if [ -z "$test_collection" ]; then
 
-              echo "❌ No test cases found with pytest, trying alternative approach..."
+            test_count=$(echo "$test_collection" | wc -l)
+            echo "✅ Successfully discovered $test_count test cases"
 
-              # Fallback: Parse test files directly for test function definitions
+            # Convert to JSON array
+            test_cases=$(echo "$test_collection" | jq -R -s -c 'split("\n") | map(select(length > 0))')
+            total_tests=$(echo "$test_cases" | jq '. | length')
+            echo "Found $total_tests test cases total"
 
-              test_collection=$(grep -h "^def test_" $(find . -name "test_*.py") | \
-                sed 's/def \(test_[^(]*\).*/\1/' | \
-                sort | uniq || true)
-
-              echo "Debug: Fallback test collection:"
-              echo "$test_collection"
-            fi
-
-            if [ -z "$test_collection" ]; then
-              echo "❌ No individual test cases found, using full-suite approach"
+            # Validate JSON format
+            if ! echo "$test_cases" | jq empty 2>/dev/null; then
+              echo "❌ Invalid JSON format, falling back to full-suite"
               test_cases='["full-suite"]'
-            else
-              test_count=$(echo "$test_collection" | wc -l)
-              echo "✅ Successfully discovered $test_count test cases"
-
-              # Convert to JSON array
-              test_cases=$(echo "$test_collection" | jq -R -s -c 'split("\n") | map(select(length > 0))')
-              total_tests=$(echo "$test_cases" | jq '. | length')
-              echo "Found $total_tests test cases total"
-
-              # Validate JSON format
-              if ! echo "$test_cases" | jq empty 2>/dev/null; then
-                echo "❌ Invalid JSON format, falling back to full-suite"
-                test_cases='["full-suite"]'
-              fi
             fi
           fi
 
-          echo "Final test cases: $test_cases"
           echo "test-cases=$test_cases" >> $GITHUB_OUTPUT
 
           # Python versions to test against - CONFIGURE HERE

@@ -72,25 +72,14 @@ jobs:
           azdev extension add apic-extension
 
 
+
           echo "=== Installing apic-extension in development mode ==="
           cd src/apic-extension
           pip install -e .
           cd ../..
 
-          echo "Debug: Verifying extension installation..."
-          echo "Checking for apic-related packages..."
-          pip list | grep -i apic || echo "No apic packages found"
-
-          echo "Testing extension module import..."
-          python -c "import azext_apic; print('Extension module found')" || echo "Extension module not importable"
-            echo "Installing Azure CLI extension directly..."
-          az extension add --source ./src/apic-extension --debug 2>&1 | head -5 || echo "Direct extension install failed"
-
-          echo "Testing az apic command..."
-          az apic --help 2>&1 | head -3 || echo "az apic command not available"
-
-          echo "Final verification:"
-          az apic --version 2>&1 || echo "apic extension not working"
+          # Install extension directly into Azure CLI
+          az extension add --source ./src/apic-extension
 
       - name: Execute test case
         run: |
