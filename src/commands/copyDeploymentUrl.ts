@@ -6,7 +6,7 @@ import { ApiDeploymentTreeItem } from "../tree/ApiDeploymentTreeItem";
 import { UiStrings } from "../uiStrings";
 
 export async function copyDeploymentUrl(context: IActionContext, node: ApiDeploymentTreeItem) {
-    const runtimeUrls = node.apiCenterApiDeployment.getRuntimeUris()
+    const runtimeUrls = node.apiCenterApiDeployment.getRuntimeUris();
     const runtimeUrl = runtimeUrls[0];
 
     await vscode.env.clipboard.writeText(runtimeUrl);
