@@ -28,6 +28,9 @@ jobs:
       test-cases: ${{ steps.discover-tests.outputs.test-cases }}
       python-versions: ${{ steps.discover-tests.outputs.python-versions }}
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
@@ -54,14 +57,27 @@ jobs:
           source .venv/bin/activate
           python -m pip install -U pip
           pip install azdev pytest
+
+          # Azure CLI Development Setup
           azdev setup -r .
           azdev extension add apic-extension
+
+          # Install extension in development mode
+          cd src/apic-extension
+          pip install -e .
 
       - name: Discover test cases and set outputs
         id: discover-tests
         run: |
           cd azure-cli-extensions
           source .venv/bin/activate
+
+          # Ensure extension environment is set up for pytest
+          export AZURE_EXTENSION_DIR=$(python -c "import site; print(site.getsitepackages()[0])")
+          echo "AZURE_EXTENSION_DIR=$AZURE_EXTENSION_DIR"
+          export PYTHONPATH="${PYTHONPATH}:$(pwd)/src/apic-extension"
+          echo "PYTHONPATH=$PYTHONPATH"
+
           cd src/apic-extension
 
           # Check if specific test cases are provided
@@ -71,12 +87,17 @@ jobs:
             test_cases="$test_input"
           else
             echo "Discovering all test cases using pytest..."
-
             # Use pytest to collect all test cases
-            echo "Debug: Collecting test cases with pytest..."
+            echo "Debug: Full pytest command output:"
+
+            # Show full pytest collection output for debugging
+            echo "=== Full pytest --collect-only output ==="
+            python -m pytest --collect-only -v --tb=short 2>&1 | head -50
+            echo "=== End pytest --collect-only output ==="
+            echo "Debug: Extracting test function names..."
 
             # Collect test node IDs and extract just the test function names
-            test_collection=$(python -m pytest --collect-only -q 2>/dev/null | \
+            test_collection=$(python -m pytest --collect-only -q --tb=no 2>/dev/null | \
               grep "::test_" | \
               sed 's/.*::\(test_[^[]*\).*/\1/' | \
               sort | uniq || true)
@@ -84,21 +105,15 @@ jobs:
             echo "Debug: Raw test collection output:"
             echo "$test_collection"
 
-            if [ -z "$test_collection" ]; then
-              echo "❌ No individual test cases found, using full-suite approach"
-              test_cases='["full-suite"]'
-            else
-              test_count=$(echo "$test_collection" | wc -l)
-              echo "✅ Successfully discovered $test_count test cases"
+            test_count=$(echo "$test_collection" | wc -l)
+            echo "✅ Successfully discovered $test_count test cases"
 
-              # Convert to JSON array
-              test_cases=$(echo "$test_collection" | jq -R -s -c 'split("\n") | map(select(length > 0))')
-              total_tests=$(echo "$test_cases" | jq '. | length')
-              echo "Found $total_tests test cases total"
-            fi
+            # Convert to JSON array
+            test_cases=$(echo "$test_collection" | jq -R -s -c 'split("\n") | map(select(length > 0))')
+            total_tests=$(echo "$test_cases" | jq '. | length')
+            echo "Found $total_tests test cases total"
           fi
 
-          echo "Final test cases: $test_cases"
           echo "test-cases=$test_cases" >> $GITHUB_OUTPUT
 
           # Python versions to test against - defined in job env

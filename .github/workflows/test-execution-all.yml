@@ -35,6 +35,9 @@ jobs:
         test-case: ${{ fromJson(inputs.test-cases) }}
     name: ${{ matrix.test-case }} (Python ${{ inputs.python-version }})
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
@@ -61,8 +64,14 @@ jobs:
           source .venv/bin/activate
           python -m pip install -U pip
           pip install azdev
+
+          echo "=== Azure CLI Development Setup ==="
           azdev setup -r .
           azdev extension add apic-extension
+
+          echo "=== Installing apic-extension in development mode ==="
+          cd src/apic-extension
+          pip install -e .
 
       - name: Execute test case
         run: |
@@ -73,6 +82,13 @@ jobs:
 
           cd azure-cli-extensions
           source .venv/bin/activate
+
+          # Set up environment for extension discovery
+          export AZURE_EXTENSION_DIR=$(python -c "import site; print(site.getsitepackages()[0])")
+          echo "AZURE_EXTENSION_DIR=$AZURE_EXTENSION_DIR"
+          export PYTHONPATH="${PYTHONPATH}:$(pwd)/src/apic-extension"
+          echo "PYTHONPATH=$PYTHONPATH"
+
           test_result="FAILED"
           test_start_time=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
 
@@ -87,8 +103,10 @@ jobs:
             if [ $test_exit_code -eq 0 ] && ! echo "$test_output" | grep -i -E "(failed|error|FAIL)" > /dev/null; then
               test_result="PASSED"
             fi
+
           else
             set +e
+            # Use azdev test for individual test cases with --live mode
             test_output=$(azdev test azext_apic-extension $test_case --discover --live 2>&1)
             test_exit_code=$?
             set -e
