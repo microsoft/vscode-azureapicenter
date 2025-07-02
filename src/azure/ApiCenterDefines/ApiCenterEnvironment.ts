@@ -49,7 +49,7 @@ export class ApiCenterEnvironmentsDataplane implements IEnvironmentsBase {
     }
     async getChild(context: ISubscriptionContext, apiName: string): Promise<GeneralApiCenterEnvironment[]> {
         const server = new ApiCenterDataPlaneService(context);
-        const res = await server.listApiEnvrionments();
+        const res = await server.listApiEnvironments();
         this._nextLink = res.nextLink;
         return res.value;
     }

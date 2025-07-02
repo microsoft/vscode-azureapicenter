@@ -109,7 +109,7 @@ describe("Azure ApiCenter Defines ApiCenterEnvironmentsDataplane", () => {
                 server: { type: ApiCenterEnvironmentServerType.AzureAPIManagement, managementPortalUris: ["uri1"] }
             }]
         };
-        sandbox.stub(ApiCenterDataPlaneService.prototype, "listApiEnvrionments").resolves(fakeEnvs);
+        sandbox.stub(ApiCenterDataPlaneService.prototype, "listApiEnvironments").resolves(fakeEnvs);
         const res = await obj.getChild({} as any, "apiName");
         assert.strictEqual(res.length, 1);
         assert.strictEqual(obj.getNextLink(), "next");

@@ -86,7 +86,7 @@ export class ApiCenterDataPlaneService {
         const response = await client.sendRequest(options);
         return response.parsedBody;
     }
-    public async listApiEnvrionments(): Promise<{ value: DataPlaneApiCenterEnvironment[]; nextLink: string }> {
+    public async listApiEnvironments(): Promise<{ value: DataPlaneApiCenterEnvironment[]; nextLink: string }> {
         const client = new ServiceClient(this.susbcriptionContext.credentials, clientOptions);
         let url = APICenterDataPlaneRestAPIs.ListApiEnvironments(this.susbcriptionContext.subscriptionPath);
         const options: RequestPrepareOptions = {

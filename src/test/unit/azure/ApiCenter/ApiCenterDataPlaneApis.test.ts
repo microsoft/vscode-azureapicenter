@@ -64,7 +64,7 @@ describe("Api Center Data Plane Apis Server", () => {
         assert.strictEqual(response.format, 'inline');
         assert.strictEqual(response.value, 'fakeSpecification');
     });
-    it("listApiEnvrionments success", async () => {
+    it("listApiEnvironments success", async () => {
         const mockResponse = {
             status: 200,
             parsedBody: {
@@ -84,15 +84,15 @@ describe("Api Center Data Plane Apis Server", () => {
         } as HttpOperationResponse;
         sandbox.stub(ServiceClient.prototype, "sendRequest").resolves(mockResponse);
         const serverClient = new ApiCenterDataPlaneService(subscriptionContext);
-        const response = await serverClient.listApiEnvrionments();
+        const response = await serverClient.listApiEnvironments();
         assert.strictEqual(response.value.length, 1);
         assert.strictEqual(response.value[0].name, "envName1");
         assert.strictEqual(response.nextLink, "fakeNextLink");
     });
-    it("listApiEnvrionments failed", async () => {
+    it("listApiEnvironments failed", async () => {
         sandbox.stub(ServiceClient.prototype, "sendRequest").resolves({ status: 500, bodyAsText: "error" } as HttpOperationResponse);
         const serverClient = new ApiCenterDataPlaneService(subscriptionContext);
-        const response = await serverClient.listApiEnvrionments();
+        const response = await serverClient.listApiEnvironments();
         assert.equal(response, undefined);
     });
     it("listApiDeployments success", async () => {

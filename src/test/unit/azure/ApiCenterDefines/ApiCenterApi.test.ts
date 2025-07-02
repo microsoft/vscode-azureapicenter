@@ -132,13 +132,11 @@ describe('Azure ApiCenter Defines ApiCenterApiManagement', () => {
     it('ApiCenterApiManagement class generateVersionChild', () => {
         const api: ApiCenterApiManagement = new ApiCenterApiManagement(data);
         const versionChild = api.generateVersionChild();
-        // ApiCenterVersionsManagement 构造参数为 ApiCenterApi
         assert.ok(versionChild.constructor.name === 'ApiCenterVersionsManagement');
     });
     it('ApiCenterApiManagement class generateDeploymentChild', () => {
         const api: ApiCenterApiManagement = new ApiCenterApiManagement(data);
         const deploymentChild = api.generateDeploymentChild();
-        // ApiCenterDeploymentsManagement 构造参数为 ApiCenterApi
         assert.ok(deploymentChild.constructor.name === 'ApiCenterDeploymentsManagement');
     });
 });
