@@ -45,7 +45,7 @@ jobs:
         run: |
           git clone https://github.com/blackchoey/azure-cli-extensions.git
           cd azure-cli-extensions
-          git checkout frank/for-pipeline-test
+          git checkout main
 
 
       - name: Setup development environment
@@ -54,7 +54,7 @@ jobs:
           python -m venv .venv
           source .venv/bin/activate
           python -m pip install -U pip
-          pip install -r ${{ github.workspace }}/requirements.txt
+          pip install azdev pytest
 
           # Azure CLI Development Setup
           azdev setup -r .
@@ -402,7 +402,7 @@ jobs:
 
           # Set environment variables for the email sending step
           echo "EMAIL_SUBJECT=$email_subject" >> $GITHUB_ENV
-          echo "EMAIL_TO=frankqian@microsoft.com" >> $GITHUB_ENV
+          echo "EMAIL_TO=${{secrets.AUTHOR_MAIL_ADDRESSES}}" >> $GITHUB_ENV
 
           # Handle multi-line email body properly - ensure proper formatting is preserved
           # Use a delimiter that won't appear in the content
