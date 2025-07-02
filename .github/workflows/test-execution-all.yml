@@ -104,7 +104,9 @@ jobs:
 
           # Set up environment for extension discovery
           export AZURE_EXTENSION_DIR=$(python -c "import site; print(site.getsitepackages()[0])")
+          echo "AZURE_EXTENSION_DIR=$AZURE_EXTENSION_DIR"
           export PYTHONPATH="${PYTHONPATH}:$(pwd)/src/apic-extension"
+          echo "PYTHONPATH=$PYTHONPATH"
 
           test_result="FAILED"
           test_start_time=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
@@ -120,11 +122,11 @@ jobs:
             if [ $test_exit_code -eq 0 ] && ! echo "$test_output" | grep -i -E "(failed|error|FAIL)" > /dev/null; then
               test_result="PASSED"
             fi
+
           else
             set +e
-            # Use cd to src/apic-extension and run pytest directly for individual tests
-            cd src/apic-extension
-            test_output=$(python -m pytest -xvs -k "$test_case" --tb=short 2>&1)
+            # Use azdev test for individual test cases with --live mode
+            test_output=$(azdev test azext_apic-extension $test_case --discover --live 2>&1)
             test_exit_code=$?
             set -e
 
