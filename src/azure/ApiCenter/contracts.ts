@@ -158,7 +158,7 @@ export type ApiCenterApiVersionDefinitionImport = {
     value: string;
     specification: {
         name: string
-        version: string
+        version?: string
     }
 };
 
