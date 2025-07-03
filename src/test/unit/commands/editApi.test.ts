@@ -18,7 +18,7 @@ describe("editApi", () => {
 
     beforeEach(() => {
         sandbox = sinon.createSandbox();
-        fakeNode = sinon.createStubInstance(ApiVersionDefinitionTreeItem);
+        fakeNode = sandbox.createStubInstance(ApiVersionDefinitionTreeItem);
 
         // Mock the ext properties that are used in the editApi command
         ext.treeDataProvider = new AzExtTreeDataProvider({} as any, "test");
