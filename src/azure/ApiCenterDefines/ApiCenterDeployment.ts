@@ -98,7 +98,7 @@ export class ApiCenterDeploymentDataplane implements IDeploymentBase {
         return this.data.title;
     }
     getId() {
-        return this.data.name; // Assuming name is unique for DataPlane deployments
+        return this.data.name;
     }
     getName() {
         return this.data.name;

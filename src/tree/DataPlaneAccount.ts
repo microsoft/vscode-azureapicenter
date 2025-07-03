@@ -73,7 +73,7 @@ export class ApiServerItem extends GenericParentTreeItem {
     public label: string;
     public readonly subscriptionContext: ISubscriptionContext;
     public readonly apisTreeItem: ApisTreeItem;
-    public readonly apisEnvTreeItems: EnvironmentsTreeItem;
+    public readonly envsTreeItem: EnvironmentsTreeItem;
     public async loadMoreChildrenImpl(clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
         let scopes = generateScopes(this.subscriptionContext.userId, this.subscriptionContext!.tenantId!);
         const properties: { [key: string]: string; } = {};
@@ -92,7 +92,7 @@ export class ApiServerItem extends GenericParentTreeItem {
                 })
             ];
         }
-        return [this.apisTreeItem, this.apisEnvTreeItems];
+        return [this.apisTreeItem, this.envsTreeItem];
     }
     public hasMoreChildrenImpl(): boolean {
         return false;
@@ -108,7 +108,7 @@ export class ApiServerItem extends GenericParentTreeItem {
         this.label = subContext.subscriptionPath.split('.')[0];
         this.subscriptionContext = subContext;
         this.apisTreeItem = new ApisTreeItem(this, new ApiCenterApisDataplane({ name: this.label }));
-        this.apisEnvTreeItems = new EnvironmentsTreeItem(this, this.label, new ApiCenterEnvironmentsDataplane({ name: this.label }));
+        this.envsTreeItem = new EnvironmentsTreeItem(this, this.label, new ApiCenterEnvironmentsDataplane({ name: this.label }));
     }
     public get id(): string {
         return this.label;
