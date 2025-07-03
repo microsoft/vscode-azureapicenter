@@ -19,7 +19,7 @@ export class ApiCenterTreeItem extends AzExtParentTreeItem {
   public readonly environmentsTreeItem: EnvironmentsTreeItem;
   public readonly profilesTreeItem: ProfilesTreeItem;
   public rulesTreeItem: RulesTreeItem | undefined;
-  constructor(parent: AzExtParentTreeItem, apicenter: ApiCenter) {
+  constructor(parent: AzExtParentTreeItem, public apicenter: ApiCenter) {
     super(parent);
     this._apicenter = apicenter;
     this.apisTreeItem = new ApisTreeItem(this, new ApiCenterApisManagement(apicenter));

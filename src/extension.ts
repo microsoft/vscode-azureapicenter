@@ -45,6 +45,7 @@ import { renameCustomFunction } from './commands/rules/renameCustomFunction';
 import { searchApi } from './commands/searchApi';
 import { setActiveDataPlaneAccount } from './commands/setActiveDataPlaneAccount';
 import { SetApiRuleset } from './commands/setApiRuleset';
+import { setMcpGallery } from './commands/setMcpGallery';
 import { SignInToDataPlane } from "./commands/signInToDataPlane";
 import { testInPostman } from './commands/testInPostman';
 import { ErrorProperties, TelemetryProperties } from './common/telemetryEvent';
@@ -169,6 +170,8 @@ export async function activate(context: vscode.ExtensionContext) {
     registerCommandWithTelemetry('azure-api-center.setActiveDataPlaneAccount', setActiveDataPlaneAccount);
 
     registerCommandWithTelemetry('azure-api-center.createApiCenterService', CreateAzureApiCenterService.createApiCenterService);
+
+    registerCommandWithTelemetry('azure-api-center.setMcpGallery', setMcpGallery);
 
     context.subscriptions.push(
         vscode.window.registerUriHandler({

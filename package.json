@@ -234,6 +234,11 @@
         "command": "azure-api-center.setActiveDataPlaneAccount",
         "title": "%azure-api-center.commands.setActiveDataPlaneAccount.title%",
         "category": "Azure API Center"
+      },
+      {
+        "command": "azure-api-center.setMcpGallery",
+        "title": "Set current API Center as MCP Gallery",
+        "category": "Azure API Center"
       }
     ],
     "views": {
@@ -402,6 +407,10 @@
           "command": "azure-api-center.createApiCenterService",
           "when": "(view == apiCenterTreeView && viewItem == azureApiCenterAzureSubscription)",
           "group": "2@1"
+        },
+        {
+          "command": "azure-api-center.setMcpGallery",
+          "when": "view == apiCenterTreeView && viewItem == azureApiCenter"
         }
       ],
       "copilot": [
