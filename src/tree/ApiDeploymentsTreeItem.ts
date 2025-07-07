@@ -1,22 +1,18 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
-import { getResourceGroupFromId } from "@microsoft/vscode-azext-azureutils";
 import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import * as vscode from 'vscode';
-import { ApiCenterService } from "../azure/ApiCenter/ApiCenterService";
-import { ApiCenterApi } from "../azure/ApiCenter/contracts";
+import { IDeploymentsBase } from "../azure/ApiCenterDefines/ApiCenterDeployment";
 import { ApiDeploymentTreeItem } from "./ApiDeploymentTreeItem";
-
 export class ApiDeploymentsTreeItem extends AzExtParentTreeItem {
   public static contextValue: string = "azureApiCenterApiDeployments";
   public readonly contextValue: string = ApiDeploymentsTreeItem.contextValue;
-  private readonly _apiCenterApi: ApiCenterApi;
+  private readonly _apiCenterDeployments: IDeploymentsBase;
   private readonly _apiCenterName: string;
-  private _nextLink: string | undefined;
-  constructor(parent: AzExtParentTreeItem, apiCenterName: string, apiCenterApi: ApiCenterApi) {
+  constructor(parent: AzExtParentTreeItem, apiCenterName: string, apiDeployments: IDeploymentsBase) {
     super(parent);
     this._apiCenterName = apiCenterName;
-    this._apiCenterApi = apiCenterApi;
+    this._apiCenterDeployments = apiDeployments;
   }
 
   public get iconPath(): TreeItemIconPath {
@@ -28,20 +24,17 @@ export class ApiDeploymentsTreeItem extends AzExtParentTreeItem {
   }
 
   public async loadMoreChildrenImpl(clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
-    const resourceGroupName = getResourceGroupFromId(this._apiCenterApi.id);
-    const apiCenterService = new ApiCenterService(this.parent?.subscription!, resourceGroupName, this._apiCenterName);
-    const apis = await apiCenterService.getApiCenterApiDeployments(this._apiCenterApi.name);
+    const apis = await this._apiCenterDeployments.getChild(this.parent?.subscription!, this._apiCenterName);
 
-    this._nextLink = apis.nextLink;
     return await this.createTreeItemsWithErrorHandling(
-      apis.value,
+      apis,
       'invalidResource',
-      resource => new ApiDeploymentTreeItem(this, resource),
+      resource => new ApiDeploymentTreeItem(this, this._apiCenterDeployments.generateChild(resource)),
       resource => resource.name
     );
   }
 
   public hasMoreChildrenImpl(): boolean {
-    return this._nextLink !== undefined;
+    return this._apiCenterDeployments.getNextLink() !== undefined;
   }
 }

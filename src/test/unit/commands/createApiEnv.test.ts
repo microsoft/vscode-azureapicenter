@@ -9,7 +9,6 @@ import { ApiCenterEnvironment, ApiCenterEnvironmentServerType, EnvironmentKind }
 import { generateApicEnv } from "../../../commands/createApicEnv";
 import { ApiCenterTreeItem } from "../../../tree/ApiCenterTreeItem";
 import { EnvironmentsTreeItem } from "../../../tree/EnvironmentsTreeItem";
-
 describe("createApicEnv", () => {
     let sandbox: sinon.SinonSandbox;
     let mockEnvironmentsTreeItem: EnvironmentsTreeItem;
@@ -18,6 +17,7 @@ describe("createApicEnv", () => {
     let withProgressStub: sinon.SinonStub;
     let showInputBoxStub: sinon.SinonStub;
     let showQuickPickStub: sinon.SinonStub;
+
     before(() => {
         sandbox = sinon.createSandbox();
     });
@@ -49,8 +49,13 @@ describe("createApicEnv", () => {
         mockEnvironmentsTreeItem = {
             apiCenter: mockApiCenter,
             parent: mockParent,
-            refresh: sandbox.stub()
+            refresh: sandbox.stub(),
+            apiEnvironments: {
+                getId: sandbox.stub().returns("/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test/providers/Microsoft.ApiCenter/services/test"),
+                getName: sandbox.stub().returns("test"),
+            }
         } as any;
+
 
         // Mock ApiCenterTreeItem
         mockApiCenterTreeItem = {
@@ -88,7 +93,6 @@ describe("createApicEnv", () => {
 
         // Mock API Center Service
         const createOrUpdateStub = sandbox.stub(ApiCenterService.prototype, "createOrUpdateApiCenterEnvironment").resolves({} as any);
-
         // Act
         await generateApicEnv(context, mockEnvironmentsTreeItem);
 

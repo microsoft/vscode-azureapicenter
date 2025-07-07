@@ -100,10 +100,10 @@ export namespace CreateAzureApiCenterService {
     };
 
     async function validateInputName(input: string): Promise<string | undefined> {
-        if (!input) return UiStrings.InputNameShouldNotBeEmpty;
-        if (input.length > 90) return UiStrings.InputNameTooLong;
-        if (!/^[\w\.\-\(\)]+$/.test(input)) return UiStrings.InputNameWithInvalidCharacter;
-        if (input.endsWith('.')) return UiStrings.InputNameShouldNotEndWithPeriod;
+        if (!input) { return UiStrings.InputNameShouldNotBeEmpty; }
+        if (input.length > 90) { return UiStrings.InputNameTooLong; }
+        if (!/^[\w\.\-\(\)]+$/.test(input)) { return UiStrings.InputNameWithInvalidCharacter; }
+        if (input.endsWith('.')) { return UiStrings.InputNameShouldNotEndWithPeriod; }
         return undefined;
     }
 }

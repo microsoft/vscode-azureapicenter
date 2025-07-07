@@ -40,4 +40,5 @@ export const APICenterDataPlaneRestAPIs = {
     ListAuthentication: (domain: string, apiName: string, apiVersion: string) => `https://${domain}/workspaces/default/apis/${apiName}/versions/${apiVersion}/securityRequirements`,
     GetCredential: (domain: string, apiName: string, apiVersion: string, authenticationName: string) => `https://${domain}/workspaces/default/apis/${apiName}/versions/${apiVersion}/securityRequirements/${authenticationName}:getCredentials`,
     ListApiDeployments: (domain: string, apiName: string) => `https://${domain}/workspaces/default/apis/${apiName}/deployments`,
+    ListApiEnvironments: (domain: string) => `https://${domain}/workspaces/default/environments`
 };

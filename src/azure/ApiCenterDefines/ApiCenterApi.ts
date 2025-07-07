@@ -11,7 +11,8 @@ import {
     DataPlaneApiCenterApi,
     GeneralApiCenterApi
 } from "../ApiCenter/contracts";
-import { ApiCenterVersionsManagement, ApiCneterVersionsDataplane, IVersionsBase } from "./ApiCenterVersion";
+import { ApiCenterDeploymentsDataplane, ApiCenterDeploymentsManagement, IDeploymentsBase } from "./ApiCenterDeployment";
+import { ApiCenterVersionsDataplane, ApiCenterVersionsManagement, IVersionsBase } from "./ApiCenterVersion";
 export type IApiCenterApisBase = {
     getName: () => string;
     getId: () => string;
@@ -77,12 +78,16 @@ export type IApiCenterApiBase = {
     getName: () => string;
     getId: () => string;
     getLabel: () => string;
-    generateChild: () => IVersionsBase;
+    generateVersionChild: () => IVersionsBase;
+    generateDeploymentChild: () => IDeploymentsBase;
     getType: () => string;
 };
 
 export class ApiCenterApiManagement implements IApiCenterApiBase {
     constructor(private data: ApiCenterApi) { }
+    generateDeploymentChild(): IDeploymentsBase {
+        return new ApiCenterDeploymentsManagement(this.data);
+    }
     getType(): string {
         return this.data.properties.kind || "unknown";
     }
@@ -102,7 +107,7 @@ export class ApiCenterApiManagement implements IApiCenterApiBase {
     getLabel(): string {
         return this.data.properties.title;
     }
-    generateChild(): IVersionsBase {
+    generateVersionChild(): IVersionsBase {
         return new ApiCenterVersionsManagement(this.data);
     }
 };
@@ -125,7 +130,10 @@ export class ApiCenterApiDataPlane implements IApiCenterApiBase {
     getName(): string {
         return this.data.name;
     }
-    generateChild(): IVersionsBase {
-        return new ApiCneterVersionsDataplane(this.data);
+    generateVersionChild(): IVersionsBase {
+        return new ApiCenterVersionsDataplane(this.data);
+    }
+    generateDeploymentChild(): IDeploymentsBase {
+        return new ApiCenterDeploymentsDataplane(this.data);
     }
 };

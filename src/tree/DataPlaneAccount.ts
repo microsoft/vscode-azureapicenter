@@ -4,6 +4,7 @@ import { AzExtParentTreeItem, AzExtTreeItem, GenericParentTreeItem, GenericParen
 import * as vscode from "vscode";
 import { DataPlaneAccount } from "../azure/ApiCenter/ApiCenterDataPlaneAPIs";
 import { ApiCenterApisDataplane } from "../azure/ApiCenterDefines/ApiCenterApi";
+import { ApiCenterEnvironmentsDataplane } from "../azure/ApiCenterDefines/ApiCenterEnvironment";
 import { AzureDataSessionProvider } from "../azure/azureLogin/authTypes";
 import { AzureAuth } from "../azure/azureLogin/azureAuth";
 import { AzureDataSessionProviderHelper, generateScopes } from "../azure/azureLogin/dataSessionProvider";
@@ -16,6 +17,7 @@ import { GeneralUtils } from "../utils/generalUtils";
 import { TelemetryUtils } from "../utils/telemetryUtils";
 import { treeUtils } from "../utils/treeUtils";
 import { ApisTreeItem } from "./ApisTreeItem";
+import { EnvironmentsTreeItem } from "./EnvironmentsTreeItem";
 export function createAzureDataAccountTreeItem(
     sessionProvider: AzureDataSessionProvider,
 ): AzExtParentTreeItem & { dispose(): unknown } {
@@ -71,6 +73,7 @@ export class ApiServerItem extends GenericParentTreeItem {
     public label: string;
     public readonly subscriptionContext: ISubscriptionContext;
     public readonly apisTreeItem: ApisTreeItem;
+    public readonly envsTreeItem: EnvironmentsTreeItem;
     public async loadMoreChildrenImpl(clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
         let scopes = generateScopes(this.subscriptionContext.userId, this.subscriptionContext!.tenantId!);
         const properties: { [key: string]: string; } = {};
@@ -89,7 +92,7 @@ export class ApiServerItem extends GenericParentTreeItem {
                 })
             ];
         }
-        return [this.apisTreeItem];
+        return [this.apisTreeItem, this.envsTreeItem];
     }
     public hasMoreChildrenImpl(): boolean {
         return false;
@@ -105,6 +108,7 @@ export class ApiServerItem extends GenericParentTreeItem {
         this.label = subContext.subscriptionPath.split('.')[0];
         this.subscriptionContext = subContext;
         this.apisTreeItem = new ApisTreeItem(this, new ApiCenterApisDataplane({ name: this.label }));
+        this.envsTreeItem = new EnvironmentsTreeItem(this, this.label, new ApiCenterEnvironmentsDataplane({ name: this.label }));
     }
     public get id(): string {
         return this.label;
