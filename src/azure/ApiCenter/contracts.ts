@@ -330,3 +330,43 @@ export type ApiCenterApiCredential = {
         clientSecret?: string;
     };
 };
+
+export type ApiCenterApiSourcePayload = {
+    properties: {
+        apiSourceType: string;
+        apimSource?: {
+            resourceId: string;
+        };
+        shouldImportSpec: boolean;
+    };
+};
+
+export type ApiCenterApiSource = {
+    properties: {
+        apiSourceType: string;
+        apimSource: {
+            resourceId: string;
+            msiResourceId: string;
+        };
+        azureApiManagementSource: {
+            resourceId: string;
+            msiResourceId: string;
+        };
+        sourceLifecycleStage: string;
+        targetEnvironmentId: string;
+        targetLifecycleStage: string;
+        importSpecification: string;
+        linkState: {
+            state: string;
+            lastUpdatedOn: string;
+        };
+    };
+    id: string;
+    name: string;
+    systemData: {
+        createdAt: string;
+        lastModifiedAt: string;
+    };
+    // tslint:disable-next-line:no-reserved-keywords
+    type: string;
+};

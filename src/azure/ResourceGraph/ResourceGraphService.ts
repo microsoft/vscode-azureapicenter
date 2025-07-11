@@ -18,6 +18,11 @@ export class ResourceGraphService {
     return await this.runQuery(query);
   }
 
+  public async listApims(): Promise<any[]> {
+    const query = "resources | where type =~ 'microsoft.apimanagement/service'";
+    return await this.runQuery(query);
+  }
+
   public async queryApiCenterByName(name: string): Promise<ApiCenter[]> {
     const query = `resources | where type =~ 'microsoft.apicenter/services' | where name =~ '${name}'`;
     return await this.runQuery(query);
