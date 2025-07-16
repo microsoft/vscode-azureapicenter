@@ -9,11 +9,17 @@ import { AzureService } from "../azure/AzureService/AzureService";
 import { RoleAssignmentPayload } from "../azure/AzureService/contracts";
 import { ResourceGraphService } from "../azure/ResourceGraph/ResourceGraphService";
 import { ext } from "../extensionVariables";
+import { ApiCenterTreeItem } from "../tree/ApiCenterTreeItem";
 import { IntegrationsTreeItem } from "../tree/IntegrationsTreeItem";
 import { SubscriptionTreeItem } from "../tree/SubscriptionTreeItem";
 import { UiStrings } from "../uiStrings";
 
-export async function createIntegrationFromApim(context: IActionContext, node: IntegrationsTreeItem) {
+export async function createIntegrationFromApim(context: IActionContext, node?: IntegrationsTreeItem) {
+    if (!node) {
+        const apiCenterNode = await ext.treeDataProvider.showTreeItemPicker<ApiCenterTreeItem>(ApiCenterTreeItem.contextValue, context);
+        node = apiCenterNode.integrationsTreeItem;
+    }
+
     const resourceGroupName = getResourceGroupFromId(node.apiCenter.id);
     const apiCenterService = new ApiCenterService(node.subscription, resourceGroupName, node.apiCenter.name);
 
@@ -44,12 +50,12 @@ export async function createIntegrationFromApim(context: IActionContext, node: I
     }, async (progress, token) => {
         const updatedApiCenter = await enableSystemAssignedManagedIdentity(apiCenterService);
 
-        await assignManagedIdentityReaderRole(node.subscription, updatedApiCenter, apimResourceId);
+        await assignManagedIdentityReaderRole(node!.subscription, updatedApiCenter, apimResourceId);
 
         const apiSource = await createIntegration(apiCenterService, linkName, apimResourceId);
 
         vscode.window.showInformationMessage(vscode.l10n.t(UiStrings.IntegrationCreated, apiSource.name));
-        node.refresh(context);
+        node!.refresh(context);
     });
 }
 
