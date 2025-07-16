@@ -73,7 +73,9 @@ async function selectApim(context: IActionContext): Promise<string> {
 
 async function enableSystemAssignedManagedIdentity(apiCenterService: ApiCenterService): Promise<ApiCenter> {
     const apiCenter = await apiCenterService.getApiCenter();
-    if (!apiCenter.identity?.principalId) {
+    if (apiCenter.identity?.principalId) {
+        return apiCenter;
+    } else {
         const apiCenterPayload: ApiCenterPayload = {
             location: apiCenter.location,
             identity: {
@@ -85,11 +87,7 @@ async function enableSystemAssignedManagedIdentity(apiCenterService: ApiCenterSe
         };
         const updatedApiCenter = await apiCenterService.createOrUpdateApiCenterService(apiCenterPayload);
         validateResponse(updatedApiCenter);
-        vscode.window.showInformationMessage("System assigned managed identity enabled for the API Center service.");
         return updatedApiCenter;
-    } else {
-        vscode.window.showInformationMessage("System assigned managed identity is already enabled for the API Center service.");
-        return apiCenter;
     }
 }
 
@@ -115,9 +113,7 @@ async function createIntegration(apiCenterService: ApiCenterService, linkName: s
             apiSourceType: "apim",
             apimSource: {
                 resourceId: apimResourceId
-            },
-            shouldImportSpec: true
-            // targetEnvironmentId: "your-target-environment-id"
+            }
         }
     };
     const apiSource = await apiCenterService.createOrUpdateIntegration(linkName, apiSourcePayload);

@@ -359,7 +359,6 @@ export type ApiCenterApiSourcePayload = {
         apimSource?: {
             resourceId: string;
         };
-        shouldImportSpec: boolean;
     };
 };
 
