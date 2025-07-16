@@ -26,6 +26,19 @@ export type SubApiCenterMetaData = {
     resourceTypes: ResourceType[];
 };
 
+export type ApiCenterPayload = {
+    location: string;
+    properties?: {};
+    tags?: {};
+    identity?: {
+        type: string;
+        userAssignedIdentities?: { [key: string]: any };
+    };
+    sku?: {
+        name: string;
+    };
+};
+
 export type ApiCenter = {
     id: string;
     location: string;
@@ -36,6 +49,15 @@ export type ApiCenter = {
         portalHostname: string;
     };
     provisioningState: string;
+    identity?: {
+        principalId?: string;
+        tenantId?: string;
+        type: string;
+        userAssignedIdentities?: { [key: string]: any };
+    };
+    sku: {
+        name: string;
+    };
     // tslint:disable-next-line:no-reserved-keywords
     type: string;
 };

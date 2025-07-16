@@ -18,4 +18,8 @@ export class IntegrationTreeItem extends AzExtTreeItem {
     public get iconPath(): TreeItemIconPath {
         return new vscode.ThemeIcon("link");
     }
+
+    public get description(): string {
+        return this.apiSource.properties.linkState.state;
+    }
 }

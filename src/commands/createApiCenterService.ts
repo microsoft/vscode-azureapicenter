@@ -47,7 +47,7 @@ export namespace CreateAzureApiCenterService {
             }
 
             progress.report({ message: UiStrings.CreatingApiCenterService });
-            validateResponse(await apiCenterService.createOrUpdateApiCenterService(location));
+            validateResponse(await apiCenterService.createOrUpdateApiCenterService({ location }));
             // Retry mechanism to check API center creation status
             await CreateAzureApiCenterService.checkApiCenterServerStatusWithRetry(serverName, node!, context);
         });
