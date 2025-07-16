@@ -198,4 +198,13 @@ export class UiStrings {
     static readonly OverwriteWarning = vscode.l10n.t("You are about to overwrite '{0}', which has unsaved changes. Do you want to continue?");
     static readonly Updating = vscode.l10n.t("Updating '{0}'...");
     static readonly Updated = vscode.l10n.t("Updated '{0}'.");
+    static readonly TreeitemLabelIntegrations = vscode.l10n.t("Integrations");
+    static readonly LinkName = vscode.l10n.t("Link Name");
+    static readonly LinkNameRequired = vscode.l10n.t("Link name is required.");
+    static readonly LinkNameInvalid = vscode.l10n.t("Must contain only letters, numbers, and dashes. Dashes must be preceded and followed by a letter or number.");
+    static readonly CreatingIntegration = vscode.l10n.t("Creating integration with Azure API Management...");
+    static readonly IntegrationCreated = vscode.l10n.t("Integration '{0}' created successfully.");
+    static readonly NoAPIManagementFound = vscode.l10n.t("No API Management services found in the subscription.");
+    static readonly SelectAPIManagementService = vscode.l10n.t("Select an API Management service");
+    static readonly FailedToAssignManagedIdentityReaderRole = vscode.l10n.t("Failed to assign Managed Identity 'API Management Service Reader' Role: {0}");
 }

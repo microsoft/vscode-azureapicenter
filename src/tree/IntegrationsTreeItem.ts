@@ -5,6 +5,7 @@ import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } 
 import * as vscode from 'vscode';
 import { ApiCenterService } from "../azure/ApiCenter/ApiCenterService";
 import { ApiCenter } from "../azure/ApiCenter/contracts";
+import { UiStrings } from "../uiStrings";
 import { IntegrationTreeItem } from "./IntegrationTreeItem";
 
 
@@ -17,7 +18,7 @@ export class IntegrationsTreeItem extends AzExtParentTreeItem {
     }
 
     public get label(): string {
-        return "Integrations";
+        return UiStrings.TreeitemLabelIntegrations;
     }
 
     public get iconPath(): TreeItemIconPath {

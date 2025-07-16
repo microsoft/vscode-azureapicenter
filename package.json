@@ -227,7 +227,7 @@
       },
       {
         "command": "azure-api-center.createIntegrationFromApim",
-        "title": "Create new integration with Azure API Management",
+        "title": "%azure-api-center.commands.createIntegrationFromApim.title%",
         "category": "Azure API Center"
       },
       {

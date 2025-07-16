@@ -39,6 +39,7 @@
     "azure-api-center.commands.createDeclarativeAgent.title": "Create M365 Copilot Declarative Agent",
     "azure-api-center.commands.copyDeploymentUrl.title": "Copy Runtime URL",
     "azure-api-center.commands.openInPortal.title": "Open in Azure Portal",
+    "azure-api-center.commands.createIntegrationFromApim.title": "Create new integration with Azure API Management",
     "azure-api-center.lmTool.getSpectralRules.displayName": "@apicenter Get Spectral Rules",
     "azure-api-center.lmTool.getSpectralRules.userDescription": "Get Spectral rules from active API style guide.",
     "azure-api-center.lmTool.searchApis.displayName": "@apicenter Search APIs",

@@ -11,6 +11,7 @@ import { ResourceGraphService } from "../azure/ResourceGraph/ResourceGraphServic
 import { ext } from "../extensionVariables";
 import { IntegrationsTreeItem } from "../tree/IntegrationsTreeItem";
 import { SubscriptionTreeItem } from "../tree/SubscriptionTreeItem";
+import { UiStrings } from "../uiStrings";
 
 export async function createIntegrationFromApim(context: IActionContext, node: IntegrationsTreeItem) {
     const resourceGroupName = getResourceGroupFromId(node.apiCenter.id);
@@ -19,15 +20,15 @@ export async function createIntegrationFromApim(context: IActionContext, node: I
     const apimResourceId = await selectApim(context);
 
     const linkName = await vscode.window.showInputBox({
-        title: "Link Name",
+        title: UiStrings.LinkName,
         ignoreFocusOut: true,
         validateInput: (value: string) => {
             if (!value) {
-                return "Link name is required.";
+                return UiStrings.LinkNameRequired;
             }
             const validPattern = /^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$/;
             if (!validPattern.test(value)) {
-                return "Must contain only letters, numbers, and dashes. Dashes must be preceded and followed by a letter or number.";
+                return UiStrings.LinkNameInvalid;
             }
             return undefined;
         }
@@ -39,7 +40,7 @@ export async function createIntegrationFromApim(context: IActionContext, node: I
 
     await vscode.window.withProgress({
         location: vscode.ProgressLocation.Notification,
-        title: "Creating integration with Azure API Management",
+        title: UiStrings.CreatingIntegration,
     }, async (progress, token) => {
         const updatedApiCenter = await enableSystemAssignedManagedIdentity(apiCenterService);
 
@@ -47,7 +48,7 @@ export async function createIntegrationFromApim(context: IActionContext, node: I
 
         const apiSource = await createIntegration(apiCenterService, linkName, apimResourceId);
 
-        vscode.window.showInformationMessage(`Integration '${apiSource.name}' created successfully.`);
+        vscode.window.showInformationMessage(vscode.l10n.t(UiStrings.IntegrationCreated, apiSource.name));
         node.refresh(context);
     });
 }
@@ -58,11 +59,11 @@ async function selectApim(context: IActionContext): Promise<string> {
 
     const apims = await resourceGraphService.listApims();
     if (!apims || apims.length === 0) {
-        throw new Error("No API Management services found in the subscription.");
+        throw new Error(UiStrings.NoAPIManagementFound);
     }
 
     const apimNames = apims.map(apim => apim.name);
-    const selectedApimName = await vscode.window.showQuickPick(apimNames, { title: "Select an API Management service", ignoreFocusOut: true });
+    const selectedApimName = await vscode.window.showQuickPick(apimNames, { title: UiStrings.SelectAPIManagementService, ignoreFocusOut: true });
     if (!selectedApimName) {
         throw new UserCancelledError();
     }
@@ -103,7 +104,7 @@ async function assignManagedIdentityReaderRole(subscriptionContext: ISubscriptio
     const scope = apimResourceId.substring(1);
     const response = await azureService.createOrUpdateRoleAssignment(scope, roleAssignmentPayload);
     if (![200, 201, 409].includes(response.status)) {
-        throw new Error(`Failed to assign role: ${response.bodyAsText}`);
+        throw new Error(vscode.l10n.t(UiStrings.FailedToAssignManagedIdentityReaderRole, response.bodyAsText ?? ""));
     }
 }
 
