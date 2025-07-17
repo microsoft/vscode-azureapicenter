@@ -20,6 +20,8 @@ export class IntegrationTreeItem extends AzExtTreeItem {
     }
 
     public get description(): string {
-        return this.apiSource.properties.linkState.state;
+        const state = this.apiSource.properties.linkState.state;
+        const message = this.apiSource.properties.linkState.message;
+        return message ? `${state} - ${message}` : state;
     }
 }

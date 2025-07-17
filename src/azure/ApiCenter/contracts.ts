@@ -379,6 +379,7 @@ export type ApiCenterApiSource = {
         importSpecification: string;
         linkState: {
             state: string;
+            message?: string;
             lastUpdatedOn: string;
         };
     };
