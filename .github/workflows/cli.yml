@@ -63,22 +63,11 @@ jobs:
           azdev setup -r .
           azdev extension add apic-extension
 
-          # Install extension in development mode
-          cd src/apic-extension
-          pip install -e .
-
       - name: Discover test cases and set outputs
         id: discover-tests
         run: |
           cd azure-cli-extensions
           source .venv/bin/activate
-
-          # Ensure extension environment is set up for pytest
-          export AZURE_EXTENSION_DIR=$(python -c "import site; print(site.getsitepackages()[0])")
-          echo "AZURE_EXTENSION_DIR=$AZURE_EXTENSION_DIR"
-          export PYTHONPATH="${PYTHONPATH}:$(pwd)/src/apic-extension"
-          echo "PYTHONPATH=$PYTHONPATH"
-
           cd src/apic-extension
 
           # Check if specific test cases are provided
@@ -88,14 +77,6 @@ jobs:
             test_cases="$test_input"
           else
             echo "Discovering all test cases using pytest..."
-            # Use pytest to collect all test cases
-            echo "Debug: Full pytest command output:"
-
-            # Show full pytest collection output for debugging
-            echo "=== Full pytest --collect-only output ==="
-            python -m pytest --collect-only -v --tb=short 2>&1 | head -50
-            echo "=== End pytest --collect-only output ==="
-            echo "Debug: Extracting test function names..."
 
             # Collect test node IDs and extract just the test function names
             test_collection=$(python -m pytest --collect-only -q --tb=no 2>/dev/null | \
