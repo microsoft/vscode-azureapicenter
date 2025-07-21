@@ -84,4 +84,13 @@ export namespace GeneralUtils {
             return UiStrings.ValidUrlStart; // Invalid URL
         }
     }
+
+    export function validateResponse(response: any) {
+        if (response?.message) {
+            throw new Error(response.message);
+        }
+        if (response?.error?.message) {
+            throw new Error(response.error.message);
+        }
+    }
 }

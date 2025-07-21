@@ -8,11 +8,13 @@ import { ApiCenter, ApiCenterApiSource, ApiCenterApiSourcePayload, ApiCenterPayl
 import { AzureService } from "../azure/AzureService/AzureService";
 import { RoleAssignmentPayload } from "../azure/AzureService/contracts";
 import { ResourceGraphService } from "../azure/ResourceGraph/ResourceGraphService";
+import { APIManagementServiceReaderRoleId } from "../constants";
 import { ext } from "../extensionVariables";
 import { ApiCenterTreeItem } from "../tree/ApiCenterTreeItem";
 import { IntegrationsTreeItem } from "../tree/IntegrationsTreeItem";
 import { SubscriptionTreeItem } from "../tree/SubscriptionTreeItem";
 import { UiStrings } from "../uiStrings";
+import { GeneralUtils } from "../utils/generalUtils";
 
 export async function createIntegrationFromApim(context: IActionContext, node?: IntegrationsTreeItem) {
     if (!node) {
@@ -93,7 +95,7 @@ async function enableSystemAssignedManagedIdentity(apiCenterService: ApiCenterSe
             }
         };
         const updatedApiCenter = await apiCenterService.createOrUpdateApiCenterService(apiCenterPayload);
-        validateResponse(updatedApiCenter);
+        GeneralUtils.validateResponse(updatedApiCenter);
         return updatedApiCenter;
     }
 }
@@ -102,7 +104,7 @@ async function assignManagedIdentityReaderRole(subscriptionContext: ISubscriptio
     const azureService = new AzureService(subscriptionContext);
     const roleAssignmentPayload: RoleAssignmentPayload = {
         properties: {
-            roleDefinitionId: `/subscriptions/${subscriptionContext.subscriptionId}/providers/Microsoft.Authorization/roleDefinitions/71522526-b88f-4d52-b57f-d31fc3546d0d`, // 'API Management Service Reader' role
+            roleDefinitionId: `/subscriptions/${subscriptionContext.subscriptionId}/providers/Microsoft.Authorization/roleDefinitions/${APIManagementServiceReaderRoleId}`, // 'API Management Service Reader' role
             principalId: apiCenter.identity!.principalId!,
             principalType: "ServicePrincipal"
         }
@@ -125,16 +127,7 @@ async function createIntegration(apiCenterService: ApiCenterService, linkName: s
     };
     const apiSource = await apiCenterService.createOrUpdateIntegration(linkName, apiSourcePayload);
 
-    validateResponse(apiSource);
+    GeneralUtils.validateResponse(apiSource);
 
     return apiSource;
-}
-
-function validateResponse(response: any) {
-    if (response?.message) {
-        throw new Error(response.message);
-    }
-    if (response?.error?.message) {
-        throw new Error(response.error.message);
-    }
 }
