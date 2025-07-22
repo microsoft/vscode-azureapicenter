@@ -18,6 +18,7 @@ import { copyDeploymentUrl } from './commands/copyDeploymentUrl';
 import { CreateAzureApiCenterService } from './commands/createApiCenterService';
 import { generateApicEnv } from './commands/createApicEnv';
 import { CreateDeclarativeAgent } from './commands/createDeclarativeAgent';
+import { createIntegrationFromApim } from './commands/createIntegrationFromApim';
 import { detectBreakingChange } from './commands/detectBreakingChange';
 import { editApi } from './commands/editApi';
 import { ExportAPI } from './commands/exportApi';
@@ -163,6 +164,8 @@ export async function activate(context: vscode.ExtensionContext) {
     registerCommandWithTelemetry('azure-api-center.createDeclarativeAgent', CreateDeclarativeAgent.createDeclarativeAgent);
 
     registerCommandWithTelemetry('azure-api-center.copyDeploymentUrl', copyDeploymentUrl);
+
+    registerCommandWithTelemetry('azure-api-center.createIntegrationFromApim', createIntegrationFromApim);
 
     registerCommandWithTelemetry('azure-api-center.openInPortal', openInAzurePortal);
 

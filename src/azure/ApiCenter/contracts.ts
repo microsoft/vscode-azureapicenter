@@ -26,6 +26,19 @@ export type SubApiCenterMetaData = {
     resourceTypes: ResourceType[];
 };
 
+export type ApiCenterPayload = {
+    location: string;
+    properties?: {};
+    tags?: {};
+    identity?: {
+        type: string;
+        userAssignedIdentities?: { [key: string]: any };
+    };
+    sku?: {
+        name: string;
+    };
+};
+
 export type ApiCenter = {
     id: string;
     location: string;
@@ -36,6 +49,15 @@ export type ApiCenter = {
         portalHostname: string;
     };
     provisioningState: string;
+    identity?: {
+        principalId?: string;
+        tenantId?: string;
+        type: string;
+        userAssignedIdentities?: { [key: string]: any };
+    };
+    sku: {
+        name: string;
+    };
     // tslint:disable-next-line:no-reserved-keywords
     type: string;
 };
@@ -329,4 +351,44 @@ export type ApiCenterApiCredential = {
     oauth2?: {
         clientSecret?: string;
     };
+};
+
+export type ApiCenterApiSourcePayload = {
+    properties: {
+        apiSourceType: string;
+        apimSource?: {
+            resourceId: string;
+        };
+    };
+};
+
+export type ApiCenterApiSource = {
+    properties: {
+        apiSourceType: string;
+        apimSource: {
+            resourceId: string;
+            msiResourceId: string;
+        };
+        azureApiManagementSource: {
+            resourceId: string;
+            msiResourceId: string;
+        };
+        sourceLifecycleStage: string;
+        targetEnvironmentId: string;
+        targetLifecycleStage: string;
+        importSpecification: string;
+        linkState: {
+            state: string;
+            message?: string;
+            lastUpdatedOn: string;
+        };
+    };
+    id: string;
+    name: string;
+    systemData: {
+        createdAt: string;
+        lastModifiedAt: string;
+    };
+    // tslint:disable-next-line:no-reserved-keywords
+    type: string;
 };

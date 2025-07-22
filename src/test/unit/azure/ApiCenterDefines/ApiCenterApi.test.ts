@@ -20,6 +20,9 @@ describe('Azure ApiCenter Defines ApiCenterApisManagement', () => {
                 dataApiHostname: "fakeDataApiHostname"
             },
             provisioningState: 'Succeeded',
+            sku: {
+                name: "fakeSkuName"
+            },
             type: "fakeType"
         };
     });

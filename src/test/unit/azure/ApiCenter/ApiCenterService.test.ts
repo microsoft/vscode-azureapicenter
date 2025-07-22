@@ -141,7 +141,7 @@ describe("ApiCenterService", () => {
         sendRequestStub.onFirstCall().resolves(mockResponse);
 
         const apiCenterService = new ApiCenterService(subscriptionContext, "fakeResourceGroup", "fakeServiceName");
-        const response = await apiCenterService.createOrUpdateApiCenterService("fakeLocation");
+        const response = await apiCenterService.createOrUpdateApiCenterService({ location: "fakeLocation" });
         assert.strictEqual(response.id, "fakeId");
         assert.strictEqual(response.location, "fakeLocation");
         assert.strictEqual(response.name, "fakeName");
@@ -157,7 +157,7 @@ describe("ApiCenterService", () => {
         sendRequestStub.onFirstCall().resolves(mockResponse);
 
         const apiCenterService = new ApiCenterService(subscriptionContext, "fakeResourceGroup", "fakeServiceName");
-        const response = await apiCenterService.createOrUpdateApiCenterService("fakeLocation");
+        const response = await apiCenterService.createOrUpdateApiCenterService({ location: "fakeLocation" });
 
         assert.strictEqual(response.provisioningState, "provisioning");
     });

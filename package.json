@@ -226,6 +226,11 @@
         "category": "Azure API Center"
       },
       {
+        "command": "azure-api-center.createIntegrationFromApim",
+        "title": "%azure-api-center.commands.createIntegrationFromApim.title%",
+        "category": "Azure API Center"
+      },
+      {
         "command": "azure-api-center.createApiCenterService",
         "title": "%azure-api-center.commands.createApiCenterService.title%",
         "category": "Azure API Center"
@@ -392,6 +397,10 @@
         {
           "command": "azure-api-center.copyDeploymentUrl",
           "when": "(view == apiCenterTreeView && viewItem == azureApiCenterApiDeployment) || (view == apiCenterWorkspace && viewItem == azureApiCenterDataPlaneApiDeployment)"
+        },
+        {
+          "command": "azure-api-center.createIntegrationFromApim",
+          "when": "view == apiCenterTreeView && viewItem == azureApiCenterIntegrations"
         },
         {
           "command": "azure-api-center.openInPortal",
