@@ -34,6 +34,11 @@
   "contributes": {
     "commands": [
       {
+        "command": "azure-api-center.jumpToApiCatalog",
+        "title": "Jump to API Catalog",
+        "category": "Azure API Center"
+      },
+      {
         "command": "azure-api-center.selectSubscriptions",
         "title": "%azure-api-center.commands.selectSubscriptions.title%",
         "icon": {
@@ -239,6 +244,14 @@
     "views": {
       "api-center-treeview": [
         {
+          "id": "jumpToApiCatalog",
+          "name": "%azure-api-center.views.api-center-treeview.controlplane.title%",
+          "icon": "media/api-center-icon.svg",
+          "contextualTitle": "Azure API Center"
+        }
+      ],
+      "apiCatalog": [
+        {
           "id": "apiCenterTreeView",
           "name": "%azure-api-center.views.api-center-treeview.controlplane.title%",
           "icon": "media/api-center-icon.svg",
@@ -257,6 +270,11 @@
           "id": "api-center-treeview",
           "title": "API Center",
           "icon": "media/api-center-icon.svg"
+        },
+        {
+          "id": "apiCatalog",
+          "title": "API Management & API Center",
+          "icon": "resources/APICatalog.svg"
         }
       ]
     },
@@ -417,6 +435,10 @@
         }
       ],
       "commandPalette": [
+        {
+          "command": "azure-api-center.jumpToApiCatalog",
+          "when": "never"
+        },
         {
           "command": "azure-api-center.selectSubscriptions",
           "when": "never"

@@ -61,6 +61,7 @@ import { ApiVersionDefinitionTreeItem } from './tree/ApiVersionDefinitionTreeIte
 import { createAzureAccountTreeItem } from "./tree/AzureAccountTreeItem";
 import { createAzureDataAccountTreeItem } from './tree/DataPlaneAccount';
 import { OpenApiEditor } from './tree/Editors/openApi/OpenApiEditor';
+import { JumpNodeProvider } from './tree/jumpNode';
 import { TelemetryUtils } from './utils/telemetryUtils';
 export async function activate(context: vscode.ExtensionContext) {
     console.log('Congratulations, your extension "azure-api-center" is now active!');
@@ -77,6 +78,8 @@ export async function activate(context: vscode.ExtensionContext) {
 
     setupControlView(context);
     setupDataTreeView(context);
+
+    vscode.window.registerTreeDataProvider('jumpToApiCatalog', new AzExtTreeDataProvider(new JumpNodeProvider(), 'jumpNodeView'));
 
     // Register API Center extension commands
 
@@ -169,6 +172,10 @@ export async function activate(context: vscode.ExtensionContext) {
     registerCommandWithTelemetry('azure-api-center.setActiveDataPlaneAccount', setActiveDataPlaneAccount);
 
     registerCommandWithTelemetry('azure-api-center.createApiCenterService', CreateAzureApiCenterService.createApiCenterService);
+
+    registerCommand('azure-api-center.jumpToApiCatalog', async () => {
+        await vscode.commands.executeCommand('workbench.view.extension.apiCatalog');
+    });
 
     context.subscriptions.push(
         vscode.window.registerUriHandler({
