@@ -9,6 +9,7 @@ export class Timeout {
     public static readonly PREPARE_TEST = 5000;
     public static readonly PREPARE_EXT = 10000;
     public static readonly SHORT_WAIT = 5000;
+    public static readonly LONG_WAIT = 20000;
 }
 
 export class VSCode {
@@ -31,6 +32,8 @@ export class VSCode {
     public static readonly ENTER = "Enter";
     //toolbar
     public static readonly Toolbar = "toolbar";
+    // menu item
+    public static readonly MENU_ITEM = "menuitem";
 }
 
 export class APICenter {
@@ -51,4 +54,9 @@ export class TestENV {
     public static readonly AZURE_TENANT_ID = process.env["AZURE_TENANT_ID"] || "72f988bf-86f1-41af-91ab-2d7cd011db47";
     public static readonly AZURE_SUBSCRIPTION_NAME = process.env["AZURE_SUBSCRIPTION_NAME"] || "Teams Cloud - E2E Testing with TTL = 1 Days";
     public static readonly AZURE_TENANT_ID_2 = process.env["AZURE_TENANT_ID"] || "af46c703-f714-4f4c-af42-835a673c2b13";
+}
+
+export class RestClient {
+    // commands
+    public static readonly SEND_REQUEST = ">Rest Client: Send Request";
 }
