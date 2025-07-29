@@ -2,16 +2,15 @@
 // Licensed under the MIT license.
 import { AzExtParentTreeItem, AzExtTreeItem, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import * as vscode from 'vscode';
-import { IEnvironmentBase } from "../azure/ApiCenterDefines/ApiCenterEnvironment";
+import { ApiCenterEnvironment } from "../azure/ApiCenter/contracts";
 
 export class EnvironmentTreeItem extends AzExtTreeItem {
   public static contextValue: string = "azureApiCenterEnvironment";
   public readonly contextValue: string = EnvironmentTreeItem.contextValue;
-  private readonly _apiCenterEnv: IEnvironmentBase;
-  constructor(parent: AzExtParentTreeItem, apiCenterEnv: IEnvironmentBase) {
+  private readonly _apiCenterEnv: ApiCenterEnvironment;
+  constructor(parent: AzExtParentTreeItem, apiCenterEnv: ApiCenterEnvironment) {
     super(parent);
     this._apiCenterEnv = apiCenterEnv;
-    this.description = this._apiCenterEnv.getKind();
   }
 
   public get iconPath(): TreeItemIconPath {
@@ -19,10 +18,10 @@ export class EnvironmentTreeItem extends AzExtTreeItem {
   }
 
   public get id(): string {
-    return this._apiCenterEnv.getId();
+    return this._apiCenterEnv.id;
   }
 
   public get label(): string {
-    return this._apiCenterEnv.getName();
+    return this._apiCenterEnv.name;
   }
 }

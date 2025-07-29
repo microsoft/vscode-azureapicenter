@@ -10,17 +10,14 @@ import { LocalPluginArgs } from "../../../types/AzureAgent";
 describe("getPlugins", () => {
     let sendEventStub: sinon.SinonStub;
     let sendErrorEventStub: sinon.SinonStub;
-    let sandbox: sinon.SinonSandbox;
-    before(() => {
-        sandbox = sinon.createSandbox();
-    });
+
     beforeEach(() => {
-        sendEventStub = sandbox.stub(TelemetryClient, "sendEvent");
-        sendErrorEventStub = sandbox.stub(TelemetryClient, "sendErrorEvent");
+        sendEventStub = sinon.stub(TelemetryClient, "sendEvent");
+        sendErrorEventStub = sinon.stub(TelemetryClient, "sendErrorEvent");
     });
 
     afterEach(() => {
-        sandbox.restore();
+        sinon.restore();
     });
 
     it("should return the correct plugin manifest and handler", async () => {
@@ -39,7 +36,7 @@ describe("getPlugins", () => {
                 functionName: "generate_openapi",
             },
         } as LocalPluginArgs;
-        const handleGenerateOpenApiStub = sandbox.stub(GenerateOpenApi, "handleGenerateOpenApi").resolves({});
+        const handleGenerateOpenApiStub = sinon.stub(GenerateOpenApi, "handleGenerateOpenApi").resolves({});
 
         const result = await getPlugins();
         const plugin = result.plugins[0];
@@ -74,7 +71,7 @@ describe("getPlugins", () => {
             },
         } as LocalPluginArgs;
         const error = new Error("Test error");
-        const handleGenerateOpenApiStub = sandbox.stub(GenerateOpenApi, "handleGenerateOpenApi").rejects(error);
+        const handleGenerateOpenApiStub = sinon.stub(GenerateOpenApi, "handleGenerateOpenApi").rejects(error);
 
         const result = await getPlugins();
         const plugin = result.plugins[0];

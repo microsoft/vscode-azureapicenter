@@ -18,6 +18,7 @@ describe('getDataPlaneApis test happy path', () => {
         sandbox = sinon.createSandbox();
     });
     beforeEach(() => {
+        sinon.restore();
         function gloablStateKeys(): readonly string[] {
             return ["PrereleaseState.Version"];
         }

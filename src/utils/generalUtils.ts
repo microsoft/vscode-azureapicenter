@@ -3,7 +3,6 @@
 import axios from 'axios';
 import * as os from "os";
 import * as path from "path";
-import { UiStrings } from '../uiStrings';
 export namespace GeneralUtils {
     const apiCenterFolder = ".api-center";
 
@@ -56,41 +55,10 @@ export namespace GeneralUtils {
         return path.join(os.homedir(), apiCenterFolder);
     }
 
-    export function getTemplatesFolder(): string {
-        return path.join(__dirname, "..", "templates");
-    }
-
     export async function fetchDataFromLink(link: string): Promise<string> {
         const res = await axios.get(link, {
             responseType: 'text'
         });
         return res.data;
-    }
-
-    export function validateInputForTitle(value: string) {
-        if (!value) {
-            return UiStrings.ValueNotBeEmpty;
-        }
-        if (!/[a-zA-Z0-9]/.test(value)) {
-            return UiStrings.ValueMustContainLetterOrNumber;
-        }
-    }
-
-    export function validateURI(value: string) {
-        try {
-            new URL(value);
-            return null; // Valid URL
-        } catch (e) {
-            return UiStrings.ValidUrlStart; // Invalid URL
-        }
-    }
-
-    export function validateResponse(response: any) {
-        if (response?.message) {
-            throw new Error(response.message);
-        }
-        if (response?.error?.message) {
-            throw new Error(response.error.message);
-        }
     }
 }

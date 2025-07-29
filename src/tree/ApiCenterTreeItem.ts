@@ -3,12 +3,10 @@
 import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import { ApiCenter } from "../azure/ApiCenter/contracts";
 import { ApiCenterApisManagement } from "../azure/ApiCenterDefines/ApiCenterApi";
-import { ApiCenterEnvironmentsManagement } from "../azure/ApiCenterDefines/ApiCenterEnvironment";
 import { UiStrings } from "../uiStrings";
 import { treeUtils } from "../utils/treeUtils";
 import { ApisTreeItem } from "./ApisTreeItem";
 import { EnvironmentsTreeItem } from "./EnvironmentsTreeItem";
-import { IntegrationsTreeItem } from "./IntegrationsTreeItem";
 import { ProfilesTreeItem } from "./rules/ProfilesTreeItem";
 import { RulesTreeItem } from "./rules/RulesTreeItem";
 export class ApiCenterTreeItem extends AzExtParentTreeItem {
@@ -20,15 +18,13 @@ export class ApiCenterTreeItem extends AzExtParentTreeItem {
   public readonly apisTreeItem: ApisTreeItem;
   public readonly environmentsTreeItem: EnvironmentsTreeItem;
   public readonly profilesTreeItem: ProfilesTreeItem;
-  public readonly integrationsTreeItem: IntegrationsTreeItem;
   public rulesTreeItem: RulesTreeItem | undefined;
   constructor(parent: AzExtParentTreeItem, apicenter: ApiCenter) {
     super(parent);
     this._apicenter = apicenter;
     this.apisTreeItem = new ApisTreeItem(this, new ApiCenterApisManagement(apicenter));
-    this.environmentsTreeItem = new EnvironmentsTreeItem(this, apicenter.name, new ApiCenterEnvironmentsManagement(apicenter));
+    this.environmentsTreeItem = new EnvironmentsTreeItem(this, apicenter);
     this.profilesTreeItem = new ProfilesTreeItem(this, apicenter);
-    this.integrationsTreeItem = new IntegrationsTreeItem(this, apicenter);
   }
 
   public get iconPath(): TreeItemIconPath {
@@ -48,6 +44,6 @@ export class ApiCenterTreeItem extends AzExtParentTreeItem {
   }
 
   public async loadMoreChildrenImpl(clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
-    return [this.apisTreeItem, this.environmentsTreeItem, this.profilesTreeItem, this.integrationsTreeItem];
+    return [this.apisTreeItem, this.environmentsTreeItem, this.profilesTreeItem];
   }
 }

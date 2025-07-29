@@ -92,11 +92,6 @@ describe('ApiCenterVersionDefinitionManagement class test', () => {
         let res = obj.getName();
         assert.equal(res, "fakeName");
     });
-    it("ApiCenterVersionDefinitionManagement getSpecificationName", () => {
-        let obj: ApiCenterVersionDefinitionManagement = new ApiCenterVersionDefinitionManagement(data);
-        let res = obj.getSpecificationName();
-        assert.equal(res, "fakeSpecName");
-    });
 });
 describe('ApiCenterVersionDefinitionDataPlane class test', () => {
     let sandbox = null as any;
@@ -139,10 +134,5 @@ describe('ApiCenterVersionDefinitionDataPlane class test', () => {
         let obj: ApiCenterVersionDefinitionDataPlane = new ApiCenterVersionDefinitionDataPlane(data);
         let res = obj.getName();
         assert.equal(res, "fakeName");
-    });
-    it("ApiCenterVersionDefinitionDataPlane getSpecificationName", () => {
-        let obj: ApiCenterVersionDefinitionDataPlane = new ApiCenterVersionDefinitionDataPlane(data);
-        let res = obj.getSpecificationName();
-        assert.equal(res, "fakeSpecName");
     });
 });

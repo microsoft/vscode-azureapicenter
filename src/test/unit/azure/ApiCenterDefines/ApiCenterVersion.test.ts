@@ -3,7 +3,7 @@
 import * as assert from "assert";
 import * as sinon from "sinon";
 import { ApiCenterApi, ApiCenterApiVersion, DataPlaneApiCenterApi, DataPlaneApiCenterApiVersion } from "../../../../azure/ApiCenter/contracts";
-import { ApiCenterVersionDataplane, ApiCenterVersionManagement, ApiCenterVersionsDataplane, ApiCenterVersionsManagement } from "../../../../azure/ApiCenterDefines/ApiCenterVersion";
+import { ApiCenterVersionDataplane, ApiCenterVersionManagement, ApiCenterVersionsManagement, ApiCneterVersionsDataplane } from "../../../../azure/ApiCenterDefines/ApiCenterVersion";
 describe('ApiCenterVersionsManagement class test', () => {
     let sandbox = null as any;
     let data: ApiCenterApi;
@@ -48,7 +48,7 @@ describe('ApiCneterVersionsDataplane class test', () => {
         sandbox.restore();
     });
     it('ApiCneterVersionsDataplane getName', () => {
-        let obj: ApiCenterVersionsDataplane = new ApiCenterVersionsDataplane(data);
+        let obj: ApiCneterVersionsDataplane = new ApiCneterVersionsDataplane(data);
         let res = obj.getName();
         assert.equal(res, 'fakeName');
     });

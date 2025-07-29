@@ -24,7 +24,6 @@ export class ApiVersionTreeItem extends AzExtParentTreeItem {
     if (apiCenterApiVersion instanceof ApiCenterVersionManagement) {
       this.apiAccessesTreeItem = new ApiAccessesTreeItem(this, apiCenterName, apiCenterApiName, apiCenterApiVersion.getName());
     }
-    this.description = apiCenterApiVersion.getLifeCycle();
   }
 
   public get iconPath(): TreeItemIconPath {

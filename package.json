@@ -79,8 +79,8 @@
         "category": "Azure API Center"
       },
       {
-        "command": "azure-api-center.editApi",
-        "title": "%azure-api-center.commands.editApi.title%",
+        "command": "azure-api-center.showOpenApi",
+        "title": "%azure-api-center.commands.showOpenApi.title%",
         "category": "Azure API Center"
       },
       {
@@ -96,16 +96,6 @@
       {
         "command": "azure-api-center.registerApi",
         "title": "%azure-api-center.commands.registerApi.title%",
-        "category": "Azure API Center"
-      },
-      {
-        "command": "azure-api-center.registerMCP",
-        "title": "%azure-api-center.commands.registerMCP.title%",
-        "category": "Azure API Center"
-      },
-      {
-        "command": "azure-api-center.createApiEnvironment",
-        "title": "%azure-api-center.commands.createApiEnvironment.title%",
         "category": "Azure API Center"
       },
       {
@@ -226,11 +216,6 @@
         "category": "Azure API Center"
       },
       {
-        "command": "azure-api-center.createIntegrationFromApim",
-        "title": "%azure-api-center.commands.createIntegrationFromApim.title%",
-        "category": "Azure API Center"
-      },
-      {
         "command": "azure-api-center.createApiCenterService",
         "title": "%azure-api-center.commands.createApiCenterService.title%",
         "category": "Azure API Center"
@@ -324,8 +309,8 @@
           "when": "(view == apiCenterTreeView && viewItem =~ /azureApiCenterApiVersionDefinitionTreeItem/) || (view == apiCenterWorkspace && viewItem =~ /azureApiCenterApiVersionDataPlaneDefinitionTreeItem/)"
         },
         {
-          "command": "azure-api-center.editApi",
-          "when": "view == apiCenterTreeView && viewItem =~ /azureApiCenterApiVersionDefinitionTreeItem/"
+          "command": "azure-api-center.showOpenApi",
+          "when": "view == apiCenterTreeView && viewItem =~ /never/"
         },
         {
           "command": "azure-api-center.generateHttpFile",
@@ -338,14 +323,6 @@
         {
           "command": "azure-api-center.registerApi",
           "when": "view == apiCenterTreeView && viewItem =~ /^azureApiCenterApis/"
-        },
-        {
-          "command": "azure-api-center.registerMCP",
-          "when": "view == apiCenterTreeView && viewItem =~ /^azureApiCenterApis/"
-        },
-        {
-          "command": "azure-api-center.createApiEnvironment",
-          "when": "view == apiCenterTreeView && viewItem =~ /^azureApiCenterEnvironments/"
         },
         {
           "command": "azure-api-center.searchApi",
@@ -396,11 +373,7 @@
         },
         {
           "command": "azure-api-center.copyDeploymentUrl",
-          "when": "(view == apiCenterTreeView && viewItem == azureApiCenterApiDeployment) || (view == apiCenterWorkspace && viewItem == azureApiCenterDataPlaneApiDeployment)"
-        },
-        {
-          "command": "azure-api-center.createIntegrationFromApim",
-          "when": "view == apiCenterTreeView && viewItem == azureApiCenterIntegrations"
+          "when": "view == apiCenterTreeView && viewItem == azureApiCenterApiDeployment"
         },
         {
           "command": "azure-api-center.openInPortal",
@@ -436,6 +409,10 @@
         },
         {
           "command": "azure-api-center.importOpenApiByLink",
+          "when": "never"
+        },
+        {
+          "command": "azure-api-center.showOpenApi",
           "when": "never"
         },
         {
@@ -665,11 +642,6 @@
       {
         "title": "Azure Api Center",
         "properties": {
-          "azure-api-center.showSavePrompt": {
-            "type": "boolean",
-            "default": true,
-            "description": "Show warning dialog on remote file uploading."
-          },
           "azure-api-center.selectedSubscriptions": {
             "type": "array",
             "description": "Selected Azure subscriptions",
@@ -717,7 +689,6 @@
     "@stoplight/spectral-functions": "^1.9.3",
     "@stoplight/spectral-ruleset-bundler": "^1.6.1",
     "@types/archiver": "^6.0.2",
-    "@types/chai": "^5.2.2",
     "@types/express": "^4.17.20",
     "@types/fs-extra": "^11.0.2",
     "@types/js-yaml": "^4.0.8",
@@ -732,7 +703,6 @@
     "@typescript-eslint/parser": "^6.7.3",
     "@vscode/test-cli": "^0.0.6",
     "@vscode/test-electron": "^2.3.9",
-    "chai": "^5.2.0",
     "copy-webpack-plugin": "^12.0.2",
     "copyfiles": "^2.4.1",
     "crypto-js": "^4.2.0",

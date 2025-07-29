@@ -26,19 +26,6 @@ export type SubApiCenterMetaData = {
     resourceTypes: ResourceType[];
 };
 
-export type ApiCenterPayload = {
-    location: string;
-    properties?: {};
-    tags?: {};
-    identity?: {
-        type: string;
-        userAssignedIdentities?: { [key: string]: any };
-    };
-    sku?: {
-        name: string;
-    };
-};
-
 export type ApiCenter = {
     id: string;
     location: string;
@@ -49,15 +36,6 @@ export type ApiCenter = {
         portalHostname: string;
     };
     provisioningState: string;
-    identity?: {
-        principalId?: string;
-        tenantId?: string;
-        type: string;
-        userAssignedIdentities?: { [key: string]: any };
-    };
-    sku: {
-        name: string;
-    };
     // tslint:disable-next-line:no-reserved-keywords
     type: string;
 };
@@ -90,39 +68,14 @@ export type DataPlaneApiCenterApi = {
     customProperties: {};
 };
 
-export type GeneralApiCenterEnvironment = ApiCenterEnvironment | DataPlaneApiCenterEnvironment;
-
 export type ApiCenterEnvironment = {
     id: string;
     location: string;
     name: string;
     properties: {
-        title: string;
-        kind: string;
-        server?: {
-            type: string;
-            managementPortalUri: string[];
-        }
-        onboarding?: {
-            developerPortalUri: string[];
-        }
     };
     // tslint:disable-next-line:no-reserved-keywords
     type: string;
-};
-
-export type DataPlaneApiCenterEnvironment = {
-    name: string;
-    title: string;
-    kind: string;
-    server?: {
-        type: ApiCenterEnvironmentServerType;
-        managementPortalUris: string[];
-    };
-    onboarding?: {
-        instructions: string;
-        developerPortalUris: string[];
-    }
 };
 
 export type GeneralApiCenterApiVersion = ApiCenterApiVersion | DataPlaneApiCenterApiVersion;
@@ -145,32 +98,17 @@ export type DataPlaneApiCenterApiVersion = {
     lifecycleStage: string;
 };
 
-export type GeneralApiCenterApiDeployment = ApiCenterApiDeployment | DataPlaneApiCenterApiDeployment;
-
 export type ApiCenterApiDeployment = {
     id: string;
+    location: string;
     name: string;
     properties: {
         server: {
             runtimeUri: string[];
-        },
-        title: string;
-        environmentId: string;
-        definitionId: string;
+        }
     };
     // tslint:disable-next-line:no-reserved-keywords
     type: string;
-};
-
-export type DataPlaneApiCenterApiDeployment = {
-    name: string;
-    title: string;
-    environment: string;
-    server: {
-        runtimeUri: string[];
-    };
-    // tslint:disable-next-line:no-reserved-keywords
-    recommended: boolean;
 };
 
 export type GeneralApiCenterApiVersionDefinition = ApiCenterApiVersionDefinition | DataPlaneApiCenterApiVersionDefinition;
@@ -215,7 +153,7 @@ export type ApiCenterApiVersionDefinitionImport = {
     value: string;
     specification: {
         name: string
-        version?: string
+        version: string
     }
 };
 
@@ -278,26 +216,6 @@ export enum SpecificationName {
     other = 'Other',
 };
 
-export enum EnvironmentKind {
-    production = "Production",
-    staging = "Staging",
-    development = "Development",
-    testing = "Testing",
-};
-
-export enum ApiCenterEnvironmentServerType {
-    AzureAPIManagement = "Azure API Management",
-    AzureAppService = "Azure App Service",
-    AzureContainerApp = "Azure Container Apps",
-    AzureFunction = "Azure Function",
-    AzureComputeService = "Azure Compute Service",
-    ApigeeAPIM = "Apigee API Management",
-    AWSAPIManagement = "AWS API Gateway",
-    KongAPIGateWay = "Kong API Gateway",
-    k8s = "Kubernetes",
-    MuleAPIM = "MuleSoft API Management",
-};
-
 export enum ApiSpecExportResultFormat {
     inline = 'inline',
     link = 'link',
@@ -351,44 +269,4 @@ export type ApiCenterApiCredential = {
     oauth2?: {
         clientSecret?: string;
     };
-};
-
-export type ApiCenterApiSourcePayload = {
-    properties: {
-        apiSourceType: string;
-        apimSource?: {
-            resourceId: string;
-        };
-    };
-};
-
-export type ApiCenterApiSource = {
-    properties: {
-        apiSourceType: string;
-        apimSource: {
-            resourceId: string;
-            msiResourceId: string;
-        };
-        azureApiManagementSource: {
-            resourceId: string;
-            msiResourceId: string;
-        };
-        sourceLifecycleStage: string;
-        targetEnvironmentId: string;
-        targetLifecycleStage: string;
-        importSpecification: string;
-        linkState: {
-            state: string;
-            message?: string;
-            lastUpdatedOn: string;
-        };
-    };
-    id: string;
-    name: string;
-    systemData: {
-        createdAt: string;
-        lastModifiedAt: string;
-    };
-    // tslint:disable-next-line:no-reserved-keywords
-    type: string;
 };

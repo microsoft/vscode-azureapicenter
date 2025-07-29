@@ -6,9 +6,9 @@ import { ApiCenterVersionDefinitionManagement } from "../azure/ApiCenterDefines/
 import { ext } from "../extensionVariables";
 import { ApiVersionDefinitionTreeItem } from "../tree/ApiVersionDefinitionTreeItem";
 
-export async function editApi(actionContext: IActionContext, node?: ApiVersionDefinitionTreeItem) {
+export async function showOpenApi(actionContext: IActionContext, node?: ApiVersionDefinitionTreeItem) {
     if (!node) {
-        node = await ext.treeDataProvider.showTreeItemPicker<ApiVersionDefinitionTreeItem>(new RegExp(`${ApiCenterVersionDefinitionManagement.contextValue}.*`), actionContext);
+        node = await ext.treeDataProvider.showTreeItemPicker<ApiVersionDefinitionTreeItem>(ApiCenterVersionDefinitionManagement.contextValue, actionContext);
     }
     await ext.openApiEditor.showEditor(node);
     commands.executeCommand('setContext', 'isEditorEnabled', true);
