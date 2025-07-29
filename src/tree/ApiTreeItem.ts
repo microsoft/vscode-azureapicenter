@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import * as vscode from 'vscode';
-import { ApiCenterApiManagement, IApiCenterApiBase } from "../azure/ApiCenterDefines/ApiCenterApi";
+import { IApiCenterApiBase } from "../azure/ApiCenterDefines/ApiCenterApi";
 import { UiStrings } from "../uiStrings";
 import { ApiDeploymentsTreeItem } from "./ApiDeploymentsTreeItem";
 import { ApiVersionsTreeItem } from "./ApiVersionsTreeItem";
@@ -18,10 +18,9 @@ export class ApiTreeItem extends AzExtParentTreeItem {
     super(parent);
     this._apiCenterName = apiCenterName;
     this._apiCenterApi = apiCenterApi;
-    this.apiVersionsTreeItem = new ApiVersionsTreeItem(this, apiCenterName, apiCenterApi.generateChild());
-    if (apiCenterApi instanceof ApiCenterApiManagement) {
-      this.apiDeploymentsTreeItem = new ApiDeploymentsTreeItem(this, apiCenterName, (apiCenterApi as ApiCenterApiManagement).getData());
-    }
+    this.description = this._apiCenterApi.getType().toLowerCase();
+    this.apiVersionsTreeItem = new ApiVersionsTreeItem(this, apiCenterName, apiCenterApi.generateVersionChild());
+    this.apiDeploymentsTreeItem = new ApiDeploymentsTreeItem(this, apiCenterName, apiCenterApi.generateDeploymentChild());
   }
 
   public get iconPath(): TreeItemIconPath {

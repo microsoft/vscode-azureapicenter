@@ -2,15 +2,15 @@
 // Licensed under the MIT license.
 import { AzExtParentTreeItem, AzExtTreeItem, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import * as vscode from 'vscode';
-import { ApiCenterApiDeployment } from "../azure/ApiCenter/contracts";
+import { IDeploymentBase } from "../azure/ApiCenterDefines/ApiCenterDeployment";
 
 export class ApiDeploymentTreeItem extends AzExtTreeItem {
-  public static contextValue: string = "azureApiCenterApiDeployment";
-  public readonly contextValue: string = ApiDeploymentTreeItem.contextValue;
+  public readonly contextValue: string;
   constructor(
     parent: AzExtParentTreeItem,
-    public apiCenterApiDeployment: ApiCenterApiDeployment) {
+    public apiCenterApiDeployment: IDeploymentBase) {
     super(parent);
+    this.contextValue = apiCenterApiDeployment.getContext();
   }
 
   public get iconPath(): TreeItemIconPath {
@@ -18,10 +18,10 @@ export class ApiDeploymentTreeItem extends AzExtTreeItem {
   }
 
   public get id(): string {
-    return this.apiCenterApiDeployment.id;
+    return this.apiCenterApiDeployment.getId()!;
   }
 
   public get label(): string {
-    return this.apiCenterApiDeployment.name;
+    return this.apiCenterApiDeployment.getName();
   }
 }
