@@ -10,7 +10,7 @@
     "azure-api-center.commands.editApi.title": "Edit API Specification Document",
     "azure-api-center.commands.generateHttpFile.title": "Generate HTTP File",
     "azure-api-center.commands.registerApi.title": "Register API",
-    "azure-api-center.commands.registerMCP.title": "Register MCP",
+    "azure-api-center.commands.registerMCP.title": "Register MCP (Preview)",
     "azure-api-center.commands.createApiEnvironment.title": "Create API Environment",
     "azure-api-center.commands.setApiRuleset.title": "Set active API Style Guide",
     "azure-api-center.commands.detectBreakingChange.title": "Detect Breaking Change",
