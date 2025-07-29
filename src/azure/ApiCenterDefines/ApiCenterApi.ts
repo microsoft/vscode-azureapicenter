@@ -11,8 +11,7 @@ import {
     DataPlaneApiCenterApi,
     GeneralApiCenterApi
 } from "../ApiCenter/contracts";
-import { ApiCenterDeploymentsDataplane, ApiCenterDeploymentsManagement, IDeploymentsBase } from "./ApiCenterDeployment";
-import { ApiCenterVersionsDataplane, ApiCenterVersionsManagement, IVersionsBase } from "./ApiCenterVersion";
+import { ApiCenterVersionsManagement, ApiCneterVersionsDataplane, IVersionsBase } from "./ApiCenterVersion";
 export type IApiCenterApisBase = {
     getName: () => string;
     getId: () => string;
@@ -78,19 +77,11 @@ export type IApiCenterApiBase = {
     getName: () => string;
     getId: () => string;
     getLabel: () => string;
-    generateVersionChild: () => IVersionsBase;
-    generateDeploymentChild: () => IDeploymentsBase;
-    getType: () => string;
+    generateChild: () => IVersionsBase;
 };
 
 export class ApiCenterApiManagement implements IApiCenterApiBase {
     constructor(private data: ApiCenterApi) { }
-    generateDeploymentChild(): IDeploymentsBase {
-        return new ApiCenterDeploymentsManagement(this.data);
-    }
-    getType(): string {
-        return this.data.properties.kind || "unknown";
-    }
     getData(): ApiCenterApi {
         return this.data;
     }
@@ -107,16 +98,13 @@ export class ApiCenterApiManagement implements IApiCenterApiBase {
     getLabel(): string {
         return this.data.properties.title;
     }
-    generateVersionChild(): IVersionsBase {
+    generateChild(): IVersionsBase {
         return new ApiCenterVersionsManagement(this.data);
     }
 };
 
 export class ApiCenterApiDataPlane implements IApiCenterApiBase {
     constructor(private data: DataPlaneApiCenterApi) { }
-    getType(): string {
-        return this.data.kind || "unknown";
-    }
     getLabel(): string {
         return this.data.name;
     }
@@ -130,10 +118,7 @@ export class ApiCenterApiDataPlane implements IApiCenterApiBase {
     getName(): string {
         return this.data.name;
     }
-    generateVersionChild(): IVersionsBase {
-        return new ApiCenterVersionsDataplane(this.data);
-    }
-    generateDeploymentChild(): IDeploymentsBase {
-        return new ApiCenterDeploymentsDataplane(this.data);
+    generateChild(): IVersionsBase {
+        return new ApiCneterVersionsDataplane(this.data);
     }
 };

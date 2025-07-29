@@ -1,12 +1,11 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 import { getResourceGroupFromId } from "@microsoft/vscode-azext-azureutils";
-import * as vscode from "vscode";
 import { ProgressLocation, window } from "vscode";
 import { ApiCenterService } from "../../../azure/ApiCenter/ApiCenterService";
 import { ApiCenterApiVersionDefinitionImport, ApiSpecExportResultFormat } from "../../../azure/ApiCenter/contracts";
 import { showSavePromptConfigKey } from "../../../constants";
-import { UiStrings } from "../../../uiStrings";
+import { localize } from "../../../localize";
 import { GeneralUtils } from "../../../utils/generalUtils";
 import { ApiVersionDefinitionTreeItem } from "../../ApiVersionDefinitionTreeItem";
 import { Editor, EditorOptions } from "../Editor";
@@ -35,7 +34,7 @@ export class OpenApiEditor extends Editor<ApiVersionDefinitionTreeItem> {
         return window.withProgress(
             {
                 location: ProgressLocation.Notification,
-                title: UiStrings.UploadingSpec,
+                title: "Uploading spec to API Center",
                 cancellable: false
             },
             // tslint:disable-next-line:no-non-null-assertion
@@ -45,7 +44,8 @@ export class OpenApiEditor extends Editor<ApiVersionDefinitionTreeItem> {
                     format: "inline",
                     value: data.toString(),
                     specification: {
-                        name: treeItem.apiCenterApiVersionDefinition.getSpecificationName()
+                        name: "openapi", // TODO: we need to change this right?
+                        version: "0.0.1" // TODO: we need to change this right?
                     }
                 };
 
@@ -57,23 +57,23 @@ export class OpenApiEditor extends Editor<ApiVersionDefinitionTreeItem> {
                 );
             }
         ).then(async () => {
-            window.showInformationMessage(UiStrings.SpecUploaded);
+            window.showInformationMessage("Spec uploaded successfully.");
             return this.getData(treeItem);
         });
     }
     public async getFilename(treeItem: ApiVersionDefinitionTreeItem, options: EditorOptions): Promise<string> {
-        return `${treeItem.apiCenterName}-${treeItem.apiCenterApiName}-${treeItem.apiCenterApiVersionName}-${treeItem.apiCenterApiVersionDefinition.getName()}-tempFile${options.fileType}`;
+        return `${treeItem.apiCenterName}-${treeItem.apiCenterApiName}-${treeItem.apiCenterApiVersionName}--${treeItem.apiCenterApiVersionDefinition.getName()}-openapi-tempFile${options.fileType}`;
     }
 
     public async getDiffFilename(treeItem: ApiVersionDefinitionTreeItem, options: EditorOptions): Promise<string> {
-        return `${treeItem.apiCenterName}-${treeItem.apiCenterApiName}-${treeItem.apiCenterApiVersionName}-${treeItem.apiCenterApiVersionDefinition.getName()}-diff${options.fileType}`;
+        return `${treeItem.apiCenterName}-${treeItem.apiCenterApiName}-${treeItem.apiCenterApiVersionName}--${treeItem.apiCenterApiVersionDefinition.getName()}-openapi.json${options.fileType}`;
     }
 
     public async getSaveConfirmationText(treeItem: ApiVersionDefinitionTreeItem): Promise<string> {
-        return vscode.l10n.t(UiStrings.SavingWillUpdate, treeItem.apiCenterApiVersionDefinition.getName());
+        return localize("", `Saving will update the API spec '${treeItem.apiCenterApiVersionDefinition.getName()}'.`);
     }
 
     public getSize(context: ApiVersionDefinitionTreeItem): Promise<number> {
-        throw new Error(UiStrings.MethodNotImplemented);
+        throw new Error(localize("", "Method not implemented."));
     }
 }

@@ -23,7 +23,11 @@ describe("copyDeploymentUrl", () => {
         const mockRuntimeUrl = "https://example.com";
         const mockNode = {
             apiCenterApiDeployment: {
-                getRuntimeUris: () => [mockRuntimeUrl],
+                properties: {
+                    server: {
+                        runtimeUri: [mockRuntimeUrl],
+                    },
+                },
             },
         } as unknown as ApiDeploymentTreeItem;
 

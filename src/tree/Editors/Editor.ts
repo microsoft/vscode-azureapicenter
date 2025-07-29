@@ -5,7 +5,7 @@ import * as fse from 'fs-extra';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import { ext } from '../../extensionVariables';
-import { UiStrings } from "../../uiStrings";
+import { localize } from "../../localize";
 import { createTemporaryFile } from '../../utils/fsUtil';
 import { DefinitionFileType, inferDefinitionFileType } from "../../utils/inferDefinitionFileType";
 import { writeToEditor } from '../../utils/vscodeUtils';
@@ -35,11 +35,11 @@ export abstract class Editor<ContextT> implements vscode.Disposable {
         const fileName: string = await this.getFilename(context, { fileType: fileType });
         const originFileName: string = await this.getDiffFilename(context, { fileType: fileType });
 
-        this.appendLineToOutput(vscode.l10n.t(UiStrings.Opening, fileName));
+        this.appendLineToOutput(localize('opening', 'Opening "{0}"...', fileName));
         if (sizeLimit !== undefined) {
             const size: number = await this.getSize(context);
             if (size > sizeLimit) {
-                const message: string = vscode.l10n.t(UiStrings.TooLargeError, fileName);
+                const message: string = localize('tooLargeError', '"{0}" is too large to download.', fileName);
                 throw new Error(message);
             }
         }
@@ -48,7 +48,7 @@ export abstract class Editor<ContextT> implements vscode.Disposable {
         const localOriginPath: string = await createTemporaryFile(originFileName);
         const document: vscode.TextDocument = await vscode.workspace.openTextDocument(localFilePath);
         if (document.isDirty) {
-            const overwriteFlag = await vscode.window.showWarningMessage(vscode.l10n.t(UiStrings.OverwriteWarning, fileName), { modal: true }, DialogResponses.yes, DialogResponses.cancel);
+            const overwriteFlag = await vscode.window.showWarningMessage(localize("", `You are about to overwrite "${fileName}", which has unsaved changes. Do you want to continue?`), { modal: true }, DialogResponses.yes, DialogResponses.cancel);
             if (overwriteFlag !== DialogResponses.yes) {
                 throw new UserCancelledError();
             }
@@ -72,11 +72,11 @@ export abstract class Editor<ContextT> implements vscode.Disposable {
         const fileName: string = await this.getFilename(context, { fileType: fileType });
         const originFileName: string = await this.getDiffFilename(context, { fileType: fileType });
 
-        this.appendLineToOutput(vscode.l10n.t(UiStrings.Opening, fileName));
+        this.appendLineToOutput(localize('opening', 'Opening "{0}"...', fileName));
         if (sizeLimit !== undefined) {
             const size: number = await this.getSize(context);
             if (size > sizeLimit) {
-                const message: string = vscode.l10n.t(UiStrings.TooLargeError, fileName);
+                const message: string = localize('tooLargeError', '"{0}" is too large to download.', fileName);
                 throw new Error(message);
             }
         }
@@ -134,9 +134,10 @@ export abstract class Editor<ContextT> implements vscode.Disposable {
 
         const fileType = inferDefinitionFileType(rawText);
         const filename: string = await this.getFilename(context, { fileType: fileType });
-        this.appendLineToOutput(vscode.l10n.t(UiStrings.Updating, filename));
+        this.appendLineToOutput(localize('updating', 'Updating "{0}" ...', filename));
         const updatedData: string = await this.updateData(context, rawText);
-        this.appendLineToOutput(vscode.l10n.t(UiStrings.Updated, filename));
+        this.appendLineToOutput(localize('done', 'Updated "{0}".', filename));
+        await this.updateEditor(updatedData, vscode.window.activeTextEditor);
     }
 
     private async updateEditor(data: string, textEditor?: vscode.TextEditor): Promise<void> {

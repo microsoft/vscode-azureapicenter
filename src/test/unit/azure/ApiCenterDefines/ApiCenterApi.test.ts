@@ -20,9 +20,6 @@ describe('Azure ApiCenter Defines ApiCenterApisManagement', () => {
                 dataApiHostname: "fakeDataApiHostname"
             },
             provisioningState: 'Succeeded',
-            sku: {
-                name: "fakeSkuName"
-            },
             type: "fakeType"
         };
     });
@@ -132,16 +129,6 @@ describe('Azure ApiCenter Defines ApiCenterApiManagement', () => {
         const res = api.getLabel();
         assert.strictEqual(res, 'fakeTitle');
     });
-    it('ApiCenterApiManagement class generateVersionChild', () => {
-        const api: ApiCenterApiManagement = new ApiCenterApiManagement(data);
-        const versionChild = api.generateVersionChild();
-        assert.ok(versionChild.constructor.name === 'ApiCenterVersionsManagement');
-    });
-    it('ApiCenterApiManagement class generateDeploymentChild', () => {
-        const api: ApiCenterApiManagement = new ApiCenterApiManagement(data);
-        const deploymentChild = api.generateDeploymentChild();
-        assert.ok(deploymentChild.constructor.name === 'ApiCenterDeploymentsManagement');
-    });
 });
 describe('Azure ApiCenter Defines ApiCenterApiDataPlane', () => {
     let sandbox = null as any;
@@ -175,17 +162,5 @@ describe('Azure ApiCenter Defines ApiCenterApiDataPlane', () => {
         let obj: ApiCenterApiDataPlane = new ApiCenterApiDataPlane(data);
         let res = obj.getName();
         assert.equal('fakeName', res);
-    });
-    it('ApiCenterApiDataPlane generateVersionChild', () => {
-        let obj: ApiCenterApiDataPlane = new ApiCenterApiDataPlane(data);
-        let versionChild = obj.generateVersionChild();
-        // ApiCenterVersionsDataplane 构造参数为 DataPlaneApiCenterApi
-        assert.ok(versionChild.constructor.name === 'ApiCenterVersionsDataplane');
-    });
-    it('ApiCenterApiDataPlane generateDeploymentChild', () => {
-        let obj: ApiCenterApiDataPlane = new ApiCenterApiDataPlane(data);
-        let deploymentChild = obj.generateDeploymentChild();
-        // ApiCenterDeploymentsDataplane 构造参数为 DataPlaneApiCenterApi
-        assert.ok(deploymentChild.constructor.name === 'ApiCenterDeploymentsDataplane');
     });
 });
