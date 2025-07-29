@@ -104,7 +104,6 @@ describe("ApiServerItem treeItem test case", () => {
         sessionProvider.getAuthSession = async () => { return { succeeded: true, result: autSession }; };
         const node: ApiServerItem = new ApiServerItem(new DataPlanAccountManagerTreeItem(sessionProvider), subContext);
         const res = await node.loadMoreChildrenImpl(true, {} as IActionContext);
-        assert.equal(res.length, 1);
-        console.log(res[0].contextValue, "azureApiCenterApis");
+        assert.equal(res.length, 2);
     });
 });

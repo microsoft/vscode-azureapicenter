@@ -5,7 +5,7 @@ import { ISubscriptionContext } from "@microsoft/vscode-azext-utils";
 import { clientOptions } from "../../common/clientOptions";
 import { getCredentialForToken } from "../../utils/credentialUtil";
 import { APICenterRestAPIs } from "./ApiCenterRestAPIs";
-import { ApiCenter, ApiCenterAnalyzerConfigs, ApiCenterApi, ApiCenterApiAccess, ApiCenterApiCredential, ApiCenterApiDeployment, ApiCenterApiVersion, ApiCenterApiVersionDefinition, ApiCenterApiVersionDefinitionExport, ApiCenterApiVersionDefinitionImport, ApiCenterAuthConfig, ApiCenterEnvironment, ApiCenterRulesetExport, ApiCenterRulesetImport, ApiCenterRulesetImportResult, ApiCenterRulesetImportStatus, ArmAsyncOperationStatus, ResourceGroup, SubApiCenterMetaData } from "./contracts";
+import { ApiCenter, ApiCenterAnalyzerConfigs, ApiCenterApi, ApiCenterApiAccess, ApiCenterApiCredential, ApiCenterApiDeployment, ApiCenterApiSource, ApiCenterApiSourcePayload, ApiCenterApiVersion, ApiCenterApiVersionDefinition, ApiCenterApiVersionDefinitionExport, ApiCenterApiVersionDefinitionImport, ApiCenterAuthConfig, ApiCenterEnvironment, ApiCenterPayload, ApiCenterRulesetExport, ApiCenterRulesetImport, ApiCenterRulesetImportResult, ApiCenterRulesetImportStatus, ArmAsyncOperationStatus, ResourceGroup, SubApiCenterMetaData } from "./contracts";
 
 export class ApiCenterService {
   private susbcriptionContext: ISubscriptionContext;
@@ -75,6 +75,27 @@ export class ApiCenterService {
     return response.parsedBody;
   }
 
+  public async createOrUpdateApiCenterEnvironment(apiCenterEnvironment: ApiCenterEnvironment): Promise<ApiCenterEnvironment> {
+    const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
+    const client = new ServiceClient(creds, clientOptions);
+    const options: RequestPrepareOptions = {
+      method: "PUT",
+      url: APICenterRestAPIs.CreateAPIEnvironment(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, apiCenterEnvironment.name, this.apiVersion),
+      body: {
+        properties: {
+          kind: apiCenterEnvironment.properties.kind,
+          title: apiCenterEnvironment.name
+        }
+      }
+    };
+    const response = await client.sendRequest(options);
+    if (response.status === 200 || response.status === 201) {
+      return response.parsedBody;
+    } else {
+      throw new Error(`Failed to create or update API Center environment. Status code: ${response.status}.`);
+    }
+  }
+
   public async getApiCenterEnvironments(): Promise<{ value: ApiCenterEnvironment[]; nextLink: string }> {
     const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
     const client = new ServiceClient(creds, clientOptions);
@@ -141,6 +162,17 @@ export class ApiCenterService {
     return response.parsedBody;
   }
 
+  public async getApiCenterIntegrations(): Promise<{ value: ApiCenterApiSource[]; nextLink: string }> {
+    const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
+    const client = new ServiceClient(creds, clientOptions);
+    const options: RequestPrepareOptions = {
+      method: "GET",
+      url: APICenterRestAPIs.GetIntegrations(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, this.apiVersionNew)
+    };
+    const response = await client.sendRequest(options);
+    return response.parsedBody;
+  }
+
   public async createOrUpdateResourceGroup(subLocation: string): Promise<ResourceGroup> {
     const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
     const client = new ServiceClient(creds, clientOptions);
@@ -166,15 +198,13 @@ export class ApiCenterService {
     return response.parsedBody;
   }
 
-  public async createOrUpdateApiCenterService(serviceLocation: string): Promise<ApiCenter> {
+  public async createOrUpdateApiCenterService(apiCenterPayload: ApiCenterPayload): Promise<ApiCenter> {
     const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
     const client = new ServiceClient(creds, clientOptions);
     const options: RequestPrepareOptions = {
       method: "PUT",
       url: APICenterRestAPIs.CreateApiService(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, "2024-03-01"),
-      body: {
-        location: serviceLocation
-      }
+      body: apiCenterPayload
     };
     const response = await client.sendRequest(options);
     return response.parsedBody;
@@ -226,7 +256,9 @@ export class ApiCenterService {
     const options: RequestPrepareOptions = {
       method: "PUT",
       url: APICenterRestAPIs.CreateAPIDeployment(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, apiName, apiCenterApiDeployment.name, this.apiVersion),
-      body: apiCenterApiDeployment.properties
+      body: {
+        properties: apiCenterApiDeployment.properties
+      }
     };
     const response = await client.sendRequest(options);
 
@@ -245,6 +277,18 @@ export class ApiCenterService {
     };
     const response = await client.sendRequest(options);
 
+    return response.parsedBody;
+  }
+
+  public async createOrUpdateIntegration(apiSourceName: string, apiSourcePayload: ApiCenterApiSourcePayload): Promise<ApiCenterApiSource> {
+    const creds = getCredentialForToken(await this.susbcriptionContext.credentials.getToken());
+    const client = new ServiceClient(creds, clientOptions);
+    const options: RequestPrepareOptions = {
+      method: "PUT",
+      url: APICenterRestAPIs.CreateIntegration(this.susbcriptionContext.subscriptionId, this.resourceGroupName, this.apiCenterName, apiSourceName, this.apiVersionNew),
+      body: apiSourcePayload
+    };
+    const response = await client.sendRequest(options);
     return response.parsedBody;
   }
 

@@ -3,7 +3,7 @@
 import { RequestPrepareOptions, ServiceClient } from "@azure/ms-rest-js";
 import { ISubscriptionContext } from "@microsoft/vscode-azext-utils";
 import { clientOptions } from "../../common/clientOptions";
-import { ApiCenterApiCredential, ApiCenterApiVersionDefinitionExport, DataPlaneApiCenterApi, DataPlaneApiCenterApiVersion, DataPlaneApiCenterApiVersionDefinition } from "../ApiCenter/contracts";
+import { ApiCenterApiCredential, ApiCenterApiVersionDefinitionExport, DataPlaneApiCenterApi, DataPlaneApiCenterApiVersion, DataPlaneApiCenterApiVersionDefinition, DataPlaneApiCenterEnvironment } from "../ApiCenter/contracts";
 import { APICenterDataPlaneRestAPIs } from "./ApiCenterRestAPIs";
 export interface DataPlaneAccount {
     readonly domain: string;
@@ -79,6 +79,16 @@ export class ApiCenterDataPlaneService {
     public async listApiDeployments(apiName: string): Promise<{ value: any[]; nextLink: string }> {
         const client = new ServiceClient(this.susbcriptionContext.credentials, clientOptions);
         let url = APICenterDataPlaneRestAPIs.ListApiDeployments(this.susbcriptionContext.subscriptionPath, apiName);
+        const options: RequestPrepareOptions = {
+            method: "GET",
+            url: url,
+        };
+        const response = await client.sendRequest(options);
+        return response.parsedBody;
+    }
+    public async listApiEnvironments(): Promise<{ value: DataPlaneApiCenterEnvironment[]; nextLink: string }> {
+        const client = new ServiceClient(this.susbcriptionContext.credentials, clientOptions);
+        let url = APICenterDataPlaneRestAPIs.ListApiEnvironments(this.susbcriptionContext.subscriptionPath);
         const options: RequestPrepareOptions = {
             method: "GET",
             url: url,
