@@ -8,6 +8,7 @@
 * **'Register MCP (Preview)' Command**: Added a command to register MCP Server.
 * **'Create API Environment' Command**: Added a command to create new API Environment.
 * Added 'Environments' and 'Deployments' tree node in 'API Center Portal View'.
+* 'Generate OpenAPI Spec from Current File' and 'Generate OpenAPI Spec from Entire Project' commands are moved to 'Azure API Center' submenu from 'Copilot' submenu.
 
 ## 1.2.0
 * **Language Model Tools for API Center Data Plane APIs**: Added 5 language model tools to help developers easily discover and consume APIs registered in API Center with GitHub Copilot agent mode.
