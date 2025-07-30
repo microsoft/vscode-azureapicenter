@@ -265,6 +265,12 @@
         }
       ]
     },
+    "submenus": [
+      {
+        "id": "azure-api-center.submenu",
+        "label": "Azure API Center"
+      }
+    ],
     "menus": {
       "view/title": [
         {
@@ -413,16 +419,20 @@
           "group": "2@1"
         }
       ],
-      "copilot": [
+      "editor/context": [
+        {
+          "submenu": "azure-api-center.submenu",
+          "group": "apiCenter"
+        }
+      ],
+      "azure-api-center.submenu": [
         {
           "command": "azure-api-center.generateApiFromCode",
-          "when": "github.copilot-chat.activated && resourceScheme == 'file'",
-          "group": "apiCenter"
+          "when": "github.copilot-chat.activated && resourceScheme == 'file'"
         },
         {
           "command": "azure-api-center.generateApiSpecFromCodeProject",
-          "when": "github.copilot-chat.activated && workspaceFolderCount >= 1",
-          "group": "apiCenter"
+          "when": "github.copilot-chat.activated && workspaceFolderCount >= 1"
         }
       ],
       "commandPalette": [
