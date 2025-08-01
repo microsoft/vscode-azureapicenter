@@ -5,7 +5,7 @@
 ## 1.3.0
 * **'Edit API Specification Document' Command**: Added a command to edit and upload API spec.
 * **'Create new integration with Azure API Management' Command**: Added a command to sync APIs from APIM, also a new 'Integrations' tree node to list all the integrations.
-* **'Register MCP (Preview)' Command**: Added a command to register MCP Server.
+* **'Register MCP Server (Preview)' Command**: Added a command to register MCP Server.
 * **'Create API Environment' Command**: Added a command to create new API Environment.
 * Added 'Environments' and 'Deployments' tree node in 'API Center Portal View'.
 * 'Generate OpenAPI Spec from Current File' and 'Generate OpenAPI Spec from Entire Project' commands are moved to 'Azure API Center' submenu from 'Copilot' submenu.
