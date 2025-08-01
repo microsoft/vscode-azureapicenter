@@ -1,19 +1,36 @@
+﻿### How to use this workflow
+### To change the Python version matrix, please modify the PYTHON_VERSIONS variable in the setup job
+### To change the target test repo and branch, please modify line 53 to 55 in ./test-execution-all.yml
 name: CLI weekly live test
 
 on:
   schedule:
     - cron: "0 18 * * 0"
   workflow_dispatch:
+    inputs:
+      test-cases:
+        description: 'Specific test cases to run. Example: ["test_integration_create_aws", "test_api_delete"]. Leave empty to run all test cases'
+        required: false
+        type: string
 
 permissions:
   id-token: write
   contents: read
 
 jobs:
-  apic-extension-live-test:
+  setup:
     runs-on: ubuntu-latest
     environment: engineering
+    env:
+      # Python versions to test against - CONFIGURE HERE
+      PYTHON_VERSIONS: '["3.9", "3.10", "3.11", "3.12"]'
+    outputs:
+      test-cases: ${{ steps.discover-tests.outputs.test-cases }}
+      python-versions: ${{ steps.discover-tests.outputs.python-versions }}
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
@@ -38,48 +55,363 @@ jobs:
           cd azure-cli-extensions
           python -m venv .venv
           source .venv/bin/activate
+
           python -m pip install -U pip
-          pip install azdev
+          pip install azdev pytest msrestazure
+
+          # Azure CLI Development Setup
           azdev setup -r .
           azdev extension add apic-extension
 
-      - name: Run tests
+      - name: Discover test cases and set outputs
+        id: discover-tests
         run: |
           cd azure-cli-extensions
           source .venv/bin/activate
-          azdev test apic-extension --live
-        env:
-          USERASSIGNED_IDENTITY: ${{ secrets.USERASSIGNED_IDENTITY }}
-          AWS_ACCESS_KEY_LINK: ${{ secrets.AWS_ACCESS_KEY_LINK }}
-          AWS_SECRET_ACCESS_KEY_LINK: ${{ secrets.AWS_SECRET_ACCESS_KEY_LINK }}
+          cd src/apic-extension
+
+          # Check if specific test cases are provided
+          test_input='${{ inputs.test-cases }}'
+          if [ -n "$test_input" ] && [ "$test_input" != "null" ] && [ "$test_input" != "" ]; then
+            echo "Using specific test cases from input: $test_input"
+            test_cases="$test_input"
+          else
+            echo "Discovering all test cases using pytest..."
+
+            # Collect test node IDs and extract just the test function names
+            test_collection=$(python -m pytest --collect-only -q --tb=no 2>/dev/null | \
+              grep "::test_" | \
+              sed 's/.*::\(test_[^[]*\).*/\1/' | \
+              sort | uniq || true)
+
+            echo "Debug: Raw test collection output:"
+            echo "$test_collection"
+
+            test_count=$(echo "$test_collection" | wc -l)
+            echo "✅ Successfully discovered $test_count test cases"
+
+            # Convert to JSON array
+            test_cases=$(echo "$test_collection" | jq -R -s -c 'split("\n") | map(select(length > 0))')
+            total_tests=$(echo "$test_cases" | jq '. | length')
+            echo "Found $total_tests test cases total"
+          fi
+
+          echo "test-cases=$test_cases" >> $GITHUB_OUTPUT
+
+          # Python versions to test against - defined in job env
+          echo "python-versions=$PYTHON_VERSIONS" >> $GITHUB_OUTPUT
+
+  # Execute tests using matrix strategy for all Python versions
+  # This replaces the previous 4 duplicate jobs (test-python-39, test-python-310, etc.)
+  # Matrix strategy automatically creates jobs dynamically based on setup output
+  test:
+    needs: setup
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ${{ fromJson(needs.setup.outputs.python-versions) }}
+    uses: ./.github/workflows/test-execution-all.yml
+    with:
+      test-cases: ${{ needs.setup.outputs.test-cases }}
+      python-version: ${{ matrix.python-version }}
+    secrets:
+      APICEXT_TEST_AZURE_CLIENT_ID: ${{ secrets.APICEXT_TEST_AZURE_CLIENT_ID }}
+      APICEXT_TEST_AZURE_TENANT_ID: ${{ secrets.APICEXT_TEST_AZURE_TENANT_ID }}
+      APICEXT_TEST_AZURE_SUBSCRIPTION_ID: ${{ secrets.APICEXT_TEST_AZURE_SUBSCRIPTION_ID }}
+      USERASSIGNED_IDENTITY: ${{ secrets.USERASSIGNED_IDENTITY }}
+      AWS_ACCESS_KEY_LINK: ${{ secrets.AWS_ACCESS_KEY_LINK }}
+      AWS_SECRET_ACCESS_KEY_LINK: ${{ secrets.AWS_SECRET_ACCESS_KEY_LINK }}
 
   notify:
-    if: failure()
     runs-on: ubuntu-latest
-    needs: apic-extension-live-test
     environment: engineering
+    needs: [setup, test]
+    if: (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && !cancelled()
     steps:
+      - name: Download all test result artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: test-results/
+          pattern: test-results-*
+          merge-multiple: true
+
       - name: Generate Email Content
         id: generate-email-content
         run: |
-          echo "to=${{ secrets.AUTHOR_MAIL_ADDRESSES }}" >> $GITHUB_ENV
-          echo "body=Workflow URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> $GITHUB_ENV
-          echo "subject=[APICENTER] Weekly APIC Extension Live Test Failed" >> $GITHUB_ENV
+          test_cases='${{ needs.setup.outputs.test-cases }}'
+          python_versions='${{ needs.setup.outputs.python-versions }}'
+          python_versions_array=$(echo "$python_versions" | jq -r '.[]')
+          python_versions_count=$(echo "$python_versions" | jq '. | length')
+
+          # Initialize counters
+          total_cases=0
+          total_success=0
+          total_failed=0
+          failed_cases=""
+
+          cases_per_version="TBD"
+
+          email_body="<h2>📊 CLI Weekly Test Results Summary</h2>
+          <p><strong>Test Execution Date:</strong> $(date '+%Y-%m-%d %H:%M:%S UTC')<br>
+          <strong>Repository:</strong> azure-cli-extensions (apic-extension)<br>
+          <strong>Test Cases per Python Version:</strong> $cases_per_version<br>
+          <strong>Python Versions Tested:</strong> $(echo "$python_versions" | jq -r 'join(", ")')</p>
+
+          <h3>Overall Summary:</h3>
+          <table border='1' cellpadding='8' cellspacing='0' style='border-collapse: collapse; font-family: monospace;'>
+            <thead style='background-color: #f0f0f0;'>
+              <tr>
+                <th style='text-align: left; padding: 8px;'>Python Version</th>
+                <th style='text-align: center; padding: 8px;'>Total Cases</th>
+                <th style='text-align: center; padding: 8px;'>Successful</th>
+                <th style='text-align: center; padding: 8px;'>Failed</th>
+                <th style='text-align: center; padding: 8px;'>Success Rate</th>
+              </tr>
+            </thead>
+            <tbody>"
+          # Process results for each Python version
+          test_job_result='${{ needs.test.result }}'
+          while IFS= read -r version; do
+            # Find result files for this Python version
+            result_files=$(find test-results/ -name "result-${version}-*.json" 2>/dev/null || echo "")
+
+            passed_count=0
+            failed_count=0
+            total_cases_this_version=0
+            failed_cases_list=""
+            if [ -n "$result_files" ]; then
+              # Process each result file
+              while IFS= read -r result_file; do
+                  if [ -f "$result_file" ]; then
+                  test_case=$(jq -r '.test_case' "$result_file" 2>/dev/null || echo "unknown")
+                  result=$(jq -r '.result' "$result_file" 2>/dev/null || echo "unknown")
+
+                  total_cases_this_version=$((total_cases_this_version + 1))
+
+                  if [ "$result" = "PASSED" ]; then
+                    passed_count=$((passed_count + 1))
+                  else
+                    failed_count=$((failed_count + 1))
+                    if [ -z "$failed_cases_list" ]; then
+                      failed_cases_list="$test_case"
+                    else
+                      failed_cases_list="$failed_cases_list, $test_case"
+                    fi
+                  fi
+                fi
+              done <<< "$result_files"
+            fi
+
+            cases_per_version=$total_cases_this_version
+            successful_cases=$passed_count
+            failed_cases_count=$failed_count
+
+            # Calculate success rate for this version
+            success_rate=$(( (successful_cases * 100) / cases_per_version ))
+
+            # Add to totals
+            total_cases=$((total_cases + cases_per_version))
+            total_success=$((total_success + successful_cases))
+            total_failed=$((total_failed + failed_cases_count))
+
+            # Add failed cases to the list
+            if [ -n "$failed_cases_list" ]; then
+              if [ -z "$failed_cases" ]; then
+                failed_cases="Python $version: $failed_cases_list"
+              else
+                failed_cases="$failed_cases\nPython $version: $failed_cases_list"
+              fi
+            fi
+            # Add row to table using HTML formatting
+            row_color=""
+            # Safely check if failed_cases_count is a number and greater than 0
+            if [ "$failed_cases_count" -gt 0 ]; then
+              row_color=" style='background-color: #ffe6e6;'"  # Light red for failures
+            else
+              row_color=" style='background-color: #e6ffe6;'"  # Light green for success
+            fi
+
+            email_body="$email_body
+              <tr$row_color>
+                <td style='padding: 8px; text-align: left;'>Python $version</td>
+                <td style='padding: 8px; text-align: center;'>$cases_per_version</td>
+                <td style='padding: 8px; text-align: center;'>$successful_cases</td>
+                <td style='padding: 8px; text-align: center;'>$failed_cases_count</td>
+                <td style='padding: 8px; text-align: center;'>$success_rate%</td>
+              </tr>"
+          done <<< "$python_versions_array"
+
+
+          # Final totals after processing all Python versions
+          echo "=========================================="
+          echo "FINAL TOTALS:"
+          echo "Total cases across all versions: $total_cases"
+          echo "Total successful: $total_success"
+          echo "Total failed: $total_failed"
+          echo "=========================================="
+
+          # Calculate overall success rate
+          overall_success_rate=$(( (total_success * 100) / total_cases ))
+
+          # Add total row and close HTML table
+          total_row_color=""
+          if [ $total_failed -gt 0 ]; then
+            total_row_color=" style='background-color: #ffcccc; font-weight: bold;'"  # Red for failures
+          else
+            total_row_color=" style='background-color: #ccffcc; font-weight: bold;'"  # Green for all success
+          fi
+
+          email_body="$email_body
+            </tbody>
+            <tfoot>
+              <tr$total_row_color>
+                <td style='padding: 8px; text-align: left; font-weight: bold;'>TOTAL</td>
+                <td style='padding: 8px; text-align: center; font-weight: bold;'>$total_cases</td>
+                <td style='padding: 8px; text-align: center; font-weight: bold;'>$total_success</td>
+                <td style='padding: 8px; text-align: center; font-weight: bold;'>$total_failed</td>
+                <td style='padding: 8px; text-align: center; font-weight: bold;'>$overall_success_rate%</td>
+              </tr>
+            </tfoot>
+          </table>"
+
+          # Add failed cases section if any
+          if [ -n "$failed_cases" ]; then
+            email_body="$email_body
+
+          <h3>❌ Failed Test Cases:</h3>
+          <ul style='font-family: monospace; background-color: #fff5f5; padding: 10px; border-left: 4px solid #ff6b6b;'>"
+            # Format the failed cases nicely - avoid subshell issue
+            IFS=$'\n'
+            for line in $(echo -e "$failed_cases"); do
+              if [ -n "$line" ]; then
+                email_body="$email_body
+            <li style='margin: 4px 0;'>$line</li>"
+              fi
+            done
+            unset IFS
+            email_body="$email_body
+          </ul>"
+          else
+            email_body="$email_body
+
+          <div style='background-color: #f0fff0; padding: 15px; border-left: 4px solid #4caf50; margin: 10px 0;'>
+            <h3 style='color: #2e7d32; margin: 0;'>🎉 All test cases passed successfully across all Python versions!</h3>
+          </div>"
+          fi
+
+          # Add workflow context and links
+          email_body="$email_body
+
+          <h3>📊 Workflow Details:</h3>
+          <div style='background-color: #f8f9fa; padding: 15px; border-radius: 5px; font-family: monospace;'>
+            <p><strong>Workflow Run:</strong> #${{ github.run_number }}</p>
+            <p><strong>Commit SHA:</strong> <code>${{ github.sha }}</code></p>
+            <p><strong>Branch:</strong> ${{ github.ref_name }}</p>
+            <p><strong>Triggered by:</strong> ${{ github.event_name }}</p>
+            <p><strong>Test Job Status:</strong> <span style='color: $([ "$test_job_result" = "success" ] && echo "#2e7d32" || echo "#d32f2f"); font-weight: bold;'>$test_job_result</span></p>
+          </div>
+
+          <h3>🔗 Links:</h3>
+          <ul>
+            <li><a href='${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'>View full results</a></li>
+            <li><a href='${{ github.server_url }}/${{ github.repository }}/blob/${{ github.ref_name }}/.github/workflows/cli.yml'>View workflow file</a></li>
+          </ul>
+
+          <div style='background-color: #e3f2fd; padding: 10px; border-radius: 5px; margin-top: 20px;'>
+            <p style='margin: 0; color: #1565c0;'><strong>ℹ️ Note:</strong> This is an automated notification from the CLI weekly test workflow. If you need to investigate failures, check the individual job logs in the workflow run.</p>
+          </div>"
+
+          # Determine email subject based on results
+          if [ $total_failed -eq 0 ]; then
+            email_subject="✅ CLI Weekly Tests PASSED - All $total_success tests successful"
+          else
+            email_subject="❌ CLI Weekly Tests FAILED - $total_failed/$total_cases tests failed"
+          fi
+
+          # Add build status emoji based on overall result
+          if [ "$test_job_result" = "success" ]; then
+            status_emoji="✅"
+            status_text="SUCCESS"
+          elif [ "$test_job_result" = "failure" ]; then
+            status_emoji="❌"
+            status_text="FAILURE"
+          elif [ "$test_job_result" = "cancelled" ]; then
+            status_emoji="⚠️"
+            status_text="CANCELLED"
+          else
+            status_emoji="❓"
+            status_text="UNKNOWN"
+          fi
+
+          email_subject="$status_emoji CLI Weekly Tests $status_text ($total_success/$total_cases passed)"
+
+          # Set environment variables for the email sending step
+          echo "EMAIL_SUBJECT=$email_subject" >> $GITHUB_ENV
+          echo "EMAIL_TO=${{secrets.AUTHOR_MAIL_ADDRESSES}}" >> $GITHUB_ENV
+
+          # Handle multi-line email body properly - ensure proper formatting is preserved
+          # Use a delimiter that won't appear in the content
+          delimiter="EMAIL_BODY_EOF_$(date +%s)"
+          {
+            echo "EMAIL_BODY<<$delimiter"
+            printf "%s\n" "$email_body"
+            echo "$delimiter"
+          } >> $GITHUB_ENV
+
+          echo "✅ Email content generated successfully"
+          echo "📧 Subject: $email_subject"
+          echo "📊 Total Cases: $total_cases, Success: $total_success, Failed: $total_failed, Success Rate: $overall_success_rate%"
+          echo "📋 Test Job Result: $test_job_result"
+
 
       - name: Send Email Notification
         run: |
-          response=$(curl \
+          echo "Sending email notification..."
+
+          # Get access token
+          response=$(curl -s \
             --request POST \
             --header "Content-Type: application/x-www-form-urlencoded" \
             --data "grant_type=client_credentials&client_id=${{ secrets.MAIL_CLIENT_ID }}&client_secret=${{ secrets.MAIL_CLIENT_SECRET }}&resource=https://management.core.windows.net" \
             "https://login.microsoftonline.com/${{ secrets.MAIL_TENANT_ID }}/oauth2/token")
 
-          access_token=$(echo $response | jq -r '. | select(.access_token) | .access_token')
+          access_token=$(echo $response | jq -r '.access_token // empty')
 
-          curl \
+          if [ -z "$access_token" ]; then
+            echo "Failed to get access token"
+            echo "Response: $response"
+            exit 1
+          fi
+
+          # Create JSON payload using jq to properly escape special characters
+          json_payload=$(jq -n \
+            --arg to "$EMAIL_TO" \
+            --arg subject "$EMAIL_SUBJECT" \
+            --arg body "$EMAIL_BODY" \
+            '{to: $to, subject: $subject, body: $body}')
+
+          # Send email
+          curl_response=$(curl -s -w "HTTP_STATUS:%{http_code}" \
             --request POST \
             --header "Content-Type: application/json" \
             --header "Authorization: Bearer $access_token" \
-            --data "{\"to\": \"${{ env.to }}\", \"body\": \"${{ env.body }}\", \"subject\": \"${{ env.subject }}\"}" \
-            'https://prod-18.northcentralus.logic.azure.com:443/workflows/b33d7861bfc64832a6f62cc8f2213988/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0'
-        shell: bash
+            --data "$json_payload" \
+            'https://prod-18.northcentralus.logic.azure.com:443/workflows/b33d7861bfc64832a6f62cc8f2213988/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0')
+
+          http_status=$(echo "$curl_response" | grep -o "HTTP_STATUS:[0-9]*" | cut -d: -f2)
+          response_body=$(echo "$curl_response" | sed 's/HTTP_STATUS:[0-9]*$//')
+
+          echo "Email sending status: $http_status"
+          if [ "$http_status" != "200" ] && [ "$http_status" != "202" ]; then
+            echo "Failed to send email. Response: $response_body"
+            exit 1
+          else
+            echo "Email sent successfully"
+          fi
+
+      - name: Cleanup test result artifacts
+        if: always()
+        uses: geekyeggo/delete-artifact@v5
+        with:
+          name: test-results-*
+          failOnError: false
