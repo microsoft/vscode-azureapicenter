@@ -2,6 +2,13 @@
 
 > Note: This changelog only includes the changes for the stable versions of Azure API Center for Visual Studio Code. For the changelog of pre-released versions, please refer to the [Pre-release Changelog of Azure API Center for Visual Studio Code](https://github.com/microsoft/vscode-azureapicenter/blob/main/PRERELEASE.md).
 
+## 1.3.0
+* **'Edit API Specification Document' Command**: Added a command to edit and upload API spec.
+* **'Create new integration with Azure API Management' Command**: Added a command to sync APIs from APIM, also a new 'Integrations' tree node to list all the integrations.
+* **'Register MCP Server (Preview)' Command**: Added a command to register MCP Server.
+* **'Create API Environment' Command**: Added a command to create new API Environment.
+* Added 'Environments' and 'Deployments' tree node in 'API Center Portal View'.
+* 'Generate OpenAPI Spec from Current File' and 'Generate OpenAPI Spec from Entire Project' commands are moved to 'Azure API Center' submenu from 'Copilot' submenu.
 
 ## 1.2.0
 * **Language Model Tools for API Center Data Plane APIs**: Added 5 language model tools to help developers easily discover and consume APIs registered in API Center with GitHub Copilot agent mode.
