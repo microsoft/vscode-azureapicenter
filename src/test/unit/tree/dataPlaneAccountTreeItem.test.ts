@@ -65,6 +65,7 @@ describe("ApiServerItem treeItem test case", () => {
         };
         subContext = {
             credentials,
+            createCredentialsForScopes: async () => credentials,
             subscriptionDisplayName: "",
             subscriptionId: "",
             subscriptionPath: "fake_test_domain",
