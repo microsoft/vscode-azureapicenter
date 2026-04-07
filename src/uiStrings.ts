@@ -207,4 +207,9 @@ export class UiStrings {
     static readonly NoAPIManagementFound = vscode.l10n.t("No API Management services found in the subscription.");
     static readonly SelectAPIManagementService = vscode.l10n.t("Select an API Management service");
     static readonly FailedToAssignManagedIdentityReaderRole = vscode.l10n.t("Failed to assign Managed Identity 'API Management Service Reader' Role: {0}");
+    static readonly SkillInstallMissingParams = vscode.l10n.t("Skill installation failed: 'sourceUrl' and 'name' query parameters are required.");
+    static readonly SkillInstallInvalidUrl = vscode.l10n.t("Skill installation failed: the source URL must be a GitHub folder URL (https://github.com/{owner}/{repo}/tree/{branch}/{path}).");
+    static readonly SkillInstallProgressTitle = vscode.l10n.t("Installing skill '{0}'...");
+    static readonly SkillInstallSuccess = vscode.l10n.t("Skill '{0}' installed successfully.");
+    static readonly SkillInstallFailed = vscode.l10n.t("Failed to install skill '{0}': {1}");
 }
