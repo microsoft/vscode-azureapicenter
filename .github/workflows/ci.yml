@@ -1,74 +1,74 @@
 name: "CI"
 on:
-  pull_request:
-    branches:
-      - main
-      - dev
-  push:
-    branches:
-      - main
-      - dev
+    pull_request:
+        branches:
+            - main
+            - dev
+    push:
+        branches:
+            - main
+            - dev
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - name: checkout
-        uses: actions/checkout@v3
-        with:
-          ref: ${{ github.head_ref }}
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
-      - uses: actions/setup-node@v3
-        with:
-          node-version: lts/*
-      - name: Setup project
-        run: |
-          npm install
-          npm run package
-      - name: Check lint
-        run: |
-          npm run lint
+    lint:
+        runs-on: ubuntu-latest
+        steps:
+            - name: checkout
+              uses: actions/checkout@v3
+              with:
+                  ref: ${{ github.head_ref }}
+                  repository: ${{ github.event.pull_request.head.repo.full_name }}
+            - uses: actions/setup-node@v3
+              with:
+                  node-version: lts/*
+            - name: Setup project
+              run: |
+                  npm install
+                  npm run package
+            - name: Check lint
+              run: |
+                  npm run lint
 
-  semver-title:
-    runs-on: ubuntu-latest
-    if: (github.event_name == 'pull_request')
-    permissions:
-      pull-requests: write
-    steps:
-      - uses: amannn/action-semantic-pull-request@v3.4.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    semver-title:
+        runs-on: ubuntu-latest
+        if: (github.event_name == 'pull_request')
+        permissions:
+            pull-requests: write
+        steps:
+            - uses: amannn/action-semantic-pull-request@v3.4.0
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  unit-test:
-    runs-on: windows-latest
-    permissions:
-      pull-requests: write
-    steps:
-      - name: checkout PR
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-          ref: ${{ github.head_ref }}
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
-      - name: Merge Branches
-        if: ${{ github.event_name == 'pull_request' }}
-        run: |
-          git config --global user.email "bot@user.noreply.github.com"
-          git config --global user.name "bot"
+    unit-test:
+        runs-on: windows-latest
+        permissions:
+            pull-requests: write
+        steps:
+            - name: checkout PR
+              uses: actions/checkout@v3
+              with:
+                  fetch-depth: 0
+                  ref: ${{ github.head_ref }}
+                  repository: ${{ github.event.pull_request.head.repo.full_name }}
+            - name: Merge Branches
+              if: ${{ github.event_name == 'pull_request' }}
+              run: |
+                  git config --global user.email "bot@user.noreply.github.com"
+                  git config --global user.name "bot"
 
-          git remote add ${{ github.event.pull_request.base.repo.owner.login }} ${{ github.event.pull_request.base.repo.clone_url }}
-          git fetch ${{ github.event.pull_request.base.repo.owner.login }}
-          git merge ${{ github.event.pull_request.base.repo.owner.login }}/${{ github.event.pull_request.base.ref }}
-      - uses: actions/setup-node@v3
-        with:
-          node-version: lts/*
-      - name: run test
-        run: |
-          npm install --ignore-scripts
-          npm run test
+                  git remote add ${{ github.event.pull_request.base.repo.owner.login }} ${{ github.event.pull_request.base.repo.clone_url }}
+                  git fetch ${{ github.event.pull_request.base.repo.owner.login }}
+                  git merge ${{ github.event.pull_request.base.repo.owner.login }}/${{ github.event.pull_request.base.ref }}
+            - uses: actions/setup-node@v3
+              with:
+                  node-version: lts/*
+            - name: run test
+              run: |
+                  npm install --ignore-scripts
+                  npm run test
 
-      - uses: codecov/codecov-action@v4
-        with:
-          token: ${{ secrets.CODE_COV }}
-          fail_ci_if_error: true
-          verbose: true
+            - uses: codecov/codecov-action@v4
+              with:
+                  token: ${{ secrets.CODE_COV }}
+                  fail_ci_if_error: true
+                  verbose: true

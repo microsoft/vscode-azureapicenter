@@ -21,6 +21,12 @@ interface GitHubContentEntry {
     download_url: string;
 }
 
+// Exported for testing only
+export const _fs = {
+    createDirectory: (uri: vscode.Uri): Thenable<void> => vscode.workspace.fs.createDirectory(uri),
+    writeFile: (uri: vscode.Uri, content: Uint8Array): Thenable<void> => vscode.workspace.fs.writeFile(uri, content),
+};
+
 export async function installSkill(sourceUrl: string, name: string | undefined): Promise<void> {
     if (!sourceUrl || !name) {
         vscode.window.showErrorMessage(UiStrings.SkillInstallMissingParams);
@@ -57,7 +63,7 @@ export async function installSkill(sourceUrl: string, name: string | undefined):
                 const files = await listFilesRecursive(folderInfo.owner, folderInfo.repo, folderInfo.ref, folderInfo.folderPath);
 
                 progress.report({ message: vscode.l10n.t('Downloading {0} file(s)...', files.length) });
-                await vscode.workspace.fs.createDirectory(targetDir);
+                await _fs.createDirectory(targetDir);
                 for (const file of files) {
                     const relativePath = file.path.startsWith(folderInfo.folderPath + '/')
                         ? file.path.slice(folderInfo.folderPath.length + 1)
@@ -68,11 +74,11 @@ export async function installSkill(sourceUrl: string, name: string | undefined):
 
                     const parentRelative = path.dirname(relativePath);
                     if (parentRelative !== '.') {
-                        await vscode.workspace.fs.createDirectory(
+                        await _fs.createDirectory(
                             vscode.Uri.joinPath(targetDir, parentRelative)
                         );
                     }
-                    await vscode.workspace.fs.writeFile(fileUri, content);
+                    await _fs.writeFile(fileUri, content);
                 }
 
                 vscode.window.showInformationMessage(

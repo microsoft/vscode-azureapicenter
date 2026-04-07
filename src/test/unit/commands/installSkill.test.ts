@@ -3,7 +3,7 @@
 import * as assert from 'assert';
 import * as sinon from 'sinon';
 import * as vscode from 'vscode';
-import { installSkill } from '../../../commands/installSkill';
+import { _fs, installSkill } from '../../../commands/installSkill';
 
 describe('installSkill', () => {
     let sandbox: sinon.SinonSandbox;
@@ -21,8 +21,8 @@ describe('installSkill', () => {
     beforeEach(() => {
         showErrorMessageStub = sandbox.stub(vscode.window, 'showErrorMessage').resolves();
         showInformationMessageStub = sandbox.stub(vscode.window, 'showInformationMessage').resolves();
-        createDirectoryStub = sandbox.stub(vscode.workspace.fs, 'createDirectory').resolves();
-        writeFileStub = sandbox.stub(vscode.workspace.fs, 'writeFile').resolves();
+        createDirectoryStub = sandbox.stub(_fs, 'createDirectory').resolves();
+        writeFileStub = sandbox.stub(_fs, 'writeFile').resolves();
 
         // Simulate withProgress executing the task immediately
         withProgressStub = sandbox.stub(vscode.window, 'withProgress').callsFake(
