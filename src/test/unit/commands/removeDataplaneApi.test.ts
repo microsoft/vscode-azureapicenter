@@ -57,6 +57,7 @@ describe('removeDataplaneAPI test happy path', () => {
             tenantId: "tenantId1",
             userId: "clientId1",
             credentials: {} as any,
+            createCredentialsForScopes: async () => ({} as any),
             subscriptionDisplayName: "",
             subscriptionId: "",
             environment: {} as any,

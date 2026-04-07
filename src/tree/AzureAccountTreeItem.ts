@@ -196,6 +196,7 @@ function getSubscriptionContext(
 
   return {
     credentials,
+    createCredentialsForScopes: async (_scopes: string[]) => credentials,
     subscriptionDisplayName: subscription.displayName || "",
     subscriptionId: subscription.subscriptionId || "",
     subscriptionPath: `/subscriptions/${subscription.subscriptionId}`,
