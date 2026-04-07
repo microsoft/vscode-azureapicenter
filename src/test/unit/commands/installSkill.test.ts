@@ -26,7 +26,7 @@ describe('installSkill', () => {
 
         // Simulate withProgress executing the task immediately
         withProgressStub = sandbox.stub(vscode.window, 'withProgress').callsFake(
-            async (_options: any, task: (progress: any, token: any) => Thenable<any>) => task({}, {} as any)
+            async (_options: any, task: (progress: any, token: any) => Thenable<any>) => task({ report: () => { } }, {} as any)
         );
 
         // Stub global fetch
@@ -63,8 +63,8 @@ describe('installSkill', () => {
         ]);
 
         const fakeContents = [
-            { type: 'file', name: 'skill.md', download_url: 'https://raw.githubusercontent.com/owner/repo/main/skills/mine/skill.md' },
-            { type: 'file', name: 'config.json', download_url: 'https://raw.githubusercontent.com/owner/repo/main/skills/mine/config.json' },
+            { type: 'file', name: 'skill.md', path: 'skills/mine/skill.md', download_url: 'https://raw.githubusercontent.com/owner/repo/main/skills/mine/skill.md' },
+            { type: 'file', name: 'config.json', path: 'skills/mine/config.json', download_url: 'https://raw.githubusercontent.com/owner/repo/main/skills/mine/config.json' },
         ];
 
         fetchStub
@@ -76,7 +76,7 @@ describe('installSkill', () => {
 
         sandbox.assert.calledOnce(withProgressStub);
         assert.equal(fetchStub.callCount, 3);
-        assert.equal(createDirectoryStub.callCount, 1);
+        assert.equal(createDirectoryStub.callCount, 1); // targetDir created once before the loop
         assert.equal(writeFileStub.callCount, 2);
         sandbox.assert.calledOnce(showInformationMessageStub);
     });
@@ -104,7 +104,7 @@ describe('installSkill', () => {
 
         await installSkill('https://example.com/not-github', 'my-skill');
 
-        sandbox.assert.calledOnce(withProgressStub);
+        sandbox.assert.calledOnce(withProgressStub); // withProgress is called; URL parsing fails inside
         sandbox.assert.calledOnce(showErrorMessageStub);
         sandbox.assert.notCalled(showInformationMessageStub);
     });

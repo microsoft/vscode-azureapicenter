@@ -22,7 +22,7 @@ interface GitHubContentEntry {
 }
 
 export async function installSkill(sourceUrl: string, name: string | undefined): Promise<void> {
-    if (!sourceUrl) {
+    if (!sourceUrl || !name) {
         vscode.window.showErrorMessage(UiStrings.SkillInstallMissingParams);
         return;
     }
@@ -33,26 +33,7 @@ export async function installSkill(sourceUrl: string, name: string | undefined):
         return;
     }
 
-    let folderInfo: GitHubFolderInfo;
-    try {
-        folderInfo = parseGitHubFolderUrl(sourceUrl);
-    } catch (err: unknown) {
-        vscode.window.showErrorMessage(UiStrings.SkillInstallInvalidUrl);
-        return;
-    }
-
-    const skillName = name || folderInfo.folderPath.split('/').pop() || 'skill';
-
-    const confirm = await vscode.window.showInformationMessage(
-        vscode.l10n.t('Install skill "{0}" from API Center?', skillName),
-        { modal: true, detail: vscode.l10n.t('Source: {0}', sourceUrl) },
-        vscode.l10n.t('Install')
-    );
-
-    if (confirm !== vscode.l10n.t('Install')) {
-        return;
-    }
-
+    const skillName = name;
     const rootUri = workspaceFolders[0].uri;
     const skillsRelPath = '.github/skills';
     const targetDir = vscode.Uri.joinPath(rootUri, skillsRelPath, skillName);
@@ -65,10 +46,18 @@ export async function installSkill(sourceUrl: string, name: string | undefined):
         },
         async (progress) => {
             try {
+                let folderInfo: GitHubFolderInfo;
+                try {
+                    folderInfo = parseGitHubFolderUrl(sourceUrl);
+                } catch {
+                    throw new Error(UiStrings.SkillInstallInvalidUrl);
+                }
+
                 progress.report({ message: vscode.l10n.t('Fetching file list from GitHub...') });
                 const files = await listFilesRecursive(folderInfo.owner, folderInfo.repo, folderInfo.ref, folderInfo.folderPath);
 
                 progress.report({ message: vscode.l10n.t('Downloading {0} file(s)...', files.length) });
+                await vscode.workspace.fs.createDirectory(targetDir);
                 for (const file of files) {
                     const relativePath = file.path.startsWith(folderInfo.folderPath + '/')
                         ? file.path.slice(folderInfo.folderPath.length + 1)
@@ -77,9 +66,12 @@ export async function installSkill(sourceUrl: string, name: string | undefined):
                     const fileUri = vscode.Uri.joinPath(targetDir, relativePath);
                     const content = await downloadFile(file.download_url);
 
-                    await vscode.workspace.fs.createDirectory(
-                        vscode.Uri.joinPath(targetDir, path.dirname(relativePath))
-                    );
+                    const parentRelative = path.dirname(relativePath);
+                    if (parentRelative !== '.') {
+                        await vscode.workspace.fs.createDirectory(
+                            vscode.Uri.joinPath(targetDir, parentRelative)
+                        );
+                    }
                     await vscode.workspace.fs.writeFile(fileUri, content);
                 }
 
