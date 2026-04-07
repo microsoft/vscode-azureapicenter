@@ -64,7 +64,7 @@ jobs:
           node-version: lts/*
       - name: run test
         run: |
-          npm install
+          npm install --ignore-scripts
           npm run test
 
       - uses: codecov/codecov-action@v4
