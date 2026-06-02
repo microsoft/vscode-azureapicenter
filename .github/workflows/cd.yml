@@ -61,7 +61,7 @@ jobs:
 
       - name: Build visx
         run: |
-          npm install
+          npm install --ignore-scripts
           if [ "${{ github.event.inputs.preview }}" == "true" ]; then
             npx @vscode/vsce package --no-dependencies --pre-release --githubBranch ${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
           else
