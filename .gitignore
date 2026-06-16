@@ -141,3 +141,4 @@ templates/openapi3
 
 # temp file for test plan synchrization
 testplan.json
+/.vs

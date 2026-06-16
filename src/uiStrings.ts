@@ -71,6 +71,7 @@ export class UiStrings {
     static readonly ApiVersionDefinitionsTreeItemChildTypeLabel = vscode.l10n.t("API Definition");
     static readonly NoFolderOpened = vscode.l10n.t("No folder is opened. Please open a folder to use this feature.");
     static readonly NoNodeInstalled = vscode.l10n.t("Node.js is not installed. Please install Node.js to use this feature.");
+    static readonly WorkspaceNotTrusted = vscode.l10n.t("This feature is disabled in untrusted workspaces. Please trust this workspace to use it.");
     static readonly SelectFirstApiSpecification = vscode.l10n.t("Select first API specification document");
     static readonly SelectSecondApiSpecification = vscode.l10n.t("Select second API specification document");
     static readonly SelectApiSpecification = vscode.l10n.t("Select API specification document");
