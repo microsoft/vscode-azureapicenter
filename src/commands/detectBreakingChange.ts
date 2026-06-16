@@ -18,6 +18,10 @@ export async function detectBreakingChange(context: IActionContext) {
         throw new Error(UiStrings.NoFolderOpened);
     }
 
+    if (!vscode.workspace.isTrusted) {
+        throw new Error(UiStrings.WorkspaceNotTrusted);
+    }
+
     const nodeVersion = await checkNodeVersion();
     if (!nodeVersion) {
         throw new Error(UiStrings.NoNodeInstalled);

@@ -14,7 +14,17 @@ export async function opticDiff(filePath1: string, filePath2: string) {
         vscode.TaskScope.Workspace,
         UiStrings.OpticTaskName,
         UiStrings.OpticTaskSource,
-        new vscode.ShellExecution(`npx -y @useoptic/optic@0.54.12 diff '${filePath1}' '${filePath2}' --check`),
+        new vscode.ShellExecution(
+            "npx",
+            [
+                "-y",
+                "@useoptic/optic@0.54.12",
+                "diff",
+                { value: filePath1, quoting: vscode.ShellQuoting.Strong },
+                { value: filePath2, quoting: vscode.ShellQuoting.Strong },
+                "--check",
+            ],
+        ),
         "$optic"
     );
 

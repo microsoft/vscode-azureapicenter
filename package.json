@@ -33,6 +33,12 @@
   ],
   "main": "./dist/extension.js",
   "l10n": "l10n",
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": "limited",
+      "description": "%azure-api-center.capabilities.untrustedWorkspaces.description%"
+    }
+  },
   "contributes": {
     "commands": [
       {

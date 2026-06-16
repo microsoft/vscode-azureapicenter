@@ -1,4 +1,5 @@
 {
+    "azure-api-center.capabilities.untrustedWorkspaces.description": "Commands that execute local tooling, such as Detect Breaking Change, are disabled in untrusted workspaces.",
     "azure-api-center.commands.selectSubscriptions.title": "Select Subscriptions...",
     "azure-api-center.commands.apiCenterTreeView.refresh.title": "Refresh",
     "azure-api-center.commands.open-api-docs.title": "Open API Documentation",
