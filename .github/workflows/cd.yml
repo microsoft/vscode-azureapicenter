@@ -80,8 +80,20 @@ jobs:
         run: |
           echo "version=$(jq -r '"v"+.version' package.json)" >> $GITHUB_OUTPUT
 
+      - name: check tag exists
+        id: tag-check
+        if: ${{ github.event.inputs.tag == 'true' }}
+        run: |
+          TAG="${{ steps.package-version.outputs.version }}"
+          if git ls-remote --exit-code --tags origin "refs/tags/$TAG" >/dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "::warning::Tag $TAG already exists (package.json version was not bumped). Skipping tag creation."
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
       - uses: piszmog/create-tag@v1
-        if: ${{ github.event.inputs.tag == 'true'}}
+        if: ${{ github.event.inputs.tag == 'true' && steps.tag-check.outputs.exists == 'false' }}
         with:
           version: ${{ steps.package-version.outputs.version }}
           message: "release ${{ steps.package-version.outputs.version }}"
