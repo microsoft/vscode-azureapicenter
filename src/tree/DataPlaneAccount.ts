@@ -106,12 +106,10 @@ export class ApiServerItem extends GenericParentTreeItem {
             initialCollapsibleState: vscode.TreeItemCollapsibleState.Expanded,
         } as GenericParentTreeItemOptions);
         this.label = subContext.subscriptionPath.split('.')[0];
+        this.id = this.label;
         this.subscriptionContext = subContext;
         this.apisTreeItem = new ApisTreeItem(this, new ApiCenterApisDataplane({ name: this.label }));
         this.envsTreeItem = new EnvironmentsTreeItem(this, this.label, new ApiCenterEnvironmentsDataplane({ name: this.label }));
-    }
-    public get id(): string {
-        return this.label;
     }
     public contextValue: string = ApiServerItem.contextValue;
     public static contextValue: string = "azureApiCenterDataPlane";
