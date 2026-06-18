@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 import { IActionContext, TreeItemIconPath } from '@microsoft/vscode-azext-utils';
 import * as path from 'path';
-import { window } from "vscode";
+import { Uri, window } from "vscode";
 import { ApiCenterVersionDefinitionDataPlane, ApiCenterVersionDefinitionManagement } from "../azure/ApiCenterDefines/ApiCenterDefinition";
 import { TreeViewType } from "../constants";
 import { ext } from '../extensionVariables';
@@ -12,13 +12,13 @@ import { SubscriptionTreeItem } from "../tree/SubscriptionTreeItem";
 import { UiStrings } from "../uiStrings";
 export namespace treeUtils {
     export function getIconPath(iconName: string): TreeItemIconPath {
-        return path.join(getResourcesPath(), `${iconName}.svg`);
+        return Uri.file(path.join(getResourcesPath(), `${iconName}.svg`));
     }
 
     export function getThemedIconPath(iconName: string): TreeItemIconPath {
         return {
-            light: path.join(getResourcesPath(), 'light', `${iconName}.svg`),
-            dark: path.join(getResourcesPath(), 'dark', `${iconName}.svg`)
+            light: Uri.file(path.join(getResourcesPath(), 'light', `${iconName}.svg`)),
+            dark: Uri.file(path.join(getResourcesPath(), 'dark', `${iconName}.svg`))
         };
     }
 
