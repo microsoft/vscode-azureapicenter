@@ -125,7 +125,7 @@ export function getSubscriptionContext(
 
     return {
         credentials,
-        createCredentialsForScopes: async (_scopes: string[]) => credentials,
+        createCredentialsForScopes: async (_scopes: string[] | vscode.AuthenticationWwwAuthenticateRequest) => credentials,
         subscriptionDisplayName: "",
         subscriptionId: "",
         subscriptionPath: account.domain,
