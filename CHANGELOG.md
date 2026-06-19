@@ -2,6 +2,9 @@
 
 > Note: This changelog only includes the changes for the stable versions of Azure API Center for Visual Studio Code. For the changelog of pre-released versions, please refer to the [Pre-release Changelog of Azure API Center for Visual Studio Code](https://github.com/microsoft/vscode-azureapicenter/blob/main/PRERELEASE.md).
 
+## 1.3.5
+* **Fix activation regression on load**: Bundle a single copy of `@microsoft/vscode-azext-utils` to avoid a webpack dual-package hazard that left the API Center tree views with "no data provider" and unregistered commands.
+
 ## 1.3.0
 * **'Edit API Specification Document' Command**: Added a command to edit and upload API spec.
 * **'Create new integration with Azure API Management' Command**: Added a command to sync APIs from APIM, also a new 'Integrations' tree node to list all the integrations.

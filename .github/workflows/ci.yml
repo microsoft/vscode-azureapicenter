@@ -25,6 +25,9 @@ jobs:
               run: |
                   npm install --ignore-scripts
                   npm run package
+            - name: Verify bundle (single azext-utils instance)
+              run: |
+                  npm run verify-bundle
             - name: Check lint
               run: |
                   npm run lint

@@ -32,6 +32,14 @@ const extensionConfig = {
     resolve: {
         // support reading TypeScript and JavaScript files, 📖 -> https://github.com/TypeStrong/ts-loader
         extensions: [".ts", ".js"],
+        // Force a single (CommonJS) copy of dual-published (ESM+CJS) packages.
+        // Packages like @microsoft/vscode-azext-* ship both an "import" (ESM) and
+        // "require" (CJS) build via the package "exports" field. Without pinning the
+        // condition, webpack can bundle BOTH builds, producing two instances of a
+        // module's singletons (e.g. the azext-utils `ext`). That breaks
+        // registerUIExtensionVariables at runtime ("must be called before using the
+        // @microsoft/vscode-azext-utils package"). Preferring "require" keeps one copy.
+        conditionNames: ["require", "node", "default"],
     },
     module: {
         rules: [
