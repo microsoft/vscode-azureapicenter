@@ -14,11 +14,11 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: checkout
-              uses: actions/checkout@v3
+              uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
               with:
                   ref: ${{ github.head_ref }}
                   repository: ${{ github.event.pull_request.head.repo.full_name }}
-            - uses: actions/setup-node@v3
+            - uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610 # v3.9.1
               with:
                   node-version: lts/*
             - name: Setup project
@@ -35,7 +35,7 @@ jobs:
         permissions:
             pull-requests: write
         steps:
-            - uses: amannn/action-semantic-pull-request@v3.4.0
+            - uses: amannn/action-semantic-pull-request@db6e259b93f286e3416eef27aaae88935d16cf2e # v3.4.0
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -45,7 +45,7 @@ jobs:
             pull-requests: write
         steps:
             - name: checkout PR
-              uses: actions/checkout@v3
+              uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
               with:
                   fetch-depth: 0
                   ref: ${{ github.head_ref }}
@@ -59,7 +59,7 @@ jobs:
                   git remote add ${{ github.event.pull_request.base.repo.owner.login }} ${{ github.event.pull_request.base.repo.clone_url }}
                   git fetch ${{ github.event.pull_request.base.repo.owner.login }}
                   git merge ${{ github.event.pull_request.base.repo.owner.login }}/${{ github.event.pull_request.base.ref }}
-            - uses: actions/setup-node@v3
+            - uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610 # v3.9.1
               with:
                   node-version: lts/*
             - name: run test
@@ -67,7 +67,7 @@ jobs:
                   npm install --ignore-scripts
                   npm run test
 
-            - uses: codecov/codecov-action@v4
+            - uses: codecov/codecov-action@b9fd7d16f6d7d1b5d2bec1a2887e65ceed900238 # v4.6.0
               with:
                   token: ${{ secrets.CODE_COV }}
                   fail_ci_if_error: true
