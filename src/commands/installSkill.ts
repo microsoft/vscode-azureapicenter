@@ -6,6 +6,7 @@ import { UiStrings } from '../uiStrings';
 
 // Matches: https://github.com/{owner}/{repo}/tree/{branch}/{folderPath}
 const GITHUB_TREE_PATTERN = /^https:\/\/github\.com\/([^/]+)\/([^/]+)\/tree\/([^/]+)\/(.+)$/;
+const SKILL_DEFINITION_FILES = new Set(['skill.md', 'skill.json']);
 
 interface GitHubFolderInfo {
     owner: string;
@@ -60,7 +61,13 @@ export async function installSkill(sourceUrl: string, name: string | undefined):
                 }
 
                 progress.report({ message: vscode.l10n.t('Fetching file list from GitHub...') });
-                const files = await listFilesRecursive(folderInfo.owner, folderInfo.repo, folderInfo.ref, folderInfo.folderPath);
+                const files = await listFilesRecursive(
+                    folderInfo.owner,
+                    folderInfo.repo,
+                    folderInfo.ref,
+                    folderInfo.folderPath,
+                    true
+                );
 
                 progress.report({ message: vscode.l10n.t('Downloading {0} file(s)...', files.length) });
                 await _fs.createDirectory(targetDir);
@@ -102,11 +109,18 @@ function parseGitHubFolderUrl(url: string): GitHubFolderInfo {
     return { owner, repo, ref, folderPath };
 }
 
+function hasRootSkillDefinition(entries: GitHubContentEntry[]): boolean {
+    return entries.some(
+        (entry) => entry.type === 'file' && SKILL_DEFINITION_FILES.has(entry.name.toLowerCase())
+    );
+}
+
 async function listFilesRecursive(
     owner: string,
     repo: string,
     ref: string,
-    folderPath: string
+    folderPath: string,
+    requireSkillRoot = false
 ): Promise<GitHubContentEntry[]> {
     const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${folderPath}?ref=${ref}`;
     const response = await fetch(apiUrl, {
@@ -121,13 +135,17 @@ async function listFilesRecursive(
     }
 
     const entries = await response.json() as GitHubContentEntry[];
+    if (!Array.isArray(entries) || (requireSkillRoot && !hasRootSkillDefinition(entries))) {
+        throw new Error(UiStrings.SkillInstallMissingSkillDefinition);
+    }
+
     const results: GitHubContentEntry[] = [];
 
     for (const entry of entries) {
         if (entry.type === 'file') {
             results.push(entry);
         } else if (entry.type === 'dir') {
-            const nested = await listFilesRecursive(owner, repo, ref, entry.path);
+            const nested = await listFilesRecursive(owner, repo, ref, entry.path, false);
             results.push(...nested);
         }
     }

@@ -108,4 +108,27 @@ describe('installSkill', () => {
         sandbox.assert.calledOnce(showErrorMessageStub);
         sandbox.assert.notCalled(showInformationMessageStub);
     });
+
+    it('rejects shared parent directories that do not contain a root skill definition without recursing', async () => {
+        const fakeWorkspaceUri = vscode.Uri.file('/fake/workspace');
+        sandbox.stub(vscode.workspace, 'workspaceFolders').value([
+            { uri: fakeWorkspaceUri, name: 'workspace', index: 0 }
+        ]);
+
+        const parentDirectoryContents = [
+            { type: 'dir', name: 'skill-a', path: 'skills/skill-a', download_url: '' },
+            { type: 'dir', name: 'skill-b', path: 'skills/skill-b', download_url: '' },
+        ];
+
+        fetchStub.onFirstCall().resolves({ ok: true, json: async () => parentDirectoryContents } as any);
+
+        await installSkill('https://github.com/owner/repo/tree/main/skills', 'my-skill');
+
+        sandbox.assert.calledOnce(withProgressStub);
+        assert.equal(fetchStub.callCount, 1);
+        sandbox.assert.notCalled(createDirectoryStub);
+        sandbox.assert.notCalled(writeFileStub);
+        sandbox.assert.calledOnce(showErrorMessageStub);
+        sandbox.assert.notCalled(showInformationMessageStub);
+    });
 });
