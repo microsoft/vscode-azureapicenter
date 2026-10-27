@@ -17,22 +17,22 @@ jobs:
       pull-requests: write # Ability to post comments on Pull Requests
       id-token: write # Required for Azure login
     steps:
-      - uses: actions/checkout@a37ce9120846195fa4ece8f58b268e6043cb2f26 # v3.7.0
-      - uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610 # v3.9.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: lts/*
       - name: Setup project
         run: |
           npm install
       - name: Azure login
-        uses: azure/login@7184910d9eb2b1c5e48f7073824a90609bb9b6d6 # v2.3.1
+        uses: azure/login@a641126d1b8aa4d1fa005f4f92df94a3a4c4c906 # v3.1.0
         with:
           client-id: ${{ secrets.EVALUATION_TEST_CLIENT_ID }}
           tenant-id: ${{ secrets.EVALUATION_TEST_TENANT_ID }}
           subscription-id: ${{ secrets.EVALUATION_TEST_SUB_ID }}
           enable-AzPSSession: true
       - name: Set up promptfoo cache
-        uses: actions/cache@6f8efc29b200d32929f49075959781ed54ec270c # v3.5.0
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.cache/promptfoo
           key: ${{ runner.os }}-promptfoo-v1
@@ -57,7 +57,7 @@ jobs:
           node .github/workflows/scripts/collectPromptRes.js
           cat ./commentContent.txt
 
-      - uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+      - uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
