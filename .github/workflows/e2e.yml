@@ -18,11 +18,11 @@ jobs:
       CI: true
     steps:
       - name: checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@a37ce9120846195fa4ece8f58b268e6043cb2f26 # v3.7.0
         with:
           ref: ${{ github.head_ref }}
           # repository: ${{ github.event.pull_request.head.repo.full_name }}
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@7c12f8017d5436eb855f1ed4399f037a36fbd9e8 # v2.5.2
         with:
           node-version: lts/*
       - name: Setup project
@@ -30,7 +30,7 @@ jobs:
           npm install
           npm run package
       - name: setup account
-        uses: jsdaniell/create-json@v1
+        uses: jsdaniell/create-json@876fa029f1fce97553997f9e4c10ddd9bb4e85ce # v1.1.2
         with:
           name: "config.json"
           json: ${{ secrets.ACCOUNT_CONFIG }}
@@ -39,7 +39,7 @@ jobs:
           xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" npx playwright test
         working-directory: ./src/test/e2e
       - if: ${{ always() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: test-results
           path: |
@@ -56,8 +56,8 @@ jobs:
     env:
       AUTO_TEST_PLAN_ID: 26611787
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@a37ce9120846195fa4ece8f58b268e6043cb2f26 # v3.7.0
+      - uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610 # v3.9.1
         with:
           node-version: 18
 
@@ -65,7 +65,7 @@ jobs:
         run: |
           npm install
 
-      - uses: azure/login@v2
+      - uses: azure/login@7184910d9eb2b1c5e48f7073824a90609bb9b6d6 # v2.3.1
         with:
           client-id: ${{secrets.DEVOPS_CLIENT_ID}}
           tenant-id: ${{secrets.DEVOPS_TENANT_ID}}
@@ -80,7 +80,7 @@ jobs:
           npx ts-node scripts/testPlan.ts archive $testplanid
 
       - name: Download TestPlan
-        uses: actions/download-artifact@v4.1.7
+        uses: actions/download-artifact@65a9edc5881444af0b9093a5e628f2fe47ea3b2e # v4.1.7
         with:
           path: ./test-results
 

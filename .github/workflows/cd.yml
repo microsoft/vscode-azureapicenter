@@ -30,13 +30,13 @@ jobs:
       id-token: write
     runs-on: "ubuntu-latest"
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@0717577d45739eb3c851188b29f50ed6c0b2194e # v2.8.0
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610 # v3.9.1
         with:
           node-version: lts/*
 
-      - uses: jossef/action-set-json-field@v1
+      - uses: jossef/action-set-json-field@6e6d7e639f24b3955ef682815317b5613ac6ca12 # v1
         if: ${{ github.event_name == 'workflow_dispatch' && (github.event.inputs.release == 'true' || github.ref == 'refs/heads/main') }}
         with:
           file: ./package.json
@@ -68,7 +68,7 @@ jobs:
             npx @vscode/vsce package --no-dependencies --githubBranch ${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
           fi
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: release
           path: |
@@ -80,7 +80,7 @@ jobs:
         run: |
           echo "version=$(jq -r '"v"+.version' package.json)" >> $GITHUB_OUTPUT
 
-      - uses: piszmog/create-tag@v1
+      - uses: piszmog/create-tag@9780feb0f3cc67c7affcbd87b4b3e22036291cf4 # v1.2.2
         if: ${{ github.event.inputs.tag == 'true'}}
         with:
           version: ${{ steps.package-version.outputs.version }}

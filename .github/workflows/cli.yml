@@ -29,15 +29,15 @@ jobs:
       python-versions: ${{ steps.discover-tests.outputs.python-versions }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@e9aba2c848f5ebd159c070c61ea2c4e2b122355e # v2.3.4
         with:
           python-version: "3.11"
 
       - name: Azure login
-        uses: azure/login@v2
+        uses: azure/login@7184910d9eb2b1c5e48f7073824a90609bb9b6d6 # v2.3.1
         with:
           client-id: ${{secrets.APICEXT_TEST_AZURE_CLIENT_ID}}
           tenant-id: ${{secrets.APICEXT_TEST_AZURE_TENANT_ID}}
@@ -129,7 +129,7 @@ jobs:
     if: (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && !cancelled()
     steps:
       - name: Download all test result artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           path: test-results/
           pattern: test-results-*
@@ -411,7 +411,7 @@ jobs:
 
       - name: Cleanup test result artifacts
         if: always()
-        uses: geekyeggo/delete-artifact@v5
+        uses: geekyeggo/delete-artifact@f275313e70c08f6120db482d7a6b98377786765b # v5.1.0
         with:
           name: test-results-*
           failOnError: false
