@@ -2,6 +2,9 @@
 
 > Note: This changelog only includes the changes for the stable versions of Azure API Center for Visual Studio Code. For the changelog of pre-released versions, please refer to the [Pre-release Changelog of Azure API Center for Visual Studio Code](https://github.com/microsoft/vscode-azureapicenter/blob/main/PRERELEASE.md).
 
+## 1.3.6
+* **Validate skill root definition before installation**: Require a root `SKILL.md` or `skill.json` in the target GitHub directory before recursively downloading skill files during `Install in VS Code`.
+
 ## 1.3.5
 * **Fix activation regression on load**: Bundle a single copy of `@microsoft/vscode-azext-utils` to avoid a webpack dual-package hazard that left the API Center tree views with "no data provider" and unregistered commands.
 
