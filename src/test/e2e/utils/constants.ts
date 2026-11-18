@@ -31,6 +31,8 @@ export class VSCode {
     public static readonly ENTER = "Enter";
     //toolbar
     public static readonly Toolbar = "toolbar";
+    // menu items
+    public static readonly MENU_ITEM = "menuitem";
 }
 
 export class APICenter {
