@@ -33,7 +33,7 @@ describe('handleUri test happy path', () => {
     });
 
     it('handleUri routes /install to installSkill', async () => {
-        const fakeUrl = 'vscode://apidev.azure-api-center/install?sourceUrl=https%3A%2F%2Fgithub.com%2Fowner%2Frepo%2Ftree%2Fmain%2Fskills%2Fmine&name=my-skill';
+        const fakeUrl = 'vscode://apidev.azure-api-center/install?sourceUrl=https%3A%2F%2Fgithub.com%2Fowner%2Frepo%2Ftree%2Fmain%2Fskills%2Fmine&name=my-skill&dataApiHost=contoso.data.eastus.azure-apicenter.ms&clientId=c&tenantId=t';
         const url = vscode.Uri.parse(fakeUrl);
         const installSkillStub = sandbox.stub(installSkillModule, 'installSkill').resolves();
         // Ensure data plane path is NOT called
@@ -42,8 +42,11 @@ describe('handleUri test happy path', () => {
         await handleUri(url);
 
         sandbox.assert.calledOnce(installSkillStub);
-        assert.equal(installSkillStub.getCall(0).args[0], 'https://github.com/owner/repo/tree/main/skills/mine');
-        assert.equal(installSkillStub.getCall(0).args[1], 'my-skill');
+        assert.deepStrictEqual(installSkillStub.getCall(0).args[0], {
+            name: 'my-skill',
+            sourceUrl: 'https://github.com/owner/repo/tree/main/skills/mine',
+            apiCenter: { dataApiHost: 'contoso.data.eastus.azure-apicenter.ms', clientId: 'c', tenantId: 't', workspace: 'default', version: undefined },
+        });
         sandbox.assert.notCalled(stubTelemetryEvent);
     });
 });
