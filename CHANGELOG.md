@@ -2,6 +2,10 @@
 
 > Note: This changelog only includes the changes for the stable versions of Azure API Center for Visual Studio Code. For the changelog of pre-released versions, please refer to the [Pre-release Changelog of Azure API Center for Visual Studio Code](https://github.com/microsoft/vscode-azureapicenter/blob/main/PRERELEASE.md).
 
+## 1.3.7
+* **Install skills from API Center**: `Install in VS Code` deep links from the API Center portal now download the skill package directly from the API Center data plane (signing in with your Microsoft account), so skills from private GitHub, GitHub Enterprise, and Azure DevOps repositories can be installed. Public GitHub folder URLs are still supported as a fallback.
+* **Safer skill installation**: Confirm before installing, accept only Azure API Center data endpoints for API Center downloads, and reject skill names or package paths that would escape `.github/skills/{name}`.
+
 ## 1.3.6
 * **Validate skill root definition before installation**: Require a root `SKILL.md` or `skill.json` in the target GitHub directory before recursively downloading skill files during `Install in VS Code`.
 
